@@ -4,16 +4,16 @@ This repository contains the group project for our 5th semester of computer scie
 
 ### Key features of the project:
 
-* Multiplayer functionality: Teams of players will compete to guess hidden words based on clues given by the team captain.
-* Player statistics: The system will collect and store game results, allowing players to view their performance over time.
-* Secure connections: Ensuring that game sessions and player data are secure and protected.
+* **Multiplayer functionality**: Teams of players will compete to guess hidden words based on clues given by the team captain.
+* **Player statistics**: The system will collect and store game results, allowing players to view their performance over time.
+* **Secure connections**: Ensuring that game sessions and player data are secure and protected.
 
 ### Technologies:
-* Frontend: HTML/CSS, JavaScript (React)
-* Backend: Node.js, Express
-* Database: MongoDB (for storing player stats and game results)
-* Networking: WebSockets for real-time communication between players
-* Version control: Git
+* **Frontend**: HTML/CSS, JavaScript (React)
+* **Backend**: Java (Spring Framework)
+* **Database**: MongoDB (for storing player stats and game results)
+* **Networking**: WebSockets for real-time communication between players
+* **Version control**: Git
 
 ### Contributors:
 This project is being developed as a group assignment by a team of students from the 5th semester of computer science studies.
