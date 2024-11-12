@@ -1,4 +1,4 @@
-package org.example.codenames.user;
+package org.example.codenames.user.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 
 @Document(collection = "users")
 @AllArgsConstructor
@@ -19,5 +20,5 @@ public class User {
     private String username;
     private String password;
     private String email;
-    private String role;
+    private String roles;
 }

@@ -1,9 +1,10 @@
 package org.example.codenames.user.service.impl;
 
-import org.example.codenames.user.User;
+import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,14 +14,17 @@ import java.util.Optional;
 public class DefaultUserService implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public DefaultUserService(UserRepository userRepository) {
+    public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void createUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
@@ -44,7 +48,7 @@ public class DefaultUserService implements UserService {
         return userRepository.findById(id)
                 .map(user -> {
                     user.setUsername(updatedUser.getUsername());
-                    user.setPassword(updatedUser.getPassword());
+                    user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
                     return userRepository.save(user);
                 })
                 .orElse(null);

@@ -1,6 +1,6 @@
 package org.example.codenames.init;
 
-import org.example.codenames.user.User;
+import org.example.codenames.user.entity.User;
 import org.example.codenames.user.service.api.UserService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 public class AppInitializer implements InitializingBean {
 
     private final UserService userService;
-
     @Autowired
     public AppInitializer(UserService userService) {
         this.userService = userService;
@@ -23,7 +22,7 @@ public class AppInitializer implements InitializingBean {
                 .username("admin")
                 .password("admin")
                 .email("admin@adminish.com")
-                .role("ADMIN")
+                .roles("ADMIN")
                 .build();
 
         userService.createUser(user);
@@ -33,7 +32,7 @@ public class AppInitializer implements InitializingBean {
                 .username("Anna")
                 .password("anna")
                 .email("anna@normalna.com")
-                .role("USER")
+                .roles("USER")
                 .build();
 
         userService.createUser(user);
@@ -43,7 +42,7 @@ public class AppInitializer implements InitializingBean {
                 .username("Adam")
                 .password("adam")
                 .email("adam@normalny.com")
-                .role("USER")
+                .roles("USER")
                 .build();
 
         userService.createUser(user);

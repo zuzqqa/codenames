@@ -1,6 +1,6 @@
 package org.example.codenames.user.service.api;
 
-import org.example.codenames.user.User;
+import org.example.codenames.user.entity.User;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,6 +1,6 @@
 package org.example.codenames.user.repository.api;
 
-import org.example.codenames.user.User;
+import org.example.codenames.user.entity.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
