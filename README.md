@@ -2,6 +2,10 @@
 
 This repository contains the group project for our 5th semester of computer science studies. The goal of the project is to develop a distributed online version of the game Codenames, based on the popular board game "Tajniacy."
 
+### Project Schedule:
+Below is the project schedule, detailing the timeline and milestones for the development process:
+![Project Schedule](/README_IMAGES/ProjectSchedule.jpg)
+
 ### Key features of the project:
 
 * **Multiplayer functionality**: Teams of players will compete to guess hidden words based on clues given by the team captain.
