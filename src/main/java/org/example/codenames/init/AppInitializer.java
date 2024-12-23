@@ -22,7 +22,7 @@ public class AppInitializer implements InitializingBean {
                 .username("admin")
                 .password("admin")
                 .email("admin@adminish.com")
-                .roles("ADMIN")
+                .roles("ROLE_ADMIN")
                 .build();
 
         userService.createUser(user);
