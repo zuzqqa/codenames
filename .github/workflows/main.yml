@@ -1,0 +1,4 @@
+- name: Clarify and Improve Issues with OpenAI GPT
+  uses: MaurerKrisztian/issue-improver-action@v1.1
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
