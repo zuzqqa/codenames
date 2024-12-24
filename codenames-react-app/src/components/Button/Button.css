@@ -1,0 +1,52 @@
+.btn {
+  position: relative;
+  display: inline-block;
+  font-family: Dragon Hunter, sans-serif;
+  min-width: 44.6%;
+  padding: 10px 20px;
+  font-size: 1.3rem;
+  font-weight: 300;
+  text-align: center;
+  text-transform: uppercase;
+
+  /* Tło przycisku */
+  background-image: linear-gradient(to top, #561723, #8D2736);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border-radius: 17px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25); 
+
+  /* Gradient dla tekstu */
+  color: transparent; /* Tekst przezroczysty */
+  background-clip: text; /* Stosuje gradient tylko na tekście */
+  -webkit-background-clip: text; /* Dla Safari i Chrome */
+  background-image: linear-gradient(to right, #FFF7AB, #DAB274); /* Gradient na tekście */
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 17px;
+  padding: 3px;
+  background: linear-gradient(to top, #000000, #FFF7AB);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.btn:hover {
+  /* Stylizacja przycisku po najechaniu */
+}
+
+.btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  /* Stylizacja przycisku primary (można tu dodać inne właściwości) */
+}
