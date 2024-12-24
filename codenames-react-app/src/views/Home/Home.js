@@ -26,10 +26,10 @@ function Home() {
             <Button variant="danger">Register</Button>
           </div>
         </div>
-        <div className="gold-bar"></div> 
-          <div className="second-column">
-            <Button variant="success">Play as Guest</Button>
-          </div>
+        <div className="gold-bar"></div>
+        <div className="second-column">
+          <Button variant="success">Play as Guest</Button>
+        </div>
       </MenuContainer>
     </BackgroundContainer>
   );
