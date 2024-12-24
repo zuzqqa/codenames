@@ -1,0 +1,14 @@
+.characters-container {
+  position: absolute;
+  margin: auto;
+  width: 37.1%;
+  height: 66%;
+  padding-bottom: 15%;
+  z-index: -1;
+}
+
+.characters {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
