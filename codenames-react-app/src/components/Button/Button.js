@@ -1,5 +1,13 @@
 import React from "react";
+
 import "./Button.css";
+
+import soundFile from "../../assets/sounds/old-radio-button-click-97549.mp3";
+
+const playSound = () => {
+  const audio = new Audio(soundFile); 
+  audio.play();
+};
 
 function Button({
   children,
@@ -12,7 +20,7 @@ function Button({
     <button
       className={`btn btn-${variant}`}
       type={type}
-      onClick={onClick}
+      onClick={ () => {playSound(); onClick && onClick()}}
       disabled={disabled}
     >
       {children}

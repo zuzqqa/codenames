@@ -9,7 +9,7 @@
   margin-bottom: -15px;
   font-family: "Dragon Hunter", sans-serif;
   font-weight: 300;
-  font-size: 6rem;
+  font-size: calc(4.8rem + 1vw);
   text-align: center;
   text-transform: uppercase;
 
@@ -20,6 +20,8 @@
 
   position: relative;
   z-index: 1;
+
+  animation: hitEffect 0.3s ease-out;
 }
 
 .title-shadow {
@@ -27,7 +29,7 @@
   margin: 0;
   font-family: "Dragon Hunter", sans-serif;
   font-weight: 300;
-  font-size: 6em;
+  font-size: calc(4.8rem + 1vw);
   text-align: center;
   text-transform: uppercase;
 
@@ -40,4 +42,21 @@
   left: 0;
   top: 0;
   text-shadow: 10px 10px 8px rgba(0, 0, 0, 0.6);
+
+  animation: hitEffect 0.3s ease-out;
+}
+
+@keyframes hitEffect {
+  0% {
+    transform: scale(3) translateY(-100px);
+    opacity: 0;
+  }
+  75% {
+    transform: scale(0.6) translateY(-10px);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1) translateY(0); 
+    opacity: 1;
+  }
 }
