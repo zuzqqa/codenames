@@ -1,4 +1,5 @@
 import React from "react";
+
 import "./Subtitle.css";
 
 function SubtitleComponent({ children }) {

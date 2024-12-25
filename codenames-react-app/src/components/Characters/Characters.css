@@ -4,7 +4,7 @@
   width: 37.1%;
   height: 66%;
   padding-bottom: 15%;
-  z-index: -1;
+  z-index: 0;
 }
 
 .characters {
