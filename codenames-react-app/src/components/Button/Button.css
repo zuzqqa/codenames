@@ -3,12 +3,15 @@
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  font-family: Dragon Hunter, sans-serif;
+
   max-width: 44.6%;
   padding: 10px 20px;
+
+  font-family: Dragon Hunter, sans-serif;
   font-weight: 300;
   text-align: center;
   text-transform: uppercase;
+
   border-width: 1px;
   border-color: rgba(252, 241, 139, 0.5);
   transition: background-color 0.3s ease;
@@ -17,12 +20,14 @@
 }
 
 .button-text {
-  font-size: calc(0.2rem + 1vw);
   padding: 0;
   margin: 0;
+
+  font-size: calc(0.2rem + 1vw);
   color: transparent;
   background-clip: text;
   -webkit-background-clip: text;
+  
   background-image: linear-gradient(to right, #fff7ab, #dab274);
 }
 
@@ -33,7 +38,7 @@
 .btn-circle {
   border-radius: 50%;
   width: 3%;
-  height: 5.2%;
+  height: 5.3321%;
   position: absolute;
   top: 2%;
   right: 2%;
