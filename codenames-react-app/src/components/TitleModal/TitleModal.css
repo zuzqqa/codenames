@@ -1,31 +1,56 @@
-.title-base {
-  margin: 0;
-  font-family: "Dragon Hunter", sans-serif;
-  font-weight: 300;
-  font-size: calc(3.7rem + 1vw);
-  text-transform: uppercase;
-
-  background-image: linear-gradient(to bottom, #fcf18b, #ffd363);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
+/* 
+ * Title container - wraps the title and shadow elements.
+ * Positioning the container relatively allows for positioning of its child elements.
+ */
+ .title-container1 {
+  position: relative; /* Allows absolute positioning of the shadow relative to the title */
+  display: inline-block; /* Keeps the container inline with other elements if necessary */
 }
 
-.title {
-  @extend .title-base;
+/* 
+ * Main title style - defines the appearance of the title text itself.
+ * The title has a gradient background applied, clipped to the text.
+ */
+.title1 {
+  position: relative; /* Ensures the title text is positioned in context with the shadow */
 
-  text-align: left;
-  position: relative;
-  z-index: 1;
-}
-
-.title-shadow {
-  @extend .title-base;
+  font-family: "Dragon Hunter", sans-serif; 
+  font-weight: 300; 
+  font-size: calc(2.7rem + 1vw); /* Responsive font size, adjusts based on viewport width */
+  letter-spacing: 2px; 
   
-  width: 100%;
-  position: absolute;
-  left: 0;
-  top: 0;
-  text-align: left;
-  text-shadow: 10px 10px 8px rgba(0, 0, 0, 0.6);
+  background-image: linear-gradient(to bottom, #fcf18b, #ffd363); /* Gradient background applied to text */
+  background-clip: text; /* Clips the background to the shape of the text */
+  -webkit-background-clip: text; /* For webkit browsers (Safari, older Chrome versions) */
+  color: transparent; /* Makes the text color transparent so the gradient background is visible */
+  
+  text-align: left; /* Aligns the text to the left */
+  z-index: 2; /* Ensures the title appears above the shadow */
+}
+
+/* 
+ * Title shadow style - defines the appearance of the shadow behind the title.
+ * The shadow is an absolute positioned element that follows the title.
+ */
+.title-shadow1 {
+  position: absolute; /* Absolutely positions the shadow relative to the title */
+  left: 0; /* Aligns the shadow with the left edge of the title */
+  top: 0; /* Aligns the shadow with the top edge of the title */
+  width: 100%; /* Ensures the shadow covers the entire width of the title */
+
+  font-family: "Dragon Hunter", sans-serif; 
+  font-size: calc(2.7rem + 1vw); 
+  letter-spacing: 2px; 
+  
+  background-image: linear-gradient(to bottom, #fcf18b, #ffd363); /* Matches the title's gradient */
+  background-clip: text; /* Clips the background to the shape of the text */
+  -webkit-background-clip: text; /* For webkit browsers */
+  color: transparent; /* Ensures the shadow is only visible through the text */
+  
+  text-align: left; /* Aligns the shadow text to the left (same as the title) */
+  
+  /* Applies the shadow effect, offsetting and blurring the shadow */
+  text-shadow: 10px 10px 8px rgba(0, 0, 0, 0.8); 
+  
+  z-index: 1; /* Places the shadow below the title */
 }

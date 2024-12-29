@@ -5,8 +5,8 @@ import "./GameTitleBar.css";
 function GameTitleBar() {
   return (
     <div className="footer-bar">
-      <div className="gold-bar"/>
       <span className="footer-bar-title">Codenames</span>
+      <div className="gold-bar1"/>
     </div>
   );
 }

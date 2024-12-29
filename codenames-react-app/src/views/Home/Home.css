@@ -32,3 +32,11 @@
     justify-content: center;
     align-items: center;
   }
+
+  .modal-header { 
+    display: flex;
+    justify-content: space-between;  /* Rozmieszcza elementy na skrajach */
+    align-items: center;             /* Wyrównuje elementy w pionie */
+    width: 90%;
+    margin: auto;
+  }

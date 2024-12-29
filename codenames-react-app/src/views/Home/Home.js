@@ -11,8 +11,8 @@ import SubtitleComponent from "../../components/Subtitle/Subtitle";
 import CharactersComponent from "../../components/Characters/Characters";
 import Button from "../../components/Button/Button";
 import Modal from "../../components/Modal/Modal";
-import TitleModal from "../../components/TitleModal/TitleModal"; 
-import GameTitleBar from "../../components/GameTitleBar/GameTitleBar"; 
+import TitleModal from "../../components/TitleModal/TitleModal";
+import GameTitleBar from "../../components/GameTitleBar/GameTitleBar";
 
 import settingsIcon from "../../assets/icons/settings.png";
 import closeIcon from "../../assets/icons/close.png";
@@ -35,15 +35,17 @@ function Home() {
         <img src={settingsIcon} onClick={toggleModal} alt="Settings" />
       </Button>
       <Modal isOpen={isModalOpen} onClose={toggleModal}>
-        <TitleModal>Settings</TitleModal>
-        <Button variant="primary" onClick={toggleModal} alt="Close">
-          <img src={closeIcon} alt="Close" />
-        </Button>
+        <div className="modal-header">
+          <TitleModal>Settings</TitleModal>
+          <Button variant="primary" onClick={toggleModal} alt="Close">
+            <img src={closeIcon} alt="Close" />
+          </Button>
+        </div>
         <p>Music</p>
         <p>Sound FX</p>
         <p>Language</p>
-        <p>Help</p>  
-        <GameTitleBar></GameTitleBar>      
+        <p>Help</p>
+        <GameTitleBar></GameTitleBar>
       </Modal>
       {isGameStarted ? (
         <>
