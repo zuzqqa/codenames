@@ -1,0 +1,56 @@
+.btn {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  max-width: 44.6%;
+  padding: 0.625rem 1.25rem; /* Converted 10px and 20px */
+
+  font-family: Dragon Hunter, sans-serif;
+  font-weight: 300;
+  text-align: center;
+  text-transform: uppercase;
+
+  border-width: 0.0625rem; /* Converted 1px */
+  border-color: rgba(252, 241, 139, 0.5);
+  transition: background-color 0.3s ease;
+  border-radius: 1.6875rem; /* Converted 27px */
+  box-shadow: 0 0.25rem 0.25rem 0 rgba(0, 0, 0, 0.25); /* Converted 0px and 4px */
+}
+
+.button-text {
+  padding: 0;
+  margin: 0;
+
+  font-size: calc(0.2rem + 1vw);
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+
+  background-image: linear-gradient(to right, #fff7ab, #dab274);
+}
+
+.btn-primary {
+  background-image: linear-gradient(to top, #561723, #8d2736);
+}
+
+.btn-circle {
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  position: absolute;
+  top: 2%;
+  right: 2%;
+
+  border-width: 0.125rem; /* Converted 2px */
+  border-color: #fcf18b;
+  background-image: linear-gradient(to top, #22303b, #0b1319);
+}
+
+@media (max-width: 1440px) {
+  .btn-circle {
+    width: 3.6%;
+    height: 7%;
+  }
+}

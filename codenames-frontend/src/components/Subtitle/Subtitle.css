@@ -1,0 +1,62 @@
+.subtitle-container {
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  margin-bottom: 10%;
+  z-index: 2;
+}
+
+.subtitle {
+  margin: 0;
+  margin-bottom: -15px;
+  font-family: "Dragon Hunter", sans-serif;
+  font-weight: 300;
+  font-size: calc(0.8rem + 1vw);
+  text-align: center;
+  text-transform: uppercase;
+
+  background-image: linear-gradient(to bottom, #fcf18b, #ffd363);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+
+  position: relative;
+  z-index: 1;
+}
+
+.subtitle-shadow {
+  width: 100%;
+  margin: 0;
+  font-family: "Dragon Hunter", sans-serif;
+  font-weight: 300;
+  font-size: calc(0.8rem + 1vw);
+  text-align: center;
+  text-transform: uppercase;
+
+  background-image: linear-gradient(to bottom, #fcf18b, #ffd363);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+
+  position: absolute;
+  left: 0;
+  top: 0;
+  text-shadow: 10px 10px 8px rgba(0, 0, 0, 0.6);
+}
+
+@media (max-width: 1440px) {
+  .subtitle-container {
+    margin-top: 4%;
+  }
+}
+
+@keyframes hitEffect {
+  0% {
+    transform: scale(3) translateY(-100px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}

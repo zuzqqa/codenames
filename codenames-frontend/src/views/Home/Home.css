@@ -1,0 +1,34 @@
+.first-column {
+    display: grid;
+    grid-template-rows: 0.8fr 0.8fr;
+    grid-row: 2 / span 2;
+  }
+  
+  .row1,
+  .row2 {
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .gold-bar {
+    grid-column: 2; 
+    grid-row: 1 / span 4; 
+
+    height: 62.7%;
+    width: 2px;
+    margin: auto;
+    z-index: 3;
+
+    background-image: linear-gradient(to right, #DAB274, #745F3E);
+  }
+
+  .second-column {
+    grid-column: 3;
+    grid-template-rows: 0.8fr 0.8fr;
+    grid-row: 2 / span 2;
+
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+  }
