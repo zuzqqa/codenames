@@ -41,10 +41,30 @@ function Home() {
             <img src={closeIcon} alt="Close" />
           </Button>
         </div>
-        <p>Music</p>
-        <p>Sound FX</p>
-        <p>Language</p>
-        <p>Help</p>
+        <div className="modal-body">
+          <div className="settings-grid">
+            <div className="settings-item">
+              <label>Music</label>
+              <input type="range" min="0" max="100" />
+            </div>
+            <div className="settings-item">
+              <label>Sound FX</label>
+              <input type="range" min="0" max="100" />
+            </div>
+            <div className="settings-item">
+              <label>Language</label>
+              <select>
+                <option>English</option>
+                <option>Polish</option>
+                <option>Spanish</option>
+              </select>
+            </div>
+            <div className="settings-item">
+              <label>Help</label>
+              <button>Open</button>
+            </div>
+          </div>
+        </div>
         <GameTitleBar></GameTitleBar>
       </Modal>
       {isGameStarted ? (
