@@ -1,0 +1,112 @@
+/* ------------------- Layout and Structure ------------------- */
+
+/* First Column Layout */
+.first-column {
+  display: grid;
+  grid-template-rows: 0.8fr 0.8fr;
+  grid-row: 2 / span 2;
+}
+
+/* Row Layout */
+.row1,
+.row2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Gold Bar Styling */
+.gold-bar {
+  grid-column: 2;
+  grid-row: 1 / span 4;
+
+  height: 62.7%;
+  width: 2px;
+  margin: auto;
+  z-index: 3;
+
+  background-image: linear-gradient(to right, #dab274, #745f3e);
+}
+
+/* Second Column Layout */
+.second-column {
+  grid-column: 3;
+  grid-template-rows: 0.8fr 0.8fr;
+  grid-row: 2 / span 2;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ------------------- Modal and Settings Layout ------------------- */
+
+/* Modal Header Styling */
+.modal-header {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center; 
+  width: 90%;
+  height: 30%;
+  margin: auto;
+}
+
+/* Modal Body Styling */
+.modal-body {
+  padding: 2%;
+  text-align: center;
+  width: 62.7%;
+  margin: auto;
+}
+
+/* ------------------- Settings Grid Layout ------------------- */
+
+/* Grid Layout for Settings */
+.settings-grid {
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+  gap: 1%;
+}
+
+/* Settings Item Layout */
+.settings-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+/* Settings Item Label Styling */
+.settings-item label {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+/* Settings Item Range Input */
+.settings-item input[type="range"] {
+  width: 80%;
+}
+
+/* Settings Item Select Dropdown */
+.settings-item select {
+  width: 80%;
+}
+
+/* Settings Item Button Styling */
+.settings-item button {
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+/* Button Hover Effect */
+.settings-item button:hover {
+  background-color: #0056b3;
+}

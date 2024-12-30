@@ -1,0 +1,50 @@
+.btn {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 44.6%;
+  padding: 10px 20px;
+  font-family: Dragon Hunter, sans-serif;
+  font-weight: 300;
+  text-align: center;
+  text-transform: uppercase;
+  border-width: 1px;
+  border-color: rgba(252, 241, 139, 0.5);
+  transition: background-color 0.3s ease;
+  border-radius: 27px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.button-text {
+  padding: 0;
+  margin: 0;
+  font-size: calc(0.2rem + 1vw);
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  background-image: linear-gradient(to right, #fff7ab, #dab274);
+}
+
+.btn-primary {
+  background-image: linear-gradient(to top, #561723, #8d2736);
+}
+
+.btn-circle {
+  border-radius: 50%;
+  width: 3%;
+  height: 5.3321%;
+  position: absolute;
+  top: 2%;
+  right: 2%;
+  border-width: 2px;
+  border-color: #fcf18b;
+  background-image: linear-gradient(to top, #22303b, #0b1319);
+}
+
+@media (max-width: 1440px) {
+  .btn-circle {
+    width: 3.6%;
+    height: 7%;
+  }
+}
