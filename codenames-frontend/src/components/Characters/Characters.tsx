@@ -1,5 +1,3 @@
-import React from "react";
-
 import "./Characters.css";
 
 import characterImage from "../../assets/images/characters.png";

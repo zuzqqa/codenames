@@ -31,9 +31,8 @@ function Home() {
   };
 
   return (
-      <>
+      <div className="app-wrapper">
         <BackgroundContainer />
-        <div className="content-container">
           <Button variant="circle">
             <img src={settingsIcon} onClick={toggleModal} alt="Settings" />
           </Button>
@@ -81,8 +80,7 @@ function Home() {
                 </Button>
               </>
           )}
-        </div>
-      </>
+      </div>
   );
 }
 
