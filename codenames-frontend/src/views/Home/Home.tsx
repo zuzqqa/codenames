@@ -32,8 +32,7 @@ function Home() {
 
   return (
       <>
-        <BackgroundContainer />
-        <div className="content-container">
+        <BackgroundContainer>
           <Button variant="circle">
             <img src={settingsIcon} onClick={toggleModal} alt="Settings" />
           </Button>
@@ -81,7 +80,7 @@ function Home() {
                 </Button>
               </>
           )}
-        </div>
+        </BackgroundContainer>
       </>
   );
 }
