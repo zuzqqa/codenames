@@ -6,6 +6,7 @@ import Home from './views/Home/Home';
 
 import soundFile from "./assets/sounds/background-music.mp3";
 import {useEffect, useState} from "react";
+import SelectGame from "./views/SelectGame/SelectGame.tsx";
 
 const App : React.FC = () => {
     const [audio] = useState(new Audio(soundFile));
@@ -38,9 +39,10 @@ const App : React.FC = () => {
         <Router>
             <Routes>
                 <Route path="/" element={<Home/>}/>
+                <Route path="/games" element={<SelectGame/>}/>
             </Routes>
         </Router>
     );
-}
+};
 
 export default App;

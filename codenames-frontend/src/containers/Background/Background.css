@@ -1,18 +1,15 @@
 .background-container {
-  position: absolute; /* This positions the background absolutely */
-  top: 0;
-  left: 0;
+  margin: 0;
   width: 100vw;
   height: 100vh;
   background-image: url("../../assets/images/background.png");
   background-size: cover;
-  background-position: center; /* This ensures the background is centered */
 
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: -1; /* Put it behind the content */
+  z-index: -10;
 }
 
 .background-container::before {
