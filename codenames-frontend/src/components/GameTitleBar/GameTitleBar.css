@@ -1,0 +1,28 @@
+.footer-bar {
+    height: 45px;
+
+  display: flex;
+  position: absolute;
+  top: 2%;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-bar-title {
+  padding: 0 30%;
+
+  font-family: "Dragon Hunter", sans-serif;
+  font-size: calc(1rem + 0.2vw);
+  text-transform: uppercase;
+  color: #fcf18b;
+  
+  background: linear-gradient(to right, #32464d, #2c3d46, #22303b);
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(252, 241, 139, 0.5);
+  border-radius: 17px;
+
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  z-index: 10;
+  letter-spacing: 2px;
+}
