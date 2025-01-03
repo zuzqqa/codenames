@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 
 import Home from './views/Home/Home';
 import soundFile from "./assets/sounds/background-music.mp3";
+import LoginPage from "./views/LoginPage/LoginPage";
+import RegisterPage from "./views/RegisterPage/RegisterPage";
 
 function App() {
   const [audio] = useState(new Audio(soundFile)); 
@@ -36,6 +38,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
       </Routes>
     </Router>
   );

@@ -30,7 +30,7 @@
   background-image: linear-gradient(to top, #561723, #8d2736);
 }
 
-.btn-circle {
+.btn-settings {
   border-radius: 50%;
   width: 3%;
   height: 5.2%;
@@ -43,8 +43,50 @@
   background-image: linear-gradient(to top, #22303b, #0b1319);
 }
 
+.btn-agent {
+  border-radius: 50%;
+  width: 3%;
+  height: 5.2%;
+  position: absolute;
+  top: 2%;
+  right: 6%;
+
+  border-width: 2px;
+  border-color: #fcf18b;
+  background-image: linear-gradient(to top, #22303b, #0b1319);
+}
+
+.btn-exit {
+  border-radius: 50%;
+  width: 3%;
+  height: 5.2%;
+  position: absolute;
+  padding-left: 1.8%;
+  top: 2%;
+  left: 2%;
+
+  border-width: 2px;
+  border-color: #fcf18b;
+  background-image: linear-gradient(to top, #22303b, #0b1319);
+}
+
+.btn-header {
+  width: 12%;
+  height: 5.2%;
+  top: 2%;
+  position: absolute;
+
+  border-width: 2px;
+  border-color: #fcf18b;
+  background-image: linear-gradient(to top, #22303b, #0b1319);
+}
+
 @media (max-width: 1440px) {
-  .btn-circle {
+  .btn-settings {
+    width: 3.6%;
+    height: 7%;
+  }
+  .btn-exit {
     width: 3.6%;
     height: 7%;
   }
