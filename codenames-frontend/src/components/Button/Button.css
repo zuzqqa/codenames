@@ -33,6 +33,8 @@
 
 .btn-primary {
   background-image: linear-gradient(to top, #561723, #8d2736);
+  min-width: 12rem;
+
 }
 
 .btn-circle {

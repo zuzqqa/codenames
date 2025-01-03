@@ -25,6 +25,10 @@
     justify-content: center;
     align-items: center;
   }
+
+  .row2{
+    padding-top: 1rem;
+  }
   
   .gold-bar {
     grid-column: 2; 

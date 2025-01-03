@@ -76,7 +76,7 @@ function Home() {
                 ) : (
                     <>
                         <Button variant="primary" onClick={startGame}>
-                            Play
+                          <span className="button-text">Play</span>
                         </Button>
                     </>
                 )}
