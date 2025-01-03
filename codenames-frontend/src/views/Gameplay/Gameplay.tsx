@@ -75,7 +75,7 @@ const Gameplay: React.FC = () => {
                     <img src={shelfImg}/>
                 </div>
                 <div className='item'>
-                    <Button variant="secondary">
+                    <Button variant="primary">
                         <span className="button-text">End Round</span>
                     </Button>
                 </div>

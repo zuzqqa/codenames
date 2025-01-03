@@ -6,6 +6,7 @@ function GameTitleBar() {
       <span className="footer-bar-title">Codenames</span>
     </div>
   );
+
 }
 
 export default GameTitleBar;

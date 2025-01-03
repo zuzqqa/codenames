@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import "./Button.css";
 
 // @ts-ignore
@@ -13,7 +13,7 @@ interface ButtonProps {
     children: ReactNode;
     onClick?: () => void;
     type?: "button" | "submit" | "reset";
-    variant?: "primary" | "secondary" | "danger" | "circle";
+    variant?: "primary" | "room" | "circle";
     disabled?: boolean;
 }
 

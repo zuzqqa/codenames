@@ -8,18 +8,14 @@ interface ModalProps {
     children: ReactNode;
 }
 
-// Functional Component
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
     if (!isOpen) return null;
 
     return (
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <TitleComponent className="modal-title" />
+                <TitleComponent></TitleComponent>
                 {children}
-                <button className="modal-close-button" onClick={onClose}>
-                    Close
-                </button>
             </div>
         </div>
     );
