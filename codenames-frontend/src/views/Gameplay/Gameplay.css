@@ -1,0 +1,86 @@
+.background-container-temp {
+    position: absolute; /* This positions the background absolutely */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url("../../assets/images/background.png");
+    background-size: cover;
+    /*background-position: center; */ /*This ensures the background is centered */
+  
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; 
+    z-index: -1; /* Put it behind the content */
+  }
+  
+  .background-container-temp::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    box-shadow: inset 0px 4px 100px 57px rgba(0, 0, 0, 0.25);
+  }
+
+  .content-container{
+    width: 100vw;
+    height: 90%;
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; 
+  }
+
+  .bottom-section {
+    width: 100%; /* Zajmuje całą szerokość */
+    display: flex;
+    justify-content: center; /* Wyrównanie elementów wewnątrz */
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    margin-top: auto; /* Ustawia tę sekcję na dole */
+}
+
+
+.cards-section img{
+    width: 160px;
+    border-radius: 8px;
+}
+
+.card{
+    margin:3px 10px;
+}
+
+.item{
+    flex: 1;
+    text-align: center;
+}
+
+.item:nth-child(2) {
+    flex:2;
+  }
+
+
+
+
+.timer{
+    margin: 20px 20px;
+    padding: 5px 20px;
+    font-family: Dragon Hunter, sans-serif;
+    font-weight: 300;
+    text-align: center;
+    text-transform: uppercase;
+    border-style: solid;
+    border-width: 0.0625rem; /* Converted 1px */
+    border-color: rgba(252, 241, 139, 0.5);
+    border-radius: 1.6875rem; /* Converted 27px */
+    box-shadow: 0 0.25rem 0.25rem 0 rgba(0, 0, 0, 0.25); /* Converted 0px and 4px */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    background-image: linear-gradient(to top, #991B1B, #E52121);
+    letter-spacing: 2px;
+    color: #fcf18b;
+}
+
+
+

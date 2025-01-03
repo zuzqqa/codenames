@@ -1,5 +1,5 @@
 import "../../styles/App.css";
-import "./Home.css";
+import "./SelectGame.css";
 
 import BackgroundContainer from "../../containers/Background/Background";
 import MenuContainer from "../../containers/Menu/Menu";
@@ -16,15 +16,10 @@ import closeIcon from "../../assets/icons/close.png";
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 
-function Home() {
-    const [isGameStarted, setIsGameStarted] = useState(false);
+function SelectGame() {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const navigate = useNavigate();
-
-    const startGame = () => {
-        setIsGameStarted(true);
-    };
 
     const toggleModal = () => {
         setIsModalOpen(!isModalOpen);
@@ -47,42 +42,27 @@ function Home() {
                     <p>Help</p>
                     <GameTitleBar></GameTitleBar>
                 </Modal>
-                {isGameStarted ? (
                     <>
                         <TitleComponent>Codenames</TitleComponent>
                         <CharactersComponent />
                         <SubtitleComponent>Your mission begins now</SubtitleComponent>
                         <MenuContainer>
                             <div className="first-column">
-                                <div className="row1">
-                                    <Button variant="primary">
-                                        <span className="button-text">Login</span>
-                                    </Button>
-                                </div>
-                                <div className="row2">
-                                    <Button variant="primary">
-                                        <span className="button-text">Register</span>
-                                    </Button>
-                                </div>
+                                <Button variant="room">
+                                    <span className="button-text">Create room</span>
+                                </Button>
                             </div>
                             <div className="gold-bar"></div>
                             <div className="second-column">
-                                <Button variant="primary" onClick={() => navigate('/games')}>
-                                    <span className="button-text">Play as Guest</span>
+                                <Button variant="room" onClick={() => navigate('/games')}>
+                                    <span className="button-text">Join room</span>
                                 </Button>
                             </div>
                         </MenuContainer>
                     </>
-                ) : (
-                    <>
-                        <Button variant="primary" onClick={startGame}>
-                          <span className="button-text">Play</span>
-                        </Button>
-                    </>
-                )}
             </BackgroundContainer>
         </>
     );
 }
 
-export default Home;
+export default SelectGame;
