@@ -3,6 +3,8 @@ import './styles/App.css';
 import * as React from 'react';
 
 import Home from './views/Home/Home';
+import Gameplay from './views/Gameplay/Gameplay'; // import nowego komponentu
+
 
 import soundFile from "./assets/sounds/background-music.mp3";
 import {useEffect, useState} from "react";
@@ -38,6 +40,7 @@ const App : React.FC = () => {
         <Router>
             <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/gameplay" element={<Gameplay />} /> {/* Nowa trasa */}
             </Routes>
         </Router>
     );
