@@ -12,6 +12,8 @@ import BackgroundContainer from "../../containers/Background/Background";
 import Button from "../../components/Button/Button";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar";
 import settingsIcon from "../../assets/icons/settings.png";
+import cardSound from "../../assets/sounds/card-filp.mp3";
+
 
 const Gameplay: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,22 +21,20 @@ const Gameplay: React.FC = () => {
         setIsModalOpen(!isModalOpen);
     };
 
-    // Tablica przechowująca stany obrazków dla kart
     const [cards, setCards] = useState<string[]>(new Array(25).fill(cardWhiteImg));
 
-    // Tablica przechowująca stany obrotu kart
     const [flipStates, setFlipStates] = useState<boolean[]>(new Array(25).fill(false));
 
-    // Funkcja do obsługi kliknięcia w kartę z opóźnieniem
+    const clickAudio = new Audio(cardSound);
+
     const toggleCardImage = (index: number) => {
-        // Ustawienie animacji obrotu
+        clickAudio.play();
         setFlipStates(prevFlipStates => {
             const newFlipStates = [...prevFlipStates];
             newFlipStates[index] = !newFlipStates[index];
             return newFlipStates;
         });
 
-        // Użycie setTimeout do opóźnienia zmiany obrazka o 0.5s
         setTimeout(() => {
             setCards(prevCards => {
                 const newCards = [...prevCards];
@@ -44,16 +44,14 @@ const Gameplay: React.FC = () => {
         }, 170);  // 0.17s
     };
 
-  // Stan, który określa, która karta jest kliknięta i powiększona
-    const [isCardVisible, setIsCardVisible] = useState(false); // New state for showing black card
-    const [cardText, setCardText] = useState(""); // State for the input text
-    const [cardDisplayText, setCardDisplayText] = useState(""); // Text displayed on the card
-    // Funkcja do obsługi kliknięcia w codename-card-container
+    const [isCardVisible, setIsCardVisible] = useState(false);
+    const [cardText, setCardText] = useState("");
+    const [cardDisplayText, setCardDisplayText] = useState(""); 
 
 
-     // Funkcja do obsługi kliknięcia w codename-card-container
      const toggleBlackCardVisibility = () => {
-        setIsCardVisible(true); // Show overlay
+        clickAudio.play();
+        setIsCardVisible(true);
     };
 
     const handleGlobalKeyDown = (event: KeyboardEvent) => {
@@ -94,7 +92,6 @@ const Gameplay: React.FC = () => {
                         <span className='timer'>00:00</span>
                     </div>
                     <div className="cards-section">
-                        {/* Renderowanie 25 kart */}
                         {cards.map((cardImage, index) => (
                             <div
                                 key={index}
@@ -124,7 +121,7 @@ const Gameplay: React.FC = () => {
                         <img className="card-stack" src={cardsStackImg} />
                             <div
                                 className="codename-card-container"
-                                onClick={toggleBlackCardVisibility} // Handle the toggle
+                                onClick={toggleBlackCardVisibility}
                             >
                                 <span className="codename-card-text">{cardDisplayText || ""}</span>
                                 <img className="codename-card" src={cardBlackImg} />
