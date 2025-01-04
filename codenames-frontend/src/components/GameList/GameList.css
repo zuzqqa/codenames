@@ -1,0 +1,28 @@
+.list-content {
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: 100%;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(360deg, #F0E0B5 0%, #EED8B0 88.89%);
+    box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.3), inset 0 0 15px 5px rgba(0, 0, 0, 0.4);
+    border-radius: 20px;
+    padding: 0;
+    width: 75%;
+    height: 80%;
+    margin: auto;
+    margin-bottom: 60%;
+    margin-right: 10%;
+}
+
+.room-info {
+    width: 100%;
+}
+
+.scroll-container {
+    width: 300px;
+    height: 200px;
+    overflow: auto; /* Enables scrolling */
+    border: 1px solid #ccc;
+    padding: 10px;
+}
