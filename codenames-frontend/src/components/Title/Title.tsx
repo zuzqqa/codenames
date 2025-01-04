@@ -1,25 +1,29 @@
-import React, { useState, ReactNode } from "react";
+import React, { useState, ReactNode, useEffect } from "react";
 import "./Title.css";
 
 // @ts-ignore
 import soundFile from "../../assets/sounds/cinematic-hit-159487.mp3";
 
-// Define prop types
 interface TitleComponentProps {
-    children: ReactNode; // Accepts string, JSX, or other React nodes
+    children: ReactNode;
+    soundFXVolume: number; 
 }
 
-const TitleComponent: React.FC<TitleComponentProps> = ({ children }) => {
-    const [audio] = useState(() => new Audio(soundFile)); // Initialize audio only once
+const TitleComponent: React.FC<TitleComponentProps> = ({ children, soundFXVolume }) => {
+    const [audio] = useState(() => new Audio(soundFile)); 
 
     const playHitSound = () => {
-        audio.volume = 0.3;
+        audio.volume = soundFXVolume / 100; 
         audio.play();
     };
 
     const handleAnimationStart = () => {
         playHitSound();
     };
+
+    useEffect(() => {
+        audio.volume = soundFXVolume / 100;
+    }, [soundFXVolume, audio]);
 
     return (
         <div className="title-container">

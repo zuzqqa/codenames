@@ -13,14 +13,20 @@ import {useEffect, useState} from "react";
 const App : React.FC = () => {
     const [audio] = useState(new Audio(soundFile));
     const [isPlaying, setIsPlaying] = useState(false);
-
+    const [musicVolume, setMusicVolume] = useState(50);
+    const [soundFXVolume, setSoundFXVolume] = useState(50); 
+    
     const playAudio = () => {
         if (!isPlaying) {
             audio.loop = true;
-            audio.volume = 0.2;
             audio.play();
             setIsPlaying(true);
         }
+    };
+
+    const setVolume = (volume: number) => {
+        audio.volume = volume; 
+        setMusicVolume(volume); 
     };
 
     useEffect(() => {
@@ -40,7 +46,8 @@ const App : React.FC = () => {
     return (
         <Router>
             <Routes>
-                <Route path="/" element={<Home />} />
+            <Route path="/" element={<Home setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
+            <Route path="/gameplay" element={<Gameplay />} /> 
                 <Route path="/games" element={<SelectGame />} />
                 <Route path="/join-game" element={<JoinGame />} />
                 <Route path="/create-game" element={<CreateGame />} />

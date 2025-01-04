@@ -3,7 +3,8 @@
   display: inline-flex;
   justify-content: center;
   align-items: center;
-
+  
+  max-width: 100%;
   padding: 0.625rem 1.25rem;
 
   font-family: Dragon Hunter, sans-serif;
@@ -11,7 +12,7 @@
   text-align: center;
   text-transform: uppercase;
 
-  border-width: 1px;
+  border-width: 0.0625rem;
   border-color: rgba(252, 241, 139, 0.5);
   transition: background-color 0.3s ease;
   border-radius: 1.6875rem;
@@ -33,13 +34,12 @@
 .btn-primary {
   background-image: linear-gradient(to top, #561723, #8d2736);
   min-width: 12rem;
-
 }
 
 .btn-circle {
   border-radius: 50%;
-  width: 2rem;
-  height: 2.5rem;
+  width: 2.5rem;
+  height: 2.7rem;
   position: absolute;
   top: 2%;
   right: 2%;
@@ -60,7 +60,7 @@
 }
 
 .btn-room {
-  background: linear-gradient(360deg, #12501E 0%, #478B35 88.89%);
+  background: linear-gradient(360deg, #12501e 0%, #478b35 88.89%);
   min-width: 12rem;
   border-radius: 17px;
   margin: 1rem 1rem;
@@ -69,6 +69,15 @@
 .btn-session {
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
   width: 100%;
+}
+
+.btn-help {
+  background-image: linear-gradient(to top, #561723, #8d2736);
+  width: 60%;
+  padding: 0;
+  margin: auto;
+  border-width: 0.125rem;
+  border-color: #fff7ab;
 }
 
 @media (max-width: 1440px) {
