@@ -1,14 +1,12 @@
 import { ReactNode } from "react";
 import "./Button.css";
-
-// @ts-ignore
 import soundFile from "../../assets/sounds/old-radio-button-click-97549.mp3";
 
 interface ButtonProps {
     children: ReactNode;
     onClick?: () => void;
     type?: "button" | "submit" | "reset";
-    variant?: "primary" | "room" | "circle" | "help";
+    variant?: "primary" | "room" | "circle" | "circle-back" | "session" | "help";
     disabled?: boolean;
     soundFXVolume: number;
 }

@@ -1,4 +1,4 @@
-.subtitle-container {
+.primary-subtitle-container {
   position: absolute;
   text-align: center;
   width: 100%;
@@ -8,7 +8,7 @@
 
 .subtitle {
   margin: 0;
-  margin-bottom: -15px;
+  margin-bottom: -5%;
   font-family: "Dragon Hunter", sans-serif;
   font-weight: 300;
   font-size: calc(0.8rem + 1vw);
@@ -59,4 +59,12 @@
     transform: scale(1) translateY(0);
     opacity: 1;
   }
+}
+
+.room-subtitle-container {
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  margin-bottom: 35%;
+  z-index: 2;
 }
