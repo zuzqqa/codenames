@@ -1,7 +1,5 @@
 import { ReactNode } from "react";
 import "./Button.css";
-
-// @ts-ignore
 import soundFile from "../../assets/sounds/old-radio-button-click-97549.mp3";
 
 const playSound = () => {
@@ -13,7 +11,7 @@ interface ButtonProps {
     children: ReactNode;
     onClick?: () => void;
     type?: "button" | "submit" | "reset";
-    variant?: "primary" | "room" | "circle";
+    variant?: "primary" | "room" | "circle" | "circle-back";
     disabled?: boolean;
 }
 

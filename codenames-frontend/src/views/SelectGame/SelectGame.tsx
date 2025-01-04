@@ -48,7 +48,7 @@ function SelectGame() {
                         <SubtitleComponent>Your mission begins now</SubtitleComponent>
                         <MenuContainer>
                             <div className="first-column">
-                                <Button variant="room">
+                                <Button variant="room" onClick={() => navigate('/create-game')}>
                                     <span className="button-text">Create room</span>
                                 </Button>
                             </div>
