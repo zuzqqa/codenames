@@ -5,6 +5,7 @@ import * as React from 'react';
 import Home from './views/Home/Home';
 import SelectGame from "./views/SelectGame/SelectGame";
 import CreateGame from "./views/CreateGame/CreateGame";
+import JoinGame from "./views/JoinGame/JoinGame";
 
 import soundFile from "./assets/sounds/background-music.mp3";
 import {useEffect, useState} from "react";
@@ -41,7 +42,7 @@ const App : React.FC = () => {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/games" element={<SelectGame />} />
-                {/*<Route path="/joinGame" element={<JoinGame />} />*/}
+                <Route path="/join-game" element={<JoinGame />} />
                 <Route path="/create-game" element={<CreateGame />} />
             </Routes>
         </Router>

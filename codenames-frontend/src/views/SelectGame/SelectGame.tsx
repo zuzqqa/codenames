@@ -54,7 +54,7 @@ function SelectGame() {
                             </div>
                             <div className="gold-bar"></div>
                             <div className="second-column">
-                                <Button variant="room" onClick={() => navigate('/games')}>
+                                <Button variant="room" onClick={() => navigate('/join-game')}>
                                     <span className="button-text">Join room</span>
                                 </Button>
                             </div>
