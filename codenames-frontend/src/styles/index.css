@@ -1,0 +1,8 @@
+@font-face {
+    font-family: 'MyCustomFont';
+    src: url('../assets/font/DRAGON_HUNTER.otf') format('opentype');
+}
+
+body {
+    font-family: 'MyCustomFont', sans-serif;
+}
