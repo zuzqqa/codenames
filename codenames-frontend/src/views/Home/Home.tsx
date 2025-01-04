@@ -55,12 +55,12 @@ function Home() {
                         <MenuContainer>
                             <div className="first-column">
                                 <div className="row1">
-                                    <Button variant="primary">
+                                    <Button variant="primary" onClick={() => navigate('/login')}>
                                         <span className="button-text">Login</span>
                                     </Button>
                                 </div>
                                 <div className="row2">
-                                    <Button variant="primary">
+                                    <Button variant="primary" onClick={() => navigate('/register')}>
                                         <span className="button-text">Register</span>
                                     </Button>
                                 </div>

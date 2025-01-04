@@ -9,7 +9,6 @@
 .subtitle {
   margin: 0;
   margin-bottom: -15px;
-  font-family: "Dragon Hunter", sans-serif;
   font-weight: 300;
   font-size: calc(0.8rem + 1vw);
   text-align: center;
@@ -27,7 +26,6 @@
 .subtitle-shadow {
   width: 100%;
   margin: 0;
-  font-family: "Dragon Hunter", sans-serif;
   font-weight: 300;
   font-size: calc(0.8rem + 1vw);
   text-align: center;

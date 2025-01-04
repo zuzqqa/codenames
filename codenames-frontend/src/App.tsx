@@ -9,6 +9,8 @@ import Gameplay from './views/Gameplay/Gameplay'; // import nowego komponentu
 import soundFile from "./assets/sounds/background-music.mp3";
 import {useEffect, useState} from "react";
 import SelectGame from "./views/SelectGame/SelectGame.tsx";
+import RegisterPage from "./views/RegisterPage/RegisterPage.tsx";
+import LoginPage from "./views/LoginPage/LoginPage.tsx";
 
 const App : React.FC = () => {
     const [audio] = useState(new Audio(soundFile));
@@ -43,6 +45,8 @@ const App : React.FC = () => {
             <Route path="/" element={<Home />} />
             <Route path="/gameplay" element={<Gameplay />} /> 
             <Route path="/games" element={<SelectGame />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/login" element={<LoginPage />} />
             </Routes>
         </Router>
     );
