@@ -15,14 +15,9 @@
   }
   
   .modal-content {
-    position: relative;
+    position: absolute;
     width: 44.8%;
     height: 48.2%;
-
-    background-image: url("../../assets/images/main-page-container.png");
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center;
 
     border-radius: 17px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -32,6 +27,13 @@
     top: 0;
     left: 0;
     text-align: left;
+  }
+
+  .modal-background-img {
+    width: 44.8%;
+    margin: auto;
+
+    border-radius: 17px;
   }
 
   .modal-close {
