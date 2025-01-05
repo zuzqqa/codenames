@@ -12,7 +12,18 @@ import closeIcon from "../../assets/icons/close.png";
 import {useState} from "react";
 import CreateGameForm from "../../components/CreateGameForm/CreateGameForm.tsx";
 
-function CreateGame() {
+interface CreateGameProps
+{
+    setVolume: (volume: number) => void;
+    soundFXVolume: number;
+    setSoundFXVolume: (volume: number) => void;
+}
+
+const CreateGame: React.FC<CreateGameProps> = ({
+    setVolume,
+    soundFXVolume,
+    setSoundFXVolume,
+}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const toggleModal = () => {
@@ -22,12 +33,12 @@ function CreateGame() {
     return (
         <>
             <BackgroundContainer>
-                <Button variant="circle">
+                <Button variant="circle" soundFXVolume={soundFXVolume}>
                     <img src={settingsIcon} onClick={toggleModal} alt="Settings" />
                 </Button>
                 <Modal isOpen={isModalOpen} onClose={toggleModal}>
                     <TitleModal>Settings</TitleModal>
-                    <Button variant="primary" onClick={toggleModal}>
+                    <Button variant="primary" onClick={toggleModal} soundFXVolume={soundFXVolume}>
                         <img src={closeIcon} alt="Close" />
                     </Button>
                     <p>Music</p>
