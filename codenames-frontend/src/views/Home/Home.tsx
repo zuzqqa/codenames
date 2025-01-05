@@ -51,7 +51,7 @@ function Home() {
                     <>
                         <TitleComponent>Codenames</TitleComponent>
                         <CharactersComponent />
-                        <SubtitleComponent>Your mission begins now</SubtitleComponent>
+                        <SubtitleComponent variant="primary">Your mission begins now</SubtitleComponent>
                         <MenuContainer>
                             <div className="first-column">
                                 <div className="row1">
