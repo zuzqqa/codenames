@@ -8,6 +8,10 @@ import "./GameList.css";
 import backButton from "../../assets/icons/arrow-back.png";
 import {useState} from "react";
 
+interface GameListProps {
+    soundFXVolume: number;
+}
+
 interface GameSession {
     id: string;
     name: string;
@@ -15,8 +19,7 @@ interface GameSession {
     maxPlayers: number;
 }
 
-const GameList = () => {
-
+const GameList: React.FC<GameListProps> = ({soundFXVolume}) => {
     const [gameSessions] = useState<GameSession[]>([
         {id: "1", name: "Game 1", players: 2, maxPlayers: 4},
         {id: "2", name: "Game 2", players: 3, maxPlayers: 4},
@@ -32,12 +35,12 @@ const GameList = () => {
         <>
             <Subtitle variant={"room"}>Join Room</Subtitle>
             <RoomMenu>
-                <Button variant={"circle-back"} onClick={() => navigate('/games')}>
+                <Button variant={"circle-back"} onClick={() => navigate('/games')} soundFXVolume={soundFXVolume}>
                     <img src={backButton} alt="Back" className="btn-arrow-back" />
                 </Button>
                 <div className={"list-content"}>
                     {gameSessions.map((gameSession) => (
-                        <Button key={gameSession.id} variant={"session"} onClick={() => navigate(`/games/${gameSession.id}`)}>
+                        <Button key={gameSession.id} variant={"session"} onClick={() => navigate(`/games/${gameSession.id}`)} soundFXVolume={soundFXVolume}>
                             <div className={"room-info"}>
                                 <div className={"room-name"}>{gameSession.name}</div>
                                 <div className={"room-players"}>{gameSession.players}/{gameSession.maxPlayers}</div>

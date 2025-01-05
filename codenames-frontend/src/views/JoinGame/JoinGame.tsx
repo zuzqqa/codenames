@@ -48,7 +48,7 @@ const JoinGame: React.FC<JoinGameProps> = ({
         </Modal>
         <>
           <GameTitleBar></GameTitleBar>
-          <GameList />
+          <GameList soundFXVolume={soundFXVolume}/>
         </>
       </BackgroundContainer>
     </>

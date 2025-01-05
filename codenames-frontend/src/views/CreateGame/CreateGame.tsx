@@ -49,7 +49,7 @@ const CreateGame: React.FC<CreateGameProps> = ({
                 </Modal>
                 <>
                     <GameTitleBar></GameTitleBar>
-                    <CreateGameForm />
+                    <CreateGameForm soundFXVolume={soundFXVolume} />
                 </>
             </BackgroundContainer>
         </>
