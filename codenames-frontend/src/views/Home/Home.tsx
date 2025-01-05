@@ -1,5 +1,5 @@
-import "../../styles/App.css";
-import "./Home.css";
+import { useNavigate } from "react-router-dom"; // Hook for programmatic navigation
+import { useState } from "react"; // Hook for managing component state
 
 import BackgroundContainer from "../../containers/Background/Background";
 import MenuContainer from "../../containers/Menu/Menu";
@@ -8,130 +8,77 @@ import TitleComponent from "../../components/Title/Title";
 import SubtitleComponent from "../../components/Subtitle/Subtitle";
 import CharactersComponent from "../../components/Characters/Characters";
 import Button from "../../components/Button/Button";
-import Modal from "../../components/Modal/Modal";
-import TitleModal from "../../components/TitleModal/TitleModal";
-import SettingsFooter from "../../components/SettingsOverlay/SettingsFooter";
-import LanguageSlider from "../../components/LanguageSlider/LanguageSlider";
+import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 
 import settingsIcon from "../../assets/icons/settings.png";
-import closeIcon from "../../assets/icons/close.png";
 
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import "../../styles/App.css";
+import "./Home.css";
 
+// Define the type for props passed to the Home component
 interface HomeProps {
-  setVolume: (volume: number) => void;
-  soundFXVolume: number;
-  setSoundFXVolume: (volume: number) => void;
+  setVolume: (volume: number) => void; // Function to set global volume
+  soundFXVolume: number; // Current sound effects volume level
+  setSoundFXVolume: (volume: number) => void; // Function to set sound effects volume
 }
 
+// Main component definition
 const Home: React.FC<HomeProps> = ({
   setVolume,
   soundFXVolume,
   setSoundFXVolume,
 }) => {
-  const [isGameStarted, setIsGameStarted] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [musicVolume, setMusicVolume] = useState(50);
+  // State variables for managing component behavior
+  const [isGameStarted, setIsGameStarted] = useState(false); // Tracks if the game has started
+  const [musicVolume, setMusicVolume] = useState(50); // Music volume level
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
 
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Hook for navigation
 
+  // Handler to start the game
   const startGame = () => {
     setIsGameStarted(true);
   };
 
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
-  };
-
-  const handleMusicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(event.target.value);
-    setMusicVolume(value);
-    setVolume(value / 100);
-  };
-
-  const handleSoundFXVolumeChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = parseInt(event.target.value);
-    setSoundFXVolume(value);
+  // Toggles the settings modal visibility
+  const toggleSettings = () => {
+    setIsSettingsOpen(!isSettingsOpen);
   };
 
   return (
     <>
       <BackgroundContainer>
+        {/* Settings button */}
         <Button variant="circle" soundFXVolume={soundFXVolume}>
-          <img src={settingsIcon} onClick={toggleModal} alt="Settings" />
+          <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
         </Button>
-        <Modal isOpen={isModalOpen} onClose={toggleModal}>
-          <TitleModal>Settings</TitleModal>
-          <Button variant="circle" soundFXVolume={soundFXVolume}>
-            <img src={closeIcon} onClick={toggleModal} alt="Close" />
-          </Button>
-          <div className="settings-overlay-container">
-            <div className="settings-grid">
-              <div className="settings-row-item">
-                <div className="settings-row-item-title">
-                  <p className="settings-modal-p">Music</p>
-                  <p className="settings-modal-p-shadow">Music</p>
-                </div>
-                <div className="slider">
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={musicVolume}
-                    onChange={handleMusicChange}
-                    className="slider"
-                  />
-                </div>
-              </div>
-              <div className="settings-row-item">
-                <div className="settings-row-item-title">
-                  <p className="settings-modal-p">Sound FX</p>
-                  <p className="settings-modal-p-shadow">Sound FX</p>
-                </div>
-                <div className="slider">
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={soundFXVolume}
-                    onChange={handleSoundFXVolumeChange}
-                    className="slider"
-                  />
-                </div>
-              </div>
-              <div className="settings-row-item">
-                <div className="settings-row-item-title">
-                  <p className="settings-modal-p">Language</p>
-                  <p className="settings-modal-p-shadow">Language</p>
-                </div>
-                <LanguageSlider soundFXVolume={soundFXVolume} />
-              </div>
-              <div className="settings-row-item">
-                <div className="settings-row-item-title">
-                  <p className="settings-modal-p">Help</p>
-                  <p className="settings-modal-p-shadow">Help</p>
-                </div>
-                <div className="settings-row-help-btn">
-                  <Button variant="help" soundFXVolume={soundFXVolume}>
-                    <span className="button-text">Send Message</span>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <SettingsFooter />
-        </Modal>
+
+        {/* Settings modal */}
+        <SettingsModal
+          isOpen={isSettingsOpen}
+          onClose={toggleSettings}
+          musicVolume={musicVolume}
+          soundFXVolume={soundFXVolume}
+          setMusicVolume={(volume) => {
+            setMusicVolume(volume); // Update local music volume
+            setVolume(volume / 100); // Update global volume
+          }}
+          setSoundFXVolume={setSoundFXVolume}
+        />
+
+        {/* Render content based on game state */}
         {isGameStarted ? (
           <>
+            {/* Game content when started */}
             <TitleComponent soundFXVolume={soundFXVolume}>
               Codenames
             </TitleComponent>
             <CharactersComponent />
-            <SubtitleComponent variant="primary">Your mission begins now</SubtitleComponent>
+            <SubtitleComponent variant="primary">
+              Your mission begins now
+            </SubtitleComponent>
             <MenuContainer>
+              {/* Menu for login and registration */}
               <div className="first-column">
                 <div className="row1">
                   <Button variant="primary" soundFXVolume={soundFXVolume}>
@@ -144,8 +91,10 @@ const Home: React.FC<HomeProps> = ({
                   </Button>
                 </div>
               </div>
+              {/* Decorative gold bar */}
               <div className="gold-bar"></div>
               <div className="second-column">
+                {/* Option to play as a guest */}
                 <Button
                   variant="primary"
                   onClick={() => navigate("/games")}
@@ -158,6 +107,7 @@ const Home: React.FC<HomeProps> = ({
           </>
         ) : (
           <>
+            {/* Initial state before starting the game */}
             <Button
               variant="primary"
               onClick={startGame}

@@ -1,14 +1,15 @@
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
-import './styles/App.css';
-import * as React from 'react';
+import {useEffect, useState} from "react";
 
 import Home from './views/Home/Home';
 import SelectGame from "./views/SelectGame/SelectGame";
 import CreateGame from "./views/CreateGame/CreateGame";
 import JoinGame from "./views/JoinGame/JoinGame";
 import Gameplay from './views/Gameplay/Gameplay';
+
 import soundFile from "./assets/sounds/background-music.mp3";
-import {useEffect, useState} from "react";
+
+import './styles/App.css';
 
 const App : React.FC = () => {
     const [audio] = useState(new Audio(soundFile));
