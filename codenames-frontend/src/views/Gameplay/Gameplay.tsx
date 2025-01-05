@@ -14,8 +14,15 @@ import GameTitleBar from "../../components/GameTitleBar/GameTitleBar";
 import settingsIcon from "../../assets/icons/settings.png";
 import cardSound from "../../assets/sounds/card-filp.mp3";
 
+interface GameplayProps {
+    setVolume: (volume: number) => void;
+    soundFXVolume: number;
+    setSoundFXVolume: (volume: number) => void;
+}
 
-const Gameplay: React.FC = () => {
+const Gameplay: React.FC<GameplayProps> = ({   setVolume,
+    soundFXVolume,
+    setSoundFXVolume, }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const toggleModal = () => {
         setIsModalOpen(!isModalOpen);
@@ -28,6 +35,7 @@ const Gameplay: React.FC = () => {
     const clickAudio = new Audio(cardSound);
 
     const toggleCardImage = (index: number) => {
+        clickAudio.volume = soundFXVolume / 100;
         clickAudio.play();
         setFlipStates(prevFlipStates => {
             const newFlipStates = [...prevFlipStates];
@@ -50,6 +58,7 @@ const Gameplay: React.FC = () => {
 
 
      const toggleBlackCardVisibility = () => {
+        clickAudio.volume = soundFXVolume / 100;
         clickAudio.play();
         setIsCardVisible(true);
     };
@@ -76,7 +85,7 @@ const Gameplay: React.FC = () => {
         <>
             <BackgroundContainer>
                 <GameTitleBar />
-                <Button variant="circle">
+                <Button variant="circle" soundFXVolume={soundFXVolume}>
                     <img src={settingsIcon} onClick={toggleModal} alt="Settings" />
                 </Button>
                 <img className="polygon1" src={polygon1Img} />
@@ -112,7 +121,7 @@ const Gameplay: React.FC = () => {
                             <img className="shelf" src={shelfImg} />
                         </div>
                         <div className="item">
-                            <Button variant="room">
+                            <Button variant="room" soundFXVolume={soundFXVolume}>
                                 <span className="button-text">End Round</span>
                             </Button>
                             <div className="horizontal-gold-bar" />
