@@ -28,6 +28,9 @@ const GameList: React.FC<GameListProps> = ({soundFXVolume}) => {
         {id: "5", name: "Game 5", players: 2, maxPlayers: 4},
         {id: "6", name: "Game 6", players: 3, maxPlayers: 4},
         {id: "7", name: "Game 7", players: 4, maxPlayers: 4},
+        {id: "8", name: "Game 8", players: 1, maxPlayers: 4},
+        {id: "9", name: "Game 9", players: 2, maxPlayers: 4},
+        {id: "10", name: "Game 10", players: 3, maxPlayers: 4},
     ]);
 
     const navigate = useNavigate()
@@ -38,7 +41,7 @@ const GameList: React.FC<GameListProps> = ({soundFXVolume}) => {
                 <Button variant={"circle-back"} onClick={() => navigate('/games')} soundFXVolume={soundFXVolume}>
                     <img src={backButton} alt="Back" className="btn-arrow-back" />
                 </Button>
-                <div className={"list-content"}>
+                <div className={"list-content"} style={{"gridColumn":"2","gridRow":"2"}}>
                     {gameSessions.map((gameSession) => (
                         <Button key={gameSession.id} variant={"session"} onClick={() => navigate(`/games/${gameSession.id}`)} soundFXVolume={soundFXVolume}>
                             <div className={"room-info"}>
