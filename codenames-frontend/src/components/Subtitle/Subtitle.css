@@ -2,7 +2,7 @@
   position: absolute;
   text-align: center;
   width: 100%;
-  margin-bottom: 10%;
+  margin-bottom: 9%;
   z-index: 2;
 }
 
@@ -22,6 +22,10 @@
 
   position: relative;
   z-index: 1;
+  user-select: none;
+  -webkit-user-select: none; 
+  -moz-user-select: none; 
+  -ms-user-select: none; 
 }
 
 .subtitle-shadow {
@@ -42,6 +46,10 @@
   left: 0;
   top: 0;
   text-shadow: 10px 10px 8px rgba(0, 0, 0, 0.6);
+  user-select: none;
+  -webkit-user-select: none; 
+  -moz-user-select: none; 
+  -ms-user-select: none; 
 }
 
 @media (max-width: 1440px) {

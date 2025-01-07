@@ -25,6 +25,10 @@
 
     position: relative;
     z-index: 1;
+    user-select: none;
+    -webkit-user-select: none; 
+    -moz-user-select: none; 
+    -ms-user-select: none; 
 }
 
 /* Shadow effect for the title */
@@ -50,4 +54,8 @@
     left: 0;
     top: 1rem;
     text-shadow: 10px 10px 8px rgba(0, 0, 0, 1);
+    user-select: none;
+    -webkit-user-select: none; 
+    -moz-user-select: none; 
+    -ms-user-select: none; 
 }

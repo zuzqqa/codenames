@@ -9,8 +9,9 @@ import SubtitleComponent from "../../components/Subtitle/Subtitle";
 import CharactersComponent from "../../components/Characters/Characters";
 import Button from "../../components/Button/Button";
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
-
+import TitleModal from "../../components/TitleModal/TitleModal";
 import settingsIcon from "../../assets/icons/settings.png";
+import characters from "../../assets/images/characters.png";
 
 import "../../styles/App.css";
 import "./Home.css";
@@ -48,11 +49,6 @@ const Home: React.FC<HomeProps> = ({
   return (
     <>
       <BackgroundContainer>
-        {/* Settings button */}
-        <Button variant="circle" soundFXVolume={soundFXVolume}>
-          <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
-        </Button>
-
         {/* Settings modal */}
         <SettingsModal
           isOpen={isSettingsOpen}
@@ -69,6 +65,10 @@ const Home: React.FC<HomeProps> = ({
         {/* Render content based on game state */}
         {isGameStarted ? (
           <>
+            {/* Settings button */}
+            <Button variant="circle" soundFXVolume={soundFXVolume}>
+              <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
+            </Button>
             {/* Game content when started */}
             <TitleComponent soundFXVolume={soundFXVolume}>
               Codenames
@@ -107,14 +107,30 @@ const Home: React.FC<HomeProps> = ({
           </>
         ) : (
           <>
-            {/* Initial state before starting the game */}
-            <Button
-              variant="primary"
-              onClick={startGame}
-              soundFXVolume={soundFXVolume}
-            >
-              <span className="button-text">Play</span>
-            </Button>
+          <div className="start-container">    
+              {/* Initial state before starting the game */}
+              <div className="character-image-start">
+                <img src={characters} alt="Characters"/>
+              </div>
+              <div className="start-text-container">
+                <div className="start-title">
+                  Codenames
+                </div>
+                <div className="start-subtitle">
+                  Your mission begins now
+                </div>
+              </div>
+              <div className="start-button">
+                {/* Start game button */}
+                <Button
+                  variant="primary"
+                  onClick={startGame}
+                  soundFXVolume={soundFXVolume}
+                >
+                  <span className="button-text">Play</span>
+                </Button>
+              </div>
+            </div>
           </>
         )}
       </BackgroundContainer>

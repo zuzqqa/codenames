@@ -1,22 +1,25 @@
-import { ReactNode } from "react";
-import "./Button.css";
-import soundFile from "../../assets/sounds/old-radio-button-click-97549.mp3";
+import { ReactNode } from "react"; // ReactNode allows flexible content inside the button
+import "./Button.css"; // Import button styling
+import soundFile from "../../assets/sounds/old-radio-button-click-97549.mp3"; // Button click sound
 
+// ButtonProps interface defines the button's properties
 interface ButtonProps {
-    children: ReactNode;
-    onClick?: () => void;
-    type?: "button" | "submit" | "reset";
-    variant?: "primary" | "room" | "circle" | "circle-back" | "session" | "help";
-    disabled?: boolean;
-    soundFXVolume: number;
+    children: ReactNode; // Content inside the button (text/icons)
+    onClick?: () => void; // Click handler function (optional)
+    type?: "button" | "submit" | "reset"; // Button type (default is "button")
+    variant?: "primary" | "primary-1" | "room" | "circle" | "circle-back" | "session" | "help"; // Button variant for styles (default is "primary")
+    disabled?: boolean; // Disabled state (default is false)
+    soundFXVolume: number; // Sound volume for the click effect
 }
 
+// Function to play button click sound with adjusted volume
 const playSound = (volume: number) => {
     const audio = new Audio(soundFile);
-    audio.volume = volume / 100; 
+    audio.volume = volume / 100;
     audio.play();
 };
 
+// Button component with dynamic styling and sound on click
 const Button: React.FC<ButtonProps> = ({
                                            children,
                                            onClick,
@@ -27,17 +30,17 @@ const Button: React.FC<ButtonProps> = ({
                                        }) => {
     return (
         <button
-            className={`btn btn-${variant}`}
+            className={`btn btn-${variant}`} // Dynamic class based on variant
             type={type}
             onClick={() => {
-                playSound(soundFXVolume);
-                if (onClick) onClick();
+                playSound(soundFXVolume); // Play sound on click
+                if (onClick) onClick(); // Call onClick handler if provided
             }}
-            disabled={disabled}
+            disabled={disabled} // Disable button if true
         >
-            {children}
+            {children} 
         </button>
     );
 };
 
-export default Button;
+export default Button; // Export Button component

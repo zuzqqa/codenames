@@ -22,6 +22,10 @@
   z-index: 1;
 
   animation: hitEffect 0.3s ease-out;
+  user-select: none;
+  -webkit-user-select: none; 
+  -moz-user-select: none; 
+  -ms-user-select: none; 
 }
 
 .title-shadow {
@@ -44,6 +48,10 @@
   text-shadow: 10px 10px 8px rgba(0, 0, 0, 0.6);
 
   animation: hitEffect 0.3s ease-out;
+  user-select: none;
+  -webkit-user-select: none; 
+  -moz-user-select: none; 
+  -ms-user-select: none; 
 }
 
 @keyframes hitEffect {

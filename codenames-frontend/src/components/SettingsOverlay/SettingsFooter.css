@@ -48,4 +48,8 @@
   -webkit-background-clip: text;
   color: transparent;
   text-shadow: 0.3125rem 0.3125rem 0.3125rem rgba(0, 0, 0, 0.4);
+  user-select: none;
+  -webkit-user-select: none; 
+  -moz-user-select: none; 
+  -ms-user-select: none; 
 }

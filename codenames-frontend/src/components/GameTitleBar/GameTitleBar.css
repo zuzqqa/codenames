@@ -32,4 +32,8 @@
   -webkit-background-clip: text;
   background-image: linear-gradient(to top, #FFD363, #FCF18B);
   width: 10vw;
+  user-select: none;
+  -webkit-user-select: none; 
+  -moz-user-select: none; 
+  -ms-user-select: none; 
 }

@@ -60,6 +60,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
   // Component rendering logic
   return (
+    <div className="settings-modal-container">
     <Modal isOpen={isOpen} onClose={toggleModal}>
       {/* Modal header with title */}
       <TitleModal>Settings</TitleModal>
@@ -143,6 +144,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         />
 
     </Modal>
+    </div>
   );
 };
 
