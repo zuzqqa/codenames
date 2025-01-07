@@ -97,6 +97,38 @@ const Gameplay: React.FC<GameplayProps> = ({
     };
   }, [cardText]);
 
+  const [messages, setMessages] = useState<{ text: string; type: "incoming" | "outgoing" }[]>([]);
+  const [messageText, setMessageText] = useState<string>("");
+
+  const addMessage = (text: string, type: "incoming" | "outgoing") => {
+    setMessages((prevMessages) => [...prevMessages, { text, type }]);
+  };
+  
+  useEffect(() => {
+    setTimeout(() => {
+      addMessage("test", "incoming");
+    }, 5000);
+  }, []); // message income simulation
+  
+  const handleSendMessage = () => {
+    if (messageText.trim()) {
+      addMessage(messageText.trim(), "outgoing");
+      setMessageText("");
+    }
+  };
+  
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+
+  const [isInputFocused, setIsInputFocused] = useState(false);
+
+  const handleInputFocus = () => setIsInputFocused(true);
+  const handleInputBlur = () => setIsInputFocused(false);
+
   return (
     <>
       <BackgroundContainer>
@@ -123,11 +155,24 @@ const Gameplay: React.FC<GameplayProps> = ({
         <img className="polygon2" src={polygon2Img} />
         <div className="timer points-red">100</div>
         <div className="timer points-blue">200</div>
-        <div className="chat-conatiner">
+        <div className={`chat-container ${isInputFocused ? "focused" : ""}`}>
+        <div className="messages">
+          {messages.map((msg, index) => (
+            <div key={index} className={`message ${msg.type}`}>
+              {msg.text}
+            </div>
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
           <input
             type="text"
-            placeholder="type in a message"
+            placeholder="Type in a message"
             className="message-input"
+            value={messageText}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+            onChange={(e) => setMessageText(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
           />
         </div>
         <div className="content-container">
