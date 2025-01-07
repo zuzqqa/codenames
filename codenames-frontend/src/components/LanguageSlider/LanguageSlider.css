@@ -1,0 +1,63 @@
+/* Container for the language slider */
+.language-slider-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Styling for the arrow buttons */
+.arrow-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.3125rem;
+}
+
+/* Arrow image styling */
+.arrow-button img {
+  height: 80%;
+}
+
+/* Styling for the language display box */
+.language-display {
+  width: 55%;
+  font-family: "Dragon Hunter", sans-serif;
+  font-size: 1.2rem;
+  border-radius: 1.6875rem;
+  border-width: 0.125rem;
+  border-color: rgb(226, 215, 114);
+  border-style: solid;
+  background: linear-gradient(
+    to top,
+    rgb(50, 70, 77),
+    rgb(44, 61, 70),
+    rgb(34, 48, 59)
+  );
+  box-shadow: 0rem 0.25rem 0.75rem rgba(0, 0, 0, 0.6);
+  user-select: none;
+  -webkit-user-select: none; 
+  -moz-user-select: none; 
+  -ms-user-select: none; 
+}
+
+/* Text inside the language display box */
+.language-display p {
+  padding: 0;
+  margin: 0.3em;
+  text-align: center;
+  letter-spacing: 0.0625rem;
+  background-image: linear-gradient(
+    to bottom,
+    rgb(252, 241, 139),
+    rgb(255, 211, 99)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: 0.3125rem 0.3125rem 0.3125rem rgba(0, 0, 0, 0.4);
+}
+
+/* Styling for reversing the arrow image direction */
+.reverse-image {
+  transform: rotateY(180deg);
+}

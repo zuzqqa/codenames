@@ -1,0 +1,42 @@
+form {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 80%;
+    height: 80%;
+    margin: auto;
+    padding: 1rem;
+}
+.form-content {
+    display: grid;
+    grid-template-columns: 70% 30%;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(360deg, #F0E0B5 0%, #EED8B0 88.89%);
+    box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.3), inset 0 0 15px 5px rgba(0, 0, 0, 0.4);
+    border-radius: 20px;
+    padding: 2rem;
+    min-width: 90%;
+    height: 100%;
+    margin: auto;
+}
+
+#playerSlider {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    background: linear-gradient(360deg, #F0E0B5 0%, #EED8B0 88.89%);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.3), inset 0px 0px 15px 5px rgba(0, 0, 0, 0.4);
+    border-radius: 17px;
+}
+.error-message {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: -10px;
+}

@@ -1,0 +1,143 @@
+/* === Messages Overlay === */
+.message-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Container for settings elements */
+.message-overlay-container {
+  padding-top: 1.5rem;
+  width: 90%;
+  margin: auto;
+  height: 80%;
+}
+
+/* Grid layout for settings rows */
+.message-grid {
+  display: grid;
+  grid-template-rows: 0.8fr 1fr 1fr 1fr; /* Four evenly spaced rows */
+  text-align: left; /* Align text to the left */
+  height: 100%;
+  width: auto;
+}
+
+/* === Settings Row Item === */
+.message-row-item {
+  width: 100%;
+  height: auto;
+}
+
+/* Styling for message text in each row */
+.message-row-item-message {
+  width: 100%;
+  margin: auto;
+  position: relative; /* Relative for positioning child elements */
+  display: flex; /* Flexbox for alignment */
+  justify-content: left; /* Align content to the left */
+  align-items: center;
+
+  /* Text styles */
+  font-family: "Dragon Hunter", sans-serif;
+  font-size: calc(0.4rem + 0.5vw);
+
+  /* Gradient text */
+  background-image: linear-gradient(to bottom, #fcf18b, #ffd363);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-font-smoothing: antialiased; 
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  user-select: none;
+  -webkit-user-select: none; 
+  -moz-user-select: none; 
+  -ms-user-select: none; 
+}
+
+/* Styling for email input field */
+.message-email-input {
+  width: 55%;
+  height: 2.5rem;
+  border-radius: 17px;
+  padding: 5px 20px;
+  padding-left: 0;
+  background: linear-gradient(to bottom, #f0e0b5, #eed8b0);
+  text-indent: 15px;
+
+  /* Text styles */
+  font-family: "Dragon Hunter", sans-serif;
+  font-size: calc(0.8rem + 0.4vw);
+
+  border: none;
+
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 1); /* Soft shadow */
+  outline: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; 
+  text-rendering: optimizeLegibility;
+}
+
+/* Styling for the message textarea */
+.message-row-item-textarea {
+  width: 97%;
+  height: 8rem;
+  border-radius: 17px;
+  padding: 15px 12px;
+  padding-left: 0;
+  background: linear-gradient(to bottom, #f0e0b5, #eed8b0);
+  text-indent: 15px;
+
+  /* Text styles */
+  font-family: "Dragon Hunter", sans-serif;
+  font-size: calc(0.8rem + 0.5vw);
+
+  border: none;
+
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 1); /* Soft shadow */
+
+  resize: none; 
+  overflow-y: auto; 
+  outline: none;
+  -webkit-font-smoothing: antialiased; 
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Placeholder text color for input and textarea */
+.message-email-input::placeholder,
+.message-row-item-textarea::placeholder {
+  color: #b8a98e;
+}
+
+/* Grid layout for the row containing message text and submit button */
+.message-row-item-grid {
+  display: grid;
+  grid-template-columns: 1fr 0.1fr; /* Two evenly spaced columns */
+}
+
+/* Padding for the last row of the modal */
+.message-row-item:nth-child(4) {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+/* Focus styles for textarea */
+.message-row-item-textarea:focus {
+  border-color: #ffd363; /* Gold border on focus */
+  box-shadow: 0 6px 10px rgba(255, 211, 99, 0.5); /* Gold shadow on focus */
+}
+
+/* Focus styles for email input */
+.message-email-input:focus {
+  border-color: #ffd363; /* Gold border on focus */
+  box-shadow: 0 6px 10px rgba(255, 211, 99, 0.5); /* Gold shadow on focus */
+}

@@ -1,0 +1,41 @@
+.app-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.first-column,
+.second-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.row1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gold-bar {
+  grid-column: 2;
+  grid-row: 1 / span 4;
+
+  height: 62.7%;
+  width: 2px;
+  margin: auto;
+  z-index: 3;
+
+  background-image: linear-gradient(to right, #dab274, #745f3e);
+}

@@ -1,0 +1,55 @@
+.settings-footer {
+  position: absolute;
+  bottom: 2em;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.settings-footer-golden-bar {
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(to right, #fcf18b 0%, #ffd363 100%);
+  z-index: 10;
+}
+
+.settings-footer-title {
+  width: 20%;
+  position: absolute;
+  z-index: 20;
+  border-radius: 1.6875rem;
+  padding: 0.1em;
+  border-width: 0.125rem;
+  border-color: rgb(226, 215, 114);
+  border-style: solid;
+  background: linear-gradient(
+    to top,
+    rgb(50, 70, 77),
+    rgb(44, 61, 70),
+    rgb(34, 48, 59)
+  );
+  font-family: "Dragon Hunter", sans-serif;
+  font-size: 1.7rem;
+  box-shadow: 0rem 0.25rem 0.75rem rgba(0, 0, 0, 0.6);
+}
+
+.settings-footer-title p {
+  width: 100%;
+  margin: 0;
+  text-align: center;
+  letter-spacing: 0.0625rem;
+  background-image: linear-gradient(
+    to bottom,
+    rgb(252, 241, 139),
+    rgb(255, 211, 99)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: 0.3125rem 0.3125rem 0.3125rem rgba(0, 0, 0, 0.4);
+  user-select: none;
+  -webkit-user-select: none; 
+  -moz-user-select: none; 
+  -ms-user-select: none; 
+}

@@ -1,0 +1,61 @@
+/* Container for the title */
+.title-container1 {
+    position: relative;
+    width: 90%;
+    margin: auto;
+    padding-top: 1rem;
+}
+
+/* Main title styles */
+.title1 {
+    margin: 0;
+    margin-bottom: -15px;
+    padding-left: 0.5rem;
+    font-family: "Dragon Hunter", sans-serif;
+    font-size: calc(2.8rem + 1vw);
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+
+    /* Gradient text effect */
+    background-image: linear-gradient(to bottom, #fcf18b, #ffd363);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+
+    position: relative;
+    z-index: 1;
+    user-select: none;
+    -webkit-user-select: none; 
+    -moz-user-select: none; 
+    -ms-user-select: none; 
+}
+
+/* Shadow effect for the title */
+.title-shadow1 {
+    width: 100%;
+    margin: 0;
+    padding-left: 0.5rem;
+    font-family: "Dragon Hunter", sans-serif;
+    font-weight: 300;
+    font-size: calc(2.8rem + 1vw);
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+
+    /* Gradient text effect for shadow */
+    background-image: linear-gradient(to bottom, #fcf18b, #ffd363);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+
+    /* Shadow positioning and effect */
+    position: absolute;
+    left: 0;
+    top: 1rem;
+    text-shadow: 10px 10px 8px rgba(0, 0, 0, 1);
+    user-select: none;
+    -webkit-user-select: none; 
+    -moz-user-select: none; 
+    -ms-user-select: none; 
+}

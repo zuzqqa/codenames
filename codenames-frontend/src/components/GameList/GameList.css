@@ -1,0 +1,69 @@
+.list-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; /* Spacing between game buttons */
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 85%;
+    max-width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #f5e1c1; /* Light beige background */
+    box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Style for each game session button */
+button.variant-session {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #fff8e5;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    font-family: 'Arial', sans-serif;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button.variant-session:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Room info container */
+.room-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.room-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #4a4a4a;
+}
+
+.room-players {
+    font-size: 14px;
+    color: #7b7b7b;
+}
+
+/* Custom Scrollbar */
+.list-content::-webkit-scrollbar {
+    width: 12px; /* Width of the scrollbar */
+}
+
+.list-content::-webkit-scrollbar-track {
+    background: #682727; /* Dark red track background */
+    border-radius: 10px;
+}
+
+.list-content::-webkit-scrollbar-thumb {
+    background: #d4af37; /* Gold thumb color */
+    border-radius: 10px;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.list-content::-webkit-scrollbar-thumb:hover {
+    background: #e8c84c; /* Lighter gold on hover */
+}
