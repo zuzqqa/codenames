@@ -1,0 +1,59 @@
+/* === Messages Overlay === */
+.message-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+/* Container for settings elements */
+.message-overlay-container {
+    padding-top: 2.5rem;
+    width: 90%;
+    margin: auto;
+    height: 60%;
+  }
+
+/* Grid layout for settings rows */
+.message-grid {
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr 1fr; /* Four evenly spaced rows */
+    text-align: left; /* Align text to the left */
+    height: 100%;
+}
+
+/* === Settings Row Item === */
+
+/* Wrapper for individual setting items */
+.settings-row-item {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns for title and slider */
+    margin: 0;
+  }
+
+  .message-row-item-message {
+    width: 100%;
+    margin: auto;
+    position: relative; /* Relative for positioning child elements */
+    display: flex; /* Flexbox for alignment */
+    justify-content: left; /* Align content to the left */
+    align-items: center;
+  
+    /* Text styles */
+    font-family: "Dragon Hunter", sans-serif;
+    font-size: calc(0.3rem + 0.5vw);
+    text-transform: uppercase; /* Uppercase text */
+
+    /* Gradient text */
+    background-image: linear-gradient(to bottom, #fcf18b, #ffd363);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }

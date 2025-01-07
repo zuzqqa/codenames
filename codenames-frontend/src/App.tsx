@@ -1,26 +1,33 @@
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
-import './styles/App.css';
-import * as React from 'react';
+import {useEffect, useState} from "react";
 
 import Home from './views/Home/Home';
 import SelectGame from "./views/SelectGame/SelectGame";
 import CreateGame from "./views/CreateGame/CreateGame";
 import JoinGame from "./views/JoinGame/JoinGame";
+import Gameplay from './views/Gameplay/Gameplay';
 
 import soundFile from "./assets/sounds/background-music.mp3";
-import {useEffect, useState} from "react";
+
+import './styles/App.css';
 
 const App : React.FC = () => {
     const [audio] = useState(new Audio(soundFile));
     const [isPlaying, setIsPlaying] = useState(false);
-
+    const [musicVolume, setMusicVolume] = useState(50);
+    const [soundFXVolume, setSoundFXVolume] = useState(50); 
+    
     const playAudio = () => {
         if (!isPlaying) {
             audio.loop = true;
-            audio.volume = 0.2;
             audio.play();
             setIsPlaying(true);
         }
+    };
+
+    const setVolume = (volume: number) => {
+        audio.volume = volume; 
+        setMusicVolume(volume); 
     };
 
     useEffect(() => {
@@ -40,10 +47,11 @@ const App : React.FC = () => {
     return (
         <Router>
             <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/games" element={<SelectGame />} />
-                <Route path="/join-game" element={<JoinGame />} />
-                <Route path="/create-game" element={<CreateGame />} />
+                <Route path="/" element={<Home setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
+                <Route path="/gameplay" element={<Gameplay setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} /> 
+                <Route path="/games" element={<SelectGame setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
+                <Route path="/join-game" element={<JoinGame setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
+                <Route path="/create-game" element={<CreateGame setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
             </Routes>
         </Router>
     );
