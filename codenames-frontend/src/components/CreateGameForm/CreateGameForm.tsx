@@ -40,7 +40,7 @@ const CreateGameForm = () => {
                 <Button variant={"circle-back"} onClick={() => navigate('/games')}>
                     <img src={backButton} alt="Back" className="btn-arrow-back" />
                 </Button>
-                <form onSubmit={formik.handleSubmit}>
+                <form onSubmit={formik.handleSubmit} style={{"gridColumn": "2", "gridRow": "2"}}>
                     <div className={"form-content"}>
                         <input
                             id="gameName"
@@ -49,12 +49,14 @@ const CreateGameForm = () => {
                             placeholder="Game name"
                             onChange={formik.handleChange}
                             value={formik.values.gameName}
-                            style={{"grid-column": "span 2"}}
+                            style={{"gridColumn": "span 2"}}
                         />
                         {formik.touched.gameName && formik.errors.gameName ? (
-                            <ErrorMessage>{formik.errors.gameName}</ErrorMessage>
+                            <ErrorMessage name="gameName">
+                                {(errorMessage) => <div className="error">{errorMessage}</div>}
+                            </ErrorMessage>
                         ) : null}
-                        <label style={{"grid-column": "span 2", "grid-row": "2"}}>Number of players:</label>
+                        <label style={{"gridColumn": "span 2", "gridRow": "2"}}>Number of players:</label>
                         <input
                             id="playerSlider"
                             name="playerSlider"
@@ -65,7 +67,7 @@ const CreateGameForm = () => {
                             step="1"
                             onChange={formik.handleChange}
                             value={formik.values.playerSlider || 4}
-                            style={{"grid-column": "1", "grid-row": "3"}}
+                            style={{"gridColumn": "1", "gridRow": "3"}}
                         />
                         <span className="slider-value">{formik.values.playerSlider || 4}</span>
                         <label>Duration of the round:</label>
