@@ -40,7 +40,7 @@ const GameList = () => {
                 </Button>
                 <div className={"list-content"} style={{"gridColumn":"2","gridRow":"2"}}>
                     {gameSessions.map((gameSession) => (
-                        <Button key={gameSession.id} variant={"session"} onClick={() => navigate(`/games/${gameSession.id}`)}>
+                        <Button key={gameSession.id} variant={"session"} onClick={() => navigate(`/game-lobby/${gameSession.id}`)}>
                             <div className={"room-info"}>
                                 <div className={"room-name"}>{gameSession.name}</div>
                                 <div className={"room-players"}>{gameSession.players}/{gameSession.maxPlayers}</div>

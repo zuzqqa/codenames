@@ -6,6 +6,7 @@ import Home from './views/Home/Home';
 import SelectGame from "./views/SelectGame/SelectGame";
 import CreateGame from "./views/CreateGame/CreateGame";
 import JoinGame from "./views/JoinGame/JoinGame";
+import GameLobby from "./views/GameLobby/GameLobby";
 
 import soundFile from "./assets/sounds/background-music.mp3";
 import {useEffect, useState} from "react";
@@ -18,7 +19,7 @@ const App : React.FC = () => {
         if (!isPlaying) {
             audio.loop = true;
             audio.volume = 0.2;
-            audio.play();
+            audio.play().then();
             setIsPlaying(true);
         }
     };
@@ -44,6 +45,7 @@ const App : React.FC = () => {
                 <Route path="/games" element={<SelectGame />} />
                 <Route path="/join-game" element={<JoinGame />} />
                 <Route path="/create-game" element={<CreateGame />} />
+                <Route path="/game-lobby/:gameId" element={<GameLobby />} />
             </Routes>
         </Router>
     );

@@ -1,0 +1,52 @@
+.background {
+    background-color: #f5e1c1;
+    box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    max-height: 85%;
+    max-width: 100%;
+    border-radius: 10px;
+}
+.content {
+    display: grid;
+    grid-template-columns: 80% 20%;
+    grid-template-rows: 10% 10% 10% 10% 60%;
+    gap: 0.5rem;
+
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+.room-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: auto;
+}
+
+.game-name {
+    grid-row: 1;
+    grid-column: span 2;
+    margin: auto;
+}
+
+.div-slots {
+    grid-row: 2;
+    grid-column: 2;
+}
+
+.div-id {
+    grid-row: 2;
+    grid-column: 1;
+}
+
+.lobby-players {
+    grid-row: 5;
+    grid-column: span 2;
+    background-color: #f5e1c1;
+    box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    border-radius: 10px;
+}
