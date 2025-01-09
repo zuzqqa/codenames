@@ -63,7 +63,7 @@ const Gameplay: React.FC<GameplayProps> = ({
       setCards((prevCards) => {
         const newCards = [...prevCards];
         newCards[index] =
-          newCards[index] === cardWhiteImg ? cardRedImg : cardWhiteImg;
+        newCards[index] === cardWhiteImg ? cardRedImg : cardWhiteImg;
         return newCards;
       });
     }, 170); // 0.17s
