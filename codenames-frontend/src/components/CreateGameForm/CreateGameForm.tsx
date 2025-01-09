@@ -9,7 +9,11 @@ import {useNavigate} from "react-router-dom";
 import "./CreateGameForm.css";
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 
-const CreateGameForm = () => {
+interface CreateGameFormProps {
+    soundFXVolume: number;
+}
+
+const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
     const formik = useFormik({
         enableReinitialize: true,
         initialValues: {
@@ -37,7 +41,7 @@ const CreateGameForm = () => {
         <>
             <Subtitle variant={"room"}>Create Room</Subtitle>
             <RoomMenu>
-                <Button variant={"circle-back"} onClick={() => navigate('/games')}>
+                <Button variant={"circle-back"} onClick={() => navigate('/games')} soundFXVolume={soundFXVolume}>
                     <img src={backButton} alt="Back" className="btn-arrow-back" />
                 </Button>
                 <form onSubmit={formik.handleSubmit} style={{"gridColumn": "2", "gridRow": "2"}}>
@@ -98,7 +102,7 @@ const CreateGameForm = () => {
                             value={formik.values.roundsNumber}
                         />
                     </div>
-                    <Button type="submit" variant="room">
+                    <Button type="submit" variant="room" soundFXVolume={soundFXVolume}>
                         <span className="button-text">Create game</span>
                     </Button>
                 </form>

@@ -1,3 +1,4 @@
+/* === General App Wrapper Styles === */
 .app-wrapper {
   position: absolute;
   top: 0;
@@ -7,47 +8,56 @@
   background-size: cover;
   background-position: center;
 
+  /* Flexbox for centering content */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
+/* === Column and Row Layout === */
+
+/* First column: Contains two rows */
 .first-column {
-    display: grid;
-    grid-template-rows: 0.8fr 0.8fr;
-    grid-row: 2 / span 2;
-  }
-  
-  .row1,
-  .row2 {
-    display: flex; 
-    justify-content: center;
-    align-items: center;
-  }
+  display: grid;
+  grid-template-rows: 0.8fr 0.8fr; /* Two rows of equal height */
+  grid-row: 2 / span 2; /* Spans rows in the grid */
+}
 
-  .row2{
-    padding-top: 1rem;
-  }
-  
-  .gold-bar {
-    grid-column: 2; 
-    grid-row: 1 / span 4; 
+.row1,
+.row2 {
+  display: flex; /* Flexbox for centering items */
+  justify-content: center;
+  align-items: center;
+}
 
-    height: 62.7%;
-    width: 2px;
-    margin: auto;
-    z-index: 3;
+.row2 {
+  padding-top: 1rem; /* Add space above the second row */
+}
 
-    background-image: linear-gradient(to right, #DAB274, #745F3E);
-  }
+/* Second column: Mirrors first column layout */
+.second-column {
+  grid-column: 3;
+  grid-template-rows: 0.8fr 0.8fr;
+  grid-row: 2 / span 2;
 
-  .second-column {
-    grid-column: 3;
-    grid-template-rows: 0.8fr 0.8fr;
-    grid-row: 2 / span 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-    display: flex; 
-    justify-content: center;
-    align-items: center;
-  }
+/* === Decorative Elements === */
+
+/* Gold Bar: Divider between columns */
+.gold-bar {
+  grid-column: 2;
+  grid-row: 1 / span 4; /* Spans all rows */
+
+  height: 62.7%;
+  width: 2px;
+  margin: auto;
+  z-index: 3;
+
+  /* Gold gradient effect */
+  background-image: linear-gradient(to right, #DAB274, #745F3E);
+}
