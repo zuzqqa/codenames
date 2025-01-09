@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"; // Hook for programmatic navigation
-import { useState } from "react"; // Hook for managing component state
+import React, { useState } from "react"; // Hook for managing component state
 
 import BackgroundContainer from "../../containers/Background/Background";
 import MenuContainer from "../../containers/Menu/Menu";

@@ -3,7 +3,7 @@ import Subtitle from "../Subtitle/Subtitle.tsx";
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import Button from "../Button/Button.tsx";
 import backButton from "../../assets/icons/arrow-back.png";
-import {useState} from "react";
+import React, {useState} from "react";
 import "./RoomLobby.css";
 
 interface Player {
@@ -20,7 +20,11 @@ interface GameSession {
     playersList: Player[];
 }
 
-const RoomLobby = () => {
+interface RoomLobbyProps {
+    soundFXVolume: number;
+}
+
+const RoomLobby: React.FC<RoomLobbyProps> = ({soundFXVolume}) => {
 
     const navigate = useNavigate()
     const {gameId} = useParams();
@@ -41,7 +45,7 @@ const RoomLobby = () => {
         <>
             <Subtitle variant={"room"}>Room Lobby</Subtitle>
             <RoomMenu>
-                <Button variant={"circle-back"} onClick={() => navigate('/games')}>
+                <Button variant={"circle-back"} soundFXVolume={soundFXVolume} onClick={() => navigate('/games')}>
                     <img src={backButton} alt="Back" className="btn-arrow-back"/>
                 </Button>
                 <div className="background" style={{gridColumn: "2", gridRow: "2"}}>
@@ -63,7 +67,7 @@ const RoomLobby = () => {
                             </div>
                         </div>
                     )}
-                    <Button variant={"room"} className="room-btn">Start</Button>
+                    <Button variant={"room"} soundFXVolume={soundFXVolume} className="room-btn">Start</Button>
                 </div>
 
             </RoomMenu>

@@ -1,40 +1,52 @@
 import Button from "../../components/Button/Button";
 import BackgroundContainer from "../../containers/Background/Background";
 import settingsIcon from "../../assets/icons/settings.png";
-import Modal from "../../components/Modal/Modal";
-import TitleModal from "../../components/TitleModal/TitleModal";
-import closeIcon from "../../assets/icons/close.png";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar";
 import RoomLobby from "../../components/RoomLobby/RoomLobby";
-import {useState} from "react";
+import React, {useState} from "react";
+import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
 
-const GameLobby = () => {
+// Define the type for props passed to the Home component
+interface GameLobbyProps {
+    setVolume: (volume: number) => void; // Function to set global volume
+    soundFXVolume: number; // Current sound effects volume level
+    setSoundFXVolume: (volume: number) => void; // Function to set sound effects volume
+}
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const toggleModal = () => {
-        setIsModalOpen(!isModalOpen);
+const GameLobby: React.FC<GameLobbyProps> = ({
+                                       setVolume,
+                                       soundFXVolume,
+                                       setSoundFXVolume,
+                                   }) => {
+    const [musicVolume, setMusicVolume] = useState(50); // Music volume level
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
+
+    const toggleSettings = () => {
+        setIsSettingsOpen(!isSettingsOpen);
     };
 
     return (
         <>
             <BackgroundContainer>
-                <Button variant="circle">
-                    <img src={settingsIcon} onClick={toggleModal} alt="Settings" />
+                <Button variant="circle" soundFXVolume={soundFXVolume}>
+                    <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
                 </Button>
-                <Modal isOpen={isModalOpen} onClose={toggleModal}>
-                    <TitleModal>Settings</TitleModal>
-                    <Button variant="primary" onClick={toggleModal}>
-                        <img src={closeIcon} alt="Close" />
-                    </Button>
-                    <p>Music</p>
-                    <p>Sound FX</p>
-                    <p>Language</p>
-                    <p>Help</p>
-                    <GameTitleBar></GameTitleBar>
-                </Modal>
+
+                {/* Settings modal */}
+                <SettingsModal
+                    isOpen={isSettingsOpen}
+                    onClose={toggleSettings}
+                    musicVolume={musicVolume}
+                    soundFXVolume={soundFXVolume}
+                    setMusicVolume={(volume) => {
+                        setMusicVolume(volume); // Update local music volume
+                        setVolume(volume / 100); // Update global volume
+                    }}
+                    setSoundFXVolume={setSoundFXVolume}
+                />
                 <>
                     <GameTitleBar></GameTitleBar>
-                    <RoomLobby />
+                    <RoomLobby soundFXVolume={soundFXVolume} />
                 </>
             </BackgroundContainer>
         </>

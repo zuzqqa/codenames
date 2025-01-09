@@ -1,11 +1,10 @@
-import React, { useState } from "react";
-
 import Button from "../Button/Button";
 import Modal from "../Modal/Modal";
 import TitleModal from "../TitleModal/TitleModal";
 import closeIcon from "../../assets/icons/close.png";
 
 import "./MessageModal.css";
+import React from "react";
 
 // Define the type for the SettingsModal component's props
 interface MessageModalProps {

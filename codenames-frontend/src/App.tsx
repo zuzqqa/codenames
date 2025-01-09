@@ -9,18 +9,18 @@ import Gameplay from './views/Gameplay/Gameplay';
 import soundFile from "./assets/sounds/background-music.mp3";
 
 import './styles/App.css';
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 
 const App : React.FC = () => {
     const [audio] = useState(new Audio(soundFile));
     const [isPlaying, setIsPlaying] = useState(false);
-    const [musicVolume, setMusicVolume] = useState(50);
+    const [, setMusicVolume] = useState(50);
     const [soundFXVolume, setSoundFXVolume] = useState(50);
 
     const playAudio = () => {
         if (!isPlaying) {
             audio.loop = true;
-            audio.play();
+            audio.play().then();
             setIsPlaying(true);
         }
     };
@@ -30,7 +30,7 @@ const App : React.FC = () => {
         setMusicVolume(volume);
     };
 
-    useEffect(() => {
+        useEffect(() => {
         const handleFirstInteraction = () => {
             playAudio();
             window.removeEventListener('click', handleFirstInteraction);
@@ -52,7 +52,7 @@ const App : React.FC = () => {
                 <Route path="/games" element={<SelectGame setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
                 <Route path="/join-game" element={<JoinGame setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
                 <Route path="/create-game" element={<CreateGame setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
-                <Route path="/game-lobby/:gameId" element={<GameLobby />} />
+                <Route path="/game-lobby/:gameId" element={<GameLobby setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
             </Routes>
         </Router>
     );

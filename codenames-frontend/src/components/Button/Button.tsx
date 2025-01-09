@@ -9,12 +9,13 @@ interface ButtonProps {
     variant?: "primary" | "room" | "circle" | "circle-back" | "session" | "help";
     disabled?: boolean;
     soundFXVolume: number;
+    className?: string;
 }
 
 const playSound = (volume: number) => {
     const audio = new Audio(soundFile);
     audio.volume = volume / 100;
-    audio.play();
+    audio.play().then();
 };
 
 const Button: React.FC<ButtonProps> = ({
@@ -23,7 +24,8 @@ const Button: React.FC<ButtonProps> = ({
                                            type = "button",
                                            variant = "primary",
                                            disabled = false,
-                                           soundFXVolume
+                                           soundFXVolume,
+                                           className=""
                                        }) => {
     return (
         <button
