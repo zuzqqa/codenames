@@ -64,7 +64,6 @@
     left: 50%;
     transform: translate(-50%, -50%);
     color: #4F3D2A;
-    font-family: Dragon Hunter, sans-serif;
     font-weight: 300;
     font-size: calc(0.3rem + 1vw);
     letter-spacing: 1px;
@@ -120,7 +119,6 @@ button {
 .timer{
     position: relative; 
     padding: 0.3125rem 1.25rem;
-    font-family: Dragon Hunter, sans-serif;
     font-weight: 300;
     font-size: calc(0.2rem + 1vw);
     text-align: center;
@@ -206,7 +204,6 @@ button {
     transform: translate(-50%, -80%);
     z-index: 3;
     color: #f9e9d1;
-    font-family: Dragon Hunter, sans-serif;
     font-weight: 300;
     font-size: calc(0.5rem + 1vw);
     text-transform: uppercase;
@@ -266,7 +263,6 @@ button {
     background-color: transparent;
     color: #f9e9d1;
     font-size: calc(0.4rem + 2vw);
-    font-family: Dragon Hunter, sans-serif;
     font-weight: 300;
     text-transform: uppercase;
     text-align: center;
@@ -330,7 +326,6 @@ button {
     padding: 0.4rem;
     border-radius: 10px;
     font-size: calc(0.4rem + 0.5vw);
-    font-family: Dragon Hunter, sans-serif;
   }
   
   .message.outgoing {
@@ -357,7 +352,6 @@ button {
     margin-bottom: 0.625rem;
     color: #fff3e2;
     font-size: calc(0.4rem + 0.5vw);
-    font-family: Dragon Hunter, sans-serif;
     font-weight: 300;
     text-transform: uppercase;
     opacity: 60%;

@@ -11,6 +11,7 @@ import MenuContainer from "../../containers/Menu/Menu";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar.tsx";
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
 import settingsIcon from "../../assets/icons/settings.png";
+import eyeIcon from "../../assets/icons/eye.svg";
 
 interface RegisterProps {
     setVolume: (volume: number) => void;
@@ -28,6 +29,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
     const [password, setPassword] = useState<string>("");
     const [musicVolume, setMusicVolume] = useState(50); // Music volume level
     const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
     const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
@@ -39,6 +41,13 @@ const RegisterPage: React.FC<RegisterProps> = ({
 
     const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
+        const inputValue = e.target.value;
+
+        if (inputValue.length > password.length) {
+            setPassword(password + inputValue[inputValue.length - 1]);
+        } else {
+            setPassword(password.slice(0, -1)); // Handle backspace
+        }
     };
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -90,10 +99,19 @@ const RegisterPage: React.FC<RegisterProps> = ({
                             onChange={handleLoginChange}
                         />
                         <FormInput
-                            type="password"
+                            type="text"
                             placeholder="PASSWORD"
-                            value={password}
+                            value={!isPasswordVisible ? '*'.repeat(password.length) : password}
                             onChange={handlePasswordChange}
+                            button={
+                                <Button
+                                    variant="eye2"
+                                    soundFXVolume={soundFXVolume}
+                                    onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                                >
+                                    <img src={eyeIcon} alt="Show password" />
+                                </Button>
+                            }
                         />
                         <Button type="submit" variant="primary" soundFXVolume={soundFXVolume}>
                             <span className="button-text">SUBMIT</span>

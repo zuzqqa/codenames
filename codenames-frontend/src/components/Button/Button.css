@@ -79,6 +79,30 @@
   border-color: #fff7ab;
 }
 
+.btn-eye {
+  position: absolute;
+  right: 1%;
+  top: 2%;
+  scale: 0.75;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.btn-eye2 {
+  position: absolute;
+  right: 0.5%;
+  top: 15%;
+  scale: 0.75;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: none;
+}
+
 .btn-primary-1 {
   background-image: linear-gradient(to top, #561723, #8d2736);
   border-radius: 17px;

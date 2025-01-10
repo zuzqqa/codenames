@@ -4,12 +4,14 @@
     align-items: center;
     width: 75%;
     padding: 7px;
+    position: relative;
 }
 
 .input-field {
     width: 100%; /* Set a max width for consistency */
     padding: 10px 15px;
     font-size: 1rem;
+    font-family: inherit;
     color: #000000; /* White text color */
     background-color: #F0E0B5; /* Dark input background to match the theme */
     border: 2px solid #4a4a5e; /* Subtle border color */

@@ -11,6 +11,7 @@ import settingsImage from "../../assets/icons/settings.png";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar.tsx";
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
 import settingsIcon from "../../assets/icons/settings.png";
+import eyeIcon from "../../assets/icons/eye.svg";
 
 interface LoginProps {
     setVolume: (volume: number) => void;
@@ -27,6 +28,7 @@ const LoginPage: React.FC<LoginProps> = ({
     const [password, setPassword] = useState<string>("");
     const [musicVolume, setMusicVolume] = useState(50); // Music volume level
     const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
     const handleLoginChange = (e: ChangeEvent<HTMLInputElement>) => {
         setLogin(e.target.value);
@@ -34,6 +36,13 @@ const LoginPage: React.FC<LoginProps> = ({
 
     const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
+        const inputValue = e.target.value;
+
+        if (inputValue.length > password.length) {
+            setPassword(password + inputValue[inputValue.length - 1]);
+        } else {
+            setPassword(password.slice(0, -1)); // Handle backspace
+        }
     };
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -46,6 +55,8 @@ const LoginPage: React.FC<LoginProps> = ({
     const toggleSettings = () => {
         setIsSettingsOpen(!isSettingsOpen);
     };
+
+
 
 
     return (
@@ -67,8 +78,8 @@ const LoginPage: React.FC<LoginProps> = ({
             </Button>
             <TitleComponent
                 soundFXVolume={soundFXVolume}
-                customStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "34%", marginBottom: "0.01%" }}
-                shadowStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "34%", marginBottom: "0.01%" }}
+                customStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "34%"}}
+                shadowStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "34%"}}
             >LOGIN</TitleComponent>
             <MenuContainer>
                 <div className="login-container">
@@ -80,10 +91,19 @@ const LoginPage: React.FC<LoginProps> = ({
                             onChange={handleLoginChange}
                         />
                         <FormInput
-                            type="password"
+                            type="text"
                             placeholder="PASSWORD"
-                            value={password}
+                            value={!isPasswordVisible ? '*'.repeat(password.length) : password}
                             onChange={handlePasswordChange}
+                            button={
+                                <Button
+                                    variant="eye"
+                                    soundFXVolume={soundFXVolume}
+                                    onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                                >
+                                    <img src={eyeIcon} alt="Show password" />
+                                </Button>
+                            }
                         />
                         <Button type="submit" variant="primary" soundFXVolume={soundFXVolume}>
                             <span className="button-text">SUBMIT</span>

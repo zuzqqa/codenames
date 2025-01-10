@@ -46,7 +46,6 @@
   align-items: center;
 
   /* Text styles */
-  font-family: "Dragon Hunter", sans-serif;
   font-size: calc(0.4rem + 0.5vw);
 
   /* Gradient text */
@@ -72,9 +71,8 @@
   padding-left: 0;
   background: linear-gradient(to bottom, #f0e0b5, #eed8b0);
   text-indent: 15px;
-
+  font-family: inherit;
   /* Text styles */
-  font-family: "Dragon Hunter", sans-serif;
   font-size: calc(0.8rem + 0.4vw);
 
   border: none;
@@ -95,9 +93,8 @@
   padding-left: 0;
   background: linear-gradient(to bottom, #f0e0b5, #eed8b0);
   text-indent: 15px;
-
+  font-family: inherit;
   /* Text styles */
-  font-family: "Dragon Hunter", sans-serif;
   font-size: calc(0.8rem + 0.5vw);
 
   border: none;

@@ -7,9 +7,10 @@ interface FormInputProps {
     value: string;
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     label?: string;
+    button?: React.ReactNode;
 }
 
-const FormInput: React.FC<FormInputProps> = ({ type, placeholder, value, onChange, label }) => {
+const FormInput: React.FC<FormInputProps> = ({type, placeholder, value, onChange, label, button }) => {
     return (
         <div className="input-container">
             {label && <label className="input-label">{label}</label>}
@@ -20,6 +21,7 @@ const FormInput: React.FC<FormInputProps> = ({ type, placeholder, value, onChang
                 value={value}
                 onChange={onChange}
             />
+            {button != null ? button : null}
         </div>
     );
 }
