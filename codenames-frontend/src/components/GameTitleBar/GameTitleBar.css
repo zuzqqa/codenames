@@ -1,19 +1,17 @@
 .footer-bar {
-    height: 5vh;
+  height: 5vh;
 
   display: flex;
   position: absolute;
   top: 3%;
   justify-content: center;
   align-items: center;
-}
+  padding: 0 3rem;
 
-.footer-bar-title {
-  padding: 0 30%;
-  font-size: calc(1rem + 0.2vw);
+  font-size: calc(0.4rem + 1vw);
   text-transform: uppercase;
-  color: #fcf18b;
-  
+
+
   background: linear-gradient(to top, #32464D, #2c3d46, #22303b);
   border-style: outset;
   border-width: 2px;

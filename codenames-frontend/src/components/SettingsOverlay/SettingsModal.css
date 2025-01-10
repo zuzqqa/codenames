@@ -48,7 +48,6 @@
   align-items: center;
 
   /* Text styles */
-  font-family: "Dragon Hunter", sans-serif;
   font-size: calc(1.5rem + 0.5vw);
   text-transform: uppercase; /* Uppercase text */
   user-select: none;
@@ -200,7 +199,6 @@ input[type="range"]:focus::-ms-fill-upper {
 }
 
 .settings-row-help-btn span {
-  font-family: "Dragon Hunter", sans-serif;
   font-size: calc(1rem + 0.2vw);
   text-transform: uppercase;
   background-image: linear-gradient(to bottom, #fcf18b, #ffd363);

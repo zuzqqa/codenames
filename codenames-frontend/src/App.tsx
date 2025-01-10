@@ -1,6 +1,5 @@
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
-import './styles/App.css';
-import * as React from 'react';
+import {useEffect, useState} from "react";
 
 import Home from './views/Home/Home';
 import SelectGame from "./views/SelectGame/SelectGame";
@@ -9,9 +8,10 @@ import JoinGame from "./views/JoinGame/JoinGame";
 import Gameplay from './views/Gameplay/Gameplay';
 
 import soundFile from "./assets/sounds/background-music.mp3";
-import {useEffect, useState} from "react";
-import RegisterPage from "./views/RegisterPage/RegisterPage.tsx";
+
+import './styles/App.css';
 import LoginPage from "./views/LoginPage/LoginPage.tsx";
+import RegisterPage from "./views/RegisterPage/RegisterPage.tsx";
 
 const App : React.FC = () => {
     const [audio] = useState(new Audio(soundFile));
@@ -22,7 +22,6 @@ const App : React.FC = () => {
     const playAudio = () => {
         if (!isPlaying) {
             audio.loop = true;
-            audio.volume = 0.2;
             audio.play();
             setIsPlaying(true);
         }
@@ -55,8 +54,8 @@ const App : React.FC = () => {
                 <Route path="/games" element={<SelectGame setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
                 <Route path="/join-game" element={<JoinGame setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
                 <Route path="/create-game" element={<CreateGame setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route path="/login" element={<LoginPage />} />
+                <Route path={"/login"} element={<LoginPage setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
+                <Route path={"/register"} element={<RegisterPage setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
             </Routes>
         </Router>
     );

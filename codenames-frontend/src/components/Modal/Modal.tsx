@@ -1,6 +1,8 @@
 import React, { ReactNode } from "react";
+
+import BackgroundImg from "../../assets/images/main-page-container.png";
+
 import "./Modal.css";
-import TitleComponent from "../Title/Title";
 
 interface ModalProps {
     isOpen: boolean;
@@ -13,8 +15,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
 
     return (
         <div className="modal-overlay" onClick={onClose}>
+            <img src={ BackgroundImg } className="modal-background-img" alt="Modal background" />
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <TitleComponent>{children}</TitleComponent>
+                {children}
             </div>
         </div>
     );

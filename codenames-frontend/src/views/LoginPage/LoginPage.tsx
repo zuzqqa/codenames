@@ -9,11 +9,24 @@ import MenuContainer from "../../containers/Menu/Menu";
 import TitleComponent from "../../components/Title/Title";
 import settingsImage from "../../assets/icons/settings.png";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar.tsx";
-//import exitImage from "../../assets/icons/exit.png";
+import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
+import settingsIcon from "../../assets/icons/settings.png";
 
-const LoginPage: React.FC = () => {
+interface LoginProps {
+    setVolume: (volume: number) => void;
+    soundFXVolume: number;
+    setSoundFXVolume: (volume: number) => void;
+}
+
+const LoginPage: React.FC<LoginProps> = ({
+    setVolume,
+    soundFXVolume,
+    setSoundFXVolume,
+                                         }) => {
     const [login, setLogin] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+    const [musicVolume, setMusicVolume] = useState(50); // Music volume level
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
 
     const handleLoginChange = (e: ChangeEvent<HTMLInputElement>) => {
         setLogin(e.target.value);
@@ -30,13 +43,30 @@ const LoginPage: React.FC = () => {
         console.log("Password:", password);
     };
 
+    const toggleSettings = () => {
+        setIsSettingsOpen(!isSettingsOpen);
+    };
+
+
     return (
         <BackgroundContainer>
             <GameTitleBar />
-            <Button variant="circle">
-                <img src={settingsImage} alt="Settings"/>
+            <SettingsModal
+                isOpen={isSettingsOpen}
+                onClose={toggleSettings}
+                musicVolume={musicVolume}
+                soundFXVolume={soundFXVolume}
+                setMusicVolume={(volume) => {
+                    setMusicVolume(volume); // Update local music volume
+                    setVolume(volume / 100); // Update global volume
+                }}
+                setSoundFXVolume={setSoundFXVolume}
+            />
+            <Button variant="circle" soundFXVolume={soundFXVolume}>
+                <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
             </Button>
             <TitleComponent
+                soundFXVolume={soundFXVolume}
                 customStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "34%", marginBottom: "0.01%" }}
                 shadowStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "34%", marginBottom: "0.01%" }}
             >LOGIN</TitleComponent>
@@ -55,7 +85,7 @@ const LoginPage: React.FC = () => {
                             value={password}
                             onChange={handlePasswordChange}
                         />
-                        <Button type="submit" variant="primary">
+                        <Button type="submit" variant="primary" soundFXVolume={soundFXVolume}>
                             <span className="button-text">SUBMIT</span>
                         </Button>
                     </form>

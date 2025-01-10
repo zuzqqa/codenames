@@ -1,5 +1,5 @@
-import "../../styles/App.css";
-import "./Home.css";
+import { useNavigate } from "react-router-dom"; // Hook for programmatic navigation
+import { useState } from "react"; // Hook for managing component state
 
 import BackgroundContainer from "../../containers/Background/Background";
 import MenuContainer from "../../containers/Menu/Menu";
@@ -8,66 +8,106 @@ import TitleComponent from "../../components/Title/Title";
 import SubtitleComponent from "../../components/Subtitle/Subtitle";
 import CharactersComponent from "../../components/Characters/Characters";
 import Button from "../../components/Button/Button";
-import Modal from "../../components/Modal/Modal";
+import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 import TitleModal from "../../components/TitleModal/TitleModal";
-import GameTitleBar from "../../components/GameTitleBar/GameTitleBar";
 import settingsIcon from "../../assets/icons/settings.png";
-import closeIcon from "../../assets/icons/close.png";
-import {useNavigate} from "react-router-dom";
-import {useState} from "react";
+import characters from "../../assets/images/characters.png";
 
-function Home() {
-    const [isGameStarted, setIsGameStarted] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+import "../../styles/App.css";
+import "./Home.css";
 
-    const navigate = useNavigate();
+// Define the type for props passed to the Home component
+interface HomeProps {
+    setVolume: (volume: number) => void; // Function to set global volume
+    soundFXVolume: number; // Current sound effects volume level
+    setSoundFXVolume: (volume: number) => void; // Function to set sound effects volume
+}
 
+// Main component definition
+const Home: React.FC<HomeProps> = ({
+                                       setVolume,
+                                       soundFXVolume,
+                                       setSoundFXVolume,
+                                   }) => {
+    // State variables for managing component behavior
+    const [isGameStarted, setIsGameStarted] = useState(false); // Tracks if the game has started
+    const [musicVolume, setMusicVolume] = useState(50); // Music volume level
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
+
+    const navigate = useNavigate(); // Hook for navigation
+
+    // Handler to start the game
     const startGame = () => {
         setIsGameStarted(true);
     };
 
-    const toggleModal = () => {
-        setIsModalOpen(!isModalOpen);
+    // Toggles the settings modal visibility
+    const toggleSettings = () => {
+        setIsSettingsOpen(!isSettingsOpen);
     };
 
     return (
         <>
             <BackgroundContainer>
-                <Button variant="circle">
-                    <img src={settingsIcon} onClick={toggleModal} alt="Settings" />
-                </Button>
-                <Modal isOpen={isModalOpen} onClose={toggleModal}>
-                    <TitleModal>Settings</TitleModal>
-                    <Button variant="primary" onClick={toggleModal}>
-                        <img src={closeIcon} alt="Close" />
-                    </Button>
-                    <p>Music</p>
-                    <p>Sound FX</p>
-                    <p>Language</p>
-                    <p>Help</p>
-                    <GameTitleBar></GameTitleBar>
-                </Modal>
+                {/* Settings modal */}
+                <SettingsModal
+                    isOpen={isSettingsOpen}
+                    onClose={toggleSettings}
+                    musicVolume={musicVolume}
+                    soundFXVolume={soundFXVolume}
+                    setMusicVolume={(volume) => {
+                        setMusicVolume(volume); // Update local music volume
+                        setVolume(volume / 100); // Update global volume
+                    }}
+                    setSoundFXVolume={setSoundFXVolume}
+                />
+
+                {/* Render content based on game state */}
                 {isGameStarted ? (
                     <>
-                        <TitleComponent>Codenames</TitleComponent>
+                        {/* Settings button */}
+                        <Button variant="circle" soundFXVolume={soundFXVolume}>
+                            <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
+                        </Button>
+                        {/* Game content when started */}
+                        <TitleComponent soundFXVolume={soundFXVolume}>
+                            Codenames
+                        </TitleComponent>
                         <CharactersComponent />
-                        <SubtitleComponent>Your mission begins now</SubtitleComponent>
+                        <SubtitleComponent variant="primary">
+                            Your mission begins now
+                        </SubtitleComponent>
                         <MenuContainer>
+                            {/* Menu for login and registration */}
                             <div className="first-column">
                                 <div className="row1">
-                                    <Button variant="primary" onClick={() => navigate('/login')}>
+                                    <Button
+                                        variant="primary"
+                                        soundFXVolume={soundFXVolume}
+                                        onClick={() => navigate("/login")}
+                                    >
                                         <span className="button-text">Login</span>
                                     </Button>
                                 </div>
                                 <div className="row2">
-                                    <Button variant="primary" onClick={() => navigate('/register')}>
+                                    <Button
+                                        variant="primary"
+                                        soundFXVolume={soundFXVolume}
+                                        onClick={() => navigate("/register")}
+                                    >
                                         <span className="button-text">Register</span>
                                     </Button>
                                 </div>
                             </div>
+                            {/* Decorative gold bar */}
                             <div className="gold-bar"></div>
                             <div className="second-column">
-                                <Button variant="primary" onClick={() => navigate('/games')}>
+                                {/* Option to play as a guest */}
+                                <Button
+                                    variant="primary"
+                                    onClick={() => navigate("/games")}
+                                    soundFXVolume={soundFXVolume}
+                                >
                                     <span className="button-text">Play as Guest</span>
                                 </Button>
                             </div>
@@ -75,14 +115,35 @@ function Home() {
                     </>
                 ) : (
                     <>
-                        <Button variant="primary" onClick={startGame}>
-                          <span className="button-text">Play</span>
-                        </Button>
+                        <div className="start-container">
+                            {/* Initial state before starting the game */}
+                            <div className="character-image-start">
+                                <img src={characters} alt="Characters"/>
+                            </div>
+                            <div className="start-text-container">
+                                <div className="start-title">
+                                    Codenames
+                                </div>
+                                <div className="start-subtitle">
+                                    Your mission begins now
+                                </div>
+                            </div>
+                            <div className="start-button">
+                                {/* Start game button */}
+                                <Button
+                                    variant="primary"
+                                    onClick={startGame}
+                                    soundFXVolume={soundFXVolume}
+                                >
+                                    <span className="button-text">Play</span>
+                                </Button>
+                            </div>
+                        </div>
                     </>
                 )}
             </BackgroundContainer>
         </>
     );
-}
+};
 
 export default Home;

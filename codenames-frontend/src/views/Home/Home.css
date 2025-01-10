@@ -101,7 +101,7 @@
 .start-title {
   margin: 0;
   margin-bottom: -15px;
-  font-family: "Dragon Hunter", sans-serif;
+
   font-weight: 300;
   font-size: calc(4.8rem + 1vw);
   text-align: center;
@@ -123,7 +123,6 @@
 .start-subtitle {
   margin: 0;
   margin-bottom: -5%;
-  font-family: "Dragon Hunter", sans-serif;
   font-weight: 300;
   font-size: calc(0.8rem + 1vw);
   text-align: center;
