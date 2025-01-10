@@ -6,14 +6,16 @@ import soundFile from "../../assets/sounds/cinematic-hit-159487.mp3";
 
 interface TitleComponentProps {
     children: ReactNode;
-    soundFXVolume: number; 
+    soundFXVolume: number;
+    customStyle?: React.CSSProperties;
+    shadowStyle?: React.CSSProperties;
 }
 
-const TitleComponent: React.FC<TitleComponentProps> = ({ children, soundFXVolume }) => {
-    const [audio] = useState(() => new Audio(soundFile)); 
+const TitleComponent: React.FC<TitleComponentProps> = ({ children, soundFXVolume, customStyle, shadowStyle}) => {
+    const [audio] = useState(() => new Audio(soundFile)); // Initialize audio only once
 
     const playHitSound = () => {
-        audio.volume = soundFXVolume / 100; 
+        audio.volume = soundFXVolume / 100;
         audio.play();
     };
 
@@ -27,10 +29,10 @@ const TitleComponent: React.FC<TitleComponentProps> = ({ children, soundFXVolume
 
     return (
         <div className="title-container">
-            <h1 className="title" onAnimationStart={handleAnimationStart}>
+            <h1 className="title" onAnimationStart={handleAnimationStart} style={customStyle}>
                 {children}
             </h1>
-            <h1 className="title-shadow">{children}</h1>
+            <h1 className="title-shadow" style={shadowStyle}>{children}</h1>
         </div>
     );
 };

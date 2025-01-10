@@ -9,7 +9,6 @@
 .subtitle {
   margin: 0;
   margin-bottom: -5%;
-  font-family: "Dragon Hunter", sans-serif;
   font-weight: 300;
   font-size: calc(0.8rem + 1vw);
   text-align: center;
@@ -23,15 +22,14 @@
   position: relative;
   z-index: 1;
   user-select: none;
-  -webkit-user-select: none; 
-  -moz-user-select: none; 
-  -ms-user-select: none; 
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .subtitle-shadow {
   width: 100%;
   margin: 0;
-  font-family: "Dragon Hunter", sans-serif;
   font-weight: 300;
   font-size: calc(0.8rem + 1vw);
   text-align: center;
@@ -47,9 +45,9 @@
   top: 0;
   text-shadow: 10px 10px 8px rgba(0, 0, 0, 0.6);
   user-select: none;
-  -webkit-user-select: none; 
-  -moz-user-select: none; 
-  -ms-user-select: none; 
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 @media (max-width: 1440px) {

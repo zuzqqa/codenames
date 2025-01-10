@@ -6,10 +6,13 @@ import SelectGame from "./views/SelectGame/SelectGame";
 import CreateGame from "./views/CreateGame/CreateGame";
 import JoinGame from "./views/JoinGame/JoinGame";
 import Gameplay from './views/Gameplay/Gameplay';
+import ChooseLeader from './views/ChooseLeader/ChooseLeader';
 
 import soundFile from "./assets/sounds/background-music.mp3";
 
 import './styles/App.css';
+import LoginPage from "./views/LoginPage/LoginPage.tsx";
+import RegisterPage from "./views/RegisterPage/RegisterPage.tsx";
 
 const App : React.FC = () => {
     const [audio] = useState(new Audio(soundFile));
@@ -52,6 +55,9 @@ const App : React.FC = () => {
                 <Route path="/games" element={<SelectGame setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
                 <Route path="/join-game" element={<JoinGame setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
                 <Route path="/create-game" element={<CreateGame setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
+                <Route path={"/login"} element={<LoginPage setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
+                <Route path={"/register"} element={<RegisterPage setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
+                <Route path="/choose-leader" element={<ChooseLeader setVolume={setVolume}  soundFXVolume={soundFXVolume} setSoundFXVolume={setSoundFXVolume}/>} />
             </Routes>
         </Router>
     );
