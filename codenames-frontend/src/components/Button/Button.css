@@ -72,7 +72,7 @@
 
 .btn-help {
   background-image: linear-gradient(to top, #561723, #8d2736);
-  width: 60%;
+  width: 70%;
   padding: 0;
   margin: auto;
   border-width: 0.125rem;
@@ -119,11 +119,4 @@
   -webkit-background-clip: text;
   background-image: linear-gradient(to right, #fff7ab, #dab274);
   color: transparent; /* Gradientowy kolor tekstu */
-}
-
-@media (max-width: 1440px) {
-  .btn-circle {
-    width: 3.6%;
-    height: 7%;
-  }
 }

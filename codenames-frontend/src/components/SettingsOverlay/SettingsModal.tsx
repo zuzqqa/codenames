@@ -67,7 +67,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
       {/* Close button for the modal */}
       <Button variant="circle" soundFXVolume={soundFXVolume}>
-        <img src={closeIcon} onClick={toggleModal} alt="Close" />
+        <img className="close-icon" src={closeIcon} onClick={toggleModal} alt="Close" />
       </Button>
 
       {/* Main settings container */}

@@ -1,5 +1,5 @@
 /* Container for the title */
-.title-container1 {
+.title-container-modal {
     position: relative;
     width: 90%;
     margin: auto;
@@ -7,11 +7,11 @@
 }
 
 /* Main title styles */
-.title1 {
+.title-modal {
     margin: 0;
     margin-bottom: -15px;
     padding-left: 0.5rem;
-    font-size: calc(2.8rem + 1vw);
+    font-size: calc(2.3rem + 1.5vw);
     text-align: left;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -31,12 +31,12 @@
 }
 
 /* Shadow effect for the title */
-.title-shadow1 {
+.title-shadow-modal {
     width: 100%;
     margin: 0;
     padding-left: 0.5rem;
     font-weight: 300;
-    font-size: calc(2.8rem + 1vw);
+    font-size: calc(2.3rem + 1.5vw);
     text-align: left;
     text-transform: uppercase;
     letter-spacing: 2px;

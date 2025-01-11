@@ -15,7 +15,7 @@
 
 /* Container for settings elements */
 .settings-overlay-container {
-  padding-top: 2.5rem;
+  padding-top: 3%;
   width: 65%;
   margin: auto;
   height: 60%;
@@ -40,7 +40,7 @@
 
 /* Title section of a row item */
 .settings-row-item-title {
-  width: 65%;
+  width: 80%;
   margin: auto;
   position: relative; /* Relative for positioning child elements */
   display: flex; /* Flexbox for alignment */
@@ -48,7 +48,7 @@
   align-items: center;
 
   /* Text styles */
-  font-size: calc(1.5rem + 0.5vw);
+  font-size: calc(0.5rem + 1.7vw);
   text-transform: uppercase; /* Uppercase text */
   user-select: none;
   -webkit-user-select: none; 
@@ -199,7 +199,7 @@ input[type="range"]:focus::-ms-fill-upper {
 }
 
 .settings-row-help-btn span {
-  font-size: calc(1rem + 0.2vw);
+  font-size: calc(0.2em + 1vw);
   text-transform: uppercase;
   background-image: linear-gradient(to bottom, #fcf18b, #ffd363);
   background-clip: text;
