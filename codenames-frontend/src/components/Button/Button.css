@@ -3,11 +3,10 @@
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  
+
   max-width: 100%;
   padding: 0.625rem 1.25rem;
-
-  font-family: Dragon Hunter, sans-serif;
+  font-family: inherit;
   font-weight: 300;
   text-align: center;
   text-transform: uppercase;
@@ -78,6 +77,30 @@
   margin: auto;
   border-width: 0.125rem;
   border-color: #fff7ab;
+}
+
+.btn-eye {
+  position: absolute;
+  right: 1%;
+  top: 2%;
+  scale: 0.75;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.btn-eye2 {
+  position: absolute;
+  right: 0.5%;
+  top: 15%;
+  scale: 0.75;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: none;
 }
 
 .btn-primary-1 {
