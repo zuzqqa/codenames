@@ -1,4 +1,4 @@
-/* === Messages Overlay === */
+  /* === Messages Overlay === */
 .message-modal {
   position: fixed;
   top: 0;
@@ -114,9 +114,13 @@
   background: #8D2736;
 }
 
+.message-row-item-textarea::-webkit-scrollbar-track {
+  background: #eed8b0; 
+  border: 2px solid #f0e0b5; 
+}
+
 .message-row-item-textarea::-webkit-scrollbar-thumb {
   background: linear-gradient(to bottom, #ffd363, #b8a98e);
-  border-radius: 8px;
 }
 
 /* Placeholder text color for input and textarea */
