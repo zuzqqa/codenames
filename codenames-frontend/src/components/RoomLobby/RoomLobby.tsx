@@ -4,7 +4,10 @@ import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import Button from "../Button/Button.tsx";
 import backButton from "../../assets/icons/arrow-back.png";
 import React, {useState} from "react";
+
 import "./RoomLobby.css";
+
+import playerIcon from "../../assets/images/player-icon.png";
 
 interface Player {
     name: string;
@@ -45,7 +48,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({soundFXVolume}) => {
         <>
             <Subtitle variant={"room"}>Room Lobby</Subtitle>
             <RoomMenu>
-                <Button variant={"circle-back"} soundFXVolume={soundFXVolume} onClick={() => navigate('/games')}>
+                <Button variant={"circle-back"} soundFXVolume={soundFXVolume} onClick={() => navigate('/join-game')}>
                     <img src={backButton} alt="Back" className="btn-arrow-back"/>
                 </Button>
                 <div className="background" style={{gridColumn: "2", gridRow: "2"}}>
@@ -61,7 +64,8 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({soundFXVolume}) => {
                             <div className="lobby-players">
                                 {gameSession.playersList.map((player, index) =>
                                     <div key={index} className="player">
-                                        {player.name}
+                                        <img src={playerIcon} alt="Player" className="player-icon"/>
+                                            {player.name}
                                     </div>
                                 )}
                             </div>
