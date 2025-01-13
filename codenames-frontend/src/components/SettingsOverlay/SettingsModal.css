@@ -48,9 +48,12 @@
   align-items: center;
 
   /* Text styles */
-  font-family: "Dragon Hunter", sans-serif;
   font-size: calc(1.5rem + 0.5vw);
   text-transform: uppercase; /* Uppercase text */
+  user-select: none;
+  -webkit-user-select: none; 
+  -moz-user-select: none; 
+  -ms-user-select: none; 
 }
 
 /* === Gradient Text and Shadows === */
@@ -72,6 +75,10 @@
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
+  user-select: none;
+  -webkit-user-select: none; 
+  -moz-user-select: none; 
+  -ms-user-select: none; 
 }
 
 /* Shadow for title text */
@@ -192,7 +199,6 @@ input[type="range"]:focus::-ms-fill-upper {
 }
 
 .settings-row-help-btn span {
-  font-family: "Dragon Hunter", sans-serif;
   font-size: calc(1rem + 0.2vw);
   text-transform: uppercase;
   background-image: linear-gradient(to bottom, #fcf18b, #ffd363);
@@ -200,4 +206,8 @@ input[type="range"]:focus::-ms-fill-upper {
   -webkit-background-clip: text;
   color: transparent;
   padding: 0.23em;
+  user-select: none;
+  -webkit-user-select: none; 
+  -moz-user-select: none; 
+  -ms-user-select: none; 
 }

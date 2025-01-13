@@ -64,7 +64,6 @@
     left: 50%;
     transform: translate(-50%, -50%);
     color: #4F3D2A;
-    font-family: Dragon Hunter, sans-serif;
     font-weight: 300;
     font-size: calc(0.3rem + 1vw);
     letter-spacing: 1px;
@@ -120,7 +119,6 @@ button {
 .timer{
     position: relative; 
     padding: 0.3125rem 1.25rem;
-    font-family: Dragon Hunter, sans-serif;
     font-weight: 300;
     font-size: calc(0.2rem + 1vw);
     text-align: center;
@@ -206,7 +204,6 @@ button {
     transform: translate(-50%, -80%);
     z-index: 3;
     color: #f9e9d1;
-    font-family: Dragon Hunter, sans-serif;
     font-weight: 300;
     font-size: calc(0.5rem + 1vw);
     text-transform: uppercase;
@@ -264,9 +261,8 @@ button {
     transform-origin: center;
     width: 20vw;
     background-color: transparent;
-    color: #fff3e2;
+    color: #f9e9d1;
     font-size: calc(0.4rem + 2vw);
-    font-family: Dragon Hunter, sans-serif;
     font-weight: 300;
     text-transform: uppercase;
     text-align: center;
@@ -291,12 +287,12 @@ button {
 }
 
 
-.chat-conatiner {
+.chat-container {
     position: absolute;
     left: 2%;
     bottom: 20%;
     width: 15vw;
-    height: 20vh; 
+    height: 20vh;
     background-image: linear-gradient(to top, #21272B, #353E44);
     border-radius: 10px;
     border-style: outset;
@@ -306,14 +302,43 @@ button {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    align-items: center; 
-    transition: all 0.3s ease-in-out;
-}
+    align-items: center;
+    overflow-y: auto; /* vertical scrolling */
+    overflow-x: hidden; /* horizontal scrolling */
+    padding: 0.5rem;
+    transition: height 0.4s ease, opacity 0.4s ease;
+    scrollbar-width: thin;
+    scrollbar-color: #F0D8B6 #353E44;
+  }
 
-.chat-conatiner:has(.message-input:focus) {
+  .messages {
+    width: 100%;
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .message {
+    max-width: 80%;
+    padding: 0.4rem;
+    border-radius: 10px;
+    font-size: calc(0.4rem + 0.5vw);
+  }
+  
+  .message.outgoing {
+    align-self: flex-end;
+    background-color: #42474a;
+    color: #fff3e2;
+    text-align: right;
+  }
+
+  .chat-container.focused {
     height: 40vh;
-    opacity: 90%; 
-}
+    opacity: 90%;
+  }
 
 .message-input {
     background-image: linear-gradient(to top, #21272B, #353E44);
@@ -327,12 +352,17 @@ button {
     margin-bottom: 0.625rem;
     color: #fff3e2;
     font-size: calc(0.4rem + 0.5vw);
-    font-family: Dragon Hunter, sans-serif;
     font-weight: 300;
     text-transform: uppercase;
     opacity: 60%;
 }
 
-
+.message.incoming {
+    align-self: flex-start;
+    background-color: #7a8084;
+    color: #f0e9d2;
+    text-align: left;
+  }
+  
 
 

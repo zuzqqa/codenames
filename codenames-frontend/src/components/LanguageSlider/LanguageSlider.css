@@ -21,7 +21,6 @@
 /* Styling for the language display box */
 .language-display {
   width: 55%;
-  font-family: "Dragon Hunter", sans-serif;
   font-size: 1.2rem;
   border-radius: 1.6875rem;
   border-width: 0.125rem;
@@ -34,6 +33,10 @@
     rgb(34, 48, 59)
   );
   box-shadow: 0rem 0.25rem 0.75rem rgba(0, 0, 0, 0.6);
+  user-select: none;
+  -webkit-user-select: none; 
+  -moz-user-select: none; 
+  -ms-user-select: none; 
 }
 
 /* Text inside the language display box */

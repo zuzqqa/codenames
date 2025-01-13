@@ -1,0 +1,129 @@
+
+
+.content-container{
+    justify-content: space-between;
+}
+
+.content-container.flex-start {
+    justify-content: flex-start;
+}
+
+.compass-container {
+    position: absolute;
+    top: 56%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.compass-container img{
+    display: block;
+    height: 75vh;
+    width: auto;
+}
+
+.center{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.choose-leader-label {
+    font-size: calc(3.65vw + 0.65vh);
+    pointer-events: none;
+    white-space: nowrap;
+    color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+    background-image: linear-gradient(to top, #FFD363, #FCF18B);
+}
+
+.teams-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin: 5vh auto;
+  }
+  
+
+  .my-team {
+    text-align: left;
+  }
+  
+  .opposing-team {
+    text-align: right;
+  }
+  
+  .player {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2vh;
+    background: linear-gradient(to bottom, #2C3D46, #131D25);
+    padding: 0.5vh 1vw;
+    position: relative;
+    border-style: outset;
+    border-width: 2px;
+    border-color: #fcdc8b80;
+  }
+  
+  .my-team .player {
+    justify-content: flex-start;
+    border-radius: 0 50px 50px 0;
+    border-left: none;
+  }
+  
+  .opposing-team .player {
+    justify-content: flex-end;
+    border-radius: 50px 0 0 50px;
+    border-right: none;
+
+  }
+  
+  .profile-pic{
+    width: 3.5vw;
+    height: auto;
+  }
+
+  .username{
+    color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+    background-image: linear-gradient(to top, #FFD363, #FCF18B);
+  }
+
+  .my-team .username{
+    margin-left: 1vw;
+  }
+
+
+  .opposing-team .username{
+    margin-right: 1vw;
+  }
+
+
+  .align-center{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .selected-player-info img{
+    height: 20vh;
+  }
+
+  .selected-player-info{
+    background: linear-gradient(to top, #FFD363, #FCF18B);
+    padding: 3vh 1.5vw;
+    margin: 1vh 0;
+    border-radius: 50px;
+  }
+
+  .player.selected {
+    background: linear-gradient(to top, #FFD363, #FCF18B);
+  }
+
+  .player.selected .username{
+    background-image: linear-gradient(to bottom, #2C3D46, #131D25); 
+  }
