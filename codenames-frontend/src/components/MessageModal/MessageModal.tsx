@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-
-// Importing components and resources
 import Button from "../Button/Button";
 import Modal from "../Modal/Modal";
 import TitleModal from "../TitleModal/TitleModal";
