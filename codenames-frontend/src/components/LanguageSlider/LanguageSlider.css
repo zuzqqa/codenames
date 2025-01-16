@@ -21,7 +21,7 @@
 /* Styling for the language display box */
 .language-display {
   width: 55%;
-  font-size: 1.2rem;
+  font-size: calc(0.2em + 1vw);
   border-radius: 1.6875rem;
   border-width: 0.125rem;
   border-color: rgb(226, 215, 114);

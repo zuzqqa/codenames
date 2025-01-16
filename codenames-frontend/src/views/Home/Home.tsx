@@ -9,7 +9,6 @@ import SubtitleComponent from "../../components/Subtitle/Subtitle";
 import CharactersComponent from "../../components/Characters/Characters";
 import Button from "../../components/Button/Button";
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
-import TitleModal from "../../components/TitleModal/TitleModal";
 import settingsIcon from "../../assets/icons/settings.png";
 import characters from "../../assets/images/characters.png";
 
@@ -67,7 +66,7 @@ const Home: React.FC<HomeProps> = ({
                     <>
                         {/* Settings button */}
                         <Button variant="circle" soundFXVolume={soundFXVolume}>
-                            <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
+                            <img src={settingsIcon} onClick={toggleSettings} alt="Settings" className="settings-icon"/>
                         </Button>
                         {/* Game content when started */}
                         <TitleComponent soundFXVolume={soundFXVolume}>
@@ -121,12 +120,12 @@ const Home: React.FC<HomeProps> = ({
                                 <img src={characters} alt="Characters"/>
                             </div>
                             <div className="start-text-container">
-                                <div className="start-title">
+                                <TitleComponent soundFXVolume={soundFXVolume} variant="start-title">
                                     Codenames
-                                </div>
-                                <div className="start-subtitle">
+                                </TitleComponent>
+                                <SubtitleComponent variant="start">
                                     Your mission begins now
-                                </div>
+                                </SubtitleComponent>
                             </div>
                             <div className="start-button">
                                 {/* Start game button */}

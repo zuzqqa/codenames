@@ -5,7 +5,7 @@ import "./Subtitle.css";
 // Define prop types
 interface SubtitleComponentProps {
     children: ReactNode; // Accepts strings, JSX, or any valid React nodes
-    variant: "room" | "primary";
+    variant: "room" | "primary" | "start";
 }
 
 const SubtitleComponent: React.FC<SubtitleComponentProps> = ({ children, variant="primary" }) => {
