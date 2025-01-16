@@ -1,0 +1,17 @@
+{
+  "language": {
+    "english": "Angielski",
+    "polish": "Polski"
+  },
+  "settings-title": "Ustawienia",
+  "settings-modal-p-music": "Muzyka",
+  "settings-modal-p-sound-fx": "Efekty dźwiękowe",
+  "settings-modal-p-language": "Język",
+  "settings-modal-p-help": "Pomoc",
+  "settings-modal-p-send-message": "Wyślij wiadomość",
+  "message-us-title": "Napisz do nas",
+  "message-row-item-message-2": "Potrzebujesz pomocy lub masz uwagi dotyczące gry? Jesteśmy tutaj, aby Ci pomóc! Wypełnij poniższy formularz i daj nam znać, jak możemy Ci pomóc.",
+  "message-row-item-message": "Postaramy się odpowiedzieć tak szybko, jak to możliwe!",
+  "submit-button": "Wyślij",
+  "MESSAGE": "WIADOMOŚĆ"
+}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import './LanguageSlider.css';
 
@@ -6,7 +7,8 @@ import arrow from '../../assets/icons/arrow.svg';
 
 import clickSoundFile from '../../assets/sounds/ui-click-43196.mp3'; 
 
-const languages = ["English", "Polish"];
+const languages = ["English", "Polski"];
+const language_code = ["en", "pl"];
 
 interface LanguageSliderProps {
     soundFXVolume: number; 
@@ -14,6 +16,7 @@ interface LanguageSliderProps {
 
 const LanguageSlider: React.FC<LanguageSliderProps> = ({ soundFXVolume }) => {
   const [currentLanguageId, setCurrentLanguageId] = useState(0);
+  const { t, i18n } = useTranslation();
 
   const playClickSound = () => {
     const audio = new Audio(clickSoundFile);
@@ -23,12 +26,20 @@ const LanguageSlider: React.FC<LanguageSliderProps> = ({ soundFXVolume }) => {
 
   const handlePreviousLanguage = () => {
     playClickSound();
-    setCurrentLanguageId((prevIndex) => (prevIndex === 0 ? languages.length - 1 : prevIndex - 1));
+    setCurrentLanguageId((prevIndex) => {
+      const newIndex = prevIndex === 0 ? languages.length - 1 : prevIndex - 1;
+      i18n.changeLanguage(language_code[newIndex]); 
+      return newIndex;
+    });
   };
 
   const handleNextLanguage = () => {
     playClickSound(); 
-    setCurrentLanguageId((prevIndex) => (prevIndex === languages.length - 1 ? 0 : prevIndex + 1));
+    setCurrentLanguageId((prevIndex) => {
+      const newIndex = prevIndex === 0 ? languages.length - 1 : prevIndex - 1;
+      i18n.changeLanguage(language_code[newIndex]); 
+      return newIndex;
+    });  
   };
 
   return (
