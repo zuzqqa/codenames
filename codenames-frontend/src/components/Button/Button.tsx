@@ -1,6 +1,6 @@
-import { ReactNode } from "react"; // ReactNode allows flexible content inside the button
-import "./Button.css"; // Import button styling
-import soundFile from "../../assets/sounds/old-radio-button-click-97549.mp3"; // Button click sound
+import React, {ReactNode} from "react";
+import "./Button.css";
+import soundFile from "../../assets/sounds/old-radio-button-click-97549.mp3";
 
 // ButtonProps interface defines the button's properties
 interface ButtonProps {
@@ -11,13 +11,14 @@ interface ButtonProps {
     disabled?: boolean; // Disabled state (default is false)
     soundFXVolume: number; // Sound volume for the click effect
     onChange?: () => void; // Change handler function (optional)
+    className?: string;
 }
 
 // Function to play button click sound with adjusted volume
 const playSound = (volume: number) => {
     const audio = new Audio(soundFile);
     audio.volume = volume / 100;
-    audio.play();
+    audio.play().then();
 };
 
 // Button component with dynamic styling and sound on click
@@ -28,11 +29,12 @@ const Button: React.FC<ButtonProps> = ({
                                            variant = "primary",
                                            disabled = false,
                                            soundFXVolume,
+                                           className="",
                                            onChange
                                        }) => {
     return (
         <button
-            className={`btn btn-${variant}`} // Dynamic class based on variant
+            className={`btn btn-${variant} ${className}`}
             type={type}
             onClick={() => {
                 playSound(soundFXVolume); // Play sound on click
