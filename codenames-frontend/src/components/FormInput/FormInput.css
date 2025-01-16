@@ -14,21 +14,23 @@
     font-family: inherit;
     color: #000000; /* White text color */
     background-color: #F0E0B5; /* Dark input background to match the theme */
-    border: 2px solid #4a4a5e; /* Subtle border color */
+    border: none; /* Subtle border color */
     border-radius: 17px; /* Rounded corners */
     outline: none;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Subtle shadow */
     transition: border-color 0.3s, box-shadow 0.3s; /* Smooth hover/active transitions */
 }
 
+
 .input-field::placeholder {
-    color: #b0b0c3; /* Light gray placeholder text */
+    color: #b8a98e; /* Light gray placeholder text */
 }
 
 .input-field:focus {
     border-color: #ffd363; /* Gold border on focus */
     box-shadow: 0 6px 10px rgba(255, 211, 99, 0.5); /* Gold shadow on focus */
 }
+
 
 .input-label {
     font-size: 1.2rem;

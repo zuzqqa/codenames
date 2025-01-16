@@ -81,9 +81,9 @@
 
 .btn-eye {
   position: absolute;
-  right: 1%;
-  top: 2%;
-  scale: 0.75;
+  right: -3%;
+  top: -6%;
+  scale: 0.6;
   transform: translateY(-50%);
   background: none;
   border: none;
@@ -93,9 +93,9 @@
 
 .btn-eye2 {
   position: absolute;
-  right: 0.5%;
-  top: 15%;
-  scale: 0.75;
+  right: -5%;
+  top: 10%;
+  scale: 0.6;
   transform: translateY(-50%);
   background: none;
   border: none;

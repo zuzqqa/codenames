@@ -7,11 +7,12 @@ import Button from "../../components/Button/Button";
 import FormInput from "../../components/FormInput/FormInput";
 import MenuContainer from "../../containers/Menu/Menu";
 import TitleComponent from "../../components/Title/Title";
-import settingsImage from "../../assets/icons/settings.png";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar.tsx";
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
 import settingsIcon from "../../assets/icons/settings.png";
 import eyeIcon from "../../assets/icons/eye.svg";
+import eyeSlashIcon from "../../assets/icons/eye-slash.svg";
+
 
 interface LoginProps {
     setVolume: (volume: number) => void;
@@ -78,8 +79,8 @@ const LoginPage: React.FC<LoginProps> = ({
             </Button>
             <TitleComponent
                 soundFXVolume={soundFXVolume}
-                customStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "34%"}}
-                shadowStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "34%"}}
+                customStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "35%"}}
+                shadowStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "35%"}}
             >LOGIN</TitleComponent>
             <MenuContainer>
                 <div className="login-container">
@@ -93,7 +94,7 @@ const LoginPage: React.FC<LoginProps> = ({
                         <FormInput
                             type="text"
                             placeholder="PASSWORD"
-                            value={!isPasswordVisible ? '*'.repeat(password.length) : password}
+                            value={!isPasswordVisible ? '●'.repeat(password.length) : password}
                             onChange={handlePasswordChange}
                             button={
                                 <Button
@@ -101,7 +102,10 @@ const LoginPage: React.FC<LoginProps> = ({
                                     soundFXVolume={soundFXVolume}
                                     onClick={() => setIsPasswordVisible(!isPasswordVisible)}
                                 >
-                                    <img src={eyeIcon} alt="Show password" />
+                                    <img 
+                                        src={isPasswordVisible ? eyeSlashIcon : eyeIcon} 
+                                        alt={isPasswordVisible ? "Hide password" : "Show password"} 
+                                    />
                                 </Button>
                             }
                         />
