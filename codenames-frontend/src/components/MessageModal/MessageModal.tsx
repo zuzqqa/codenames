@@ -22,6 +22,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
   const [email, setEmail] = useState(""); // State for the email input
   const [message, setMessage] = useState(""); // State for the message textarea
   const [isSubmitted, setIsSubmitted] = useState(false); // State to track whether the form has been submitted
+  const [error, setError] = useState<string | null>(null); // State for error handling
 
   // If the modal is not open, return null to render nothing
   if (!isOpen) return null;
@@ -32,7 +33,11 @@ const MessageModal: React.FC<MessageModalProps> = ({
   };
 
   // Function to handle form submission
-  const handleSubmit = () => {
+  const handleSubmit = async() => {
+    const dataToSend = { dataToSend: "E-mail: " + email + "\nMessage: " + message };
+
+    console.log("Sending data:", dataToSend);
+
     // Validation for the form fields (checking if email and message are filled)
     if (!email || !message) {
       alert("Please fill in all fields.");
@@ -44,8 +49,27 @@ const MessageModal: React.FC<MessageModalProps> = ({
       return;
     }
 
-    // Set the state to indicate that the form has been submitted
-    setIsSubmitted(true);
+    try {
+      // Placeholder for future API call or sending data
+      const response = await fetch("http://localhost:8080/api/email/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSend), // Sending email and message
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send email. Please try again later.");
+      }
+
+      // If successful, update state
+      setIsSubmitted(true);
+      setError(null); // Clear any errors
+    } catch (err: any) {
+      console.error("Error sending email:", err);
+      setError(err.message); // Set error message
+    };
 
     // Placeholder for future API call or sending data
     console.log("Form submitted:", { email, message });

@@ -50,6 +50,24 @@
   -ms-user-select: none;
 }
 
+.room-subtitle-container {
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  margin-bottom: 35%;
+  z-index: 2;
+}
+
+.start-subtitle-container {
+  margin: 0;
+  margin-bottom: -5%;
+  padding-left: 5px;
+}
+
+.start-subtitle-container .subtitle-shadow {
+  display: none;
+}
+
 @media (max-width: 1440px) {
   .subtitle-container {
     margin-top: 4%;
@@ -65,12 +83,4 @@
     transform: scale(1) translateY(0);
     opacity: 1;
   }
-}
-
-.room-subtitle-container {
-  position: absolute;
-  text-align: center;
-  width: 100%;
-  margin-bottom: 35%;
-  z-index: 2;
 }

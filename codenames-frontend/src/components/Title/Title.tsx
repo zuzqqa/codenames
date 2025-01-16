@@ -9,9 +9,10 @@ interface TitleComponentProps {
     soundFXVolume: number;
     customStyle?: React.CSSProperties;
     shadowStyle?: React.CSSProperties;
+    variant?: string;
 }
 
-const TitleComponent: React.FC<TitleComponentProps> = ({ children, soundFXVolume, customStyle, shadowStyle}) => {
+const TitleComponent: React.FC<TitleComponentProps> = ({ children, soundFXVolume, customStyle, shadowStyle, variant }) => {
     const [audio] = useState(() => new Audio(soundFile)); // Initialize audio only once
 
     const playHitSound = () => {
@@ -29,10 +30,10 @@ const TitleComponent: React.FC<TitleComponentProps> = ({ children, soundFXVolume
 
     return (
         <div className="title-container">
-            <h1 className="title" onAnimationStart={handleAnimationStart} style={customStyle}>
+            <h1 className={ variant || "title" } onAnimationStart={handleAnimationStart} style={customStyle}>
                 {children}
             </h1>
-            <h1 className="title-shadow" style={shadowStyle}>{children}</h1>
+            <h1 className={ variant ? variant + "-shadow" : "title-shadow" } style={shadowStyle}>{children}</h1>
         </div>
     );
 };

@@ -73,7 +73,7 @@
 
 .btn-help {
   background-image: linear-gradient(to top, #561723, #8d2736);
-  width: 60%;
+  width: 70%;
   padding: 0;
   margin: auto;
   border-width: 0.125rem;
@@ -109,7 +109,7 @@
   border-radius: 17px;
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
   font-size: calc(0.7rem + 0.5vw);
-  padding: 0.6rem 1rem;
+  padding: calc(0.3rem + 0.1vw) 1rem;
 }
 
 .btn-primary-1 span {
@@ -119,12 +119,5 @@
   background-clip: text;
   -webkit-background-clip: text;
   background-image: linear-gradient(to right, #fff7ab, #dab274);
-  color: transparent; /* Gradientowy kolor tekstu */
-}
-
-@media (max-width: 1440px) {
-  .btn-circle {
-    width: 3.6%;
-    height: 7%;
-  }
+  color: transparent; 
 }
