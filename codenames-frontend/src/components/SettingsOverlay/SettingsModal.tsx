@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import Button from "../Button/Button";
 import TitleModal from "../TitleModal/TitleModal";
 import LanguageSlider from "../LanguageSlider/LanguageSlider";
@@ -8,20 +7,19 @@ import Modal from "../Modal/Modal";
 import MessageModal from "../MessageModal/MessageModal";
 
 import closeIcon from "../../assets/icons/close.png";
+import BackgroundImg from "../../assets/images/main-page-container.png";
 
 import "./SettingsModal.css";
 
-// Define the type for the SettingsModal component's props
 interface SettingsModalProps {
-  isOpen: boolean; // Determines if the modal is visible
-  onClose: () => void; // Callback to close the modal
-  musicVolume: number; // Current music volume level
-  soundFXVolume: number; // Current sound effects volume level
-  setMusicVolume: (volume: number) => void; // Function to update music volume
-  setSoundFXVolume: (volume: number) => void; // Function to update sound effects volume
+  isOpen: boolean;
+  onClose: () => void;
+  musicVolume: number;
+  soundFXVolume: number;
+  setMusicVolume: (volume: number) => void;
+  setSoundFXVolume: (volume: number) => void;
 }
 
-// Main component definition
 const SettingsModal: React.FC<SettingsModalProps> = ({
   isOpen,
   onClose,
@@ -30,120 +28,114 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   setMusicVolume,
   setSoundFXVolume,
 }) => {
-  const [isMessageModalOpen, setIsMessageModalOpen] = useState(false); // State to control MessageModal visibility
+  const [isMessageModalOpen, setIsMessageModalOpen] = useState(false); // Manage visibility of MessageModal
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false); // Manage visibility of ConfirmationModal
 
-  // If the modal is not open, return null to render nothing
-  if (!isOpen) return null;
-
-  // Handle changes to the music volume slider
-  const handleMusicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(event.target.value);
-    setMusicVolume(value);
+  // Handle closing all modals, ensuring state consistency
+  const handleCloseAllModals = () => {
+    setIsMessageModalOpen(false); 
+    setIsConfirmationModalOpen(false);
+    onClose(); // Close settings modal
   };
 
-  // Handle changes to the sound effects volume slider
-  const handleSoundFXChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(event.target.value);
-    setSoundFXVolume(value);
-  };
-
-  // Close the modal when the close button is clicked
-  const toggleModal = () => {
-    onClose();
-    setIsMessageModalOpen(false);
-  };
-
-  // Open the Message Modal
+  // Open Message Modal
   const openMessageModal = () => {
     setIsMessageModalOpen(true);
   };
 
-  // Component rendering logic
+  // Close Confirmation Modal and also close Message Modal
+  const closeConfirmationModal = () => {
+    setIsConfirmationModalOpen(false);
+    setIsMessageModalOpen(false); // Ensure MessageModal is closed when ConfirmationModal is closed
+  };
+
+  if (!isOpen) return null;
+
   return (
     <div className="settings-modal-container">
-    <Modal isOpen={isOpen} onClose={toggleModal}>
-      {/* Modal header with title */}
-      <TitleModal>Settings</TitleModal>
+      <Modal isOpen={isOpen} onClose={handleCloseAllModals}>
+        <TitleModal>Settings</TitleModal>
+        <Button variant="circle" soundFXVolume={soundFXVolume}>
+          <img className="close-icon" src={closeIcon} onClick={handleCloseAllModals} alt="Close" />
+        </Button>
 
-      {/* Close button for the modal */}
-      <Button variant="circle" soundFXVolume={soundFXVolume}>
-        <img className="close-icon" src={closeIcon} onClick={toggleModal} alt="Close" />
-      </Button>
+        <div className="settings-overlay-container">
+          <div className="settings-grid">
+            <div className="settings-row-item">
+              <div className="settings-row-item-title">
+                <p className="settings-modal-p">Music</p>
+              </div>
+              <div className="slider">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={musicVolume}
+                  onChange={(e) => setMusicVolume(parseInt(e.target.value))}
+                  className="slider"
+                />
+              </div>
+            </div>
 
-      {/* Main settings container */}
-      <div className="settings-overlay-container">
-        <div className="settings-grid">
-          {/* Music volume slider */}
-          <div className="settings-row-item">
-            <div className="settings-row-item-title">
-              <p className="settings-modal-p">Music</p>
-              <p className="settings-modal-p-shadow">Music</p>
+            <div className="settings-row-item">
+              <div className="settings-row-item-title">
+                <p className="settings-modal-p">Sound FX</p>
+              </div>
+              <div className="slider">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={soundFXVolume}
+                  onChange={(e) => setSoundFXVolume(parseInt(e.target.value))}
+                  className="slider"
+                />
+              </div>
             </div>
-            <div className="slider">
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={musicVolume}
-                onChange={handleMusicChange}
-                className="slider"
-              />
-            </div>
-          </div>
 
-          {/* Sound FX volume slider */}
-          <div className="settings-row-item">
-            <div className="settings-row-item-title">
-              <p className="settings-modal-p">Sound FX</p>
-              <p className="settings-modal-p-shadow">Sound FX</p>
+            <div className="settings-row-item">
+              <div className="settings-row-item-title">
+                <p className="settings-modal-p">Language</p>
+              </div>
+              <LanguageSlider soundFXVolume={soundFXVolume} />
             </div>
-            <div className="slider">
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={soundFXVolume}
-                onChange={handleSoundFXChange}
-                className="slider"
-              />
-            </div>
-          </div>
 
-          {/* Language selection slider */}
-          <div className="settings-row-item">
-            <div className="settings-row-item-title">
-              <p className="settings-modal-p">Language</p>
-              <p className="settings-modal-p-shadow">Language</p>
-            </div>
-            <LanguageSlider soundFXVolume={soundFXVolume} />
-          </div>
-
-          {/* Help button */}
-          <div className="settings-row-item">
-            <div className="settings-row-item-title">
-              <p className="settings-modal-p">Help</p>
-              <p className="settings-modal-p-shadow">Help</p>
-            </div>
-            <div className="settings-row-help-btn">
-              <Button variant="help" soundFXVolume={soundFXVolume} onClick={openMessageModal}>
-                <span className="button-text">Send Message</span>
-              </Button>
+            <div className="settings-row-item">
+              <div className="settings-row-item-title">
+                <p className="settings-modal-p">Help</p>
+              </div>
+              <div className="settings-row-help-btn">
+                <Button variant="help" soundFXVolume={soundFXVolume} onClick={openMessageModal}>
+                  <span className="button-text">Send Message</span>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Footer with additional settings */}
-      <SettingsFooter />
+        <SettingsFooter />
+      </Modal>
 
-      {/* Message modal */}
+      {/* MessageModal */}
       <MessageModal
-          isOpen={isMessageModalOpen}
-          onClose={toggleModal}
-          soundFXVolume={soundFXVolume}
-        />
+        isOpen={isMessageModalOpen}
+        onClose={handleCloseAllModals} // Close settings and message modals when this is closed
+        soundFXVolume={soundFXVolume}
+        setIsConfirmationModalOpen={setIsConfirmationModalOpen} // Pass state setter to MessageModal
+      />
 
-    </Modal>
+      {/* ConfirmationModal */}
+      {isConfirmationModalOpen && (
+        <div className="confirmation-modal-container">
+            <img src={ BackgroundImg } className="confirmation-modal-background-img" alt="Modal background" />
+            <div className="confirmation-modal-content">
+              <p>Your message has been sent successfully!</p>
+              <Button variant="primary-1" soundFXVolume={soundFXVolume} onClick={closeConfirmationModal}>
+                <span>OK</span>
+              </Button>
+            </div>
+        </div>
+      )}
     </div>
   );
 };
