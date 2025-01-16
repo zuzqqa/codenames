@@ -154,3 +154,7 @@
   border-color: #ffd363; /* Gold border on focus */
   box-shadow: 0 6px 10px rgba(255, 211, 99, 0.5); /* Gold shadow on focus */
 }
+
+.spinner-image {
+  width: 75%;
+}

@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import Button from "../Button/Button";
 import Modal from "../Modal/Modal";
 import TitleModal from "../TitleModal/TitleModal";
+
 import closeIcon from "../../assets/icons/close.png";
+import spinner from "../../assets/icons/spinner.svg";
 
 import "./MessageModal.css";
 
@@ -22,6 +24,8 @@ const MessageModal: React.FC<MessageModalProps> = ({
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false); // New state for loading
+
 
   if (!isOpen) return null;
 
@@ -30,6 +34,8 @@ const MessageModal: React.FC<MessageModalProps> = ({
       alert("Please fill in all fields.");
       return;
     }
+
+    setIsLoading(true);
 
     const dataToSend = { dataToSend: "E-mail: " + email + "\nMessage: " + message };
 
@@ -50,6 +56,8 @@ const MessageModal: React.FC<MessageModalProps> = ({
       setMessage("");
     } catch (err: any) {
       setError(err.message);
+    } finally {
+      setIsLoading(false); // Stop loading
     }
   };
 
@@ -87,13 +95,20 @@ const MessageModal: React.FC<MessageModalProps> = ({
                 <p className="message-row-item-message">
                   We’ll do our best to respond as quickly as possible!
                 </p>
-                <Button
+                {isLoading ? (
+                  <div className="loading-spinner">
+                  {/* Wyświetlenie SVG jako obraz */}
+                  <img src={spinner} alt="Loading..." className="spinner-image" />
+                  </div>
+                 ) : (
+                  <Button
                   variant="primary-1"
                   soundFXVolume={soundFXVolume}
                   onClick={handleSubmit} // Triggering the handleSubmit function on button click
-                >
+                  >
                   <span>Submit</span>
                 </Button>
+                )}
               </div>
           </div>
         </div>
