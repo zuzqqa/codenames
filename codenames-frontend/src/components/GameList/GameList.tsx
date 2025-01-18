@@ -1,5 +1,6 @@
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import {useNavigate} from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import Button from "../Button/Button.tsx";
 
 import "./GameList.css";
@@ -31,6 +32,7 @@ const GameList: React.FC<GameListProps> = ({soundFXVolume}) => {
         {id: "9", name: "Game 9", players: 2, maxPlayers: 4},
         {id: "10", name: "Game 10", players: 3, maxPlayers: 4},
     ]);
+    const { t } = useTranslation();
 
     const navigate = useNavigate()
     return (
@@ -39,7 +41,7 @@ const GameList: React.FC<GameListProps> = ({soundFXVolume}) => {
                 <Button className="back-button" variant={"circle-back"} onClick={() => navigate('/games')} soundFXVolume={soundFXVolume}>
                     <img src={backButton} alt="Back" className="btn-arrow-back" />
                 </Button>
-                <span className="room-form-label">Join Room</span>
+                <span className="room-form-label">{ t('join-room-button') }</span>
                 <div className={"list-content"} style={{"gridColumn":"2","gridRow":"2"}}>
                     {gameSessions.map((gameSession) => (
                         <Button key={gameSession.id} variant={"session"} onClick={() => navigate(`/game-lobby/${gameSession.id}`)} soundFXVolume={soundFXVolume}>

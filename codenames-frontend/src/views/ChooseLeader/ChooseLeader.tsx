@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Hook for programmatic navigation
-
+import { useTranslation } from "react-i18next"; // Hook for translations
 
 import BackgroundContainer from "../../containers/Background/Background";
 
@@ -38,7 +38,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const navigate = useNavigate(); // Hook for navigation
-
+  const { t } = useTranslation(); // Hook for translations
 
   // Toggles the settings modal visibility
   const toggleSettings = () => {
@@ -93,7 +93,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
                 <img src={compassImg} alt="compass" className="Compass"/>
                 <div className="center align-center">
                   <span className="choose-leader-label">
-                    You've chosen:
+                    { t('choosen') }
                   </span>
                   <div className="selected-player-info">
                   <img
@@ -106,7 +106,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
                   </span>
                 </div>
                   <Button variant="room" soundFXVolume={soundFXVolume} onClick={() => navigate("/gameplay")}>
-                  <span className="button-text">Lock in</span>
+                  <span className="button-text">{ t('lockin') }</span>
                   </Button>  
                 </div>            
               </>
@@ -114,7 +114,9 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
               <>
                 <img src={compassImg} alt="compass" className="Compass"/>
                 <span className="choose-leader-label center">
-                  Choose your<br />team leader
+                  { t('choose-team-leader-1') }
+                  <br />
+                  { t('choose-team-leader-2') }
                 </span>
               </>
             )}

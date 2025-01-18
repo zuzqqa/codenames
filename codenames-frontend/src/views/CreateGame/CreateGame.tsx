@@ -1,4 +1,5 @@
 import { useState } from "react"; // Hook for managing component state
+import { useTranslation } from "react-i18next"; // Translation hook
 
 import BackgroundContainer from "../../containers/Background/Background";
 
@@ -28,6 +29,7 @@ const CreateGame: React.FC<CreateGameProps> = ({
 }) => {
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
+  const { t } = useTranslation(); // Translation hook
 
   // Toggles the settings modal visibility
   const toggleSettings = () => {

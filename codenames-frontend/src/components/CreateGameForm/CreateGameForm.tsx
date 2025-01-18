@@ -4,6 +4,7 @@ import * as Yup from 'yup';
 import Button from "../Button/Button.tsx";
 import backButton from "../../assets/icons/arrow-back.png";
 import {useNavigate} from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import "./CreateGameForm.css";
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
@@ -13,6 +14,7 @@ interface CreateGameFormProps {
 }
 
 const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
+    const { t } = useTranslation();
     const formik = useFormik({
         enableReinitialize: true,
         initialValues: {
@@ -42,7 +44,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
                 <Button className="back-button" variant={"circle-back"} onClick={() => navigate('/games')} soundFXVolume={soundFXVolume}>
                     <img src={backButton} alt="Back" className="btn-arrow-back" />
                 </Button>
-                <span className="room-form-label">Create Room</span>
+                <span className="room-form-label">{ t('create-game-button') }</span>
                 <form onSubmit={formik.handleSubmit} style={{"gridColumn": "2", "gridRow": "2"}}>
                     <div className={"form-content"}>
                         <input
@@ -60,7 +62,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
                                 {(errorMessage) => <div className="error">{errorMessage}</div>}
                             </ErrorMessage>
                         ) : null}
-                        <label style={{"gridColumn": "span 2", "gridRow": "2"}}>Number of players</label>
+                        <label style={{"gridColumn": "span 2", "gridRow": "2"}}>{ t('slots') }</label>
                         <input
                             id="playerSlider"
                             name="playerSlider"
@@ -74,7 +76,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
                             style={{"gridColumn": "1", "gridRow": "3"}}
                         />
                         <span className="slider-value">{formik.values.playerSlider || 4}</span>
-                        <label>Duration of the round</label>
+                        <label>{ t('duration') }</label>
                         <input
                             id="gameDuration"
                             className='input-box'
@@ -84,7 +86,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
                             onChange={formik.handleChange}
                             value={formik.values.gameDuration}
                         />
-                        <label>Time to select a hint</label>
+                        <label>{ t('hint-duration') }</label>
                         <input
                             id="hintTime"
                             className='input-box'
@@ -94,7 +96,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
                             onChange={formik.handleChange}
                             value={formik.values.hintTime}
                         />
-                        <label>Number of rounds</label>
+                        <label>{ t('number-of-rounds') }</label>
                         <input
                             id="roundsNumber"
                             className='input-box'
@@ -106,7 +108,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
                         />
                     </div>
                     <Button type="submit" variant="room" soundFXVolume={soundFXVolume}>
-                        <span className="button-text">Create game</span>
+                        <span className="button-text">{ t('create-game-button') }</span>
                     </Button>
                 </form>
             </RoomMenu>
