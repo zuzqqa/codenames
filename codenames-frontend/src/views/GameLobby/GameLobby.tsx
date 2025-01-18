@@ -1,9 +1,12 @@
+import React, {useState} from "react";
+import {useTranslation} from "react-i18next";
+
 import Button from "../../components/Button/Button";
 import BackgroundContainer from "../../containers/Background/Background";
 import settingsIcon from "../../assets/icons/settings.png";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar";
 import RoomLobby from "../../components/RoomLobby/RoomLobby";
-import React, {useState} from "react";
+
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
 
 // Define the type for props passed to the Home component
@@ -20,6 +23,7 @@ const GameLobby: React.FC<GameLobbyProps> = ({
                                    }) => {
     const [musicVolume, setMusicVolume] = useState(50); // Music volume level
     const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
+    const { t } = useTranslation();
 
     const toggleSettings = () => {
         setIsSettingsOpen(!isSettingsOpen);

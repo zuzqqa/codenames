@@ -1,9 +1,11 @@
 import {useNavigate, useParams} from "react-router-dom";
+import {useTranslation} from "react-i18next";
+import React, {useState} from "react";
+
 import Subtitle from "../Subtitle/Subtitle.tsx";
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import Button from "../Button/Button.tsx";
 import backButton from "../../assets/icons/arrow-back.png";
-import React, {useState} from "react";
 
 import "./RoomLobby.css";
 
@@ -28,7 +30,7 @@ interface RoomLobbyProps {
 }
 
 const RoomLobby: React.FC<RoomLobbyProps> = ({soundFXVolume}) => {
-
+    const { t } = useTranslation();
     const navigate = useNavigate()
     const {gameId} = useParams();
     // gameSession = api.get(`/game/${gameId}`)
@@ -46,7 +48,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({soundFXVolume}) => {
 
     return (
         <>
-            <Subtitle variant={"room"}>Room Lobby</Subtitle>
+            <Subtitle variant={"room"}>{ t('game-lobby') }</Subtitle>
             <RoomMenu>
                 <Button variant={"circle-back"} soundFXVolume={soundFXVolume} onClick={() => navigate('/join-game')}>
                     <img src={backButton} alt="Back" className="btn-arrow-back"/>
@@ -56,10 +58,10 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({soundFXVolume}) => {
                         <div className="content">
                             <div className="game-name">{gameSession.name}</div>
                             <div className="div-id">ID: {gameSession.id}</div>
-                            <div>Slots: {gameSession.players}/{gameSession.maxPlayers}</div>
-                            <div>Duration of the round:</div>
+                            <div>{ t('slots') } {gameSession.players}/{gameSession.maxPlayers}</div>
+                            <div>{ t('duration') }</div>
                             <div>{gameSession.roundDuration} s</div>
-                            <div>Time for a hint:</div>
+                            <div>{ t('hint-duration') }</div>
                             <div>{gameSession.hintTime} s</div>
                             <div className="lobby-players">
                                 {gameSession.playersList.map((player, index) =>

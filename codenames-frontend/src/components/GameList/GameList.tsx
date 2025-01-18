@@ -1,5 +1,7 @@
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import {useNavigate} from "react-router-dom";
+import { useTranslation } from 'react-i18next';
+
 import Subtitle from "../Subtitle/Subtitle.tsx";
 import Button from "../Button/Button.tsx";
 
@@ -32,11 +34,12 @@ const GameList: React.FC<GameListProps> = ({soundFXVolume}) => {
         {id: "9", name: "Game 9", players: 2, maxPlayers: 4},
         {id: "10", name: "Game 10", players: 3, maxPlayers: 4},
     ]);
+    const { t } = useTranslation();
 
     const navigate = useNavigate()
     return (
         <>
-            <Subtitle variant={"room"}>Join Room</Subtitle>
+            <Subtitle variant={"room"}>{ t('join-room-button') }</Subtitle>
             <RoomMenu>
                 <Button variant={"circle-back"} onClick={() => navigate('/games')} soundFXVolume={soundFXVolume}>
                     <img src={backButton} alt="Back" className="btn-arrow-back" />
