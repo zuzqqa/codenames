@@ -1,4 +1,5 @@
 .register-container {
+    margin-top: 7px;
     grid-column: 1 / span 3; /* Stretch across all columns */
     grid-row: 1 / span 4; /* Stretch across all rows */
     display: flex;

@@ -1,6 +1,5 @@
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import {useNavigate} from "react-router-dom";
-import Subtitle from "../Subtitle/Subtitle.tsx";
 import Button from "../Button/Button.tsx";
 
 import "./GameList.css";
@@ -36,11 +35,11 @@ const GameList: React.FC<GameListProps> = ({soundFXVolume}) => {
     const navigate = useNavigate()
     return (
         <>
-            <Subtitle variant={"room"}>Join Room</Subtitle>
             <RoomMenu>
-                <Button variant={"circle-back"} onClick={() => navigate('/games')} soundFXVolume={soundFXVolume}>
+                <Button className="back-button" variant={"circle-back"} onClick={() => navigate('/games')} soundFXVolume={soundFXVolume}>
                     <img src={backButton} alt="Back" className="btn-arrow-back" />
                 </Button>
+                <span className="room-form-label">Join Room</span>
                 <div className={"list-content"} style={{"gridColumn":"2","gridRow":"2"}}>
                     {gameSessions.map((gameSession) => (
                         <Button key={gameSession.id} variant={"session"} onClick={() => navigate(`/game-lobby/${gameSession.id}`)} soundFXVolume={soundFXVolume}>

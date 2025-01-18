@@ -6,7 +6,7 @@ import BackgroundContainer from "../../containers/Background/Background";
 import Button from "../../components/Button/Button";
 import FormInput from "../../components/FormInput/FormInput";
 import TitleComponent from "../../components/Title/Title";
-import MenuContainer from "../../containers/Menu/Menu";
+import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister.tsx";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar.tsx";
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
 import settingsIcon from "../../assets/icons/settings.png";
@@ -81,10 +81,10 @@ const RegisterPage: React.FC<RegisterProps> = ({
             </Button>
             <TitleComponent
                 soundFXVolume={soundFXVolume}
-                customStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "35%", letterSpacing: "3px"}}
-                shadowStyle={{fontSize: "4rem", textAlign: "left", marginLeft: "35%",  letterSpacing: "3px"}}
+                customStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "35%", letterSpacing: "3px", marginBottom: "-1.2%" }}
+                shadowStyle={{fontSize: "4rem", textAlign: "left", marginLeft: "35%",  letterSpacing: "3px", marginBottom: "-1.2%"}}
             >REGISTER</TitleComponent>
-            <MenuContainer>
+            <LoginRegisterContainer>
                 <div className="register-container">
                     <form className="register-form" onSubmit={handleSubmit}>
                         <FormInput
@@ -122,7 +122,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
                         </Button>
                     </form>
                 </div>
-            </MenuContainer>
+            </LoginRegisterContainer>
         </BackgroundContainer>
     );
 }

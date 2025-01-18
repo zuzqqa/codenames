@@ -68,7 +68,8 @@
 .btn-session {
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
   width: 100%;
-  background-image: linear-gradient(to right, #dab274, #dab274);
+  background-image: linear-gradient(to right, #e9dcc9, #ebd4b1);
+  margin-bottom: 4px;
 }
 
 .btn-help {
