@@ -7,13 +7,14 @@ import "./LoginPage.css";
 import BackgroundContainer from "../../containers/Background/Background";
 import Button from "../../components/Button/Button";
 import FormInput from "../../components/FormInput/FormInput";
-import MenuContainer from "../../containers/Menu/Menu";
 import TitleComponent from "../../components/Title/Title";
-import settingsImage from "../../assets/icons/settings.png";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar.tsx";
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
 import settingsIcon from "../../assets/icons/settings.png";
 import eyeIcon from "../../assets/icons/eye.svg";
+import eyeSlashIcon from "../../assets/icons/eye-slash.svg";
+
+import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister.tsx";
 
 interface LoginProps {
     setVolume: (volume: number) => void;
@@ -79,10 +80,10 @@ const LoginPage: React.FC<LoginProps> = ({
             </Button>
             <TitleComponent
                 soundFXVolume={soundFXVolume}
-                customStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "34%"}}
-                shadowStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "34%"}}
+                customStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "35%", marginBottom: "-1.2%"}}
+                shadowStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "35%", marginBottom: "-1.2%"}}
             >{ t('login-button-text') }</TitleComponent>
-            <MenuContainer>
+            <LoginRegisterContainer>
                 <div className="login-container">
                     <form className="login-form" onSubmit={handleSubmit}>
                         <FormInput
@@ -94,7 +95,7 @@ const LoginPage: React.FC<LoginProps> = ({
                         <FormInput
                             type="text"
                             placeholder={ t('PASSWORD') }
-                            value={!isPasswordVisible ? '*'.repeat(password.length) : password}
+                            value={!isPasswordVisible ? '●'.repeat(password.length) : password}
                             onChange={handlePasswordChange}
                             button={
                                 <Button
@@ -102,7 +103,10 @@ const LoginPage: React.FC<LoginProps> = ({
                                     soundFXVolume={soundFXVolume}
                                     onClick={() => setIsPasswordVisible(!isPasswordVisible)}
                                 >
-                                    <img src={eyeIcon} alt="Show password" />
+                                    <img 
+                                        src={isPasswordVisible ? eyeSlashIcon : eyeIcon} 
+                                        alt={isPasswordVisible ? "Hide password" : "Show password"} 
+                                    />
                                 </Button>
                             }
                         />
@@ -111,7 +115,7 @@ const LoginPage: React.FC<LoginProps> = ({
                         </Button>
                     </form>
                 </div>
-            </MenuContainer>
+            </LoginRegisterContainer>
         </BackgroundContainer>
     );
 }

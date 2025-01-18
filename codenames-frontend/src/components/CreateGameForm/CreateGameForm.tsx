@@ -2,7 +2,6 @@
 import {ErrorMessage, useFormik} from 'formik';
 import * as Yup from 'yup';
 import Button from "../Button/Button.tsx";
-import Subtitle from "../Subtitle/Subtitle.tsx";
 import backButton from "../../assets/icons/arrow-back.png";
 import {useNavigate} from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -19,7 +18,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
     const formik = useFormik({
         enableReinitialize: true,
         initialValues: {
-            gameName: 'NewGame',
+            gameName: '',
             playerSlider: 4,
             gameDuration: 0,
             hintTime: 0,
@@ -41,15 +40,16 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
 
     return (
         <>
-            <Subtitle variant={"room"}>{ t('create-game-button') }</Subtitle>
             <RoomMenu>
-                <Button variant={"circle-back"} onClick={() => navigate('/games')} soundFXVolume={soundFXVolume}>
+                <Button className="back-button" variant={"circle-back"} onClick={() => navigate('/games')} soundFXVolume={soundFXVolume}>
                     <img src={backButton} alt="Back" className="btn-arrow-back" />
                 </Button>
+                <span className="room-form-label">{ t('create-game-button') }</span>
                 <form onSubmit={formik.handleSubmit} style={{"gridColumn": "2", "gridRow": "2"}}>
                     <div className={"form-content"}>
                         <input
                             id="gameName"
+                            className='input-box'
                             name="gameName"
                             type="text"
                             placeholder="Game name"
@@ -79,6 +79,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
                         <label>{ t('duration') }</label>
                         <input
                             id="gameDuration"
+                            className='input-box'
                             name="gameDuration"
                             type="text"
                             placeholder="Game duration"
@@ -88,6 +89,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
                         <label>{ t('hint-duration') }</label>
                         <input
                             id="hintTime"
+                            className='input-box'
                             name="hintTime"
                             type="text"
                             placeholder="Hint Time"
@@ -97,6 +99,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
                         <label>{ t('number-of-rounds') }</label>
                         <input
                             id="roundsNumber"
+                            className='input-box'
                             name="roundsNumber"
                             type="text"
                             placeholder="Rounds No."

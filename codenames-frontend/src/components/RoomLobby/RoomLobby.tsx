@@ -1,8 +1,6 @@
 import {useNavigate, useParams} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import React, {useState} from "react";
-
-import Subtitle from "../Subtitle/Subtitle.tsx";
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import Button from "../Button/Button.tsx";
 import backButton from "../../assets/icons/arrow-back.png";
@@ -42,17 +40,17 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({soundFXVolume}) => {
         maxPlayers: 4,
         roundDuration: 60,
         hintTime: 30,
-        playersList: [{name: "Player 1"}, {name: "Player 2"}, {name: "Player 3"}, {name: "Player 4"}]
+        playersList: [{name: "Player 1"}, {name: "Player 2"}, {name: "Player 3"}, {name: "Player 4"}, {name: "Player 5"}, {name: "Player 6"}, {name: "Player 8"}]
     });
 
 
     return (
         <>
-            <Subtitle variant={"room"}>{ t('game-lobby') }</Subtitle>
             <RoomMenu>
-                <Button variant={"circle-back"} soundFXVolume={soundFXVolume} onClick={() => navigate('/join-game')}>
+                <Button className="back-button" variant={"circle-back"} soundFXVolume={soundFXVolume} onClick={() => navigate('/join-game')}>
                     <img src={backButton} alt="Back" className="btn-arrow-back"/>
                 </Button>
+                <span className="room-form-label">{ t('game-lobby') }</span>
                 <div className="background" style={{gridColumn: "2", gridRow: "2"}}>
                     {gameSession && (
                         <div className="content">
@@ -64,16 +62,20 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({soundFXVolume}) => {
                             <div>{ t('hint-duration') }</div>
                             <div>{gameSession.hintTime} s</div>
                             <div className="lobby-players">
+                                <Button variant={"room"} soundFXVolume={soundFXVolume} className="room-btn">
+                                    <span className="button-text">Start</span>
+                                </Button>
+                                <div className="players-container">
                                 {gameSession.playersList.map((player, index) =>
-                                    <div key={index} className="player">
+                                    <div key={index} className="player-container">
                                         <img src={playerIcon} alt="Player" className="player-icon"/>
                                             {player.name}
                                     </div>
                                 )}
+                                </div>
                             </div>
                         </div>
                     )}
-                    <Button variant={"room"} soundFXVolume={soundFXVolume} className="room-btn">Start</Button>
                 </div>
 
             </RoomMenu>

@@ -7,13 +7,14 @@ import "./RegisterPage.css";
 import BackgroundContainer from "../../containers/Background/Background";
 import Button from "../../components/Button/Button";
 import FormInput from "../../components/FormInput/FormInput";
-import settingsImage from "../../assets/icons/settings.png";
 import TitleComponent from "../../components/Title/Title";
-import MenuContainer from "../../containers/Menu/Menu";
+import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister.tsx";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar.tsx";
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
 import settingsIcon from "../../assets/icons/settings.png";
 import eyeIcon from "../../assets/icons/eye.svg";
+import eyeSlashIcon from "../../assets/icons/eye-slash.svg";
+
 
 interface RegisterProps {
     setVolume: (volume: number) => void;
@@ -83,10 +84,10 @@ const RegisterPage: React.FC<RegisterProps> = ({
             </Button>
             <TitleComponent
                 soundFXVolume={soundFXVolume}
-                customStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "34%", marginBottom: "0.01%" }}
-                shadowStyle={{fontSize: "4rem", textAlign: "left", marginLeft: "34%", marginBottom: "0.01%"}}
+                customStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "35%", letterSpacing: "3px", marginBottom: "-1.2%" }}
+                shadowStyle={{fontSize: "4rem", textAlign: "left", marginLeft: "35%",  letterSpacing: "3px", marginBottom: "-1.2%"}}
             >{ t('register-button-text') }</TitleComponent>
-            <MenuContainer>
+            <LoginRegisterContainer>
                 <div className="register-container">
                     <form className="register-form" onSubmit={handleSubmit}>
                         <FormInput
@@ -104,7 +105,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
                         <FormInput
                             type="text"
                             placeholder={ t('PASSWORD') }
-                            value={!isPasswordVisible ? '*'.repeat(password.length) : password}
+                            value={!isPasswordVisible ? '●'.repeat(password.length) : password}
                             onChange={handlePasswordChange}
                             button={
                                 <Button
@@ -112,7 +113,10 @@ const RegisterPage: React.FC<RegisterProps> = ({
                                     soundFXVolume={soundFXVolume}
                                     onClick={() => setIsPasswordVisible(!isPasswordVisible)}
                                 >
-                                    <img src={eyeIcon} alt="Show password" />
+                                    <img 
+                                        src={isPasswordVisible ? eyeSlashIcon : eyeIcon} 
+                                        alt={isPasswordVisible ? "Hide password" : "Show password"} 
+                                    />                                
                                 </Button>
                             }
                         />
@@ -121,7 +125,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
                         </Button>
                     </form>
                 </div>
-            </MenuContainer>
+            </LoginRegisterContainer>
         </BackgroundContainer>
     );
 }
