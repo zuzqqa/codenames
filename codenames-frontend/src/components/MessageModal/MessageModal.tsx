@@ -2,145 +2,114 @@ import React, { useState } from "react";
 import Button from "../Button/Button";
 import Modal from "../Modal/Modal";
 import TitleModal from "../TitleModal/TitleModal";
+
 import closeIcon from "../../assets/icons/close.png";
+import spinner from "../../assets/icons/spinner.svg";
 
 import "./MessageModal.css";
 
-// Defining the type for the props of the MessageModal component
 interface MessageModalProps {
-  isOpen: boolean; // Determines whether the modal is visible
-  onClose: () => void; // Callback function to close the modal
-  soundFXVolume: number; // The current sound effects volume level
+  isOpen: boolean;
+  onClose: () => void;
+  soundFXVolume: number;
+  setIsConfirmationModalOpen: (open: boolean) => void; // New prop to control the confirmation modal
 }
 
 const MessageModal: React.FC<MessageModalProps> = ({
   isOpen,
   onClose,
   soundFXVolume,
+  setIsConfirmationModalOpen,
 }) => {
-  // States to store the form data
-  const [email, setEmail] = useState(""); // State for the email input
-  const [message, setMessage] = useState(""); // State for the message textarea
-  const [isSubmitted, setIsSubmitted] = useState(false); // State to track whether the form has been submitted
-  const [error, setError] = useState<string | null>(null); // State for error handling
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false); // New state for loading
 
-  // If the modal is not open, return null to render nothing
+
   if (!isOpen) return null;
 
-  // Function to close the modal
-  const toggleModal = () => {
-    onClose(); // Calling the callback function to close the modal
-  };
-
-  // Function to handle form submission
-  const handleSubmit = async() => {
-    const dataToSend = { dataToSend: "E-mail: " + email + "\nMessage: " + message };
-
-    console.log("Sending data:", dataToSend);
-
-    // Validation for the form fields (checking if email and message are filled)
+  const handleSubmit = async () => {
     if (!email || !message) {
       alert("Please fill in all fields.");
-      return; // Stop further action if any field is empty
-    }
-
-    if (!isValidEmail(email)) {
-      alert("Please enter a valid email address.");
       return;
     }
 
+    setIsLoading(true);
+
+    const dataToSend = { dataToSend: "E-mail: " + email + "\nMessage: " + message };
+
     try {
-      // Placeholder for future API call or sending data
       const response = await fetch("http://localhost:8080/api/email/send", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataToSend), // Sending email and message
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dataToSend),
       });
 
       if (!response.ok) {
         throw new Error("Failed to send email. Please try again later.");
       }
 
-      // If successful, update state
-      setIsSubmitted(true);
-      setError(null); // Clear any errors
+      setError(null);
+      setIsConfirmationModalOpen(true); 
+      setEmail("");
+      setMessage("");
     } catch (err: any) {
-      console.error("Error sending email:", err);
-      setError(err.message); // Set error message
-    };
-
-    // Placeholder for future API call or sending data
-    console.log("Form submitted:", { email, message });
-  };
-
-  const isValidEmail = (email: string) => {
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailRegex.test(email); // Return true if email matches the regex
+      setError(err.message);
+    } finally {
+      setIsLoading(false); // Stop loading
+    }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={toggleModal}>
-      {/* Modal header with title */}
+    <Modal isOpen={isOpen} onClose={onClose}>
       <TitleModal>Message us</TitleModal>
-      {/* Button to close the modal */}
       <Button variant="circle" soundFXVolume={soundFXVolume}>
-        <img src={closeIcon} onClick={toggleModal} alt="Close" />
+        <img src={closeIcon} onClick={onClose} alt="Close" />
       </Button>
-      {/* Form container */}
       <div className="message-overlay-container">
         <div className="message-grid">
-          {/* First row with a description of the form purpose */}
           <div className="message-row-item">
             <p className="message-row-item-message">
-              Need help or have feedback about the game? We're here to assist
-              you! Fill out the form below and let us know how we can help.
-            </p>
+              Need help or have feedback about the game? We're here to assist you! Fill out the form below and let us know how we can help.            </p>
           </div>
-          {/* Email input field */}
           <div className="message-row-item">
             <input
               className="message-email-input"
               type="email"
-              placeholder="Email"
+              placeholder="EMAIL"
               value={email}
-              onChange={(e) => setEmail(e.target.value)} // Updating the email state
-              disabled={isSubmitted} // Disable input after submission
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-          {/* Message textarea */}
           <div className="message-row-item">
             <textarea
-              placeholder="Message"
+              placeholder="MESSAGE"
               className="message-row-item-textarea"
               value={message}
-              onChange={(e) => setMessage(e.target.value)} // Updating the message state
-              disabled={isSubmitted} // Disable textarea after submission
+              onChange={(e) => setMessage(e.target.value)}
             />
           </div>
-          {/* Row with the submit button or confirmation message */}
           <div className="message-row-item">
-            {isSubmitted ? (
-              // Display a confirmation message after the form is submitted
-              <p className="message-row-item-message">
-                Your message has been sent!
-              </p>
-            ) : (
-              // Form displayed before submission
               <div className="message-row-item-grid">
                 <p className="message-row-item-message">
                   We’ll do our best to respond as quickly as possible!
                 </p>
-                <Button
+                {isLoading ? (
+                  <div className="loading-spinner">
+                  {/* Wyświetlenie SVG jako obraz */}
+                  <img src={spinner} alt="Loading..." className="spinner-image" />
+                  </div>
+                 ) : (
+                  <Button
                   variant="primary-1"
                   soundFXVolume={soundFXVolume}
                   onClick={handleSubmit} // Triggering the handleSubmit function on button click
-                >
+                  >
                   <span>Submit</span>
                 </Button>
+                )}
               </div>
-            )}
           </div>
         </div>
       </div>
