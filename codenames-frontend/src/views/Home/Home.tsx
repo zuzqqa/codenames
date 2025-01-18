@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom"; // Hook for programmatic navigation
 import React, { useState } from "react"; // Hook for managing component state
+import { useTranslation } from "react-i18next"; // Hook for translation
 
 import BackgroundContainer from "../../containers/Background/Background";
 import MenuContainer from "../../containers/Menu/Menu";
@@ -32,7 +33,7 @@ const Home: React.FC<HomeProps> = ({
     const [isGameStarted, setIsGameStarted] = useState(false); // Tracks if the game has started
     const [musicVolume, setMusicVolume] = useState(50); // Music volume level
     const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
-
+    const { t } = useTranslation(); // Hook for translation
     const navigate = useNavigate(); // Hook for navigation
 
     // Handler to start the game
@@ -74,7 +75,8 @@ const Home: React.FC<HomeProps> = ({
                         </TitleComponent>
                         <CharactersComponent />
                         <SubtitleComponent variant="primary">
-                            Your mission begins now
+                            { t("home-subtitle") }
+       
                         </SubtitleComponent>
                         <MenuContainer>
                             {/* Menu for login and registration */}
@@ -85,7 +87,7 @@ const Home: React.FC<HomeProps> = ({
                                         soundFXVolume={soundFXVolume}
                                         onClick={() => navigate("/login")}
                                     >
-                                        <span className="button-text">Login</span>
+                                        <span className="button-text">{ t('login-button-text') }</span>
                                     </Button>
                                 </div>
                                 <div className="row2">
@@ -94,7 +96,7 @@ const Home: React.FC<HomeProps> = ({
                                         soundFXVolume={soundFXVolume}
                                         onClick={() => navigate("/register")}
                                     >
-                                        <span className="button-text">Register</span>
+                                        <span className="button-text">{ t('register-button-text') }</span>
                                     </Button>
                                 </div>
                             </div>
@@ -107,7 +109,7 @@ const Home: React.FC<HomeProps> = ({
                                     onClick={() => navigate("/games")}
                                     soundFXVolume={soundFXVolume}
                                 >
-                                    <span className="button-text">Play as Guest</span>
+                                    <span className="button-text">{ t('play-as-guest-button-text') }</span>
                                 </Button>
                             </div>
                         </MenuContainer>
@@ -124,7 +126,7 @@ const Home: React.FC<HomeProps> = ({
                                     Codenames
                                 </TitleComponent>
                                 <SubtitleComponent variant="start">
-                                    Your mission begins now
+                                    { t("home-subtitle") }
                                 </SubtitleComponent>
                             </div>
                             <div className="start-button">
@@ -134,7 +136,7 @@ const Home: React.FC<HomeProps> = ({
                                     onClick={startGame}
                                     soundFXVolume={soundFXVolume}
                                 >
-                                    <span className="button-text">Play</span>
+                                    <span className="button-text"> { t('play-button-text') }</span>
                                 </Button>
                             </div>
                         </div>

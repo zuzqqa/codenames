@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 import BackgroundContainer from "../../containers/Background/Background";
 
@@ -34,11 +35,13 @@ const Gameplay: React.FC<GameplayProps> = ({
 }) => {
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
-
-  // Toggles the settings modal visibility
-  const toggleSettings = () => {
-    setIsSettingsOpen(!isSettingsOpen);
-  };
+  const { t } = useTranslation(); // Translation hook
+  const [isCardVisible, setIsCardVisible] = useState(false);
+  const [cardText, setCardText] = useState("");
+  const [cardDisplayText, setCardDisplayText] = useState("");
+  const [messages, setMessages] = useState<{ text: string; type: "incoming" | "outgoing" }[]>([]);
+  const [messageText, setMessageText] = useState<string>("");
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   const [cards, setCards] = useState<string[]>(
     new Array(25).fill(cardWhiteImg)
@@ -47,6 +50,11 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [flipStates, setFlipStates] = useState<boolean[]>(
     new Array(25).fill(false)
   );
+
+  // Toggles the settings modal visibility
+  const toggleSettings = () => {
+    setIsSettingsOpen(!isSettingsOpen);
+  };
 
   const clickAudio = new Audio(cardSound);
 
@@ -68,10 +76,6 @@ const Gameplay: React.FC<GameplayProps> = ({
       });
     }, 170); // 0.17s
   };
-
-  const [isCardVisible, setIsCardVisible] = useState(false);
-  const [cardText, setCardText] = useState("");
-  const [cardDisplayText, setCardDisplayText] = useState("");
 
   const toggleBlackCardVisibility = () => {
     clickAudio.volume = soundFXVolume / 100;
@@ -97,9 +101,6 @@ const Gameplay: React.FC<GameplayProps> = ({
     };
   }, [cardText]);
 
-  const [messages, setMessages] = useState<{ text: string; type: "incoming" | "outgoing" }[]>([]);
-  const [messageText, setMessageText] = useState<string>("");
-
   const addMessage = (text: string, type: "incoming" | "outgoing") => {
     setMessages((prevMessages) => [...prevMessages, { text, type }]);
   };
@@ -116,8 +117,6 @@ const Gameplay: React.FC<GameplayProps> = ({
       setMessageText("");
     }
   };
-  
-  const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -166,7 +165,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         </div>
           <input
             type="text"
-            placeholder="Type in a message"
+            placeholder={ t('enter-the-message') }
             className="message-input"
             value={messageText}
             onFocus={handleInputFocus}
@@ -208,7 +207,7 @@ const Gameplay: React.FC<GameplayProps> = ({
             </div>
             <div className="item">
               <Button variant="room" soundFXVolume={soundFXVolume}>
-                <span className="button-text">End Round</span>
+                <span className="button-text">{ t('end-round') }</span>
               </Button>
               <div className="horizontal-gold-bar" />
             </div>
@@ -235,7 +234,7 @@ const Gameplay: React.FC<GameplayProps> = ({
             />
             <input
               type="text"
-              placeholder="Enter the codename"
+              placeholder= { t('enter-the-codename') }
               className="codename-input"
               value={cardText}
               onChange={(e) => setCardText(e.target.value)}

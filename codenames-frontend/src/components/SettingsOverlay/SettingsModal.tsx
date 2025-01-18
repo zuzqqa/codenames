@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Button from "../Button/Button";
 import TitleModal from "../TitleModal/TitleModal";
 import LanguageSlider from "../LanguageSlider/LanguageSlider";
@@ -28,6 +29,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   setMusicVolume,
   setSoundFXVolume,
 }) => {
+  const { t } = useTranslation();
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false); // Manage visibility of MessageModal
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false); // Manage visibility of ConfirmationModal
 
@@ -54,7 +56,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   return (
     <div className="settings-modal-container">
       <Modal isOpen={isOpen} onClose={handleCloseAllModals}>
-        <TitleModal>Settings</TitleModal>
+        <TitleModal>{ t('settings-title') }</TitleModal>
         <Button variant="circle" soundFXVolume={soundFXVolume}>
           <img className="close-icon" src={closeIcon} onClick={handleCloseAllModals} alt="Close" />
         </Button>
@@ -63,7 +65,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           <div className="settings-grid">
             <div className="settings-row-item">
               <div className="settings-row-item-title">
-                <p className="settings-modal-p">Music</p>
+                <p className="settings-modal-p">{ t('settings-modal-p-music') }</p>
               </div>
               <div className="slider">
                 <input
@@ -79,7 +81,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
             <div className="settings-row-item">
               <div className="settings-row-item-title">
-                <p className="settings-modal-p">Sound FX</p>
+                <p className="settings-modal-p">{ t('settings-modal-p-sound-fx') }</p>
               </div>
               <div className="slider">
                 <input
@@ -95,18 +97,18 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
             <div className="settings-row-item">
               <div className="settings-row-item-title">
-                <p className="settings-modal-p">Language</p>
+                <p className="settings-modal-p">{ t('settings-modal-p-language') }</p>
               </div>
               <LanguageSlider soundFXVolume={soundFXVolume} />
             </div>
 
             <div className="settings-row-item">
               <div className="settings-row-item-title">
-                <p className="settings-modal-p">Help</p>
+                <p className="settings-modal-p">{ t('settings-modal-p-help') }</p>
               </div>
               <div className="settings-row-help-btn">
                 <Button variant="help" soundFXVolume={soundFXVolume} onClick={openMessageModal}>
-                  <span className="button-text">Send Message</span>
+                  <span className="button-text">{ t('settings-modal-p-send-message') }</span>
                 </Button>
               </div>
             </div>

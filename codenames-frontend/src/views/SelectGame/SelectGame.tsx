@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom"; // Importing the navigate hook from React Router
 import { useState } from "react"; // Importing useState hook for managing component state
+import { useTranslation } from "react-i18next"; // Importing the useTranslation hook from react-i18next
 
 import BackgroundContainer from "../../containers/Background/Background";
 import MenuContainer from "../../containers/Menu/Menu";
@@ -30,6 +31,7 @@ const SelectGame: React.FC<SelectGameProps> = ({
 }) => {
   const [musicVolume, setMusicVolume] = useState(50); // State to manage music volume
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // State to track if settings modal is open
+  const { t } = useTranslation(); // Hook for translations
 
   const navigate = useNavigate(); // Hook for navigation
 
@@ -65,7 +67,7 @@ const SelectGame: React.FC<SelectGameProps> = ({
         </TitleComponent>
         <CharactersComponent /> {/* Renders the characters component */}
         <SubtitleComponent variant="primary">
-          Your mission begins now
+          { t('home-subtitle') }
         </SubtitleComponent>
 
         {/* Menu section with options for creating or joining a room */}
@@ -76,7 +78,7 @@ const SelectGame: React.FC<SelectGameProps> = ({
               onClick={() => navigate("/create-game")} // Navigates to create game page
               soundFXVolume={soundFXVolume}
             >
-              <span className="button-text">Create room</span>
+              <span className="button-text">{ t('create-game-button') }</span>
             </Button>
           </div>
           <div className="gold-bar"></div>
@@ -86,7 +88,7 @@ const SelectGame: React.FC<SelectGameProps> = ({
               onClick={() => navigate("/join-game")} // Navigates to join game page
               soundFXVolume={soundFXVolume}
             >
-              <span className="button-text">Join room</span>
+              <span className="button-text">{ t('join-room-button') }</span>
             </Button>
           </div>
         </MenuContainer>
