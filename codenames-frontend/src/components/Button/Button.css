@@ -58,6 +58,11 @@
   background-image: linear-gradient(to top, #22303b, #0b1319);
 }
 
+.btn-search{
+  width: 2rem;
+  height: 2.5rem;
+}
+
 .btn-room {
   background: linear-gradient(360deg, #12501e 0%, #478b35 88.89%);
   min-width: 12rem;

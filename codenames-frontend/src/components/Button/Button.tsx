@@ -7,7 +7,7 @@ interface ButtonProps {
     children: ReactNode; // Content inside the button (text/icons)
     onClick?: () => void; // Click handler function (optional)
     type?: "button" | "submit" | "reset"; // Button type (default is "button")
-    variant?: "primary" | "primary-1" | "room" | "circle" | "circle-back" | "session" | "help" | "eye" | "eye2"; // Button variant for styles (default is "primary")
+    variant?: "primary" | "primary-1" | "room" | "circle" | "circle-back" | "session" | "help" | "eye" | "eye2" | "search"; // Button variant for styles (default is "primary")
     disabled?: boolean; // Disabled state (default is false)
     soundFXVolume: number; // Sound volume for the click effect
     onChange?: () => void; // Change handler function (optional)

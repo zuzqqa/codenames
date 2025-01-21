@@ -1,5 +1,5 @@
 .background {
-    background-color: #f5e1c1;
+    background: linear-gradient(360deg, #F0E0B5 0%, #EED8B0 88.89%);
     box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.3);
     padding: 1.5vh 2.5vw;
     max-height: 75%;
@@ -54,7 +54,7 @@
     width: 112.5%;
     max-height: 50%;
 
-    background-color: #f5e1c1;
+    background: linear-gradient(360deg, #F0E0B5 0%, #EED8B0 88.89%);
     box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.3);
     padding: 5vh 2vw;
     border-radius: 10px;

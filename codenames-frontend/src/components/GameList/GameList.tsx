@@ -1,10 +1,13 @@
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import {useNavigate} from "react-router-dom";
 import Button from "../Button/Button.tsx";
+import SearchModal from "../../components/SearchOverlay/SearchModal";
 
 import "./GameList.css";
 
 import backButton from "../../assets/icons/arrow-back.png";
+import searchButton from "../../assets/images/search-button.png";
+
 import {useState} from "react";
 
 interface GameListProps {
@@ -32,6 +35,12 @@ const GameList: React.FC<GameListProps> = ({soundFXVolume}) => {
         {id: "10", name: "Game 10", players: 3, maxPlayers: 4},
     ]);
 
+      const [isSearchbarOpen, setIsSearchbarOpen] = useState(false); // Tracks if the search modal is open
+    const toggleSearch = () => {
+        setIsSearchbarOpen(!isSearchbarOpen);
+      };
+    
+
     const navigate = useNavigate()
     return (
         <>
@@ -39,18 +48,29 @@ const GameList: React.FC<GameListProps> = ({soundFXVolume}) => {
                 <Button className="back-button" variant={"circle-back"} onClick={() => navigate('/games')} soundFXVolume={soundFXVolume}>
                     <img src={backButton} alt="Back" className="btn-arrow-back" />
                 </Button>
+                <Button className="search-button" variant={"search"}  onClick={toggleSearch} soundFXVolume={soundFXVolume}>
+                    <img src={searchButton} alt="Search" />
+                </Button>
                 <span className="room-form-label">Join Room</span>
-                <div className={"list-content"} style={{"gridColumn":"2","gridRow":"2"}}>
+                <div className={"list-container"} style={{"gridColumn":"2","gridRow":"2"}}>
+                    <ul className="list-content">
                     {gameSessions.map((gameSession) => (
-                        <Button key={gameSession.id} variant={"session"} onClick={() => navigate(`/game-lobby/${gameSession.id}`)} soundFXVolume={soundFXVolume}>
+                        <li onClick={() => navigate(`/game-lobby/${gameSession.id}`)}>
                             <div className={"room-info"}>
                                 <div className={"room-name"}>{gameSession.name}</div>
-                                <div className={"room-players"}>{gameSession.players}/{gameSession.maxPlayers}</div>
+                                <div className={"room-players"}>slots: {gameSession.players}/{gameSession.maxPlayers}</div>
                             </div>
-                        </Button>
+                        </li>
                     ))
                     }
+                    </ul>
                 </div>
+                {/* Settings modal */}
+                <SearchModal
+                isOpen={isSearchbarOpen}
+                onClose={toggleSearch}
+                soundFXVolume={soundFXVolume}
+                />
             </RoomMenu>
         </>
     );
