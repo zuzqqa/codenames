@@ -54,11 +54,35 @@ const RegisterPage: React.FC<RegisterProps> = ({
         }
     };
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit  = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         // Add your login logic here
         console.log("Login:", login);
         console.log("Password:", password);
+        const userData = { email, username: login, password };
+
+        try {
+            const response = await fetch("/api/users", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(userData),
+            });
+
+            if (response.ok) {
+                const result = await response.text();
+                console.log("Registration successful:", result);
+                alert("User registered successfully!");
+            } else {
+                const error = await response.text();
+                console.error("Registration failed:", error);
+                alert("Failed to register: " + error);
+            }
+        } catch (error) {
+            console.error("Error during registration:", error);
+            alert("An error occurred during registration. Please try again later.");
+        }
     };
 
     const toggleSettings = () => {
