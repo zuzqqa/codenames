@@ -67,3 +67,4 @@ build/
 Thumbs.db
 
 .properties
+.env
