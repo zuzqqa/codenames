@@ -40,9 +40,9 @@ public class ConfigSecurity {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/api/users", "/api/users/authenticate").permitAll()
-                                .requestMatchers("/api/email/send").permitAll()
-                                .requestMatchers("/ws/**").permitAll()
-                                .anyRequest().authenticated())
+                                .requestMatchers("/api/email/send", "/api/game-session/create", "api/game-session/**", "api/game-session/**/start", "api/game-session/**/finish").permitAll()
+                                .anyRequest().authenticated() // Allow access to registration and authentication endpoints
+                                )
                 .sessionManagement(sessionManagement ->
                         sessionManagement
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -13,6 +13,7 @@
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@stomp/stompjs": "^7.0.0",
     "@types/react-router-dom": "^5.3.3",
+    "codenames-frontend": "file:",
     "formik": "^2.4.6",
     "i18next": "^24.2.1",
     "i18next-http-backend": "^3.0.1",
