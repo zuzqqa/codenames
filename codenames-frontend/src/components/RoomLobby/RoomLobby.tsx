@@ -65,8 +65,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                     });
                     
                 })
-                .catch((error) => {
-                    console.error('Error fetching game session:', error);
+                .catch(() => {
                     setError('Failed to load game session. Please try again.');
                 });
         } else {
@@ -75,9 +74,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     }, [navigate]);
     
 
-    function convertDurationToSeconds(duration: string | number): number {
-        console.log("Converting duration:", duration); 
-    
+    function convertDurationToSeconds(duration: string | number): number {    
         if (typeof duration === 'string') {
             const regex = /^PT(\d+)([SMH])$/;
             const match = duration.match(regex);
@@ -104,6 +101,33 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
         return typeof duration === 'number' ? duration : 0;
     }
     
+    const start_game = async () => {
+        console.log("Starting game");
+        const storedGameId = localStorage.getItem('gameId');
+
+        if(!storedGameId) {
+            setError('No game session found');
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/game-session/${storedGameId}/start`,{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: null,
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to start the game');
+            }
+
+            navigate('/join-game');
+        } catch (error) {
+            setError('Failed to start the game. Please try again.');
+        }
+    }
 
     return (
         <>
@@ -132,6 +156,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                                     variant={"room"}
                                     soundFXVolume={soundFXVolume}
                                     className="room-btn"
+                                    onClick={start_game}
                                 >
                                     <span className="button-text">Start</span>
                                 </Button>

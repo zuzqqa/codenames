@@ -9,4 +9,6 @@ public interface GameSessionService {
     public String createGameSession(CreateGameRequest request);
 
     public GameSession getGameSessionById(UUID gameId);
+
+    public void updateStatus(UUID id, GameSession.sessionStatus sessionStatus);
 }

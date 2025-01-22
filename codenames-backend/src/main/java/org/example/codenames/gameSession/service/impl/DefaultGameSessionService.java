@@ -49,5 +49,13 @@ public class DefaultGameSessionService implements GameSessionService {
 
         return null;
     }
+
+    @Override
+    public void updateStatus(UUID sessionId, GameSession.sessionStatus newStatus) {
+        GameSession session = gameSessionRepository.findBySessionId(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Session not found"));
+        session.setStatus(newStatus);
+        gameSessionRepository.save(session);
+    }
 }
 

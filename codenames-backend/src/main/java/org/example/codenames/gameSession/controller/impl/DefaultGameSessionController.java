@@ -45,4 +45,15 @@ public class DefaultGameSessionController implements GameSessionController {
         }
     }
 
+    @PostMapping("/{id}/start")
+    public ResponseEntity<Void> startGame(@PathVariable UUID id) {
+        gameSessionService.updateStatus(id, GameSession.sessionStatus.IN_PROGRESS);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/finish")
+    public ResponseEntity<Void> finishGame(@PathVariable UUID id) {
+        gameSessionService.updateStatus(id, GameSession.sessionStatus.FINISHED);
+        return ResponseEntity.ok().build();
+    }
 }
