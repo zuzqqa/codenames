@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 
 import "./CreateGameForm.css";
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
+import React from "react";
 
 interface CreateGameFormProps {
     soundFXVolume: number;

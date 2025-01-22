@@ -35,12 +35,14 @@ public class ConfigSecurity {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf().disable().authorizeHttpRequests(authorizeRequests ->
+        return http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/api/users", "/api/users/authenticate").permitAll()
                                 .requestMatchers("/api/email/send").permitAll()
-                                .anyRequest().authenticated() // Allow access to registration and authentication endpoints
-                                )
+                                .requestMatchers("/ws/**").permitAll() // Allow access to WebSocket endpoints
+                                .anyRequest().permitAll())
                 .sessionManagement(sessionManagement ->
                         sessionManagement
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

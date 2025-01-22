@@ -10,7 +10,7 @@ services:
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     networks:
-      - my_network
+      - codenames-network
 networks:
-  my_network:
+  codenames-network:
     driver: bridge
