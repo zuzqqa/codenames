@@ -35,7 +35,9 @@ public class ConfigSecurity {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf().disable().authorizeHttpRequests(authorizeRequests ->
+        return http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/api/users", "/api/users/authenticate").permitAll()
                                 .requestMatchers("/api/email/send", "/api/game-session/create", "api/game-session/**", "api/game-session/**/start", "api/game-session/**/finish").permitAll()

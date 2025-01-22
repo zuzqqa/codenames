@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import "./CreateGameForm.css";
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
+import React from "react";
 
 // Typ dla CreateGameFormProps
 interface CreateGameFormProps {

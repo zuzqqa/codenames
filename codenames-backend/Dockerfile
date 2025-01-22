@@ -1,9 +1,20 @@
-FROM mongo:6.0.20
+# Use the official Eclipse Temurin image as the base image
+FROM eclipse-temurin:17.0.6_10-jre
 
-RUN apt-get update &&  \
-    apt-get install -y gnupg wget curl && \
-    curl -sL https://repo.mongodb.org/apt/ubuntu/dists/jammy/mongodb-org/6.0/multiverse/binary-amd64/mongodb-org-server_6.0.20_amd64.deb -o /tmp/mongodb-org-server_6.0.20_amd64.deb && \
-    dpkg -i /tmp/mongodb-org-server_6.0.20_amd64.deb && \
-    rm /tmp/mongodb-org-server_6.0.20_amd64.deb && \
-    apt-get install -f -y && \
-    apt-get clean
+# Set the labels for the image
+LABEL org.opencontainers.image.title="codenames-spring-backend"
+LABEL org.opencontainers.image.authors="Jakub Walasik"
+LABEL org.opencontainers.image.version="0.0.1-SNAPSHOT"
+
+# Set environment variables
+ENV VERSION="0.0.1-SNAPSHOT"
+ENV SERVER_PORT=8080
+
+# Expose the application port
+EXPOSE 8080
+
+# Copy the jar file to the container
+COPY target/Codenames-${VERSION}.jar /opt/codenames-backend/codenames-backend.jar
+
+# Run the jar file
+CMD ["java", "-jar", "/opt/codenames-backend/codenames-backend.jar"]
