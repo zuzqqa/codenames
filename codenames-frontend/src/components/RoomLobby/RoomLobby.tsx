@@ -123,7 +123,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                 throw new Error('Failed to start the game');
             }
 
-            navigate('/join-game');
+            navigate('/choose-leader');
         } catch (error) {
             setError('Failed to start the game. Please try again.');
         }
