@@ -6,14 +6,14 @@ import searchIcon from "../../assets/icons/search-icon.png";
 import "./SearchModal.css";
 
 // Define the type for the SettingsModal component's props
-interface SettingsModalProps {
+interface SearchModalProps {
   isOpen: boolean; // Determines if the modal is visible
   onClose: () => void; // Callback to close the modal
   soundFXVolume: number; // Current sound effects volume level
 }
 
 // Main component definition
-const SearchModal: React.FC<SettingsModalProps> = ({
+const SearchModal: React.FC<SearchModalProps> = ({
   isOpen,
   onClose
 }) => {

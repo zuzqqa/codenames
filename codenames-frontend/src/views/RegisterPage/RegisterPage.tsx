@@ -1,4 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
+import { useTranslation } from "react-i18next";
+
 import "../../styles/App.css";
 import "./RegisterPage.css";
 
@@ -31,6 +33,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
     const [musicVolume, setMusicVolume] = useState(50); // Music volume level
     const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const { t } = useTranslation();
 
     const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
@@ -83,13 +86,13 @@ const RegisterPage: React.FC<RegisterProps> = ({
                 soundFXVolume={soundFXVolume}
                 customStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "35%", letterSpacing: "3px", marginBottom: "-1.2%" }}
                 shadowStyle={{fontSize: "4rem", textAlign: "left", marginLeft: "35%",  letterSpacing: "3px", marginBottom: "-1.2%"}}
-            >REGISTER</TitleComponent>
+            >{ t('register-button-text') }</TitleComponent>
             <LoginRegisterContainer>
                 <div className="register-container">
                     <form className="register-form" onSubmit={handleSubmit}>
                         <FormInput
                             type="text"
-                            placeholder="EMAIL"
+                            placeholder="E-MAIL"
                             value={email}
                             onChange={handleEmailChange}
                         />
@@ -101,7 +104,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
                         />
                         <FormInput
                             type="text"
-                            placeholder="PASSWORD"
+                            placeholder={ t('PASSWORD') }
                             value={!isPasswordVisible ? '●'.repeat(password.length) : password}
                             onChange={handlePasswordChange}
                             button={
@@ -118,7 +121,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
                             }
                         />
                         <Button type="submit" variant="primary" soundFXVolume={soundFXVolume}>
-                            <span className="button-text">SUBMIT</span>
+                            <span className="button-text">{ t('submit-button') }</span>
                         </Button>
                     </form>
                 </div>

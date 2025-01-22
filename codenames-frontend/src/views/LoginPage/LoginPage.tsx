@@ -1,4 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
+import { useTranslation } from "react-i18next";
+
 import "../../styles/App.css";
 import "./LoginPage.css";
 
@@ -30,6 +32,7 @@ const LoginPage: React.FC<LoginProps> = ({
     const [musicVolume, setMusicVolume] = useState(50); // Music volume level
     const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const { t } = useTranslation();
 
     const handleLoginChange = (e: ChangeEvent<HTMLInputElement>) => {
         setLogin(e.target.value);
@@ -49,8 +52,6 @@ const LoginPage: React.FC<LoginProps> = ({
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         // Add your login logic here
-        console.log("Login:", login);
-        console.log("Password:", password);
     };
 
     const toggleSettings = () => {
@@ -81,7 +82,7 @@ const LoginPage: React.FC<LoginProps> = ({
                 soundFXVolume={soundFXVolume}
                 customStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "35%", marginBottom: "-1.2%"}}
                 shadowStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "35%", marginBottom: "-1.2%"}}
-            >LOGIN</TitleComponent>
+            >{ t('login-button-text') }</TitleComponent>
             <LoginRegisterContainer>
                 <div className="login-container">
                     <form className="login-form" onSubmit={handleSubmit}>
@@ -93,7 +94,7 @@ const LoginPage: React.FC<LoginProps> = ({
                         />
                         <FormInput
                             type="text"
-                            placeholder="PASSWORD"
+                            placeholder={ t('PASSWORD') }
                             value={!isPasswordVisible ? '●'.repeat(password.length) : password}
                             onChange={handlePasswordChange}
                             button={
@@ -110,7 +111,7 @@ const LoginPage: React.FC<LoginProps> = ({
                             }
                         />
                         <Button type="submit" variant="primary" soundFXVolume={soundFXVolume}>
-                            <span className="button-text">SUBMIT</span>
+                            <span className="button-text">{ t('submit-button') }</span>
                         </Button>
                     </form>
                 </div>
