@@ -46,13 +46,6 @@
     text-align: right;
 }
 
-.message.incoming {
-    align-self: flex-start;
-    background-color: #7a8084;
-    color: #f0e9d2;
-    text-align: left;
-}
-
 .chat-container.focused {
     height: 40vh;
     opacity: 90%;
@@ -74,11 +67,17 @@
     text-transform: uppercase;
     opacity: 60%;
 }
+
+.message.incoming {
+    align-self: flex-start;
+    background-color: #7a8084;
+    color: #f0e9d2;
+    text-align: left;
+}
+
 .div-sender {
     color: transparent;
     background-clip: text;
     -webkit-background-clip: text;
     background-image: linear-gradient(to top, #af8824, #ffd769);
-    opacity: 60%;
 }
-

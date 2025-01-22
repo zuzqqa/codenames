@@ -17,11 +17,11 @@ const Chat: React.FC = () => {
     const [messageText, setMessageText] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const clientRef = useRef<Client | null>(null);
-
+    const playerName = 'Player1'; // TODO: Get player name from the backend
     // Connect to WebSocket
     useEffect(() => {
         const client = connect((msg) => {
-            setMessages((prev) => [...prev, { text: msg.content, type: msg.sender === 'Player1' ? 'outgoing' : 'incoming' , sender: msg.sender }]);
+            setMessages((prev) => [...prev, { text: msg.content, type: msg.sender === playerName ? 'outgoing' : 'incoming' , sender: msg.sender }]);
         });
 
         clientRef.current = client;
@@ -54,23 +54,31 @@ const Chat: React.FC = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
+    const [isInputFocused, setIsInputFocused] = useState(false);
+
+    const handleInputFocus = () => setIsInputFocused(true);
+    const handleInputBlur = () => setIsInputFocused(false);
+
     return (
-        <div className="chat-container">
+        <div className={`chat-container ${isInputFocused ? "focused" : ""}`}>
             <div className="messages">
                 {messages.map((msg, index) => (
                     <div key={index} className={`message ${msg.type}`}>
+                        <div className="div-sender">{msg.sender}</div>
                         {msg.text}
                     </div>
                 ))}
-                <div ref={messagesEndRef} />
+                <div ref={messagesEndRef}/>
             </div>
             <input
                 type="text"
                 placeholder={t('enter-the-message')}
                 className="message-input"
                 value={messageText}
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
                 onChange={(e) => setMessageText(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+                onKeyDown={(e) => e.key === "Enter" && sendMessage()}
             />
         </div>
     );

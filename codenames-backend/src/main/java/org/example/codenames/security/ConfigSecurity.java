@@ -41,8 +41,8 @@ public class ConfigSecurity {
                         authorizeRequests
                                 .requestMatchers("/api/users", "/api/users/authenticate").permitAll()
                                 .requestMatchers("/api/email/send").permitAll()
-                                .requestMatchers("/ws/**").permitAll() // Allow access to WebSocket endpoints
-                                .anyRequest().permitAll())
+                                .requestMatchers("/ws/**").permitAll()
+                                .anyRequest().authenticated())
                 .sessionManagement(sessionManagement ->
                         sessionManagement
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
