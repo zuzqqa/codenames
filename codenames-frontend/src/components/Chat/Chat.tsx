@@ -2,12 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import connect from '../../services/webSocketService.tsx';
 import { Client } from '@stomp/stompjs';
 import { t } from 'i18next';
+import '../../views/Gameplay/Gameplay.css';
 import './Chat.css';
 
 // Define the message type
 interface Message {
     text: string;
     type: 'incoming' | 'outgoing';
+    sender: string;
 }
 
 const Chat: React.FC = () => {
@@ -19,7 +21,7 @@ const Chat: React.FC = () => {
     // Connect to WebSocket
     useEffect(() => {
         const client = connect((msg) => {
-            setMessages((prev) => [...prev, { text: msg.content, type: 'incoming' }]);
+            setMessages((prev) => [...prev, { text: msg.content, type: msg.sender === 'Player1' ? 'outgoing' : 'incoming' , sender: msg.sender }]);
         });
 
         clientRef.current = client;
@@ -35,19 +37,16 @@ const Chat: React.FC = () => {
         if (!client || !messageText.trim()) return;
 
         const message = { sender: 'Player1', content: messageText.trim() };
-
         client.publish({
             destination: '/chat/send', // Matches @MessageMapping in the backend
             body: JSON.stringify(message),
         });
-
-        addMessage(message.content, 'outgoing'); // Update local state
         setMessageText(''); // Clear input
     };
 
     // Add a message to the state
-    const addMessage = (text: string, type: 'incoming' | 'outgoing') => {
-        setMessages((prevMessages) => [...prevMessages, { text, type }]);
+    const addMessage = (text: string, type: 'incoming' | 'outgoing', sender: string) => {
+        setMessages((prevMessages) => [...prevMessages, { text, type, sender }]);
     };
 
     // Scroll to the bottom when messages change

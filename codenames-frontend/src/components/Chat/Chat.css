@@ -74,5 +74,11 @@
     text-transform: uppercase;
     opacity: 60%;
 }
-
+.div-sender {
+    color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+    background-image: linear-gradient(to top, #af8824, #ffd769);
+    opacity: 60%;
+}
 
