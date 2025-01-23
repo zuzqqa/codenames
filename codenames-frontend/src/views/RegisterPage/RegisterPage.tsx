@@ -14,6 +14,8 @@ import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
 import settingsIcon from "../../assets/icons/settings.png";
 import eyeIcon from "../../assets/icons/eye.svg";
 import eyeSlashIcon from "../../assets/icons/eye-slash.svg";
+import logoutButton from "../../assets/icons/logout.svg";
+import {logout} from "../../shared/utils.tsx";
 
 
 interface RegisterProps {
@@ -54,11 +56,35 @@ const RegisterPage: React.FC<RegisterProps> = ({
         }
     };
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit  = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // Add your login logic here
-        console.log("Login:", login);
-        console.log("Password:", password);
+        const userData = { email, username: login, password, roles: "USER" };
+
+        try {
+            const response = await fetch("http://localhost:8080/api/users", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(userData),
+                credentials: "include", // Include cookies in the request
+            });
+
+            if (response.ok) {
+                const result = await response.text();
+                console.log("Registration successful:", result);
+                window.location.reload()
+                document.cookie = "loggedIn=true";
+                alert("User registered successfully!");
+            } else {
+                const error = await response.text();
+                console.error("Registration failed:", error);
+                alert("Failed to register: " + error);
+            }
+        } catch (error) {
+            console.error("Error during registration:", error);
+            alert("An error occurred during registration. Please try again later.");
+        }
     };
 
     const toggleSettings = () => {
@@ -82,6 +108,15 @@ const RegisterPage: React.FC<RegisterProps> = ({
             <Button variant="circle" soundFXVolume={soundFXVolume}>
                 <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
             </Button>
+            {document.cookie.split('; ').find(cookie => cookie.startsWith('loggedIn=')) && (
+                <Button variant="logout" soundFXVolume={soundFXVolume}>
+                    <img
+                        src={logoutButton}
+                        onClick={logout}
+                        alt="Logout"
+                    />
+                </Button>
+            )}
             <TitleComponent
                 soundFXVolume={soundFXVolume}
                 customStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "35%", letterSpacing: "3px", marginBottom: "-1.2%" }}
