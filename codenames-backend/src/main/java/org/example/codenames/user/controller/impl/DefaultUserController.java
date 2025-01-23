@@ -1,5 +1,7 @@
 package org.example.codenames.user.controller.impl;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.codenames.jwt.JwtService;
 import org.example.codenames.user.entity.User;
@@ -27,9 +29,11 @@ public class DefaultUserController implements UserController {
     private final JwtService jwtService;
 
     @PostMapping
-    public ResponseEntity<String> createUser(@RequestBody User user) {
+    public ResponseEntity<Void> createUser(@RequestBody User user, HttpServletResponse response) {
         userService.createUser(user);
-        return ResponseEntity.ok("User created successfully");
+        String token = jwtService.generateToken(user.getUsername());
+        response.addCookie(setAuthCookie(token, true));
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}")
@@ -60,18 +64,47 @@ public class DefaultUserController implements UserController {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<String> authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<Void> authenticateAndSetCookie(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+            );
             if (authentication.isAuthenticated()) {
                 String token = jwtService.generateToken(authRequest.getUsername());
-                return ResponseEntity.ok(token);
+                response.addCookie(setAuthCookie(token, true));
+                return ResponseEntity.ok().build();
             } else {
                 throw new UsernameNotFoundException("Invalid username or password");
             }
         } catch (Exception e) {
             throw new UsernameNotFoundException("Invalid username or password");
         }
+    }
+
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("authToken", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false); // Set true for https
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(setAuthCookie(null, false));
+
+        return ResponseEntity.ok().build();
+    }
+
+    private Cookie setAuthCookie(String token, boolean loggingIn) {
+        Cookie cookie = new Cookie("authToken", token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false); // Set to true for https
+        cookie.setPath("/");
+        if (loggingIn) {
+            cookie.setMaxAge(3600);
+        }
+        else {
+            cookie.setMaxAge(0);
+        }
+        return cookie;
     }
 }
