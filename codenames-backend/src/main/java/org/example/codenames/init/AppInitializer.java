@@ -46,7 +46,5 @@ public class AppInitializer implements InitializingBean {
                 .build();
 
         userService.createUser(user);
-
-        userService.createUser(user);
     }
 }

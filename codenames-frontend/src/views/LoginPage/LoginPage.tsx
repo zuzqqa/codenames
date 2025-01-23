@@ -13,8 +13,10 @@ import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
 import settingsIcon from "../../assets/icons/settings.png";
 import eyeIcon from "../../assets/icons/eye.svg";
 import eyeSlashIcon from "../../assets/icons/eye-slash.svg";
+import logoutButton from "../../assets/icons/logout.svg";
 
 import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister.tsx";
+import {logout} from "../../shared/utils.tsx";
 
 interface LoginProps {
     setVolume: (volume: number) => void;
@@ -49,16 +51,37 @@ const LoginPage: React.FC<LoginProps> = ({
         }
     };
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // Add your login logic here
+
+        const userData = { username: login, password };
+
+        try {
+            const response = await fetch("http://localhost:8080/api/users/authenticate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(userData),
+                credentials: "include", // Include cookies in the request
+            });
+
+            if (response.ok) {
+                document.cookie = "loggedIn=true";
+                window.location.reload();
+                alert("User logged in successfully!");
+            } else {
+                const error = await response.text();
+                alert("Failed to log in: " + error);
+            }
+        } catch (error) {
+            alert("An error occurred during login. Please try again later." + error);
+        }
     };
 
     const toggleSettings = () => {
         setIsSettingsOpen(!isSettingsOpen);
     };
-
-
 
 
     return (
@@ -78,6 +101,15 @@ const LoginPage: React.FC<LoginProps> = ({
             <Button variant="circle" soundFXVolume={soundFXVolume}>
                 <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
             </Button>
+            {document.cookie.split('; ').find(cookie => cookie.startsWith('loggedIn=')) && (
+                <Button variant="logout" soundFXVolume={soundFXVolume}>
+                    <img
+                        src={logoutButton}
+                        onClick={logout}
+                        alt="Logout"
+                    />
+                </Button>
+            )}
             <TitleComponent
                 soundFXVolume={soundFXVolume}
                 customStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "35%", marginBottom: "-1.2%"}}

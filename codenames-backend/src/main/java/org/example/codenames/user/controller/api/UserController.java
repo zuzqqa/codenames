@@ -1,5 +1,6 @@
 package org.example.codenames.user.controller.api;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.userDetails.AuthRequest;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ import java.util.List;
 public interface UserController {
 
     // Create a new user
-    public ResponseEntity<String> createUser(User user);
+    public ResponseEntity<Void> createUser(User user, HttpServletResponse response);
 
     // Get a user by ID
     public ResponseEntity<User> getUserById(String id);
@@ -32,5 +33,5 @@ public interface UserController {
     public ResponseEntity<Void> deleteUserById(String id);
 
     // Authenticate a user and get a JWT token in response body
-    public ResponseEntity<String> authenticateAndGetToken(AuthRequest authRequest);
+    public ResponseEntity<Void> authenticateAndSetCookie(AuthRequest authRequest, HttpServletResponse response);
 }
