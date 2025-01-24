@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.userDetails.AuthRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 
 import java.util.List;
 
@@ -34,4 +35,13 @@ public interface UserController {
 
     // Authenticate a user and get a JWT token in response body
     public ResponseEntity<Void> authenticateAndSetCookie(AuthRequest authRequest, HttpServletResponse response);
+
+    //Logout
+    public ResponseEntity<Void> logout(HttpServletResponse response);
+
+    //Get Username by token
+    public ResponseEntity<String> getUsernameByToken(String token);
+
+    //Get id by token
+    public ResponseEntity<String> getIdByToken(String token);
 }

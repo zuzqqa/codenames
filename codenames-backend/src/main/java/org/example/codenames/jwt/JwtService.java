@@ -65,6 +65,15 @@ public class JwtService {
                 .compact();
     }
 
+    public String getUsernameFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSignKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
     private Key getSignKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET));
     }
