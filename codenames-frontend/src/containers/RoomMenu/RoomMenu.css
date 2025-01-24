@@ -3,13 +3,14 @@
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  height: 80%;
+  height: 70%;
   width: 40%;
   border-radius: 17px;
   box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.25);
   z-index: 1;
   display: grid;
-  grid-template-columns: 10% 80% 10%;
+  grid-template-columns: 5% 90% 5%;
   grid-template-rows: 10% auto;
   margin-top: 7vh;
+  position: relative;
 }

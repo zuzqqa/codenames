@@ -1,5 +1,6 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom"; // Hook for programmatic navigation
 
 import "../../styles/App.css";
 import "./RegisterPage.css";
@@ -16,7 +17,7 @@ import eyeIcon from "../../assets/icons/eye.svg";
 import eyeSlashIcon from "../../assets/icons/eye-slash.svg";
 import logoutButton from "../../assets/icons/logout.svg";
 import {logout} from "../../shared/utils.tsx";
-
+import Cookies from 'js-cookie';
 
 interface RegisterProps {
     setVolume: (volume: number) => void;
@@ -36,6 +37,8 @@ const RegisterPage: React.FC<RegisterProps> = ({
     const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const { t } = useTranslation();
+    const navigate = useNavigate(); // Hook for navigation
+    const [emailError, setEmailError] = useState<string | null>(null);
 
     const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
@@ -55,9 +58,22 @@ const RegisterPage: React.FC<RegisterProps> = ({
             setPassword(password.slice(0, -1)); // Handle backspace
         }
     };
+  
+    const validateEmail = (email: string): boolean => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
 
     const handleSubmit  = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        if (!validateEmail(email)) {
+            setEmailError("Invalid email format.");
+            return; 
+        }
+        setEmailError(null);
+        
         const userData = { email, username: login, password, roles: "USER" };
 
         try {
@@ -72,10 +88,8 @@ const RegisterPage: React.FC<RegisterProps> = ({
 
             if (response.ok) {
                 const result = await response.text();
-                console.log("Registration successful:", result);
-                window.location.reload()
+                window.location.href = "/loading";
                 document.cookie = "loggedIn=true";
-                alert("User registered successfully!");
             } else {
                 const error = await response.text();
                 console.error("Registration failed:", error);
@@ -90,6 +104,16 @@ const RegisterPage: React.FC<RegisterProps> = ({
     const toggleSettings = () => {
         setIsSettingsOpen(!isSettingsOpen);
     };
+
+    useEffect(() => {
+        console.log("Sprawdzam");
+        const loggedIn = Cookies.get('loggedIn'); // Retrieve the cookie value
+
+        // Ensure 'loggedIn' is true
+        if (loggedIn === 'true') {
+            navigate('/games'); // Redirect to /games if logged in
+        }
+    }, [navigate]);
 
     return (
         <BackgroundContainer>

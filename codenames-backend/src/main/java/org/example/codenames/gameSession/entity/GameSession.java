@@ -36,5 +36,7 @@ public class GameSession {
     private Duration timeForAHint;
 
     private Integer numberOfRounds;
-    private List<User> connectedUsers;
+    private List<List<User>> connectedUsers;
+    private List<int[]> votes;
+    private GameState gameState;
 }
