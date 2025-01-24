@@ -12,7 +12,6 @@
 #      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 #    networks:
 #      - codenames-network
-#
 #  backend:
 #    image: codenames-spring-backend:0.0.1-SNAPSHOT
 #    container_name: codenames-backend
