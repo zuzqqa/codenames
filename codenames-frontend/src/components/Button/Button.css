@@ -136,3 +136,30 @@
   width: 100%;
   border: none;
 }
+.btn-logout {
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.7rem;
+  position: absolute;
+  top: 2%;
+  left: 2%;
+
+  border-width: 0.125rem;
+  border-color: #fcf18b;
+  background-image: linear-gradient(to top, #22303b, #0b1319);
+}
+
+.btn-logout-back {
+  border-radius: 50%;
+  width: 2rem;
+  height: 2.5rem;
+  align-items: center;
+  border-width: 0.125rem;
+  border-color: #fcf18b;
+  background-image: linear-gradient(to top, #22303b, #0b1319);
+}
+
+.btn-logout img, .btn-logout-back img {
+  margin-left: 1rem;
+  margin-top: 0.25rem;
+}

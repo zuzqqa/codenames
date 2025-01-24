@@ -10,8 +10,10 @@
 .input-field {
     width: 100%; /* Set a max width for consistency */
     padding:10px 15px;
-    font-size: 1rem;
-    font-family: inherit;
+    font-family: 'Wellfleet', serif;
+    font-style: normal;
+    /* Text styles */
+    font-size: calc(0.6rem + 0.4vw);
     color: #000000; /* White text color */
     background-color: #F0E0B5; /* Dark input background to match the theme */
     border: none; /* Subtle border color */

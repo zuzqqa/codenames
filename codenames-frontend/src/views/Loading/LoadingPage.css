@@ -1,0 +1,28 @@
+.progressContainer {
+  position: absolute;
+  bottom: 18%;
+  width: 30%;
+  background-color: #cccccc;
+  border-radius: 17px;
+}
+
+#progressBar {
+  width: 30vw;
+  height: 28px;
+  border-radius: 17px;
+  border-color: #fff7ab;
+  border-style: solid;
+  border-width: 2px;
+  background:
+   linear-gradient(#8D2736 0 0) left/0% 100% no-repeat
+   #E4E4ED;
+  animation:p2 4s infinite steps(10);
+}
+
+@keyframes p2 {
+    100% {background-size:120% 100%}
+}
+
+.character-image-start { 
+    margin-top: 0px;
+}

@@ -19,6 +19,7 @@ import polygon2Img from "../../assets/images/polygon2.png";
 import cardSound from "../../assets/sounds/card-filp.mp3";
 
 import "./Gameplay.css";
+import Chat from "../../components/Chat/Chat.tsx";
 
 // Define the type for props passed to the Gameplay component
 interface GameplayProps {
@@ -39,9 +40,6 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [isCardVisible, setIsCardVisible] = useState(false);
   const [cardText, setCardText] = useState("");
   const [cardDisplayText, setCardDisplayText] = useState("");
-  const [messages, setMessages] = useState<{ text: string; type: "incoming" | "outgoing" }[]>([]);
-  const [messageText, setMessageText] = useState<string>("");
-  const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   const [cards, setCards] = useState<string[]>(
     new Array(25).fill(cardWhiteImg)
@@ -101,33 +99,6 @@ const Gameplay: React.FC<GameplayProps> = ({
     };
   }, [cardText]);
 
-  const addMessage = (text: string, type: "incoming" | "outgoing") => {
-    setMessages((prevMessages) => [...prevMessages, { text, type }]);
-  };
-  
-  useEffect(() => {
-    setTimeout(() => {
-      addMessage("test", "incoming");
-    }, 5000);
-  }, []); // message income simulation
-  
-  const handleSendMessage = () => {
-    if (messageText.trim()) {
-      addMessage(messageText.trim(), "outgoing");
-      setMessageText("");
-    }
-  };
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-
-  const [isInputFocused, setIsInputFocused] = useState(false);
-
-  const handleInputFocus = () => setIsInputFocused(true);
-  const handleInputBlur = () => setIsInputFocused(false);
-
   return (
     <>
       <BackgroundContainer>
@@ -154,26 +125,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         <img className="polygon2" src={polygon2Img} />
         <div className="timer points-red">100</div>
         <div className="timer points-blue">200</div>
-        <div className={`chat-container ${isInputFocused ? "focused" : ""}`}>
-        <div className="messages">
-          {messages.map((msg, index) => (
-            <div key={index} className={`message ${msg.type}`}>
-              {msg.text}
-            </div>
-          ))}
-          <div ref={messagesEndRef} />
-        </div>
-          <input
-            type="text"
-            placeholder={ t('enter-the-message') }
-            className="message-input"
-            value={messageText}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
-            onChange={(e) => setMessageText(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-          />
-        </div>
+        <Chat />
         <div className="content-container">
           <div className="timer-container">
             <div className="horizontal-gold-bar"></div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Hook for programmatic navigation
 import { useTranslation } from "react-i18next"; // Hook for translations
 
@@ -11,8 +11,6 @@ import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 import settingsIcon from "../../assets/icons/settings.png";
 import compassImg from "../../assets/images/compass.png";
 import profilePicImg from "../../assets/images/profile-pic.png";
-
-
 
 import "./ChooseLeader.css";
 
@@ -37,10 +35,28 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+  const [timeLeft, setTimeLeft] = useState(120); // Timer state (2 minutes = 120 seconds)
   const navigate = useNavigate(); // Hook for navigation
   const { t } = useTranslation(); // Hook for translations
 
-  // Toggles the settings modal visibility
+  // Timer logic
+  useEffect(() => {
+    if (timeLeft <= 0) navigate('/gameplay'); // Stop when time runs out
+
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => prevTime - 1);
+    }, 1000);
+
+    return () => clearInterval(timer); // Cleanup timer on component unmount
+  }, [timeLeft]);
+
+  // Format time as MM:SS
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  };
+
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
@@ -58,8 +74,14 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
   ];
 
   const handlePlayerClick = (player: Player) => {
-    setSelectedPlayer(player); // Update selected player
+    setSelectedPlayer(player); 
   };
+
+  const send_vote = (player: Player) => {
+    // send the vote to the server
+
+    // if server responds with success (everyone has choosen, then navigate to gameplay)
+  }
 
   return (
     <>
@@ -83,71 +105,79 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
           setSoundFXVolume={setSoundFXVolume}
         />
         <div className="content-container flex-start">
-            <div className="timer-container">
-                <div className="horizontal-gold-bar"></div>
-                <span className="timer">00:00</span>
-            </div>
-            <div className="compass-container">
+          <div className="timer-container">
+            <div className="horizontal-gold-bar"></div>
+            <span className="timer">{formatTime(timeLeft)}</span>
+          </div>
+          <div className="compass-container">
             {selectedPlayer ? (
               <>
-                <img src={compassImg} alt="compass" className="Compass"/>
+                <img src={compassImg} alt="compass" className="Compass" />
                 <div className="center align-center">
-                  <span className="choose-leader-label">
-                    { t('choosen') }
-                  </span>
+                  <span className="choose-leader-label">{t("choosen")}</span>
                   <div className="selected-player-info">
-                  <img
-                    src={selectedPlayer.profilePic}
-                    alt={selectedPlayer.username}
-                    className="selected-profile-pic"
-                  />
-                  <span className="selected-username">
-                    {selectedPlayer.username}
-                  </span>
+                    <img
+                      src={selectedPlayer.profilePic}
+                      alt={selectedPlayer.username}
+                      className="selected-profile-pic"
+                    />
+                    <span className="selected-username">
+                      {selectedPlayer.username}
+                    </span>
+                  </div>
+                  <Button
+                    variant="room"
+                    soundFXVolume={soundFXVolume}
+                    onClick={() => send_vote(selectedPlayer)}
+                  >
+                    <span className="button-text">{t("lockin")}</span>
+                  </Button>
                 </div>
-                  <Button variant="room" soundFXVolume={soundFXVolume} onClick={() => navigate("/gameplay")}>
-                  <span className="button-text">{ t('lockin') }</span>
-                  </Button>  
-                </div>            
               </>
             ) : (
               <>
-                <img src={compassImg} alt="compass" className="Compass"/>
+                <img src={compassImg} alt="compass" className="Compass" />
                 <span className="choose-leader-label center">
-                  { t('choose-team-leader-1') }
+                  {t("choose-team-leader-1")}
                   <br />
-                  { t('choose-team-leader-2') }
+                  {t("choose-team-leader-2")}
                 </span>
               </>
             )}
           </div>
-            <div className="teams-container">
+          <div className="teams-container">
             <div className="team my-team">
-                {myTeam.map((player, index) => (
-                  <div
-                    key={index}
-                    className={`player ${selectedPlayer?.username === player.username ? "selected" : ""}`}
-                    onClick={() => handlePlayerClick(player)}
-                  >
-                    <img
-                      src={player.profilePic}
-                      alt={player.username}
-                      className="profile-pic"
-                    />
-                    <span className="username my-team">{player.username}</span>
-                  </div>
-                ))}
+              {myTeam.map((player, index) => (
+                <div
+                  key={index}
+                  className={`player ${
+                    selectedPlayer?.username === player.username ? "selected" : ""
+                  }`}
+                  onClick={() => handlePlayerClick(player)}
+                >
+                  <img
+                    src={player.profilePic}
+                    alt={player.username}
+                    className="profile-pic"
+                  />
+                  <span className="username my-team">{player.username}</span>
+                </div>
+              ))}
             </div>
 
             <div className="team opposing-team">
-                {opposingTeam.map((player, index) => (
+              {opposingTeam.map((player, index) => (
                 <div key={index} className="player opposing-player">
-                    <span className="username opposing-team">{player.username}</span>
-                    <img src={player.profilePic} alt={player.username} className="profile-pic" />
+                  <span className="username opposing-team">{player.username}</span>
+                  <img
+                    src={player.profilePic}
+                    alt={player.username}
+                    className="profile-pic"
+                  />
                 </div>
-                ))}
+              ))}
             </div>
-            </div>
+          </div>
         </div>
       </BackgroundContainer>
     </>
