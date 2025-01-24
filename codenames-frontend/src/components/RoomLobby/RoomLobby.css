@@ -93,6 +93,13 @@
     padding-right: 1rem;
 }
 
+.join-button{
+    font-size: calc(0.6rem + 0.8vw);
+    color: #5B544E;
+    margin-bottom: 10px;
+
+}
+
 .player-icon {
     height: 100%;
     margin-left: 0.5rem;

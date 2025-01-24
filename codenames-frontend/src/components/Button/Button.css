@@ -127,3 +127,12 @@
   background-image: linear-gradient(to right, #fff7ab, #dab274);
   color: transparent; 
 }
+
+.btn-join-team{
+  background: linear-gradient(to top, #ccbf9a, #dccfaa);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 17px;
+  height: 3rem;
+  width: 100%;
+  border: none;
+}
