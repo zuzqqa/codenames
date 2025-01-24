@@ -1,20 +1,24 @@
-
 import {ErrorMessage, useFormik} from 'formik';
 import * as Yup from 'yup';
 import Button from "../Button/Button.tsx";
 import backButton from "../../assets/icons/arrow-back.png";
 import {useNavigate} from "react-router-dom";
 import { useTranslation } from "react-i18next";
-
+import { useState } from "react";
 import "./CreateGameForm.css";
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
+import React from "react";
 
+// Typ dla CreateGameFormProps
 interface CreateGameFormProps {
     soundFXVolume: number;
 }
 
 const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
+    const [error, setError] = useState<string | null>(null);
+
     const formik = useFormik({
         enableReinitialize: true,
         initialValues: {
@@ -31,12 +35,37 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
             hintTime: Yup.number().required('Required'),
             roundsNumber: Yup.number().required('Required'),
         }),
-        onSubmit: () => {
-            // apiCreateGame();
+        onSubmit: async (values) => {
+            try {
+                const requestData = {
+                    gameName: values.gameName,
+                    maxPlayers: values.playerSlider,
+                    durationOfTheRound: `PT${values.gameDuration}S`,  
+                    timeForGuessing: `PT${values.hintTime}S`,          
+                    timeForAHint: `PT${values.hintTime}S`,          
+                    numberOfRounds: values.roundsNumber,
+                };
+
+                const response = await fetch('http://localhost:8080/api/game-session/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('gameId', data.gameId);
+                    navigate('/game-lobby');
+                } else {
+                    setError('Failed to create game session');
+                }
+            } catch (err) {
+                setError('Network error');
+            }
         },
     });
-
-    const navigate = useNavigate()
 
     return (
         <>
@@ -106,6 +135,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
                             value={formik.values.hintTime}
                         />
                     </div>
+                    {error && <div className="error">{error}</div>}
                     <Button type="submit" variant="room" soundFXVolume={soundFXVolume}>
                         <span className="button-text">{ t('create-game-button') }</span>
                     </Button>

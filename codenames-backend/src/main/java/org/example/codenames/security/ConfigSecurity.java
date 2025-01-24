@@ -6,6 +6,7 @@ import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.userDetails.UserEntityDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -35,10 +36,13 @@ public class ConfigSecurity {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf().disable().authorizeHttpRequests(authorizeRequests ->
+        return http.csrf().disable()
+                //.cors().and()     //We either have to do this or add requestMatchers for OPTIONS, leaving this for now to explore it further
+                .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/api/users", "/api/users/authenticate").permitAll()
-                                .requestMatchers("/api/email/send").permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight requests
+                                .requestMatchers("/api/users", "/api/users/authenticate", "api/users/logout").permitAll()
+                                .requestMatchers("/api/email/send", "/api/game-session/create", "api/game-session/**", "api/game-session/**/start", "api/game-session/**/finish").permitAll()
                                 .anyRequest().authenticated() // Allow access to registration and authentication endpoints
                                 )
                 .sessionManagement(sessionManagement ->

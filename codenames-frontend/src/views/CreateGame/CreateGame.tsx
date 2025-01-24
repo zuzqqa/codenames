@@ -13,6 +13,8 @@ import settingsIcon from "../../assets/icons/settings.png";
 import "../../styles/App.css";
 import "../SelectGame/SelectGame.css";
 import "./CreateGame.css";
+import {logout} from "../../shared/utils.tsx";
+import logoutButton from "../../assets/icons/logout.svg";
 
 // Define the type for props passed to the CreateGame component
 interface CreateGameProps {
@@ -43,6 +45,16 @@ const CreateGame: React.FC<CreateGameProps> = ({
         <Button variant="circle" soundFXVolume={soundFXVolume}>
           <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
         </Button>
+
+        {document.cookie.split('; ').find(cookie => cookie.startsWith('loggedIn=')) && (
+                <Button variant="logout" soundFXVolume={soundFXVolume}>
+                    <img
+                        src={logoutButton}
+                        onClick={logout}
+                        alt="Logout"
+                    />
+                </Button>
+            )}
 
         {/* Settings modal */}
         <SettingsModal
