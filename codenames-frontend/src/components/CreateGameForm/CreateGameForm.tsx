@@ -67,10 +67,37 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
         },
     });
 
+    const handleBack = async () => {
+        const storedGameId = localStorage.getItem('gameId');
+    
+        if(!storedGameId) {
+            setError('No game session found');
+            return;
+        }
+    
+        try {
+            const response = await fetch(`http://localhost:8080/api/game-session/${storedGameId}/finish`,{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: null,
+            });
+                
+            if (!response.ok) {
+                throw new Error('Failed to abort the game');
+            }
+    
+            navigate('/games');
+        } catch (error) {
+            setError('Failed to abort the game. Please try again.');
+        }
+    }
+
     return (
         <>
             <RoomMenu>
-                <Button className="back-button" variant={"circle-back"} onClick={() => navigate('/games')} soundFXVolume={soundFXVolume}>
+                <Button className="back-button" variant={"circle-back"} onClick={handleBack} soundFXVolume={soundFXVolume}>
                     <img src={backButton} alt="Back" className="btn-arrow-back" />
                 </Button>
                 <span className="room-form-label">{ t('create-game-button') }</span>

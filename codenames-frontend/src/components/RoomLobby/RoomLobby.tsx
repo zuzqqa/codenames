@@ -102,7 +102,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     }
     
     const start_game = async () => {
-        console.log("Starting game");
         const storedGameId = localStorage.getItem('gameId');
 
         if(!storedGameId) {

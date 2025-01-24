@@ -22,6 +22,7 @@
   padding: 0;
   margin: 0;
 
+  padding-left: 2px;
   font-size: calc(0.2rem + 1vw);
   color: transparent;
   background-clip: text;
