@@ -5,6 +5,7 @@ import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import Button from "../Button/Button.tsx";
 import backButton from "../../assets/icons/arrow-back.png";
 import "./RoomLobby.css";
+import playerIcon from "../../assets/images/player-icon.png";
 
 interface User {
     userId: string;
@@ -128,6 +129,10 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
         }
     }
 
+    const team1 = gameSession.playersList.filter((_, index) => index % 2 === 0);
+    const team2 = gameSession.playersList.filter((_, index) => index % 2 !== 0);
+
+  
     return (
         <>
             <RoomMenu>
@@ -159,6 +164,29 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                                 >
                                     <span className="button-text">Start</span>
                                 </Button>
+                                <div className="players-container">
+                                <div className="team">
+                                        <Button className="join-button" variant={"join-team"} soundFXVolume={soundFXVolume}>
+                                            +
+                                        </Button>                                    {team1.map((player, index) => (
+                                        <div key={index} className="player-container">
+                                            <img src={playerIcon} alt="Player" className="player-icon" />
+                                            {player.name}
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="team">
+                                <Button className="join-button" variant={"join-team"} soundFXVolume={soundFXVolume}>
+                                    +
+                                </Button>
+                                    {team2.map((player, index) => (
+                                        <div key={index} className="player-container">
+                                            <img src={playerIcon} alt="Player" className="player-icon" />
+                                            {player.name}
+                                        </div>
+                                    ))}
+                                </div>
+                                </div>
                             </div>
                         </div>
                     )}
