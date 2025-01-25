@@ -32,9 +32,10 @@ public class GameSession {
     private String gameName;
     private Integer maxPlayers;
     private Duration durationOfTheRound;
-    private Duration timeForGuessing;
     private Duration timeForAHint;
 
-    private Integer numberOfRounds;
-    private List<User> connectedUsers;
+    private Duration timeForGuessing;
+    private List<List<User>> connectedUsers;
+    private List<List<Integer>> votes;
+    private GameState gameState;
 }

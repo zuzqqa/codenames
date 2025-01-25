@@ -10,8 +10,7 @@ export const logout = async () => {
 
         if (response.ok) {
             document.cookie = `loggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
-            window.location.reload();
-            alert("User logged out successfully!");
+            window.location.href = "/loading";
         } else {
             const error = await response.text();
             alert("Failed to log out: " + error);

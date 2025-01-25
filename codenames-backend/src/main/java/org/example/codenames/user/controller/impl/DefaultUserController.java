@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -81,7 +82,6 @@ public class DefaultUserController implements UserController {
         }
     }
 
-
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("authToken", null);
@@ -94,13 +94,44 @@ public class DefaultUserController implements UserController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/getUsername")
+    public ResponseEntity<String> getUsernameByToken(@CookieValue(value = "authToken", required = false) String token) {
+        if (token == null) {
+            return ResponseEntity.ok("null");
+        }
+        return ResponseEntity.ok(jwtService.getUsernameFromToken(token));
+    }
+
+    @GetMapping("/getId")
+    public ResponseEntity<String> getIdByToken(@CookieValue(value = "authToken", required = false) String token) {
+        if (token == null) {
+            return ResponseEntity.ok("null");
+        }
+        String username = jwtService.getUsernameFromToken(token);
+        Optional<User> user = userService.getUserByUsername(username);
+        System.out.println(user);
+        return user.map(User::getId).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/createGuest")
+    public ResponseEntity<Void> createGuest(HttpServletResponse response) {
+        User guest = new User();
+        guest.setUsername("guest");
+        guest.setPassword("guest");
+        guest.setRoles("ROLE_GUEST");
+        userService.createUser(guest);
+        String token = jwtService.generateToken(guest.getUsername());
+        response.addCookie(setAuthCookie(token, true));
+        return ResponseEntity.ok().build();
+    }
+
     private Cookie setAuthCookie(String token, boolean loggingIn) {
         Cookie cookie = new Cookie("authToken", token);
         cookie.setHttpOnly(true);
         cookie.setSecure(false); // Set to true for https
         cookie.setPath("/");
         if (loggingIn) {
-            cookie.setMaxAge(3600);
+            cookie.setMaxAge(36000);
         }
         else {
             cookie.setMaxAge(0);

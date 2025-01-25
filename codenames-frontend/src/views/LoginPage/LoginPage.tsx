@@ -1,5 +1,6 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom"; // Hook for programmatic navigation
 
 import "../../styles/App.css";
 import "./LoginPage.css";
@@ -17,6 +18,7 @@ import logoutButton from "../../assets/icons/logout.svg";
 
 import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister.tsx";
 import {logout} from "../../shared/utils.tsx";
+import Cookies from 'js-cookie';
 
 interface LoginProps {
     setVolume: (volume: number) => void;
@@ -35,6 +37,7 @@ const LoginPage: React.FC<LoginProps> = ({
     const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const { t } = useTranslation();
+    const navigate = useNavigate(); // Hook for navigation
 
     const handleLoginChange = (e: ChangeEvent<HTMLInputElement>) => {
         setLogin(e.target.value);
@@ -68,8 +71,7 @@ const LoginPage: React.FC<LoginProps> = ({
 
             if (response.ok) {
                 document.cookie = "loggedIn=true";
-                window.location.reload();
-                alert("User logged in successfully!");
+                window.location.href = "/loading";
             } else {
                 const error = await response.text();
                 alert("Failed to log in: " + error);
@@ -82,7 +84,6 @@ const LoginPage: React.FC<LoginProps> = ({
     const toggleSettings = () => {
         setIsSettingsOpen(!isSettingsOpen);
     };
-
 
     return (
         <BackgroundContainer>
