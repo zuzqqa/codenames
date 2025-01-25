@@ -41,7 +41,6 @@ public class DefaultGameSessionService implements GameSessionService {
                 UUID.randomUUID(),
                 request.getGameName(),
                 request.getMaxPlayers(),
-                request.getDurationOfTheRound(),
                 request.getTimeForAHint(),
                 request.getTimeForGuessing(),
                 new ArrayList<List<User>>() {{
@@ -52,7 +51,7 @@ public class DefaultGameSessionService implements GameSessionService {
                     add(new ArrayList<>());
                     add(new ArrayList<>());
                 }},
-                gameState
+                new GameState(null, null, 0, 0, 0, "")
         );
 
         gameSessionRepository.save(newGame);

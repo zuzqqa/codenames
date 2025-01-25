@@ -31,7 +31,6 @@ public class GameSession {
 
     private String gameName;
     private Integer maxPlayers;
-    private Duration durationOfTheRound;
     private Duration timeForAHint;
 
     private Duration timeForGuessing;

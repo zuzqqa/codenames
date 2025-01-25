@@ -16,17 +16,51 @@ import cardRedImg from "../../assets/images/card-red.jpg";
 import cardBlueImg from "../../assets/images/card-blue.jpg";
 import polygon1Img from "../../assets/images/polygon1.png";
 import polygon2Img from "../../assets/images/polygon2.png";
-
+import { convertDurationToSeconds } from "../../shared/utils.tsx";
 import cardSound from "../../assets/sounds/card-filp.mp3";
 
 import "./Gameplay.css";
 import Chat from "../../components/Chat/Chat.tsx";
-
-// Define the type for props passed to the Gameplay component
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+import { useNavigate } from "react-router-dom";
+import {formatTime} from "../../shared/utils.tsx";
 interface GameplayProps {
   setVolume: (volume: number) => void; // Function to set global volume
   soundFXVolume: number; // Current sound effects volume level
   setSoundFXVolume: (volume: number) => void; // Function to set sound effects volume
+}
+
+interface User {
+  id: string;
+  username: string;
+}
+
+enum SessionStatus {
+  CREATED = "CREATED",
+  IN_PROGRESS = "IN_PROGRESS",
+  FINISHED = "FINISHED",
+}
+
+interface GameSession {
+  status: SessionStatus;
+  sessionId: string;
+  gameName: string;
+  maxPlayers: number;
+  durationOfTheRound: string;
+  timeForAHint: string;
+  timeForGuessing: string;
+  connectedUsers: User[][];
+  gameState: GameState;
+}
+
+interface GameState {
+  blueTeamLeader: User;
+  redTeamLeader: User;
+  blueTeamScore: number;
+  redTeamScore: number;
+  teamTurn: number;
+  hint: string;
 }
 
 // Main component definition
@@ -41,15 +75,26 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [isCardVisible, setIsCardVisible] = useState(false);
   const [cardText, setCardText] = useState("");
   const [cardDisplayText, setCardDisplayText] = useState("");
-
+  const [gameSession, setGameSession] = useState<GameSession | null>(null);
+  const [redTeamPlayers, setRedTeamPlayers] = useState<User[]>([]);
+  const [blueTeamPlayers, setBlueTeamPlayers] = useState<User[]>([]);
+  const [client, setClient] = useState<Client | null>(null);
+  const [myTeam, setMyTeam] = useState<string | null>(null);
   const [cards, setCards] = useState<string[]>(
     new Array(25).fill(cardWhiteImg)
   );
-
   const [flipStates, setFlipStates] = useState<boolean[]>(
     new Array(25).fill(false)
   );
-
+  const [amIRedTeamLeader, setAmIRedTeamLeader] = useState(false);
+  const [amIBlueTeamLeader, setAmIBlueTeamLeader] = useState(false);
+  const navigate = useNavigate();
+  const [blueTeamScore, setBlueTeamScore] = useState(0);
+  const [redTeamScore, setRedTeamScore] = useState(0);
+  const [whosTurn, setWhosTurn] = useState<number>(0);
+  const [isGuessingTime, setIsGuessingTime] = useState(false);
+  const [isHintTime, setIsHintTime] = useState(true);
+  const [remainingTime, setRemainingTime] = useState(0);
   // Toggles the settings modal visibility
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
@@ -70,7 +115,7 @@ const Gameplay: React.FC<GameplayProps> = ({
       setCards((prevCards) => {
         const newCards = [...prevCards];
         newCards[index] =
-        newCards[index] === cardWhiteImg ? cardRedImg : cardWhiteImg;
+          newCards[index] === cardWhiteImg ? cardRedImg : cardWhiteImg;
         return newCards;
       });
     }, 170); // 0.17s
@@ -93,12 +138,122 @@ const Gameplay: React.FC<GameplayProps> = ({
       setCardText("");
     }
   };
+
   useEffect(() => {
+    const storedGameId = localStorage.getItem("gameId");
+
+    if (storedGameId) {
+      fetch(`http://localhost:8080/api/game-session/${storedGameId}`)
+        .then((response) => response.json())
+        .then(async (data: GameSession) => {
+          const hintTimeInSeconds = convertDurationToSeconds(data.timeForAHint);
+          const guessingTimeInSeconds = convertDurationToSeconds(
+            data.timeForGuessing
+          );
+
+          setGameSession({
+            ...data,
+            timeForAHint: hintTimeInSeconds.toString(),
+            timeForGuessing: guessingTimeInSeconds.toString(),
+          });
+
+          if (data.connectedUsers) {
+            setRedTeamPlayers(data.connectedUsers[0] || []);
+            setBlueTeamPlayers(data.connectedUsers[1] || []);
+          }
+
+          const getIdResponse = await fetch(
+            "http://localhost:8080/api/users/getId",
+            {
+              method: "GET",
+              credentials: "include",
+            }
+          );
+          const userId = await getIdResponse.text();
+
+          if (data.connectedUsers[0]?.some((user) => user.id === userId)) {
+            setMyTeam("red");
+          } else if (
+            data.connectedUsers[1]?.some((user) => user.id === userId)
+          ) {
+            setMyTeam("blue");
+          } else {
+            setMyTeam(null);
+          }
+
+          if (data.gameState?.blueTeamLeader?.id === userId) {
+            setAmIBlueTeamLeader(true);
+          } else if (data.gameState?.redTeamLeader?.id === userId) {
+            setAmIRedTeamLeader(true);
+          }
+
+          setBlueTeamScore(data.gameState?.blueTeamScore || 0);
+          setRedTeamScore(data.gameState?.redTeamScore || 0);
+          setWhosTurn(data.gameState.teamTurn);
+        })
+        .catch((err) => console.error("Failed to load game session", err));
+    } else {
+      navigate("/games");
+    }
+
+    // WebSocket connection using SockJS and STOMP
+    const socket = new SockJS("http://localhost:8080/ws");
+    const stompClient = new Client({
+      webSocketFactory: () => socket,
+      onConnect: () => {
+        // Subscribe to the game session updates
+        stompClient.subscribe(`/game/${storedGameId}`, (message) => {
+          const updatedGameSession = JSON.parse(message.body);
+          if (updatedGameSession) {
+            setRedTeamPlayers(updatedGameSession.connectedUsers[0] || []);
+            setBlueTeamPlayers(updatedGameSession.connectedUsers[1] || []);
+          }
+        });
+      },
+      onStompError: (frame) => {
+        console.error("STOMP error", frame);
+      },
+    });
+
+    stompClient.activate();
+
     document.addEventListener("keydown", handleGlobalKeyDown);
     return () => {
       document.removeEventListener("keydown", handleGlobalKeyDown);
     };
-  }, [cardText]);
+  }, [cardText, navigate]);
+
+  useEffect(() => {
+    if (gameSession?.timeForAHint && isHintTime) {
+      const timeForHint = Number(gameSession.timeForAHint);
+      setRemainingTime(timeForHint); 
+    } else if (gameSession?.timeForGuessing && isGuessingTime) {
+      const timeForGuessing = Number(gameSession.timeForGuessing);
+      setRemainingTime(timeForGuessing);  
+    }
+  }, [gameSession, isHintTime, isGuessingTime]);
+
+  
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setRemainingTime((prevTime) => {
+        if (prevTime <= 1) {
+          clearInterval(timer);  
+          
+          if (isHintTime) {
+            setIsHintTime(false);
+            setIsGuessingTime(true);
+          } else if (isGuessingTime) {
+            console.log("Round complete!");
+          }
+          return 0; 
+        }
+        return prevTime - 1; 
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isHintTime, isGuessingTime]); 
 
   return (
     <>
@@ -124,13 +279,18 @@ const Gameplay: React.FC<GameplayProps> = ({
 
         <img className="polygon1" src={polygon1Img} />
         <img className="polygon2" src={polygon2Img} />
-        <div className="timer points-red">100</div>
-        <div className="timer points-blue">200</div>
+        <div className="timer points-red">{redTeamScore}</div>
+        <div className="timer points-blue">{blueTeamScore}</div>
         <Chat />
         <div className="content-container">
           <div className="timer-container">
             <div className="horizontal-gold-bar"></div>
-            <span className="timer">00:00</span>
+
+            {isHintTime ? (
+              <span className="timer">{formatTime(remainingTime)}</span>
+            ) : (
+              <span className="timer">{formatTime(remainingTime)}</span>
+            )}
           </div>
           <div className="cards-section">
             {cards.map((cardImage, index) => (
@@ -160,7 +320,7 @@ const Gameplay: React.FC<GameplayProps> = ({
             </div>
             <div className="item">
               <Button variant="room" soundFXVolume={soundFXVolume}>
-                <span className="button-text">{ t('end-round') }</span>
+                <span className="button-text">{t("end-round")}</span>
               </Button>
               <div className="horizontal-gold-bar" />
             </div>
@@ -187,10 +347,11 @@ const Gameplay: React.FC<GameplayProps> = ({
             />
             <input
               type="text"
-              placeholder= { t('enter-the-codename') }
+              placeholder={t("enter-the-codename")}
               className="codename-input"
               value={cardText}
               onChange={(e) => setCardText(e.target.value)}
+              disabled={!amIRedTeamLeader && !amIBlueTeamLeader}
             />
           </div>
         )}
