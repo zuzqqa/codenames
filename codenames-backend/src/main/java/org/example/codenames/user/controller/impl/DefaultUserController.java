@@ -1,7 +1,6 @@
 package org.example.codenames.user.controller.impl;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.codenames.jwt.JwtService;
@@ -107,6 +106,7 @@ public class DefaultUserController implements UserController {
         return ResponseEntity.ok().build();
     }
 
+    // TODO: Move this to a utility class
     private Cookie setAuthCookie(String token, boolean loggingIn) {
         Cookie cookie = new Cookie("authToken", token);
         // cookie.setHttpOnly(true); this bullshit unables me to read the cookie in the frontend
