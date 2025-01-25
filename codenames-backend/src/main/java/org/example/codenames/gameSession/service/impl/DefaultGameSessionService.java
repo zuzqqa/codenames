@@ -51,7 +51,7 @@ public class DefaultGameSessionService implements GameSessionService {
                     add(new ArrayList<>());
                     add(new ArrayList<>());
                 }},
-                new GameState(null, null, 0, 0, 0, "")
+                gameState
         );
 
         gameSessionRepository.save(newGame);
@@ -73,6 +73,7 @@ public class DefaultGameSessionService implements GameSessionService {
         return gameSessionRepository.findBySessionId(sessionId)
                 .map(gameSession -> {
                     if (gameSession.getGameState() != null) {
+                        System.out.println("aaaaaaaaaaaaaaaaaaaa");
                         return gameSession.getGameState().getCards();
                     }
                     throw new IllegalStateException("GameState is null for the given session.");

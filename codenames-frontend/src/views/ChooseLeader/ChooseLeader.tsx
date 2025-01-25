@@ -54,7 +54,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [selectedPlayer, setSelectedPlayer] = useState<User | null>(null);
-  const [timeLeft, setTimeLeft] = useState(120); // Timer state (2 minutes = 120 seconds)
+  const [timeLeft, setTimeLeft] = useState(10); // Timer state (2 minutes = 120 seconds)
   const navigate = useNavigate(); // Hook for navigation
   const { t } = useTranslation(); // Hook for translations
   const [gameSession, setGameSession] = useState<GameSession | null>(null);
@@ -105,7 +105,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     }
 
     const timer = setInterval(() => {
-      setTimeLeft((prevTime) => prevTime - 10);
+      setTimeLeft((prevTime) => prevTime - 1);
     }, 1000);
 
     // WebSocket connection using SockJS and STOMP
