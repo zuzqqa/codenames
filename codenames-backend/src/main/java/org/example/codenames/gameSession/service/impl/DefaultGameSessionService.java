@@ -5,6 +5,7 @@ import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.gameState.entity.GameState;
+import org.example.codenames.gameState.service.api.GameStateService;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.service.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +21,21 @@ public class DefaultGameSessionService implements GameSessionService {
 
     private final GameSessionRepository gameSessionRepository;
     private final UserService userService;
+    private final GameStateService gameStateService;
 
     @Autowired
-    public DefaultGameSessionService(GameSessionRepository gameSessionRepository, UserService userService) {
+    public DefaultGameSessionService(GameSessionRepository gameSessionRepository, UserService userService, GameStateService gameStateService) {
         this.gameSessionRepository = gameSessionRepository;
         this.userService = userService;
+        this.gameStateService = gameStateService;
     }
 
     @Override
     public String createGameSession(CreateGameRequest request) {
+        GameState gameState = new GameState();
+        gameStateService.generateRandomCardsNames(gameState);
+        gameStateService.generateRandomCardsColors(gameState);
+
         GameSession newGame = new GameSession(
                 GameSession.sessionStatus.CREATED,
                 UUID.randomUUID(),
@@ -45,7 +52,7 @@ public class DefaultGameSessionService implements GameSessionService {
                     add(new ArrayList<>());
                     add(new ArrayList<>());
                 }},
-                new GameState()
+                gameState
         );
 
         gameSessionRepository.save(newGame);
@@ -123,8 +130,11 @@ public class DefaultGameSessionService implements GameSessionService {
 
         // Create or update GameState with the leaders
         GameState gameState = session.getGameState();
+
         if (gameState == null) {
             gameState = new GameState();
+            gameStateService.generateRandomCardsNames(gameState);
+            gameStateService.generateRandomCardsColors(gameState);
             session.setGameState(gameState);
         }
 
