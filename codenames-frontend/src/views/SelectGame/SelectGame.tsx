@@ -43,6 +43,11 @@ const SelectGame: React.FC<SelectGameProps> = ({
     setIsSettingsOpen(!isSettingsOpen);
   };
 
+  const updateMusicVolume = (volume: number) => {
+    setMusicVolume(volume);
+    setVolume(volume); // Update global volume
+  };
+  
   return (
     <>
       <BackgroundContainer>
@@ -68,10 +73,7 @@ const SelectGame: React.FC<SelectGameProps> = ({
           onClose={toggleSettings}
           musicVolume={musicVolume} 
           soundFXVolume={soundFXVolume}
-          setMusicVolume={(volume) => {
-            setMusicVolume(volume); // Update local music volume
-            setVolume(volume / 100); // Update global volume
-          }}
+          setMusicVolume={updateMusicVolume}
           setSoundFXVolume={setSoundFXVolume}
         />
 
