@@ -244,7 +244,8 @@ const Gameplay: React.FC<GameplayProps> = ({
             setIsHintTime(false);
             setIsGuessingTime(true);
           } else if (isGuessingTime) {
-            console.log("Round complete!");
+            setIsHintTime(true);
+            setIsGuessingTime(false);
           }
           return 0; 
         }
@@ -255,7 +256,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     return () => clearInterval(timer);
   }, [isHintTime, isGuessingTime]); 
 
-  return (
+  return ( 
     <>
       <BackgroundContainer>
         <GameTitleBar />

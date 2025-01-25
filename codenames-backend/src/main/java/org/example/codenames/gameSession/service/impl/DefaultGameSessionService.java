@@ -6,6 +6,7 @@ import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.gameState.entity.GameState;
 import org.example.codenames.gameState.service.api.GameStateService;
+import org.example.codenames.gameState.service.impl.DefaultGameStateService;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.service.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,7 @@ public class DefaultGameSessionService implements GameSessionService {
                     add(new ArrayList<>());
                     add(new ArrayList<>());
                 }},
-                new GameState(null, null, 0, 0, 0, "")
+                gameState
         );
 
         gameSessionRepository.save(newGame);
@@ -163,8 +164,7 @@ public class DefaultGameSessionService implements GameSessionService {
 
         gameState.setBlueTeamLeader(blueTeamLeader);
         gameState.setRedTeamLeader(redTeamLeader);
-        System.out.println("Hehe: " + gameState.getBlueTeamLeader());
-        System.out.println(gameState.getRedTeamLeader());
+
         gameSessionRepository.save(session);
     }
 
