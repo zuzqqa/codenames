@@ -1,17 +1,45 @@
-.list-content {
-    margin: 0 auto;
-    margin-top: 9%;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem; /* Spacing between game buttons */
+.search-button{
+    position: absolute;
+    right: 0;
+    margin-top: -1.2vh;
+
+}
+
+.search-button img{
+    height: 8vh;
+}
+.list-container {
     overflow-y: auto; /* Enable vertical scrolling */
     max-height: 75%;
-    max-width: 100%;
-    padding: 10px;
-    border-radius: 10px;
-    background-color: #f5e1c1; /* Light beige background */
+    margin-top: 9%;
+    border-radius: 20px;
+    width: 80%;
+    position: absolute;
+    left: 50%;
+    transform: translate(-53%, 0);
+  }
+
+.list-content{
+    margin: 0 auto;
+    overflow: hidden;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    border-radius: 20px;
+    background: linear-gradient(360deg, #F0E0B5 0%, #EED8B0 88.89%);
     box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.3);
-    width: 80%
+    width: 97%;
+}
+
+.list-container li{
+    font-size: 1.3rem;
+
+    width: 100%;
+    border-style: none none solid none;
+    box-shadow: 0 5px 5px 0 #ac9c81 inset;    
+    border-color: #544534; /* Możesz dodać border dla podkreślenia */
+    border-width: 1px;
 }
 
 /* Style for each game session button */
@@ -38,37 +66,38 @@ button.variant-session:hover {
 .room-info {
     display: flex;
     flex-direction: column;
+    padding: 10px;
 }
 
 .room-name {
-    font-size: 16px;
+    font-size: 1.3rem;
     font-weight: bold;
     color: #4a4a4a;
 }
 
 .room-players {
-    font-size: 14px;
+    font-size: 1rem;
     color: #7b7b7b;
 }
 
 /* Custom Scrollbar */
-.list-content::-webkit-scrollbar {
-    width: 14px; /* Width of the scrollbar */
+.list-container::-webkit-scrollbar {
+    width: 18px; /* Width of the scrollbar */
 }
 
-.list-content::-webkit-scrollbar-track {
+.list-container::-webkit-scrollbar-track {
     background: linear-gradient(to bottom, #d0c7a1, #d0c5a1);
     box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
-    border-radius: 5px;
+    border-radius: 7px;
 }
 
-.list-content::-webkit-scrollbar-thumb {
+.list-container::-webkit-scrollbar-thumb {
     background: #650a0a; /* Gold thumb color */
     border-radius: 7px;
     box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
 }
 
-.list-content::-webkit-scrollbar-thumb:hover {
+.list-container::-webkit-scrollbar-thumb:hover {
     background: #720c0c; /* Lighter gold on hover */
 }
 
@@ -92,4 +121,42 @@ button.variant-session:hover {
     padding-bottom: 7vh;
 
   
+}
+
+.search-bar{
+    z-index: 100;
+}
+
+.search-bar-background{
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 45vw;
+    height: 8vh;
+    margin-top: -3vh;
+    min-height: 60px;
+}
+
+.search-input-container{
+    width: 35vw;
+    margin-left: 20px;
+    margin-top: -1.4vh;
+
+}
+
+.search-bar-container{
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.search-icon{
+    width: 2rem;
+    height: 2rem;
+    margin-right: -1vw;
+    margin-top: -1.2vh;
+
 }

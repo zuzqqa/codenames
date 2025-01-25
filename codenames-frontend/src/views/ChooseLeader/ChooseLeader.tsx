@@ -11,6 +11,8 @@ import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 import settingsIcon from "../../assets/icons/settings.png";
 import compassImg from "../../assets/images/compass.png";
 import profilePicImg from "../../assets/images/profile-pic.png";
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
 import "./ChooseLeader.css";
 
@@ -21,9 +23,26 @@ interface ChooseLeaderProps {
   setSoundFXVolume: (volume: number) => void; // Function to set sound effects volume
 }
 
-interface Player {
+interface User {
+  userId: string;
   username: string;
-  profilePic: string;
+}
+
+enum SessionStatus {
+  CREATED = "CREATED",
+  IN_PROGRESS = "IN_PROGRESS",
+  FINISHED = "FINISHED",
+}
+
+interface GameSession {
+  status: SessionStatus;
+  sessionId: string;
+  gameName: string;
+  maxPlayers: number;
+  durationOfTheRound: string;
+  timeForAHint: string;
+  timeForGuessing: string;
+  connectedUsers: User[][];
 }
 
 // Main component definition
@@ -34,54 +53,124 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
 }) => {
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
-  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+  const [selectedPlayer, setSelectedPlayer] = useState<User | null>(null);
   const [timeLeft, setTimeLeft] = useState(120); // Timer state (2 minutes = 120 seconds)
   const navigate = useNavigate(); // Hook for navigation
   const { t } = useTranslation(); // Hook for translations
-
+  const [gameSession, setGameSession] = useState<GameSession | null>(null);
+  const [redTeamPlayers, setRedTeamPlayers] = useState<User[]>([]);
+  const [blueTeamPlayers, setBlueTeamPlayers] = useState<User[]>([]);
+  const [client, setClient] = useState<Client | null>(null);
   // Timer logic
   useEffect(() => {
-    if (timeLeft <= 0) navigate('/gameplay'); // Stop when time runs out
+    if (timeLeft <= 0) navigate("/gameplay"); // Stop when time runs out
+
+    const storedGameId = localStorage.getItem("gameId");
+
+    if (storedGameId) {
+      fetch(`http://localhost:8080/api/game-session/${storedGameId}`)
+        .then((response) => response.json())
+        .then((data: GameSession) => {
+          if (data.connectedUsers) {
+            setRedTeamPlayers(data.connectedUsers[0] || []); 
+            setBlueTeamPlayers(data.connectedUsers[1] || []);
+          }
+        })
+        .catch((err) => console.error("Failed to load game session", err));
+    } else {
+      navigate("/games");
+    }
 
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => prevTime - 1);
     }, 1000);
 
-    return () => clearInterval(timer); // Cleanup timer on component unmount
-  }, [timeLeft]);
+    // WebSocket connection using SockJS and STOMP
+    const socket = new SockJS("http://localhost:8080/ws");
+    const stompClient = new Client({
+      webSocketFactory: () => socket,
+      connectHeaders: {
+        login: "user",
+        passcode: "password",
+      },
+      debug: (str) => {
+        console.log("STOMP: " + str);
+      },
+      onConnect: () => {
+        console.log("WebSocket connected");
+
+        // Subscribe to the game session updates
+        stompClient.subscribe(`/game/${storedGameId}`, (message) => {
+          const updatedGameSession = JSON.parse(message.body);
+          if (updatedGameSession) {
+            setRedTeamPlayers(updatedGameSession.connectedUsers[0] || []);
+            setBlueTeamPlayers(updatedGameSession.connectedUsers[1] || []);
+          }
+        });
+      },
+      onStompError: (frame) => {
+        console.error("STOMP error", frame);
+      },
+    });
+
+    stompClient.activate();
+
+    // Cleanup function to deactivate WebSocket connection
+    return () => {
+      clearInterval(timer); // Clear the timer when component unmounts
+
+    };
+  }, [timeLeft, navigate]);
 
   // Format time as MM:SS
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+      2,
+      "0"
+    )}`;
   };
 
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
 
-  const myTeam = [
-    { username: "Player1", profilePic: profilePicImg },
-    { username: "Player2", profilePic: profilePicImg },
-    { username: "Player3", profilePic: profilePicImg },
-  ];
-
-  const opposingTeam = [
-    { username: "Opponent1", profilePic: profilePicImg },
-    { username: "Opponent2", profilePic: profilePicImg },
-    { username: "Opponent3", profilePic: profilePicImg },
-  ];
-
-  const handlePlayerClick = (player: Player) => {
-    setSelectedPlayer(player); 
+  const handlePlayerClick = (player: User) => {
+    setSelectedPlayer(player);
   };
 
-  const send_vote = (player: Player) => {
-    // send the vote to the server
+  const send_vote = async () => {
+    const storedGameId = localStorage.getItem("gameId");
 
-    // if server responds with success (everyone has choosen, then navigate to gameplay)
-  }
+    if (storedGameId && selectedPlayer) {
+      const getIdResponse = await fetch("http://localhost:8080/api/users/getId", {
+        method: "GET",
+        credentials: "include",
+      });
+      const userId = await getIdResponse.text();
+
+      const voteRequest = {
+        userId: selectedPlayer.userId,
+        votedUserId: userId,
+      };
+
+      const response = await fetch(`http://localhost:8080/api/game-session/${storedGameId}/vote`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(voteRequest),
+      })
+      
+      if (response.ok) {
+        console.log("Vote casted.");
+      } else {
+        console.error("Failed to cast a vote.");
+      }
+    }
+  };
 
   return (
     <>
@@ -117,7 +206,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
                   <span className="choose-leader-label">{t("choosen")}</span>
                   <div className="selected-player-info">
                     <img
-                      src={selectedPlayer.profilePic}
+                      src={profilePicImg}
                       alt={selectedPlayer.username}
                       className="selected-profile-pic"
                     />
@@ -128,7 +217,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
                   <Button
                     variant="room"
                     soundFXVolume={soundFXVolume}
-                    onClick={() => send_vote(selectedPlayer)}
+                    onClick={send_vote}
                   >
                     <span className="button-text">{t("lockin")}</span>
                   </Button>
@@ -147,16 +236,18 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
           </div>
           <div className="teams-container">
             <div className="team my-team">
-              {myTeam.map((player, index) => (
+              {redTeamPlayers.map((player, index) => (
                 <div
                   key={index}
                   className={`player ${
-                    selectedPlayer?.username === player.username ? "selected" : ""
+                    selectedPlayer?.username === player.username
+                      ? "selected"
+                      : ""
                   }`}
                   onClick={() => handlePlayerClick(player)}
                 >
                   <img
-                    src={player.profilePic}
+                    src={profilePicImg}
                     alt={player.username}
                     className="profile-pic"
                   />
@@ -166,11 +257,17 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
             </div>
 
             <div className="team opposing-team">
-              {opposingTeam.map((player, index) => (
-                <div key={index} className="player opposing-player">
-                  <span className="username opposing-team">{player.username}</span>
+              {blueTeamPlayers.map((player, index) => (
+                <div key={index} className={`player ${
+                  selectedPlayer?.username === player.username
+                    ? "selected"
+                    : ""
+                }`} onClick={() => handlePlayerClick(player)}>
+                  <span className="username opposing-team">
+                    {player.username}
+                  </span>
                   <img
-                    src={player.profilePic}
+                    src={profilePicImg}
                     alt={player.username}
                     className="profile-pic"
                   />

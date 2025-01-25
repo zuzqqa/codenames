@@ -18,6 +18,7 @@ import logoutButton from "../../assets/icons/logout.svg";
 import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister.tsx";
 import {logout} from "../../shared/utils.tsx";
 import {useNavigate} from "react-router-dom";
+import Cookies from 'js-cookie';
 
 interface LoginProps {
     setVolume: (volume: number) => void;
@@ -70,9 +71,7 @@ const LoginPage: React.FC<LoginProps> = ({
 
             if (response.ok) {
                 document.cookie = "loggedIn=true";
-                //window.location.reload();
-                alert("User logged in successfully!");
-                navigate("/games");
+                window.location.href = "/loading";
             } else {
                 const error = await response.text();
                 alert("Failed to log in: " + error);
@@ -108,10 +107,7 @@ const LoginPage: React.FC<LoginProps> = ({
                 <Button variant="logout" soundFXVolume={soundFXVolume}>
                     <img
                         src={logoutButton}
-                        onClick={() => {
-                            logout();
-                            navigate("/");
-                        }}
+                        onClick={logout}
                         alt="Logout"
                     />
                 </Button>

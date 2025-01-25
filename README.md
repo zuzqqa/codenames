@@ -17,7 +17,7 @@ This repository contains the group project for our 5th semester of computer scie
 
 ### Contributors:
 This project is being developed as a group assignment by a team of students from the 5th semester of computer science studies.
-* [Zuzanna Nowak](https://github.com/zuzqqa)
+* [Zuzanna Nowak](https://github.com/zuzqqa) (Project Leader)
 * [Agata Domasik](https://github.com/agatadomasik)
 * [Adam Chabraszewski](https://github.com/achabrasz)
 * [Jakub Walasik](https://github.com/jwalasik3)

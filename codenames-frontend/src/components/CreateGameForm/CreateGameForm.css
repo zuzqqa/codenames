@@ -7,31 +7,35 @@ form {
     min-width: 80%;
     height: 80%;
     margin: auto;
-    padding: 1rem;
+    padding: 0.8rem;
 }
 .form-content {
     display: grid;
     grid-template-columns: 70% 30%;
     grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+    row-gap: 20px;
     align-items: center;
     justify-content: center;
     background: linear-gradient(360deg, #F0E0B5 0%, #EED8B0 88.89%);
     box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.3), inset 0 0 15px 5px rgba(0, 0, 0, 0.4);
     border-radius: 20px;
-    padding: 2rem;
+    padding: 1rem;
     min-width: 90%;
-    height: 100%;
     margin: auto;
     margin-bottom: 15px;
+    margin-top: 6%;
+    height: 75%;
+    font-size: 1.3rem;
+
 
 }
 
 #playerSlider {
-    width: 80%;
-    padding: 15px;
+    width: 60%;
+    /* padding: 15px; */
     margin: 10px 0;
     border-radius: 5px;
-    font-size: 1rem;
+    font-size: 1.3rem;
     background-color: #F0E0B5; /* Dark input background to match the theme */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Subtle shadow */
     border-radius: 17px;
@@ -49,7 +53,7 @@ form {
 
 .input-box{
     padding: 10px 15px;
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-family: inherit;
     color: #000000; /* White text color */
     background-color: #F0E0B5; /* Dark input background to match the theme */

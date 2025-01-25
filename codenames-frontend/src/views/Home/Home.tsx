@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"; // Hook for programmatic navigation
-import React, { useState } from "react"; // Hook for managing component state
+import React, { useState, useEffect } from "react"; // Hook for managing component state and effects
 import { useTranslation } from "react-i18next"; // Hook for translation
 
 import BackgroundContainer from "../../containers/Background/Background";
@@ -15,6 +15,7 @@ import characters from "../../assets/images/characters.png";
 
 import "../../styles/App.css";
 import "./Home.css";
+import Cookies from 'js-cookie'; // Import js-cookie for cookie handling
 
 // Define the type for props passed to the Home component
 interface HomeProps {
@@ -46,6 +47,17 @@ const Home: React.FC<HomeProps> = ({
         setIsSettingsOpen(!isSettingsOpen);
     };
 
+    // Check if user is logged in using cookies
+    useEffect(() => {
+        console.log("Sprawdzam");
+        const loggedIn = Cookies.get('loggedIn'); // Retrieve the cookie value
+
+        // Ensure 'loggedIn' is true
+        if (loggedIn === 'true') {
+            navigate('/games'); // Redirect to /games if logged in
+        }
+    }, [navigate]); // This effect runs once on component mount
+
     return (
         <>
             <BackgroundContainer>
@@ -76,7 +88,6 @@ const Home: React.FC<HomeProps> = ({
                         <CharactersComponent />
                         <SubtitleComponent variant="primary">
                             { t("home-subtitle") }
-       
                         </SubtitleComponent>
                         <MenuContainer>
                             {/* Menu for login and registration */}
