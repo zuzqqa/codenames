@@ -4,8 +4,8 @@ import org.example.codenames.gameSession.controller.api.GameSessionController;
 import org.example.codenames.gameSession.entity.CreateGameRequest;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.entity.VoteRequest;
-import org.example.codenames.gameSession.entity.VoteResult;
 import org.example.codenames.gameSession.service.api.GameSessionService;
+import org.example.codenames.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -82,5 +82,43 @@ public class DefaultGameSessionController implements GameSessionController {
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{gameId}/team")
+    public ResponseEntity<?> getUsersByTeam(@PathVariable String gameId, @RequestParam String teamIndex) {
+        GameSession gameSession = gameSessionService.getGameSessionById(UUID.fromString(gameId));
+        int teamIndexInt;
+
+        try {
+            teamIndexInt = Integer.parseInt(teamIndex);
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(400).body(null);
+        }
+
+        if (gameSession == null) {
+            return ResponseEntity.status(404).body("Game session not found");
+        }
+
+        List<List<User>> connectedUsers = gameSession.getConnectedUsers();
+
+        if (teamIndexInt < 0 || teamIndexInt >= connectedUsers.size()) {
+            return ResponseEntity.status(400).body("Invalid team index. Must be 0 (red) or 1 (blue).");
+        }
+
+        List<User> teamUsers = connectedUsers.get(teamIndexInt);
+
+        return ResponseEntity.ok(teamUsers);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<GameSession>> getGameSessions() {
+        List<GameSession> gameSessions = gameSessionService.getAllGameSessions();
+
+        if (gameSessions.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(gameSessions);
     }
 }

@@ -109,6 +109,7 @@ public class DefaultUserController implements UserController {
         }
         String username = jwtService.getUsernameFromToken(token);
         Optional<User> user = userService.getUserByUsername(username);
+        System.out.println(user);
         return user.map(User::getId).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
@@ -130,7 +131,7 @@ public class DefaultUserController implements UserController {
         cookie.setSecure(false); // Set to true for https
         cookie.setPath("/");
         if (loggingIn) {
-            cookie.setMaxAge(3600);
+            cookie.setMaxAge(36000);
         }
         else {
             cookie.setMaxAge(0);

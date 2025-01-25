@@ -6,21 +6,25 @@ import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.gameState.entity.GameState;
 import org.example.codenames.user.entity.User;
+import org.example.codenames.user.service.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class DefaultGameSessionService implements GameSessionService {
 
     private final GameSessionRepository gameSessionRepository;
+    private final UserService userService;
 
     @Autowired
-    public DefaultGameSessionService(GameSessionRepository gameSessionRepository) {
+    public DefaultGameSessionService(GameSessionRepository gameSessionRepository, UserService userService) {
         this.gameSessionRepository = gameSessionRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -31,11 +35,16 @@ public class DefaultGameSessionService implements GameSessionService {
                 request.getGameName(),
                 request.getMaxPlayers(),
                 request.getDurationOfTheRound(),
-                request.getTimeForGuessing(),
                 request.getTimeForAHint(),
-                request.getNumberOfRounds(),
-                new ArrayList<List<User>>(),
-                new ArrayList<int[]>(),
+                request.getTimeForGuessing(),
+                new ArrayList<List<User>>() {{
+                    add(new ArrayList<>());
+                    add(new ArrayList<>());
+                }},
+                new ArrayList<List<Integer>>() {{
+                    add(new ArrayList<>());
+                    add(new ArrayList<>());
+                }},
                 new GameState()
         );
 
@@ -62,7 +71,7 @@ public class DefaultGameSessionService implements GameSessionService {
     }
 
     @Override
-    public void submitVote(UUID sessionId, UUID userId, UUID votedUserId) {
+    public void submitVote(UUID sessionId, String userId, String votedUserId) {
         GameSession session = gameSessionRepository.findBySessionId(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
@@ -82,17 +91,15 @@ public class DefaultGameSessionService implements GameSessionService {
                     throw new RuntimeException("Voted user not found in the team");
                 }
 
-                session.getVotes().get(teamIndex)[votedIndex]++;
+                session.getVotes().get(teamIndex).set(votedIndex, session.getVotes().get(teamIndex).get(votedIndex) + 1);
                 gameSessionRepository.save(session);
                 return;
             }
         }
-
-        throw new RuntimeException("Voting user not found in any team");
     }
 
     @Override
-    public List<int[]> getVotes(UUID sessionId) {
+    public List<List<Integer>> getVotes(UUID sessionId) {
         GameSession session = gameSessionRepository.findBySessionId(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
@@ -105,7 +112,7 @@ public class DefaultGameSessionService implements GameSessionService {
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
         List<List<User>> teams = session.getConnectedUsers();
-        List<int[]> votes = session.getVotes();
+        List<List<Integer>> votes = session.getVotes();
 
         if (teams.size() != 2 || votes.size() != 2) {
             throw new IllegalStateException("Expected exactly two teams for leader assignment.");
@@ -128,13 +135,13 @@ public class DefaultGameSessionService implements GameSessionService {
     }
 
     @Override
-    public User findLeader(List<User> team, int[] teamVotes) {
+    public User findLeader(List<User> team, List<Integer> teamVotes) {
         int maxVotes = -1;
         User leader = null;
 
         for (int i = 0; i < team.size(); i++) {
-            if (teamVotes[i] > maxVotes) {
-                maxVotes = teamVotes[i];
+            if (teamVotes.get(i) > maxVotes) {
+                maxVotes = teamVotes.get(i);
                 leader = team.get(i);
             }
         }
@@ -144,6 +151,75 @@ public class DefaultGameSessionService implements GameSessionService {
         }
 
         return leader;
+    }
+
+    @Override
+    public boolean addPlayerToSession(UUID sessionId, String userId, int teamIndex) {
+        GameSession gameSession = getGameSessionById(sessionId);
+
+        if (gameSession == null) {
+            throw new IllegalArgumentException("Game session not found for ID: " + sessionId);
+        }
+
+        List<List<User>> connectedUsers = gameSession.getConnectedUsers();
+        if (connectedUsers == null) {
+            connectedUsers = List.of(new ArrayList<>(), new ArrayList<>());
+            gameSession.setConnectedUsers(connectedUsers);
+        }
+
+        if (teamIndex < 0 || teamIndex >= connectedUsers.size()) {
+            System.out.println(teamIndex >= connectedUsers.size());
+            return false;
+        }
+
+        for(List<User> team : connectedUsers) {
+            if (team.stream().anyMatch(user -> user.getId().equals(userId))) {
+                return false;
+            }
+        }
+
+        Optional<User> user = userService.getUserById(userId);
+
+        User actualUser = user.orElseThrow(() -> new IllegalArgumentException("User not found for ID: " + userId));
+        connectedUsers.get(teamIndex).add(actualUser);
+        gameSessionRepository.save(gameSession);
+
+        return true;
+    }
+
+    @Override
+    public List<GameSession> getAllGameSessions() {
+        return gameSessionRepository.findAll();
+    }
+
+    @Override
+    public boolean removePlayerFromSession(UUID sessionId, String userId) {
+        GameSession gameSession = getGameSessionById(sessionId);
+
+        if (gameSession == null) {
+            throw new IllegalArgumentException("Game session not found for ID: " + sessionId);
+        }
+
+        List<List<User>> connectedUsers = gameSession.getConnectedUsers();
+
+        if (connectedUsers == null || connectedUsers.isEmpty()) {
+            return false;
+        }
+
+        boolean removed = false;
+
+        for (List<User> team : connectedUsers) {
+            if (team.removeIf(user -> user.getId().equals(userId))) {
+                removed = true;
+                break;
+            }
+        }
+
+        if (removed) {
+            gameSessionRepository.save(gameSession);
+        }
+
+        return removed;
     }
 }
 

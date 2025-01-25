@@ -26,24 +26,40 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
             playerSlider: 4,
             gameDuration: 0,
             hintTime: 0,
-            roundsNumber: 0,
+            guessingTime: 0,
         },
+
         validationSchema: Yup.object({
             gameName: Yup.string().required('Required'),
             playerSlider: Yup.number().required('Required').min(4).max(16),
             gameDuration: Yup.number().required('Required'),
             hintTime: Yup.number().required('Required'),
-            roundsNumber: Yup.number().required('Required'),
+            guessingTime: Yup.number().required('Required'),
         }),
+
         onSubmit: async (values) => {
             try {
+                const getIdResponse = await fetch('http://localhost:8080/api/users/getId', {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+        
+                if (!getIdResponse.ok) {
+                    setError('Failed to fetch ID');
+                    return;
+                }
+        
+                const getIdData = await getIdResponse.text();
+
                 const requestData = {
                     gameName: values.gameName,
                     maxPlayers: values.playerSlider,
-                    durationOfTheRound: `PT${values.gameDuration}S`,  
-                    timeForGuessing: `PT${values.hintTime}S`,          
-                    timeForAHint: `PT${values.hintTime}S`,          
-                    numberOfRounds: values.roundsNumber,
+                    durationOfTheRound: `PT${values.gameDuration}S`,           
+                    timeForAHint: `PT${values.hintTime}S`,       
+                    timeForGuessing: `PT${values.guessingTime}S`,    
                 };
 
                 const response = await fetch('http://localhost:8080/api/game-session/create', {
@@ -154,12 +170,12 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
                         <label>{ t('guess-duration') }</label>  
                         {/* dodać tłumaczenie "time to guess" */}
                         <input
-                            id="guessTime"
+                            id="guessingTime"
                             className='input-box'
-                            name="guessTime"
+                            name="guessingTime"
                             type="text"
                             onChange={formik.handleChange}
-                            value={formik.values.hintTime}
+                            value={formik.values.guessingTime}
                         />
                     </div>
                     {error && <div className="error">{error}</div>}

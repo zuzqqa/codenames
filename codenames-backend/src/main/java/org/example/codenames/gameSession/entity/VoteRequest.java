@@ -6,6 +6,6 @@ import java.util.UUID;
 
 @Data
 public class VoteRequest {
-    private UUID userId;
-    private UUID votedUserId;
+    private String userId;
+    private String votedUserId;
 }

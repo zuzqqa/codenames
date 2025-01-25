@@ -4,6 +4,7 @@ import org.example.codenames.gameSession.entity.GameSession;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,4 +12,5 @@ import java.util.UUID;
 public interface GameSessionRepository extends MongoRepository<GameSession, String> {
     Optional<GameSession> findByGameName(String gameName);
     Optional<GameSession> findBySessionId(UUID sessionId);
+    List<GameSession> findAll();
 }

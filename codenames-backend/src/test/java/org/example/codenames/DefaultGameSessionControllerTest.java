@@ -35,7 +35,7 @@ public class DefaultGameSessionControllerTest {
                 .durationOfTheRound(Duration.ofMinutes(2))
                 .timeForGuessing(Duration.ofMinutes(1))
                 .timeForAHint(Duration.ofSeconds(30))
-                .numberOfRounds(5)
+                .timeForGuessing(Duration.ofSeconds(30))
                 .build();
 
         String gameId = "12345";
