@@ -62,6 +62,7 @@ interface GameState {
   teamTurn: number;
   hint: string;
   cards: string[];
+  cardsColors: number[];
 }
 
 // Main component definition
@@ -104,6 +105,9 @@ const Gameplay: React.FC<GameplayProps> = ({
   const clickAudio = new Audio(cardSound);
 
   const toggleCardImage = (index: number) => {
+    if (amIRedTeamLeader || amIBlueTeamLeader) return;
+    if (flipStates[index]) return;
+
     clickAudio.volume = soundFXVolume / 100;
     clickAudio.play();
     setFlipStates((prevFlipStates) => {
@@ -115,8 +119,25 @@ const Gameplay: React.FC<GameplayProps> = ({
     setTimeout(() => {
       setCards((prevCards) => {
         const newCards = [...prevCards];
-        newCards[index] =
-          newCards[index] === cardWhiteImg ? cardRedImg : cardWhiteImg;
+        const cardColor = gameSession?.gameState.cardsColors[index];
+  
+        switch (cardColor) {
+          case 0:
+            newCards[index] = cardWhiteImg;
+            break;
+          case 1:
+            newCards[index] = cardRedImg;
+            break;
+          case 2:
+            newCards[index] = cardBlueImg;
+            break;
+          case 3:
+            newCards[index] = cardBlackImg;
+            break;
+          default:
+            newCards[index] = cardWhiteImg;
+        }
+  
         return newCards;
       });
     }, 170); // 0.17s
@@ -181,6 +202,7 @@ const Gameplay: React.FC<GameplayProps> = ({
           } else {
             setMyTeam(null);
           }
+
           if (data.gameState?.blueTeamLeader?.id === userId) {
             setAmIBlueTeamLeader(true);
           } else if (data.gameState?.redTeamLeader?.id === userId) {
@@ -319,18 +341,38 @@ const Gameplay: React.FC<GameplayProps> = ({
                 className="card-container"
                 onClick={() => toggleCardImage(index)}
               >
-                <img
-                  className={`card ${flipStates[index] ? "flip" : ""}`}
-                  src={cardImage}
-                  alt={`card-${index}`}
-                />
+              <img
+                className={`card ${
+                  flipStates[index] || (amIRedTeamLeader && amIBlueTeamLeader) ? "flip" : ""
+                }`}
+                src={
+                  (amIRedTeamLeader || amIBlueTeamLeader) // Jeśli lider, ustaw od razu odpowiedni kolor
+                    ? (() => {
+                        const cardColor = gameSession?.gameState.cardsColors[index];
+                        switch (cardColor) {
+                          case 1:
+                            return cardRedImg;
+                          case 2:
+                            return cardBlueImg;
+                          case 3:
+                            return cardBlackImg;
+                          default:
+                            return cardWhiteImg;
+                        }
+                      })()
+                    : cardImage
+                }
+                alt={`card-${index}`}
+              />
+              {(!flipStates[index])&& (
                 <span
                   className={`card-text ${
-                    cardImage === cardRedImg ? "gold-text" : ""
+                    gameSession?.gameState.cardsColors[index] != 0 && (amIRedTeamLeader || amIBlueTeamLeader) ? "gold-text" : ""
                   }`}
                 >
-                  {gameSession?.gameState.cards[0]}
+                  {gameSession?.gameState.cards[index]}
                 </span>
+              )}
               </div>
             ))}
           </div>

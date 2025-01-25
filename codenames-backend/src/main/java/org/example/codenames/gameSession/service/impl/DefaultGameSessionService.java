@@ -78,6 +78,7 @@ public class DefaultGameSessionService implements GameSessionService {
         return gameSessionRepository.findBySessionId(sessionId)
                 .map(gameSession -> {
                     if (gameSession.getGameState() != null) {
+                        System.out.println("aaaaaaaaaaaaaaaaaaaa");
                         return gameSession.getGameState().getCards();
                     }
                     throw new IllegalStateException("GameState is null for the given session.");

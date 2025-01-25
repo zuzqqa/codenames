@@ -24,10 +24,8 @@ public class DefaultGameStateService implements GameStateService {
     }
 
     public void generateRandomCardsNames(GameState gameState) {
-        // Pobieramy wszystkie karty z repozytorium
         List<Card> allCards = cardRepository.findAll();
 
-        // Tworzymy listę losowych indeksów
         Random random = new Random();
         List<Integer> selectedIndexes = new ArrayList<>();
         while (selectedIndexes.size() < 25) {
@@ -62,6 +60,7 @@ public class DefaultGameStateService implements GameStateService {
         }
 
         Collections.shuffle(cardColorsList);
+
         gameState.setCardsColors(cardColorsList.toArray(new Integer[0]));
     }
 
