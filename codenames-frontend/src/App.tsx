@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"; // Importing React Router components
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom"; // Importing React Router components
 import React, { useEffect, useState } from "react"; // Importing React hooks
 import Cookies from "js-cookie"; // Importing cookie management library
 import soundFile from "./assets/sounds/background-music.mp3"; // Importing background music file
@@ -13,37 +18,54 @@ import Gameplay from "./views/Gameplay/Gameplay";
 import ChooseLeader from "./views/ChooseLeader/ChooseLeader";
 import LoginPage from "./views/LoginPage/LoginPage";
 import RegisterPage from "./views/RegisterPage/RegisterPage";
-import PrivateRoute from "./utils/PrivateRoute"; // Importing PrivateRoute for protecting routes
+import PrivateRoute from "./utils/PrivateRoute"; 
 import LoadingPage from "./views/Loading/LoadingPage";
+import { useTranslation } from 'react-i18next';
 
 const App: React.FC = () => {
-  // State hooks for managing authentication, sound settings, and audio state
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // Authentication state (null means not yet checked)
-  const [soundFXVolume, setSoundFXVolume] = useState(50); // Sound effects volume state
-  const [audio] = useState(new Audio(soundFile)); // Audio element for background music
-  const [isPlaying, setIsPlaying] = useState(false); // State to track if music is playing
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); 
+  const [soundFXVolume, setSoundFXVolume] = useState(50); 
+  const [audio] = useState(new Audio(soundFile)); 
+  const [isPlaying, setIsPlaying] = useState(false);
+  const { i18n } = useTranslation();
 
-  // Function to play background audio if it's not already playing
   const playAudio = () => {
     if (!isPlaying) {
-      audio.loop = true; // Loop the background music
-      audio.play().then(); // Play the audio
-      setIsPlaying(true); // Update state to indicate the music is playing
+      audio.loop = true; 
+      audio.play().then(); 
+      setIsPlaying(true); 
     }
   };
 
+  const storedMusicVolume = localStorage.getItem("musicVolume");
+  const storedSoundFXVolume = localStorage.getItem("soundFXVolume");
+
   // Function to set the background music volume
   const setVolume = (volume: number) => {
-    audio.volume = volume; // Adjust the background music volume
+    audio.volume = volume / 100; // Adjust the background music volume
+    localStorage.setItem("musicVolume", volume.toString());
   };
 
   // Function to set the sound effects volume
   const setSoundFX = (volume: number) => {
     setSoundFXVolume(volume); // Adjust the sound effects volume
+    localStorage.setItem("soundFXVolume", volume.toString());
   };
 
   // useEffect hook to check authentication and handle audio setup
   useEffect(() => {
+    const initialMusicVolume = storedMusicVolume
+      ? parseFloat(storedMusicVolume)
+      : 0.5;
+    const initialSoundFXVolume = storedSoundFXVolume
+      ? parseInt(storedSoundFXVolume)
+      : 0.5;
+
+    setSoundFXVolume(initialSoundFXVolume);
+    audio.volume = initialMusicVolume / 100; // Set initial volume from localStorage
+
+    i18n.changeLanguage(localStorage.getItem("i18nextLng") || "en");
+    
     // Function to check if the user is authenticated by checking cookies
     const checkAuthentication = () => {
       const loggedIn = Cookies.get("loggedIn");
@@ -75,14 +97,43 @@ const App: React.FC = () => {
     <Router>
       <Routes>
         {/* Public routes */}
-        <Route path="/" element={<Home setVolume={setVolume} setSoundFXVolume={setSoundFX} soundFXVolume={soundFXVolume} />} />
+        <Route
+          path="/"
+          element={
+            <Home
+              setVolume={setVolume}
+              setSoundFXVolume={setSoundFX}
+              soundFXVolume={soundFXVolume}
+            />
+          }
+        />
         <Route
           path="/login"
-          element={isAuthenticated ? <Navigate to="/loading" replace /> : <LoginPage setVolume={setVolume} setSoundFXVolume={setSoundFX} soundFXVolume={soundFXVolume} />}
+          element={
+            isAuthenticated ? (
+              <Navigate to="/loading" replace />
+            ) : (
+              <LoginPage
+                setVolume={setVolume}
+                setSoundFXVolume={setSoundFX}
+                soundFXVolume={soundFXVolume}
+              />
+            )
+          }
         />
         <Route
           path="/register"
-          element={isAuthenticated ? <Navigate to="/loading" replace /> : <RegisterPage setVolume={setVolume} setSoundFXVolume={setSoundFX} soundFXVolume={soundFXVolume} />}
+          element={
+            isAuthenticated ? (
+              <Navigate to="/loading" replace />
+            ) : (
+              <RegisterPage
+                setVolume={setVolume}
+                setSoundFXVolume={setSoundFX}
+                soundFXVolume={soundFXVolume}
+              />
+            )
+          }
         />
 
         {/* Protected routes wrapped with PrivateRoute */}
@@ -90,7 +141,13 @@ const App: React.FC = () => {
           path="/games"
           element={
             <PrivateRoute
-              element={<SelectGame setVolume={setVolume} setSoundFXVolume={setSoundFX} soundFXVolume={soundFXVolume} />}
+              element={
+                <SelectGame
+                  setVolume={setVolume}
+                  setSoundFXVolume={setSoundFX}
+                  soundFXVolume={soundFXVolume}
+                />
+              }
               isAuthenticated={isAuthenticated}
             />
           }
@@ -99,7 +156,13 @@ const App: React.FC = () => {
           path="/create-game"
           element={
             <PrivateRoute
-              element={<CreateGame setVolume={setVolume} setSoundFXVolume={setSoundFX} soundFXVolume={soundFXVolume} />}
+              element={
+                <CreateGame
+                  setVolume={setVolume}
+                  setSoundFXVolume={setSoundFX}
+                  soundFXVolume={soundFXVolume}
+                />
+              }
               isAuthenticated={isAuthenticated}
             />
           }
@@ -108,7 +171,13 @@ const App: React.FC = () => {
           path="/gameplay"
           element={
             <PrivateRoute
-              element={<Gameplay setVolume={setVolume} setSoundFXVolume={setSoundFX} soundFXVolume={soundFXVolume} />}
+              element={
+                <Gameplay
+                  setVolume={setVolume}
+                  setSoundFXVolume={setSoundFX}
+                  soundFXVolume={soundFXVolume}
+                />
+              }
               isAuthenticated={isAuthenticated}
             />
           }
@@ -117,7 +186,13 @@ const App: React.FC = () => {
           path="/join-game"
           element={
             <PrivateRoute
-              element={<JoinGame setVolume={setVolume} setSoundFXVolume={setSoundFX} soundFXVolume={soundFXVolume} />}
+              element={
+                <JoinGame
+                  setVolume={setVolume}
+                  setSoundFXVolume={setSoundFX}
+                  soundFXVolume={soundFXVolume}
+                />
+              }
               isAuthenticated={isAuthenticated}
             />
           }
@@ -126,7 +201,13 @@ const App: React.FC = () => {
           path="/game-lobby"
           element={
             <PrivateRoute
-              element={<GameLobby setVolume={setVolume} setSoundFXVolume={setSoundFX} soundFXVolume={soundFXVolume} />}
+              element={
+                <GameLobby
+                  setVolume={setVolume}
+                  setSoundFXVolume={setSoundFX}
+                  soundFXVolume={soundFXVolume}
+                />
+              }
               isAuthenticated={isAuthenticated}
             />
           }
@@ -135,17 +216,36 @@ const App: React.FC = () => {
           path="/choose-leader"
           element={
             <PrivateRoute
-              element={<ChooseLeader setVolume={setVolume} setSoundFXVolume={setSoundFX} soundFXVolume={soundFXVolume} />}
+              element={
+                <ChooseLeader
+                  setVolume={setVolume}
+                  setSoundFXVolume={setSoundFX}
+                  soundFXVolume={soundFXVolume}
+                />
+              }
               isAuthenticated={isAuthenticated}
             />
           }
         />
-        <Route path="/loading" element={<LoadingPage setVolume={setVolume} setSoundFXVolume={setSoundFX} soundFXVolume={soundFXVolume}/>} />
+        <Route
+          path="/loading"
+          element={
+            <LoadingPage
+              setVolume={setVolume}
+              setSoundFXVolume={setSoundFX}
+              soundFXVolume={soundFXVolume}
+            />
+          }
+        />
         {/* Fallback route */}
         <Route
           path="*"
           element={
-            isAuthenticated ? <Navigate to="/games" replace /> : <Navigate to="/" replace />
+            isAuthenticated ? (
+              <Navigate to="/games" replace />
+            ) : (
+              <Navigate to="/" replace />
+            )
           }
         />
       </Routes>

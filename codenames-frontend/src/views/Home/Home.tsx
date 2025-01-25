@@ -49,7 +49,6 @@ const Home: React.FC<HomeProps> = ({
 
     // Check if user is logged in using cookies
     useEffect(() => {
-        console.log("Sprawdzam");
         const loggedIn = Cookies.get('loggedIn'); // Retrieve the cookie value
 
         // Ensure 'loggedIn' is true
@@ -57,6 +56,11 @@ const Home: React.FC<HomeProps> = ({
             navigate('/games'); // Redirect to /games if logged in
         }
     }, [navigate]); // This effect runs once on component mount
+
+    const updateMusicVolume = (volume: number) => {
+        setMusicVolume(volume);
+        setVolume(volume); // Update global volume
+      };
 
     return (
         <>
@@ -67,10 +71,7 @@ const Home: React.FC<HomeProps> = ({
                     onClose={toggleSettings}
                     musicVolume={musicVolume}
                     soundFXVolume={soundFXVolume}
-                    setMusicVolume={(volume) => {
-                        setMusicVolume(volume); // Update local music volume
-                        setVolume(volume / 100); // Update global volume
-                    }}
+                    setMusicVolume={updateMusicVolume}
                     setSoundFXVolume={setSoundFXVolume}
                 />
 
