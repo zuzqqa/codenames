@@ -3,6 +3,8 @@ package org.example.codenames.gameState.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.codenames.card.entity.Card;
+import org.example.codenames.card.repository.CardRepository;
 import org.example.codenames.user.entity.User;
 
 @AllArgsConstructor
@@ -16,5 +18,6 @@ public class GameState {
     private Integer redTeamScore;
     private Integer teamTurn;
 
-    private String hint;
+    private String[] cards;
+    private Integer[] cardsColors;
 }
