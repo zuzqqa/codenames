@@ -14,11 +14,14 @@ import java.util.UUID;
 
 public interface GameSessionController {
     ResponseEntity<Map<String, String>> createGameSession(@RequestBody CreateGameRequest request);
+
     ResponseEntity<GameSession> getGameSession(@PathVariable String gameId);
-    ResponseEntity<Void> startGame(@PathVariable UUID id);
-    ResponseEntity<Void> finishGame(@PathVariable UUID id);
+
     ResponseEntity<?> submitVote(@PathVariable UUID id, @RequestBody VoteRequest voteRequest);
+
     ResponseEntity<String> getVotes(@PathVariable UUID id);
+
     ResponseEntity<?> getUsersByTeam(@PathVariable String gameId, @RequestParam String teamIndex);
+
     ResponseEntity<List<GameSession>>  getGameSessions();
 }

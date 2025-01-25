@@ -96,6 +96,11 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
           if (updatedGameSession) {
             setRedTeamPlayers(updatedGameSession.connectedUsers[0] || []);
             setBlueTeamPlayers(updatedGameSession.connectedUsers[1] || []);
+            console.log("Game session updated:", updatedGameSession.status);
+            console.log(updatedGameSession.status === SessionStatus.IN_PROGRESS);
+            if(updatedGameSession.status === SessionStatus.IN_PROGRESS) {
+              navigate("/choose-leader");
+            }
           }
         });
       },
@@ -256,8 +261,8 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
               <div>
                 {t("slots")}{" "}
                 {gameSession.connectedUsers
-                  ? gameSession.connectedUsers[0].length +
-                    gameSession.connectedUsers[1].length
+                  ? blueTeamPlayers.length +
+                    redTeamPlayers.length
                   : 0}
                 /{gameSession.maxPlayers}
               </div>

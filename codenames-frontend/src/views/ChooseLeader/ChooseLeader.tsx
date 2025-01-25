@@ -24,7 +24,7 @@ interface ChooseLeaderProps {
 }
 
 interface User {
-  userId: string;
+  id: string;
   username: string;
 }
 
@@ -61,19 +61,42 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
   const [redTeamPlayers, setRedTeamPlayers] = useState<User[]>([]);
   const [blueTeamPlayers, setBlueTeamPlayers] = useState<User[]>([]);
   const [client, setClient] = useState<Client | null>(null);
-  // Timer logic
-  useEffect(() => {
-    if (timeLeft <= 0) navigate("/gameplay"); // Stop when time runs out
+  const [myTeam, setMyTeam] = useState<string | null>(null);
+  const [isVoteCasted, setIsVoteCasted] = useState<boolean>(false);
 
+  useEffect(() => {
     const storedGameId = localStorage.getItem("gameId");
+
+    if (timeLeft <= 0) {
+      endPool();
+    }
 
     if (storedGameId) {
       fetch(`http://localhost:8080/api/game-session/${storedGameId}`)
         .then((response) => response.json())
-        .then((data: GameSession) => {
+        .then(async (data: GameSession) => {
           if (data.connectedUsers) {
-            setRedTeamPlayers(data.connectedUsers[0] || []); 
+            setRedTeamPlayers(data.connectedUsers[0] || []);
             setBlueTeamPlayers(data.connectedUsers[1] || []);
+          }
+
+          const getIdResponse = await fetch(
+            "http://localhost:8080/api/users/getId",
+            {
+              method: "GET",
+              credentials: "include",
+            }
+          );
+          const userId = await getIdResponse.text();
+
+          if (data.connectedUsers[0]?.some((user) => user.id === userId)) {
+            setMyTeam("red");
+          } else if (
+            data.connectedUsers[1]?.some((user) => user.id === userId)
+          ) {
+            setMyTeam("blue");
+          } else {
+            setMyTeam(null);
           }
         })
         .catch((err) => console.error("Failed to load game session", err));
@@ -82,23 +105,14 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     }
 
     const timer = setInterval(() => {
-      setTimeLeft((prevTime) => prevTime - 1);
+      setTimeLeft((prevTime) => prevTime - 10);
     }, 1000);
 
     // WebSocket connection using SockJS and STOMP
     const socket = new SockJS("http://localhost:8080/ws");
     const stompClient = new Client({
       webSocketFactory: () => socket,
-      connectHeaders: {
-        login: "user",
-        passcode: "password",
-      },
-      debug: (str) => {
-        console.log("STOMP: " + str);
-      },
       onConnect: () => {
-        console.log("WebSocket connected");
-
         // Subscribe to the game session updates
         stompClient.subscribe(`/game/${storedGameId}`, (message) => {
           const updatedGameSession = JSON.parse(message.body);
@@ -118,10 +132,27 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     // Cleanup function to deactivate WebSocket connection
     return () => {
       clearInterval(timer); // Clear the timer when component unmounts
-
     };
   }, [timeLeft, navigate]);
 
+  const endPool = async () => {
+    const storedGameId = localStorage.getItem("gameId");
+  
+    if (storedGameId) {  // Upewniamy się, że mamy zapisany gameId
+      const getIdResponse = await fetch(
+        `http://localhost:8080/api/game-session/${storedGameId}/assign-leaders`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+    } else {
+      console.error("Game ID is not stored in localStorage.");
+    }
+
+    navigate("/gameplay");
+  };
+  
   // Format time as MM:SS
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
@@ -137,37 +168,45 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
   };
 
   const handlePlayerClick = (player: User) => {
-    setSelectedPlayer(player);
+    if (myTeam === "red" && redTeamPlayers.includes(player))
+      setSelectedPlayer(player);
+    else if (myTeam === "blue" && blueTeamPlayers.includes(player))
+      setSelectedPlayer(player);
+    return;
   };
 
   const send_vote = async () => {
     const storedGameId = localStorage.getItem("gameId");
 
     if (storedGameId && selectedPlayer) {
-      const getIdResponse = await fetch("http://localhost:8080/api/users/getId", {
-        method: "GET",
-        credentials: "include",
-      });
+      const getIdResponse = await fetch(
+        "http://localhost:8080/api/users/getId",
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
       const userId = await getIdResponse.text();
 
       const voteRequest = {
-        userId: selectedPlayer.userId,
+        userId: selectedPlayer.id,
         votedUserId: userId,
       };
 
-      const response = await fetch(`http://localhost:8080/api/game-session/${storedGameId}/vote`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(voteRequest),
-      })
-      
+      const response = await fetch(
+        `http://localhost:8080/api/game-session/${storedGameId}/vote`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(voteRequest),
+        }
+      );
+
       if (response.ok) {
-        console.log("Vote casted.");
-      } else {
-        console.error("Failed to cast a vote.");
+        setIsVoteCasted(true);
       }
     }
   };
@@ -214,13 +253,16 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
                       {selectedPlayer.username}
                     </span>
                   </div>
-                  <Button
+                  {isVoteCasted === false ? (
+                    <Button
                     variant="room"
                     soundFXVolume={soundFXVolume}
                     onClick={send_vote}
                   >
-                    <span className="button-text">{t("lockin")}</span>
+                    <span className="button-text">{t("lockin")}</span> 
                   </Button>
+                  ) : ( <> </>
+                  )}
                 </div>
               </>
             ) : (
@@ -258,11 +300,15 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
 
             <div className="team opposing-team">
               {blueTeamPlayers.map((player, index) => (
-                <div key={index} className={`player ${
-                  selectedPlayer?.username === player.username
-                    ? "selected"
-                    : ""
-                }`} onClick={() => handlePlayerClick(player)}>
+                <div
+                  key={index}
+                  className={`player ${
+                    selectedPlayer?.username === player.username
+                      ? "selected"
+                      : ""
+                  }`}
+                  onClick={() => handlePlayerClick(player)}
+                >
                   <span className="username opposing-team">
                     {player.username}
                   </span>
