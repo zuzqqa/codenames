@@ -43,7 +43,7 @@ public class ConfigSecurity {
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight requests
                                 .requestMatchers("/api/users", "/api/users/authenticate").permitAll()
                                 .requestMatchers("/api/email/send").permitAll()
-                                .anyRequest().authenticated() // Allow access to registration and authentication endpoints
+                                .anyRequest().permitAll()
                                 )
                 .sessionManagement(sessionManagement ->
                         sessionManagement

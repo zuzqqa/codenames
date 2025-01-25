@@ -16,6 +16,7 @@ import eyeIcon from "../../assets/icons/eye.svg";
 import eyeSlashIcon from "../../assets/icons/eye-slash.svg";
 import logoutButton from "../../assets/icons/logout.svg";
 import {logout} from "../../shared/utils.tsx";
+import {useNavigate} from "react-router-dom";
 
 
 interface RegisterProps {
@@ -36,6 +37,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
     const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
     const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
@@ -73,9 +75,9 @@ const RegisterPage: React.FC<RegisterProps> = ({
             if (response.ok) {
                 const result = await response.text();
                 console.log("Registration successful:", result);
-                window.location.reload()
                 document.cookie = "loggedIn=true";
                 alert("User registered successfully!");
+                navigate("/games");
             } else {
                 const error = await response.text();
                 console.error("Registration failed:", error);

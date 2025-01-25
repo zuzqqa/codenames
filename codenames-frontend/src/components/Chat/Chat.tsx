@@ -4,6 +4,7 @@ import { Client } from '@stomp/stompjs';
 import { t } from 'i18next';
 import '../../views/Gameplay/Gameplay.css';
 import './Chat.css';
+import { useCookies } from "react-cookie";
 
 // Define the message type
 interface Message {
@@ -17,11 +18,54 @@ const Chat: React.FC = () => {
     const [messageText, setMessageText] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const clientRef = useRef<Client | null>(null);
-    const playerName = 'Player1'; // TODO: Get player name from the backend
+    const [playerName, setPlayerName] = useState<string | null>(null);
+    const [cookies] = useCookies(['authToken']);
+
+    useEffect(() => {
+        const fetchPlayerName = async () => {
+            try {
+                const response = await fetch(
+                    `http://localhost:8080/api/users/username/` + cookies.authToken
+                );
+                if (!response.ok) {
+                    throw new Error('Failed to fetch player name');
+                }
+                const data = await response.json();
+                setPlayerName(data.username);
+            } catch (error) {
+                console.error("Error fetching player name:", error);
+            }
+        };
+
+        fetchPlayerName();
+    }, [cookies.authToken]);
+
+    // Load messages from localStorage on mount
+    useEffect(() => {
+        const savedMessages = localStorage.getItem('chatMessages');
+        if (savedMessages) {
+            setMessages(JSON.parse(savedMessages)); // Parse and set messages if they exist
+        }
+    }, []);
+
+    // Save messages to localStorage whenever they change
+    useEffect(() => {
+        if (messages.length > 0) {
+            localStorage.setItem('chatMessages', JSON.stringify(messages));
+        }
+    }, [messages]);
+
     // Connect to WebSocket
     useEffect(() => {
         const client = connect((msg) => {
-            setMessages((prev) => [...prev, { text: msg.content, type: msg.sender === playerName ? 'outgoing' : 'incoming' , sender: msg.sender }]);
+            setMessages((prev) => [
+                ...prev,
+                {
+                    text: msg.content,
+                    type: msg.sender === playerName ? 'outgoing' : 'incoming',
+                    sender: msg.sender
+                }
+            ]);
         });
 
         clientRef.current = client;
@@ -29,24 +73,18 @@ const Chat: React.FC = () => {
         return () => {
             client.deactivate(); // Cleanup connection
         };
-    }, []);
+    }, [playerName]);
 
     // Send message to WebSocket
     const sendMessage = () => {
         const client = clientRef.current;
         if (!client || !messageText.trim()) return;
-
-        const message = { sender: 'Player1', content: messageText.trim() };
+        const message = { sender: playerName, content: messageText.trim() };
         client.publish({
             destination: '/chat/send', // Matches @MessageMapping in the backend
             body: JSON.stringify(message),
         });
         setMessageText(''); // Clear input
-    };
-
-    // Add a message to the state
-    const addMessage = (text: string, type: 'incoming' | 'outgoing', sender: string) => {
-        setMessages((prevMessages) => [...prevMessages, { text, type, sender }]);
     };
 
     // Scroll to the bottom when messages change
@@ -68,7 +106,7 @@ const Chat: React.FC = () => {
                         {msg.text}
                     </div>
                 ))}
-                <div ref={messagesEndRef}/>
+                <div ref={messagesEndRef} />
             </div>
             <input
                 type="text"

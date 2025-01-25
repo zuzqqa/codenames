@@ -1,6 +1,7 @@
 package org.example.codenames.user.controller.impl;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.codenames.jwt.JwtService;
@@ -16,7 +17,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -48,6 +51,16 @@ public class DefaultUserController implements UserController {
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
+
+    @GetMapping("/username/{token}")
+    public ResponseEntity<Map<String, String>> getUserByToken(@PathVariable String token) {
+        String username = jwtService.ExtractUsername(token);
+        Map<String, String> response = new HashMap<>();
+        response.put("username", username);
+        return ResponseEntity.ok(response);
+    }
+
+
 
     // Update a user by ID
     @PutMapping("/{id}")
@@ -96,11 +109,11 @@ public class DefaultUserController implements UserController {
 
     private Cookie setAuthCookie(String token, boolean loggingIn) {
         Cookie cookie = new Cookie("authToken", token);
-        cookie.setHttpOnly(true);
+        // cookie.setHttpOnly(true); this bullshit unables me to read the cookie in the frontend
         cookie.setSecure(false); // Set to true for https
         cookie.setPath("/");
         if (loggingIn) {
-            cookie.setMaxAge(3600);
+            cookie.setMaxAge(3600 * 10);
         }
         else {
             cookie.setMaxAge(0);
