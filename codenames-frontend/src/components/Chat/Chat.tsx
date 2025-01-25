@@ -20,6 +20,7 @@ const Chat: React.FC = () => {
     const clientRef = useRef<Client | null>(null);
     const [playerName, setPlayerName] = useState<string | null>(null);
     const [cookies] = useCookies(['authToken']);
+    const [gameId, setGameId] = useState('');
 
     useEffect(() => {
         const fetchPlayerName = async () => {
@@ -66,7 +67,7 @@ const Chat: React.FC = () => {
                     sender: msg.sender
                 }
             ]);
-        });
+        }, gameId);
 
         clientRef.current = client;
 
@@ -75,13 +76,17 @@ const Chat: React.FC = () => {
         };
     }, [playerName]);
 
+    useEffect(() => {
+        setGameId(localStorage.getItem('gameId') || '');
+    }, []);
+
     // Send message to WebSocket
     const sendMessage = () => {
         const client = clientRef.current;
         if (!client || !messageText.trim()) return;
         const message = { sender: playerName, content: messageText.trim() };
         client.publish({
-            destination: '/chat/send', // Matches @MessageMapping in the backend
+            destination: '/chat/send/' + gameId, // Matches @MessageMapping in the backend
             body: JSON.stringify(message),
         });
         setMessageText(''); // Clear input

@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, {useState, ChangeEvent, FormEvent, useEffect} from "react";
 import { useTranslation } from "react-i18next";
 
 import "../../styles/App.css";
@@ -17,8 +17,7 @@ import eyeSlashIcon from "../../assets/icons/eye-slash.svg";
 import logoutButton from "../../assets/icons/logout.svg";
 import {logout} from "../../shared/utils.tsx";
 import {useNavigate} from "react-router-dom";
-
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
 interface RegisterProps {
     setVolume: (volume: number) => void;

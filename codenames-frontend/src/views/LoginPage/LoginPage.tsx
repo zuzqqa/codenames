@@ -18,7 +18,6 @@ import logoutButton from "../../assets/icons/logout.svg";
 import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister.tsx";
 import {logout} from "../../shared/utils.tsx";
 import {useNavigate} from "react-router-dom";
-import Cookies from 'js-cookie';
 
 interface LoginProps {
     setVolume: (volume: number) => void;
