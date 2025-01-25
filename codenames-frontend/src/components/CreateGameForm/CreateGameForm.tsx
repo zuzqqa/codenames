@@ -32,7 +32,6 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
         validationSchema: Yup.object({
             gameName: Yup.string().required('Required'),
             playerSlider: Yup.number().required('Required').min(4).max(16),
-            gameDuration: Yup.number().required('Required'),
             hintTime: Yup.number().required('Required'),
             guessingTime: Yup.number().required('Required'),
         }),
@@ -57,7 +56,6 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
                 const requestData = {
                     gameName: values.gameName,
                     maxPlayers: values.playerSlider,
-                    durationOfTheRound: `PT${values.gameDuration}S`,           
                     timeForAHint: `PT${values.hintTime}S`,       
                     timeForGuessing: `PT${values.guessingTime}S`,    
                 };
@@ -149,15 +147,6 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
                             />
                             <span className="slider-value">{formik.values.playerSlider || 4}</span>
                         </div>
-                        <label>{ t('duration') }</label>
-                        <input
-                            id="gameDuration"
-                            className='input-box'
-                            name="gameDuration"
-                            type="text"
-                            onChange={formik.handleChange}
-                            value={formik.values.gameDuration}
-                        />
                         <label>{ t('hint-duration') }</label>
                         <input
                             id="hintTime"
