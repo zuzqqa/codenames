@@ -42,7 +42,7 @@ public class ConfigSecurity {
                         authorizeRequests
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight requests
                                 .requestMatchers("/api/users", "/api/users/authenticate", "/api/users/getId", "/api/users/getUsername", "/api/users/createGuest").permitAll()
-                                .requestMatchers("/api/email/send", "/api/game-session/create", "api/game-session/**").permitAll()
+                                .requestMatchers("/api/email/send", "/api/game-session/create", "api/game-session/**", "api/game-state/**").permitAll()
                                 .anyRequest().authenticated() // Allow access to registration and authentication endpoints
                                 )
                 .sessionManagement(sessionManagement ->

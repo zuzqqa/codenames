@@ -36,6 +36,9 @@ public class DefaultGameSessionService implements GameSessionService {
         GameState gameState = new GameState();
         gameStateService.generateRandomCardsNames(gameState);
         gameStateService.generateRandomCardsColors(gameState);
+        gameState.setTeamTurn(0);
+        gameState.setBlueTeamScore(0);
+        gameState.setRedTeamScore(0);
 
         GameSession newGame = new GameSession(
                 GameSession.sessionStatus.CREATED,
@@ -55,6 +58,7 @@ public class DefaultGameSessionService implements GameSessionService {
                 gameState
         );
 
+        System.out.println("Nowa gra" + newGame.getGameState().getTeamTurn());
         gameSessionRepository.save(newGame);
         return newGame.getSessionId().toString();
     }
