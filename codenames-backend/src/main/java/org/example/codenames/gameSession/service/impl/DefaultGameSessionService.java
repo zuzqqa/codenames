@@ -70,6 +70,30 @@ public class DefaultGameSessionService implements GameSessionService {
     }
 
     @Override
+    public String[] getCardsBySessionId(UUID sessionId) {
+        return gameSessionRepository.findBySessionId(sessionId)
+                .map(gameSession -> {
+                    if (gameSession.getGameState() != null) {
+                        return gameSession.getGameState().getCards();
+                    }
+                    throw new IllegalStateException("GameState is null for the given session.");
+                })
+                .orElseThrow(() -> new IllegalArgumentException("GameSession not found with ID: " + sessionId));
+    }
+
+    @Override
+    public Integer[] getCardsColorsBySessionId(UUID sessionId) {
+        return gameSessionRepository.findBySessionId(sessionId)
+                .map(gameSession -> {
+                    if (gameSession.getGameState() != null) {
+                        return gameSession.getGameState().getCardsColors();
+                    }
+                    throw new IllegalStateException("GameState is null for the given session.");
+                })
+                .orElseThrow(() -> new IllegalArgumentException("GameSession not found with ID: " + sessionId));
+    }
+
+    @Override
     public void updateStatus(UUID sessionId, GameSession.sessionStatus newStatus) {
         GameSession session = gameSessionRepository.findBySessionId(sessionId)
                 .orElseThrow(() -> new IllegalArgumentException("Session not found"));

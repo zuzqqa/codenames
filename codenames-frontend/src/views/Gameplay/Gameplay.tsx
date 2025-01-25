@@ -13,6 +13,7 @@ import cardsStackImg from "../../assets/images/cards-stack.png";
 import cardWhiteImg from "../../assets/images/card-white.png";
 import cardBlackImg from "../../assets/images/card-black.png";
 import cardRedImg from "../../assets/images/card-red.jpg";
+import cardBlueImg from "../../assets/images/card-blue.jpg";
 import polygon1Img from "../../assets/images/polygon1.png";
 import polygon2Img from "../../assets/images/polygon2.png";
 
