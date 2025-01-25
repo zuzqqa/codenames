@@ -13,7 +13,7 @@ import compassImg from "../../assets/images/compass.png";
 import profilePicImg from "../../assets/images/profile-pic.png";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
-
+import { formatTime } from "../../shared/utils";
 import "./ChooseLeader.css";
 
 // Define the type for props passed to the Gameplay component
@@ -151,16 +151,6 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     }
 
     navigate("/gameplay");
-  };
-  
-  // Format time as MM:SS
-  const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = time % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
-      2,
-      "0"
-    )}`;
   };
 
   const toggleSettings = () => {

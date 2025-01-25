@@ -2,8 +2,12 @@ package org.example.codenames.gameState.service.api;
 
 import org.example.codenames.gameState.entity.GameState;
 
-public interface GameStateService {
+import java.util.UUID;
 
-    public void generateRandomCardsNames(GameState gameState);
-    public void generateRandomCardsColors(GameState gameState);
+public interface GameStateService {
+    void generateRandomCardsNames(GameState gameState);
+
+    void generateRandomCardsColors(GameState gameState);
+
+    void changeTurns(UUID gameId, Integer turn);
 }

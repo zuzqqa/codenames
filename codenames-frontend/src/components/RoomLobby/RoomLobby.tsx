@@ -77,16 +77,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     const socket = new SockJS("http://localhost:8080/ws");
     const stompClient = new Client({
       webSocketFactory: () => socket,
-      connectHeaders: {
-        login: "user",
-        passcode: "password",
-      },
-      debug: (str) => {
-        console.log("STOMP: " + str);
-      },
       onConnect: () => {
-        console.log("WebSocket connected");
-
         stompClient.subscribe("/game/" + storedGameId, (message) => {
           const updatedGameSession = JSON.parse(message.body);
           if (updatedGameSession) {

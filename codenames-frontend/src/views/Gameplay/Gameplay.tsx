@@ -93,7 +93,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   const navigate = useNavigate();
   const [blueTeamScore, setBlueTeamScore] = useState(0);
   const [redTeamScore, setRedTeamScore] = useState(0);
-  const [whosTurn, setWhosTurn] = useState<number>(0);
+  const [whosTurn, setWhosTurn] = useState<string>("red");
   const [isGuessingTime, setIsGuessingTime] = useState(false);
   const [isHintTime, setIsHintTime] = useState(true);
   const [remainingTime, setRemainingTime] = useState(0);
@@ -203,9 +203,6 @@ const Gameplay: React.FC<GameplayProps> = ({
             setMyTeam(null);
           }
 
-          console.log("moje id: " + userId);
-          console.log("id lidera: " + data.gameState?.blueTeamLeader?.id);
-          
           if (data.gameState?.blueTeamLeader?.id === userId) {
             setAmIBlueTeamLeader(true);
           } else if (data.gameState?.redTeamLeader?.id === userId) {
@@ -214,7 +211,6 @@ const Gameplay: React.FC<GameplayProps> = ({
 
           setBlueTeamScore(data.gameState?.blueTeamScore || 0);
           setRedTeamScore(data.gameState?.redTeamScore || 0);
-          setWhosTurn(data.gameState.teamTurn);
         })
         .catch((err) => console.error("Failed to load game session", err));
     } else {
@@ -265,12 +261,8 @@ const Gameplay: React.FC<GameplayProps> = ({
         if (prevTime <= 1) {
           clearInterval(timer);  
           
-          if (isHintTime) {
-            setIsHintTime(false);
-            setIsGuessingTime(true);
-          } else if (isGuessingTime) {
-            console.log("Round complete!");
-          }
+          endRound();
+
           return 0; 
         }
         return prevTime - 1; 
@@ -280,7 +272,32 @@ const Gameplay: React.FC<GameplayProps> = ({
     return () => clearInterval(timer);
   }, [isHintTime, isGuessingTime]); 
 
-  return (
+  const endRound = () => {
+    if (isHintTime) {
+      setIsHintTime(false);
+      setIsGuessingTime(true);
+    } else if (isGuessingTime) {
+      setIsHintTime(true);
+      setIsGuessingTime(false);
+      changeTurns();
+    }
+  }
+
+  const changeTurns = async() => {
+    const storedGameId = localStorage.getItem("gameId");
+    const nextTurn = whosTurn === "red" ? "blue" : "red";  
+    setWhosTurn(nextTurn); 
+
+    fetch(
+      `http://localhost:8080/api/game-state/${storedGameId}/next-turn?turn=${whosTurn === "red" ? 0 : 1}`,
+      {
+        method: "GET",
+      }
+    );
+
+  };
+
+  return ( 
     <>
       <BackgroundContainer>
         <GameTitleBar />
@@ -364,7 +381,7 @@ const Gameplay: React.FC<GameplayProps> = ({
               <img className="shelf" src={shelfImg} />
             </div>
             <div className="item">
-              <Button variant="room" soundFXVolume={soundFXVolume}>
+              <Button variant="room" soundFXVolume={soundFXVolume} onClick={endRound}>
                 <span className="button-text">{t("end-round")}</span>
               </Button>
               <div className="horizontal-gold-bar" />
