@@ -130,7 +130,8 @@ public class DefaultGameSessionService implements GameSessionService {
 
         gameState.setBlueTeamLeader(blueTeamLeader);
         gameState.setRedTeamLeader(redTeamLeader);
-
+        System.out.println("Hehe: " + gameState.getBlueTeamLeader());
+        System.out.println(gameState.getRedTeamLeader());
         gameSessionRepository.save(session);
     }
 
@@ -162,13 +163,15 @@ public class DefaultGameSessionService implements GameSessionService {
         }
 
         List<List<User>> connectedUsers = gameSession.getConnectedUsers();
+        List<List<Integer>> votes = gameSession.getVotes();
         if (connectedUsers == null) {
             connectedUsers = List.of(new ArrayList<>(), new ArrayList<>());
+            votes = List.of(new ArrayList<>(), new ArrayList<>());
             gameSession.setConnectedUsers(connectedUsers);
+            gameSession.setVotes(votes);
         }
 
         if (teamIndex < 0 || teamIndex >= connectedUsers.size()) {
-            System.out.println(teamIndex >= connectedUsers.size());
             return false;
         }
 
@@ -182,6 +185,8 @@ public class DefaultGameSessionService implements GameSessionService {
 
         User actualUser = user.orElseThrow(() -> new IllegalArgumentException("User not found for ID: " + userId));
         connectedUsers.get(teamIndex).add(actualUser);
+        votes.get(teamIndex).add(0);
+
         gameSessionRepository.save(gameSession);
 
         return true;
