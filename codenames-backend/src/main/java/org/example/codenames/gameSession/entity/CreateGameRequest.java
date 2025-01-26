@@ -12,7 +12,6 @@ import java.time.Duration;
 public class CreateGameRequest {
     public String gameName;
     public Integer maxPlayers;
-    public Duration durationOfTheRound;
     public Duration timeForAHint;
     public Duration timeForGuessing;
 }

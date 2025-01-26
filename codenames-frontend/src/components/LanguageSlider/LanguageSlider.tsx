@@ -15,7 +15,7 @@ interface LanguageSliderProps {
 }
 
 const LanguageSlider: React.FC<LanguageSliderProps> = ({ soundFXVolume }) => {
-  const [currentLanguageId, setCurrentLanguageId] = useState(0);
+  const [currentLanguageId, setCurrentLanguageId] = useState(localStorage.getItem("i18nextLng") === "pl" ? 1 : 0);
   const { t, i18n } = useTranslation();
 
   const playClickSound = () => {
@@ -29,6 +29,7 @@ const LanguageSlider: React.FC<LanguageSliderProps> = ({ soundFXVolume }) => {
     setCurrentLanguageId((prevIndex) => {
       const newIndex = prevIndex === 0 ? languages.length - 1 : prevIndex - 1;
       i18n.changeLanguage(language_code[newIndex]); 
+      localStorage.setItem("i18nextLng", language_code[newIndex]);
       return newIndex;
     });
   };
@@ -38,6 +39,7 @@ const LanguageSlider: React.FC<LanguageSliderProps> = ({ soundFXVolume }) => {
     setCurrentLanguageId((prevIndex) => {
       const newIndex = prevIndex === 0 ? languages.length - 1 : prevIndex - 1;
       i18n.changeLanguage(language_code[newIndex]); 
+      localStorage.setItem("i18nextLng", language_code[newIndex]);
       return newIndex;
     });  
   };

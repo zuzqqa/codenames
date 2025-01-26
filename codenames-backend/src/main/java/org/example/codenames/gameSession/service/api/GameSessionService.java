@@ -12,6 +12,10 @@ public interface GameSessionService {
 
     GameSession getGameSessionById(UUID gameId);
 
+    String[] getCardsBySessionId(UUID sessionId);
+
+    Integer[] getCardsColorsBySessionId(UUID sessionId);
+
     void updateStatus(UUID id, GameSession.sessionStatus sessionStatus);
 
     void submitVote(UUID id, String userId, String votedUserId);

@@ -14,7 +14,7 @@
 .content {
     display: grid;
     grid-template-columns: 75% 25%;
-    grid-template-rows: 10% 10% 10% 10% 10% 50%;
+    grid-template-rows: 10% 10% 10% 10% 60%;
     gap: 0.1rem;
 
     align-items: center;

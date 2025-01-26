@@ -5,6 +5,8 @@ import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.gameState.entity.GameState;
+import org.example.codenames.gameState.service.api.GameStateService;
+import org.example.codenames.gameState.service.impl.DefaultGameStateService;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.service.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,21 +22,29 @@ public class DefaultGameSessionService implements GameSessionService {
 
     private final GameSessionRepository gameSessionRepository;
     private final UserService userService;
+    private final GameStateService gameStateService;
 
     @Autowired
-    public DefaultGameSessionService(GameSessionRepository gameSessionRepository, UserService userService) {
+    public DefaultGameSessionService(GameSessionRepository gameSessionRepository, UserService userService, GameStateService gameStateService) {
         this.gameSessionRepository = gameSessionRepository;
         this.userService = userService;
+        this.gameStateService = gameStateService;
     }
 
     @Override
     public String createGameSession(CreateGameRequest request) {
+        GameState gameState = new GameState();
+        gameStateService.generateRandomCardsNames(gameState);
+        gameStateService.generateRandomCardsColors(gameState);
+        gameState.setTeamTurn(0);
+        gameState.setBlueTeamScore(0);
+        gameState.setRedTeamScore(0);
+
         GameSession newGame = new GameSession(
                 GameSession.sessionStatus.CREATED,
                 UUID.randomUUID(),
                 request.getGameName(),
                 request.getMaxPlayers(),
-                request.getDurationOfTheRound(),
                 request.getTimeForAHint(),
                 request.getTimeForGuessing(),
                 new ArrayList<List<User>>() {{
@@ -45,9 +55,10 @@ public class DefaultGameSessionService implements GameSessionService {
                     add(new ArrayList<>());
                     add(new ArrayList<>());
                 }},
-                new GameState()
+                gameState
         );
 
+        System.out.println("Nowa gra" + newGame.getGameState().getTeamTurn());
         gameSessionRepository.save(newGame);
         return newGame.getSessionId().toString();
     }
@@ -60,6 +71,31 @@ public class DefaultGameSessionService implements GameSessionService {
         }
 
         return null;
+    }
+
+    @Override
+    public String[] getCardsBySessionId(UUID sessionId) {
+        return gameSessionRepository.findBySessionId(sessionId)
+                .map(gameSession -> {
+                    if (gameSession.getGameState() != null) {
+                        System.out.println("aaaaaaaaaaaaaaaaaaaa");
+                        return gameSession.getGameState().getCards();
+                    }
+                    throw new IllegalStateException("GameState is null for the given session.");
+                })
+                .orElseThrow(() -> new IllegalArgumentException("GameSession not found with ID: " + sessionId));
+    }
+
+    @Override
+    public Integer[] getCardsColorsBySessionId(UUID sessionId) {
+        return gameSessionRepository.findBySessionId(sessionId)
+                .map(gameSession -> {
+                    if (gameSession.getGameState() != null) {
+                        return gameSession.getGameState().getCardsColors();
+                    }
+                    throw new IllegalStateException("GameState is null for the given session.");
+                })
+                .orElseThrow(() -> new IllegalArgumentException("GameSession not found with ID: " + sessionId));
     }
 
     @Override
@@ -123,8 +159,11 @@ public class DefaultGameSessionService implements GameSessionService {
 
         // Create or update GameState with the leaders
         GameState gameState = session.getGameState();
+
         if (gameState == null) {
             gameState = new GameState();
+            gameStateService.generateRandomCardsNames(gameState);
+            gameStateService.generateRandomCardsColors(gameState);
             session.setGameState(gameState);
         }
 
@@ -162,13 +201,15 @@ public class DefaultGameSessionService implements GameSessionService {
         }
 
         List<List<User>> connectedUsers = gameSession.getConnectedUsers();
+        List<List<Integer>> votes = gameSession.getVotes();
         if (connectedUsers == null) {
             connectedUsers = List.of(new ArrayList<>(), new ArrayList<>());
+            votes = List.of(new ArrayList<>(), new ArrayList<>());
             gameSession.setConnectedUsers(connectedUsers);
+            gameSession.setVotes(votes);
         }
 
         if (teamIndex < 0 || teamIndex >= connectedUsers.size()) {
-            System.out.println(teamIndex >= connectedUsers.size());
             return false;
         }
 
@@ -182,6 +223,8 @@ public class DefaultGameSessionService implements GameSessionService {
 
         User actualUser = user.orElseThrow(() -> new IllegalArgumentException("User not found for ID: " + userId));
         connectedUsers.get(teamIndex).add(actualUser);
+        votes.get(teamIndex).add(0);
+
         gameSessionRepository.save(gameSession);
 
         return true;
