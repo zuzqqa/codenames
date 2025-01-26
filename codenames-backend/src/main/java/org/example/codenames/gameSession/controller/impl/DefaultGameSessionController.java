@@ -46,6 +46,16 @@ public class DefaultGameSessionController implements GameSessionController {
         }
     }
 
+    @GetMapping("/{id}/cards")
+    public String[] getGameStateCards(@PathVariable UUID id) {
+        return gameSessionService.getCardsBySessionId(id);
+    }
+
+    @GetMapping("/{id}/cards-colors")
+    public Integer[] getGameStateCardsColors(@PathVariable UUID id) {
+        return gameSessionService.getCardsColorsBySessionId(id);
+    }
+
     @PostMapping("/{id}/vote")
     public ResponseEntity<?> submitVote(@PathVariable UUID id, @RequestBody VoteRequest voteRequest) {
         gameSessionService.submitVote(id, voteRequest.getUserId(), voteRequest.getVotedUserId());

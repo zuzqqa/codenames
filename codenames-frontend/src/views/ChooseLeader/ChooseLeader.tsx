@@ -13,7 +13,7 @@ import compassImg from "../../assets/images/compass.png";
 import profilePicImg from "../../assets/images/profile-pic.png";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
-
+import { formatTime } from "../../shared/utils";
 import "./ChooseLeader.css";
 
 // Define the type for props passed to the Gameplay component
@@ -54,7 +54,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [selectedPlayer, setSelectedPlayer] = useState<User | null>(null);
-  const [timeLeft, setTimeLeft] = useState(120); // Timer state (2 minutes = 120 seconds)
+  const [timeLeft, setTimeLeft] = useState(10); // Timer state (2 minutes = 120 seconds)
   const navigate = useNavigate(); // Hook for navigation
   const { t } = useTranslation(); // Hook for translations
   const [gameSession, setGameSession] = useState<GameSession | null>(null);
@@ -105,7 +105,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     }
 
     const timer = setInterval(() => {
-      setTimeLeft((prevTime) => prevTime - 10);
+      setTimeLeft((prevTime) => prevTime - 1);
     }, 1000);
 
     // WebSocket connection using SockJS and STOMP
@@ -151,16 +151,6 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     }
 
     navigate("/gameplay");
-  };
-  
-  // Format time as MM:SS
-  const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = time % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
-      2,
-      "0"
-    )}`;
   };
 
   const toggleSettings = () => {

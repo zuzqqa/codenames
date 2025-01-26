@@ -109,7 +109,6 @@ public class DefaultUserController implements UserController {
         }
         String username = jwtService.getUsernameFromToken(token);
         Optional<User> user = userService.getUserByUsername(username);
-        System.out.println(user);
         return user.map(User::getId).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 

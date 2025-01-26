@@ -9,6 +9,7 @@ import Button from "../Button/Button.tsx";
 import backButton from "../../assets/icons/arrow-back.png";
 import playerIcon from "../../assets/images/player-icon.png";
 import "./RoomLobby.css";
+import {convertDurationToSeconds} from "../../shared/utils.tsx";
 
 interface RoomLobbyProps {
   soundFXVolume: number;
@@ -30,7 +31,6 @@ interface GameSession {
   sessionId: string;
   gameName: string;
   maxPlayers: number;
-  durationOfTheRound: string;
   timeForAHint: string;
   timeForGuessing: string;
   connectedUsers: User[][];
@@ -53,9 +53,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       fetch(`http://localhost:8080/api/game-session/${storedGameId}`)
         .then((response) => response.json())
         .then((data: GameSession) => {
-          const roundDurationInSeconds = convertDurationToSeconds(
-            data.durationOfTheRound
-          );
           const hintTimeInSeconds = convertDurationToSeconds(data.timeForAHint);
           const guessingTimeInSeconds = convertDurationToSeconds(
             data.timeForGuessing
@@ -63,7 +60,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
 
           setGameSession({
             ...data,
-            durationOfTheRound: roundDurationInSeconds.toString(),
             timeForAHint: hintTimeInSeconds.toString(),
             timeForGuessing: guessingTimeInSeconds.toString(),
           });
@@ -81,23 +77,13 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     const socket = new SockJS("http://localhost:8080/ws");
     const stompClient = new Client({
       webSocketFactory: () => socket,
-      connectHeaders: {
-        login: "user",
-        passcode: "password",
-      },
-      debug: (str) => {
-        console.log("STOMP: " + str);
-      },
       onConnect: () => {
-        console.log("WebSocket connected");
-
         stompClient.subscribe("/game/" + storedGameId, (message) => {
           const updatedGameSession = JSON.parse(message.body);
           if (updatedGameSession) {
             setRedTeamPlayers(updatedGameSession.connectedUsers[0] || []);
             setBlueTeamPlayers(updatedGameSession.connectedUsers[1] || []);
-            console.log("Game session updated:", updatedGameSession.status);
-            console.log(updatedGameSession.status === SessionStatus.IN_PROGRESS);
+
             if(updatedGameSession.status === SessionStatus.IN_PROGRESS) {
               navigate("/choose-leader");
             }
@@ -117,34 +103,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       }
     };
   }, [navigate]);
-
-  
-  function convertDurationToSeconds(duration: string | number): number {
-    if (typeof duration === "string") {
-      const regex = /^PT(\d+)([SMH])$/;
-      const match = duration.match(regex);
-
-      if (match) {
-        const value = parseInt(match[1], 10);
-        const unit = match[2];
-
-        if (unit === "S") {
-          return value;
-        } else if (unit === "M") {
-          return value * 60;
-        } else if (unit === "H") {
-          return value * 3600;
-        } else {
-          console.warn("Unhandled unit:", unit);
-          return 0;
-        }
-      } else {
-        console.warn("Invalid duration format:", duration);
-      }
-    }
-
-    return typeof duration === "number" ? duration : 0;
-  }
   
   const addPlayerToRedTeam = async () => {
     // Fetch player ID, then add to red team via REST API
@@ -266,8 +224,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                   : 0}
                 /{gameSession.maxPlayers}
               </div>
-              <div>{t("duration")}</div>
-              <div>{gameSession.durationOfTheRound} s</div>
               <div>{t("hint-duration")}</div>
               <div>{gameSession.timeForAHint} s</div>
               <div>{t("guessing-duration")}</div>
