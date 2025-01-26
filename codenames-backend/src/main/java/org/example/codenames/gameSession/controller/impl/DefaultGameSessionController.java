@@ -37,27 +37,23 @@ public class DefaultGameSessionController implements GameSessionController {
 
     @GetMapping("/{gameId}")
     public ResponseEntity<GameSession> getGameSession(@PathVariable String gameId) {
-        System.out.println("Received GET request for gameId: " + gameId);
         GameSession gameSession = gameSessionService.getGameSessionById(UUID.fromString(gameId));
 
         if (gameSession != null) {
             return ResponseEntity.ok(gameSession);
         } else {
-            System.out.println("GameSession not found for gameId: " + gameId);
             return ResponseEntity.notFound().build();
         }
     }
 
-    @PostMapping("/{id}/start")
-    public ResponseEntity<Void> startGame(@PathVariable UUID id) {
-        gameSessionService.updateStatus(id, GameSession.sessionStatus.IN_PROGRESS);
-        return ResponseEntity.ok().build();
+    @GetMapping("/{id}/cards")
+    public String[] getGameStateCards(@PathVariable UUID id) {
+        return gameSessionService.getCardsBySessionId(id);
     }
 
-    @PostMapping("/{id}/finish")
-    public ResponseEntity<Void> finishGame(@PathVariable UUID id) {
-        gameSessionService.updateStatus(id, GameSession.sessionStatus.FINISHED);
-        return ResponseEntity.ok().build();
+    @GetMapping("/{id}/cards-colors")
+    public Integer[] getGameStateCardsColors(@PathVariable UUID id) {
+        return gameSessionService.getCardsColorsBySessionId(id);
     }
 
     @PostMapping("/{id}/vote")
@@ -71,7 +67,7 @@ public class DefaultGameSessionController implements GameSessionController {
         GameSession gameSession = gameSessionService.getGameSessionById(id);
 
         if (gameSession != null) {
-            if (gameSession.getGameState().getBlueTeamLeader() != null) {
+            if (gameSession.getGameState().getBlueTeamLeader() == null) {
                 gameSessionService.assignTeamLeaders(id);
             }
             else {

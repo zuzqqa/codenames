@@ -83,7 +83,11 @@ const LoginPage: React.FC<LoginProps> = ({
     const toggleSettings = () => {
         setIsSettingsOpen(!isSettingsOpen);
     };
-
+  
+    const updateMusicVolume = (volume: number) => {
+        setMusicVolume(volume);
+        setVolume(volume); // Update global volume
+      };
 
     return (
         <BackgroundContainer>
@@ -93,10 +97,7 @@ const LoginPage: React.FC<LoginProps> = ({
                 onClose={toggleSettings}
                 musicVolume={musicVolume}
                 soundFXVolume={soundFXVolume}
-                setMusicVolume={(volume) => {
-                    setMusicVolume(volume); // Update local music volume
-                    setVolume(volume / 100); // Update global volume
-                }}
+                setMusicVolume={updateMusicVolume}
                 setSoundFXVolume={setSoundFXVolume}
             />
             <Button variant="circle" soundFXVolume={soundFXVolume}>
