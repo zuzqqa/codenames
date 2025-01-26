@@ -25,16 +25,6 @@ public class DefaultGameSessionController implements GameSessionController {
         this.gameSessionService = gameSessionService;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<Map<String, String>> createGameSession(@RequestBody CreateGameRequest request) {
-        String gameId = gameSessionService.createGameSession(request);
-
-        Map<String, String> response = new HashMap<>();
-        response.put("gameId", gameId);
-
-        return ResponseEntity.ok(response);
-    }
-
     @GetMapping("/{gameId}")
     public ResponseEntity<GameSession> getGameSession(@PathVariable String gameId) {
         GameSession gameSession = gameSessionService.getGameSessionById(UUID.fromString(gameId));
@@ -105,16 +95,5 @@ public class DefaultGameSessionController implements GameSessionController {
         List<User> teamUsers = connectedUsers.get(teamIndexInt);
 
         return ResponseEntity.ok(teamUsers);
-    }
-
-    @GetMapping("/all")
-    public ResponseEntity<List<GameSession>> getGameSessions() {
-        List<GameSession> gameSessions = gameSessionService.getAllGameSessions();
-
-        if (gameSessions.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-
-        return ResponseEntity.ok(gameSessions);
     }
 }

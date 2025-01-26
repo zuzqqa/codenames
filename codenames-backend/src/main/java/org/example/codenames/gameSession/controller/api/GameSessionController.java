@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public interface GameSessionController {
-    ResponseEntity<Map<String, String>> createGameSession(@RequestBody CreateGameRequest request);
-
     ResponseEntity<GameSession> getGameSession(@PathVariable String gameId);
 
     ResponseEntity<?> submitVote(@PathVariable UUID id, @RequestBody VoteRequest voteRequest);
@@ -22,6 +20,4 @@ public interface GameSessionController {
     ResponseEntity<String> getVotes(@PathVariable UUID id);
 
     ResponseEntity<?> getUsersByTeam(@PathVariable String gameId, @RequestParam String teamIndex);
-
-    ResponseEntity<List<GameSession>>  getGameSessions();
 }

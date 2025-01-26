@@ -1,4 +1,4 @@
-import React, { useState } from "react"; // Hook for managing component state
+import React, { useState, useEffect } from "react"; // Hook for managing component state
 
 import BackgroundContainer from "../../containers/Background/Background";
 
@@ -8,12 +8,37 @@ import GameList from "../../components/GameList/GameList";
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 
 import settingsIcon from "../../assets/icons/settings.png";
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
 // Define the type for props passed to the JoinGame component
 interface JoinGameProps {
   setVolume: (volume: number) => void; // Function to set global volume
   soundFXVolume: number; // Current sound effects volume level
   setSoundFXVolume: (volume: number) => void; // Function to set sound effects volume
+}
+
+interface User {
+  userId: string;
+  username: string;
+}
+
+enum SessionStatus {
+  CREATED = "CREATED",
+  IN_PROGRESS = "IN_PROGRESS",
+  FINISHED = "FINISHED",
+}
+
+interface GameSession {
+  status: SessionStatus;
+  sessionId: string;
+  gameName: string;
+  maxPlayers: number;
+  durationOfTheRound: string;
+  timeForGuessing: string;
+  timeForAHint: string;
+  numberOfRounds: number;
+  connectedUsers: User[][]; // A table of two arrays representing teams
 }
 
 // Main component definition
@@ -24,6 +49,55 @@ const JoinGame: React.FC<JoinGameProps> = ({
 }) => {
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
+  const [gameSessions, setGameSessions] = useState<GameSession[]>([]);
+  const [filteredGames, setFilteredGames] = useState<GameSession[]>([]);
+
+  useEffect(() => {
+    // Funkcja do pobierania gier
+    getGames();
+
+    const socket = new SockJS("http://localhost:8080/ws");
+    const stompClient = new Client({
+      webSocketFactory: () => socket,
+      onConnect: () => {
+        stompClient.subscribe("/game/all", (message) => {
+          const updatedGameSessionsList = JSON.parse(message.body);
+          if (updatedGameSessionsList) {
+            const filteredUpdatedGames = updatedGameSessionsList.filter(
+              (game: GameSession) => game.status === "CREATED"
+            );
+            setGameSessions(filteredUpdatedGames);
+            setFilteredGames(filteredUpdatedGames);
+          }
+        });
+      },
+      onStompError: (frame) => {
+        console.error("STOMP error", frame);
+      },
+    });
+
+    stompClient.activate();
+
+    return () => {
+      stompClient.deactivate(); // Zatrzymaj połączenie WebSocket przy odmontowywaniu komponentu
+    };
+  }, []);
+
+  const getGames = () => {
+    fetch("http://localhost:8080/api/game-session/all")
+      .then((response) => response.json())
+      .then((data) => {
+        // Filtrujemy gry, aby pokazać tylko te z statusem 'CREATED'
+        const createdGames = data.filter(
+          (game: GameSession) => game.status === "CREATED"
+        );
+        setGameSessions(createdGames);
+        setFilteredGames(createdGames);
+      })
+      .catch((error) => {
+        console.error("Error fetching game sessions:", error);
+      });
+  };
 
   // Toggles the settings modal visibility
   const toggleSettings = () => {
@@ -52,7 +126,12 @@ const JoinGame: React.FC<JoinGameProps> = ({
         />
         <>
           <GameTitleBar></GameTitleBar>
-          <GameList soundFXVolume={soundFXVolume}/>
+          <GameList
+            soundFXVolume={soundFXVolume}
+            gameSessions={gameSessions}
+            filteredSessions={filteredGames}
+            setFilteredSessions={setFilteredGames}
+          />
         </>
       </BackgroundContainer>
     </>

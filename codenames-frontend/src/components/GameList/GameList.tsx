@@ -14,6 +14,9 @@ import { useState, useEffect } from "react";
 
 interface GameListProps {
   soundFXVolume: number;
+  gameSessions: GameSession[];
+  filteredSessions: GameSession[];
+  setFilteredSessions: (sessions: GameSession[]) => void;
 }
 
 interface User {
@@ -39,33 +42,22 @@ interface GameSession {
   connectedUsers: User[][]; // A table of two arrays representing teams
 }
 
-const GameList: React.FC<GameListProps> = ({ soundFXVolume }) => {
-  const [gameSessions, setGameSessions] = useState<GameSession[]>([]);
-  const [filteredGames, setFilteredGames] = useState<GameSession[]>([]);
+const GameList: React.FC<GameListProps> = ({
+  soundFXVolume,
+  gameSessions,
+  filteredSessions,
+  setFilteredSessions,
+}) => {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetch("http://localhost:8080/api/game-session/all")
-      .then((response) => response.json())
-      .then((data) => {
-        // Filter games with status 'CREATED'
-        const createdGames = data.filter((game: GameSession) => game.status === SessionStatus.CREATED);
-        setGameSessions(createdGames);
-        setFilteredGames(createdGames);
-      })
-      .catch((error) => {
-        console.error("Error fetching game sessions:", error);
-      });
-  }, []);
-
   const toggleSearch = () => {
     setIsSearchVisible(!isSearchVisible);
     setSearchTerm("");
-    setFilteredGames(gameSessions); // Reset filter when search is closed
+    setFilteredSessions(gameSessions); // Reset filter when search is closed
   };
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,12 +66,12 @@ const GameList: React.FC<GameListProps> = ({ soundFXVolume }) => {
     const filtered = gameSessions.filter((game) =>
       game.gameName.toLowerCase().includes(value)
     );
-    setFilteredGames(filtered);
+    setFilteredSessions(filtered);
   };
 
   const join_specific_game = (sessionId: string) => {
-    localStorage.setItem('gameId', sessionId);
-    navigate('/game-lobby');
+    localStorage.setItem("gameId", sessionId);
+    navigate("/game-lobby");
   };
 
   return (
@@ -136,7 +128,7 @@ const GameList: React.FC<GameListProps> = ({ soundFXVolume }) => {
           style={{ gridColumn: "2", gridRow: "2" }}
         >
           <ul className="list-content">
-            {filteredGames.map((gameSession) => (
+            {filteredSessions.map((gameSession) => (
               <li
                 key={gameSession.sessionId}
                 onClick={() => join_specific_game(gameSession.sessionId)}
@@ -144,7 +136,10 @@ const GameList: React.FC<GameListProps> = ({ soundFXVolume }) => {
                 <div className="room-info">
                   <div className="room-name">{gameSession.gameName}</div>
                   <div className="room-players">
-                    Slots: {gameSession.connectedUsers[0].length + gameSession.connectedUsers[1].length}/{gameSession.maxPlayers}
+                    Slots:{" "}
+                    {gameSession.connectedUsers[0].length +
+                      gameSession.connectedUsers[1].length}
+                    /{gameSession.maxPlayers}
                   </div>
                 </div>
               </li>
