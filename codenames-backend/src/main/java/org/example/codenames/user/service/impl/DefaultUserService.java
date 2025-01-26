@@ -24,7 +24,9 @@ public class DefaultUserService implements UserService {
 
     @Override
     public void createUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (!user.isGuest()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         userRepository.save(user);
     }
 

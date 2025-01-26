@@ -346,7 +346,7 @@ const Gameplay: React.FC<GameplayProps> = ({
                   flipStates[index] || (amIRedTeamLeader && amIBlueTeamLeader) ? "flip" : ""
                 }`}
                 src={
-                  (amIRedTeamLeader || amIBlueTeamLeader) // Jeśli lider, ustaw od razu odpowiedni kolor
+                  (amIRedTeamLeader || amIBlueTeamLeader) // If leader, show colors
                     ? (() => {
                         const cardColor = gameSession?.gameState.cardsColors[index];
                         switch (cardColor) {

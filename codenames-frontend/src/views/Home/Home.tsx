@@ -49,14 +49,12 @@ const Home: React.FC<HomeProps> = ({
 
     // Check if user is logged in using cookies
     useEffect(() => {
-        console.log("Sprawdzam");
-        const loggedIn = Cookies.get('loggedIn'); // Retrieve the cookie value
-
-        // Ensure 'loggedIn' is true
-        if (loggedIn === 'true') {
-            navigate('/games'); // Redirect to /games if logged in
+        const loggedIn = Cookies.get("loggedIn") === "true";
+        if (loggedIn) {
+          navigate("/games");
         }
-    }, [navigate]); // This effect runs once on component mount
+      }, [navigate]);
+    
 
     return (
         <>
@@ -117,10 +115,27 @@ const Home: React.FC<HomeProps> = ({
                                 {/* Option to play as a guest */}
                                 <Button
                                     variant="primary"
-                                    onClick={() => navigate("/games")}
+                                    onClick={async () => {
+                                        try {
+                                            const response = await fetch("http://localhost:8080/api/users/createGuest", {
+                                                method: "POST",
+                                                credentials: "include",
+                                            });
+
+                                            if (response.ok) {
+                                                Cookies.set("loggedIn", "true", { path: "/" });
+                                                window.location.href = "/loading";
+
+                                            } else {
+                                            console.error("Failed to create guest account");
+                                            }
+                                        } catch (error) {
+                                            console.error("Error creating guest account:", error);
+                                        }
+                                    }}
                                     soundFXVolume={soundFXVolume}
-                                >
-                                    <span className="button-text">{ t('play-as-guest-button-text') }</span>
+                                    >
+                                    <span className="button-text">{t("play-as-guest-button-text")}</span>
                                 </Button>
                             </div>
                         </MenuContainer>
