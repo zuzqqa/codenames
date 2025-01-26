@@ -8,6 +8,7 @@ import org.example.codenames.user.service.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,6 @@ public class DefaultUserService implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    public static final String SECRET = "1F2D9598B296B88841E03E7117E6271BC42832EF219E9291F0251D1DE71408BF";
     @Autowired
     public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
