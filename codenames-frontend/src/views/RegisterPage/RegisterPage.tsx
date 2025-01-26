@@ -1,6 +1,5 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import React, {useState, ChangeEvent, FormEvent, useEffect} from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom"; // Hook for programmatic navigation
 
 import "../../styles/App.css";
 import "./RegisterPage.css";
@@ -17,7 +16,8 @@ import eyeIcon from "../../assets/icons/eye.svg";
 import eyeSlashIcon from "../../assets/icons/eye-slash.svg";
 import logoutButton from "../../assets/icons/logout.svg";
 import {logout} from "../../shared/utils.tsx";
-import Cookies from 'js-cookie';
+import {useNavigate} from "react-router-dom";
+import Cookies from "js-cookie";
 
 interface RegisterProps {
     setVolume: (volume: number) => void;
@@ -58,7 +58,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
             setPassword(password.slice(0, -1)); // Handle backspace
         }
     };
-  
+
     const validateEmail = (email: string): boolean => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
@@ -70,10 +70,10 @@ const RegisterPage: React.FC<RegisterProps> = ({
 
         if (!validateEmail(email)) {
             setEmailError("Invalid email format.");
-            return; 
+            return;
         }
         setEmailError(null);
-        
+
         const userData = { email, username: login, password, roles: "USER" };
 
         try {
