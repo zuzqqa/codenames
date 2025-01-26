@@ -137,8 +137,9 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
 
   const endPool = async () => {
     const storedGameId = localStorage.getItem("gameId");
-  
-    if (storedGameId) {  // Upewniamy się, że mamy zapisany gameId
+
+    if (storedGameId) {
+      // Upewniamy się, że mamy zapisany gameId
       const getIdResponse = await fetch(
         `http://localhost:8080/api/game-session/${storedGameId}/assign-leaders`,
         {
@@ -245,13 +246,14 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
                   </div>
                   {isVoteCasted === false ? (
                     <Button
-                    variant="room"
-                    soundFXVolume={soundFXVolume}
-                    onClick={send_vote}
-                  >
-                    <span className="button-text">{t("lockin")}</span> 
-                  </Button>
-                  ) : ( <> </>
+                      variant="room"
+                      soundFXVolume={soundFXVolume}
+                      onClick={send_vote}
+                    >
+                      <span className="button-text">{t("lockin")}</span>
+                    </Button>
+                  ) : (
+                    <> </>
                   )}
                 </div>
               </>

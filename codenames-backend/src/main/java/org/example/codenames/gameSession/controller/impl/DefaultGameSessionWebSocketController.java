@@ -2,6 +2,7 @@ package org.example.codenames.gameSession.controller.impl;
 
 import lombok.AllArgsConstructor;
 import org.example.codenames.gameSession.controller.api.GameSessionWebSocketController;
+import org.example.codenames.gameSession.entity.CreateGameRequest;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
@@ -10,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -25,6 +29,18 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         this.gameSessionService = gameSessionService;
         this.messagingTemplate = messagingTemplate;
         this.gameSessionRepository = gameSessionRepository;
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<Map<String, String>> createGameSession(@RequestBody CreateGameRequest request) {
+        String gameId = gameSessionService.createGameSession(request);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("gameId", gameId);
+
+        messagingTemplate.convertAndSend("/game/all" , gameSessionService.getAllGameSessions());
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{gameId}/connect")
@@ -88,5 +104,17 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
         }
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getGameSessions() {
+        List<GameSession> gameSessions = gameSessionService.getAllGameSessions();
+
+        if (gameSessions.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        messagingTemplate.convertAndSend("/game/all" , gameSessions);
+
+        return ResponseEntity.ok(gameSessions);
     }
 }
