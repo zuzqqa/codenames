@@ -49,12 +49,19 @@ const Home: React.FC<HomeProps> = ({
 
     // Check if user is logged in using cookies
     useEffect(() => {
-        const loggedIn = Cookies.get("loggedIn") === "true";
-        if (loggedIn) {
-          navigate("/games");
+        const loggedIn = Cookies.get('loggedIn'); // Retrieve the cookie value
+
+        // Ensure 'loggedIn' is true
+        if (loggedIn === 'true') {
+            navigate('/games'); // Redirect to /games if logged in
         }
       }, [navigate]);
     
+
+    const updateMusicVolume = (volume: number) => {
+        setMusicVolume(volume);
+        setVolume(volume); // Update global volume
+      };
 
     return (
         <>
@@ -65,10 +72,7 @@ const Home: React.FC<HomeProps> = ({
                     onClose={toggleSettings}
                     musicVolume={musicVolume}
                     soundFXVolume={soundFXVolume}
-                    setMusicVolume={(volume) => {
-                        setMusicVolume(volume); // Update local music volume
-                        setVolume(volume / 100); // Update global volume
-                    }}
+                    setMusicVolume={updateMusicVolume}
                     setSoundFXVolume={setSoundFXVolume}
                 />
 

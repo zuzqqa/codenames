@@ -1,6 +1,5 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom"; // Hook for programmatic navigation
 
 import "../../styles/App.css";
 import "./LoginPage.css";
@@ -18,7 +17,7 @@ import logoutButton from "../../assets/icons/logout.svg";
 
 import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister.tsx";
 import {logout} from "../../shared/utils.tsx";
-import Cookies from 'js-cookie';
+import {useNavigate} from "react-router-dom";
 
 interface LoginProps {
     setVolume: (volume: number) => void;
@@ -37,7 +36,7 @@ const LoginPage: React.FC<LoginProps> = ({
     const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const { t } = useTranslation();
-    const navigate = useNavigate(); // Hook for navigation
+    const navigate = useNavigate();
 
     const handleLoginChange = (e: ChangeEvent<HTMLInputElement>) => {
         setLogin(e.target.value);
@@ -84,6 +83,11 @@ const LoginPage: React.FC<LoginProps> = ({
     const toggleSettings = () => {
         setIsSettingsOpen(!isSettingsOpen);
     };
+  
+    const updateMusicVolume = (volume: number) => {
+        setMusicVolume(volume);
+        setVolume(volume); // Update global volume
+      };
 
     return (
         <BackgroundContainer>
@@ -93,10 +97,7 @@ const LoginPage: React.FC<LoginProps> = ({
                 onClose={toggleSettings}
                 musicVolume={musicVolume}
                 soundFXVolume={soundFXVolume}
-                setMusicVolume={(volume) => {
-                    setMusicVolume(volume); // Update local music volume
-                    setVolume(volume / 100); // Update global volume
-                }}
+                setMusicVolume={updateMusicVolume}
                 setSoundFXVolume={setSoundFXVolume}
             />
             <Button variant="circle" soundFXVolume={soundFXVolume}>
