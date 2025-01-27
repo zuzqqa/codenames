@@ -126,13 +126,20 @@ public class DefaultUserController implements UserController {
 
     @PostMapping("/createGuest")
     public ResponseEntity<Void> createGuest(HttpServletResponse response) {
-        User guest = new User();
-        guest.setUsername("guest");
-        guest.setPassword("guest");
-        guest.setRoles("ROLE_GUEST");
+        String guestId = "guest" + System.currentTimeMillis(); // Generowanie unikalnego ID
+        User guest = User.builder()
+                .username(guestId)
+                .password("") // Goście nie potrzebują hasła
+                .roles("ROLE_GUEST")
+                .isGuest(true) // Oznacz jako gość
+                .build();
+
         userService.createUser(guest);
+
+        // Generuj token na podstawie ID użytkownika gościa
         String token = jwtService.generateToken(guest.getUsername());
         response.addCookie(setAuthCookie(token, true));
+
         return ResponseEntity.ok().build();
     }
 
