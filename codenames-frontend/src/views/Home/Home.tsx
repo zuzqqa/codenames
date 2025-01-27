@@ -55,7 +55,8 @@ const Home: React.FC<HomeProps> = ({
         if (loggedIn === 'true') {
             navigate('/games'); // Redirect to /games if logged in
         }
-    }, [navigate]); // This effect runs once on component mount
+      }, [navigate]);
+    
 
     const updateMusicVolume = (volume: number) => {
         setMusicVolume(volume);
@@ -118,10 +119,27 @@ const Home: React.FC<HomeProps> = ({
                                 {/* Option to play as a guest */}
                                 <Button
                                     variant="primary"
-                                    onClick={() => navigate("/games")}
+                                    onClick={async () => {
+                                        try {
+                                            const response = await fetch("http://localhost:8080/api/users/createGuest", {
+                                                method: "POST",
+                                                credentials: "include",
+                                            });
+
+                                            if (response.ok) {
+                                                Cookies.set("loggedIn", "true", { path: "/" });
+                                                window.location.href = "/loading";
+
+                                            } else {
+                                            console.error("Failed to create guest account");
+                                            }
+                                        } catch (error) {
+                                            console.error("Error creating guest account:", error);
+                                        }
+                                    }}
                                     soundFXVolume={soundFXVolume}
-                                >
-                                    <span className="button-text">{ t('play-as-guest-button-text') }</span>
+                                    >
+                                    <span className="button-text">{t("play-as-guest-button-text")}</span>
                                 </Button>
                             </div>
                         </MenuContainer>

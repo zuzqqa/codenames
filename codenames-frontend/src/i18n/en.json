@@ -32,5 +32,7 @@
   "choosen": "You've chosen:",
   "lockin": "Lock in",
   "choose-team-leader-1": "Choose your",
-  "choose-team-leader-2": "team leader"
+  "choose-team-leader-2": "team leader",
+  "Defeat": "Defeat",
+  "Victory": "Victory"
 }
