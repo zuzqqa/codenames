@@ -106,7 +106,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   const clickAudio = new Audio(cardSound);
 
   const toggleCardImage = (index: number) => {
-    if (amIRedTeamLeader || amIBlueTeamLeader) return;
+    if (amIRedTeamLeader || amIBlueTeamLeader || whosTurn !== myTeam) return;
     if (flipStates[index]) return;
 
     clickAudio.volume = soundFXVolume / 100;
@@ -257,6 +257,8 @@ const Gameplay: React.FC<GameplayProps> = ({
 
   
   useEffect(() => {
+    console.log(amIBlueTeamLeader);
+    console.log(amIRedTeamLeader);
     const timer = setInterval(() => {
       setRemainingTime((prevTime) => {
         if (prevTime <= 1) {
@@ -406,7 +408,7 @@ const Gameplay: React.FC<GameplayProps> = ({
               <img className="shelf" src={shelfImg} />
             </div>
             <div className="item">
-              <Button variant="room" soundFXVolume={soundFXVolume} onClick={endRound}>
+              <Button variant="room" soundFXVolume={soundFXVolume} onClick={endRound} disabled={whosTurn !== myTeam}>
                 <span className="button-text">{t("end-round")}</span>
               </Button>
               <div className="horizontal-gold-bar" />
@@ -438,7 +440,7 @@ const Gameplay: React.FC<GameplayProps> = ({
               className="codename-input"
               value={cardText}
               onChange={(e) => setCardText(e.target.value)}
-              disabled={!amIRedTeamLeader && !amIBlueTeamLeader}
+              disabled={!amIRedTeamLeader && !amIBlueTeamLeader || whosTurn !== myTeam}
             />
           </div>
         )}
