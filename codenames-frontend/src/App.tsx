@@ -6,6 +6,8 @@ import {
 } from "react-router-dom"; // Importing React Router components
 import React, { useEffect, useState } from "react"; // Importing React hooks
 import Cookies from "js-cookie"; // Importing cookie management library
+import { useTranslation } from 'react-i18next';
+
 import soundFile from "./assets/sounds/background-music.mp3"; // Importing background music file
 
 // Importing components for different views in the app
@@ -19,8 +21,8 @@ import ChooseLeader from "./views/ChooseLeader/ChooseLeader";
 import LoginPage from "./views/LoginPage/LoginPage";
 import RegisterPage from "./views/RegisterPage/RegisterPage";
 import PrivateRoute from "./utils/PrivateRoute"; 
+import WinLossView from "./views/WinLossView/WinLossView";
 import LoadingPage from "./views/Loading/LoadingPage";
-import { useTranslation } from 'react-i18next';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); 
@@ -96,6 +98,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <Routes>
+        <Route path="/win-loss" element={<WinLossView/>} />
         {/* Public routes */}
         <Route
           path="/"

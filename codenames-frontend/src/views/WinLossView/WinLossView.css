@@ -1,0 +1,54 @@
+.win-loss-container {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: calc(5rem + 2vw);
+  letter-spacing: 4px;
+  background-image: linear-gradient(to bottom, #fcf18b, #ffd363);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  z-index: 10;
+}
+
+.horizontal-line {
+  position: absolute;
+  width: 50%;
+  height: 2px;
+  background-image: linear-gradient(
+    to right,
+    #fcf18b,
+    #ffd363
+  ); 
+  border: 0;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  z-index: 1;
+  filter: blur(1px);
+}
+
+.blurred-rectangle {
+  position: absolute;
+  width: 30%;
+  height: 200px;
+  background: #450404;
+  opacity: 50%;
+  border-radius: 50px;
+  filter: blur(13px);
+  z-index: 4;
+}
+
+.blurred-rectangle.victory {
+  background: #450404;
+}
+
+.blurred-rectangle.defeat {
+  background: #000F23;
+}
+
+.character-image-start img {
+  width: 85%;
+}

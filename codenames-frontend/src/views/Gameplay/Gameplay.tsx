@@ -97,6 +97,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [isGuessingTime, setIsGuessingTime] = useState(false);
   const [isHintTime, setIsHintTime] = useState(true);
   const [remainingTime, setRemainingTime] = useState(0);
+  const [winningTeam, setWinningTeam] = useState<string>("red");
   // Toggles the settings modal visibility
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
@@ -294,9 +295,33 @@ const Gameplay: React.FC<GameplayProps> = ({
         method: "GET",
       }
     );
-
   };
 
+  const endGameIfFinished = () => {
+      const maxScore = 6; 
+  
+      if (blueTeamScore >= maxScore || myTeam === "blue") {
+        if(myTeam === "blue")
+          navigate("/win-loss", { state: { result: "Victory"} });
+        else 
+          navigate("/win-loss", { state: { result: "Loss"} });
+      } else if (redTeamScore >= maxScore) {
+        if(myTeam === "red")
+          navigate("/win-loss", { state: { result: "Victory"} });
+        else
+          navigate("/win-loss", { state: { result: "Loss"} });
+      }
+  };
+
+  const terminateGameBcOfBlackCard = () => {
+    if (myTeam === "red") {
+      navigate("/win-loss", { state: { result: "Loss"} });
+    }
+    else {
+      navigate("/win-loss", { state: { result: "Victory"} });
+    }
+  }
+  
   return ( 
     <>
       <BackgroundContainer>
