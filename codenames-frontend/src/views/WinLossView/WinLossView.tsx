@@ -29,6 +29,12 @@ const WinLossView: React.FC = () => {
     return () => clearTimeout(timer);
   }, [navigate]);
 
+  useEffect(() => {
+    if(localStorage.getItem("chatMessages")) {
+      localStorage.removeItem("chatMessages");
+    }
+  }, []);
+
   return (
     <BackgroundContainer>
       <div className="start-container">
