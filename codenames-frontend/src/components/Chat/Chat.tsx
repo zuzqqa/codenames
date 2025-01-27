@@ -11,6 +11,7 @@ interface Message {
     text: string;
     type: 'incoming' | 'outgoing';
     sender: string;
+    gameID: string;
 }
 
 const Chat: React.FC = () => {
@@ -45,7 +46,8 @@ const Chat: React.FC = () => {
     useEffect(() => {
         const savedMessages = localStorage.getItem('chatMessages');
         if (savedMessages) {
-            setMessages(JSON.parse(savedMessages)); // Parse and set messages if they exist
+            let gameMessages = JSON.parse(savedMessages).filter((msg: Message) => msg.gameID === gameId);
+            setMessages(gameMessages);
         }
     }, []);
 
@@ -64,7 +66,8 @@ const Chat: React.FC = () => {
                 {
                     text: msg.content,
                     type: msg.sender === playerName ? 'outgoing' : 'incoming',
-                    sender: msg.sender
+                    sender: msg.sender,
+                    gameID: gameId
                 }
             ]);
         }, gameId);
