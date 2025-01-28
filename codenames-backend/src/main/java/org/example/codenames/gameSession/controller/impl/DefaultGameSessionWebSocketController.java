@@ -11,10 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @AllArgsConstructor
 @RestController
@@ -88,6 +85,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
     public ResponseEntity<Void> startGame(@PathVariable UUID id) {
         try {
             gameSessionService.updateStatus(id, GameSession.sessionStatus.IN_PROGRESS);
+            gameSessionService.updateVotingStartTime(id);
             messagingTemplate.convertAndSend("/game/" + id, gameSessionRepository.findBySessionId(id));
             return ResponseEntity.ok().build();
         } catch (Exception e) {

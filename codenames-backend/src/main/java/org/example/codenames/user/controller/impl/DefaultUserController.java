@@ -146,7 +146,7 @@ public class DefaultUserController implements UserController {
     // TODO: Move this to a utility class
     private Cookie setAuthCookie(String token, boolean loggingIn) {
         Cookie cookie = new Cookie("authToken", token);
-        // cookie.setHttpOnly(true); this bullshit unables me to read the cookie in the frontend
+        // cookie.setHttpOnly(true); this bullshit unables me to read the cookie in the frontend        That was the point since we don't want to expose the token to JavaScript
         cookie.setSecure(false); // Set to true for https
         cookie.setPath("/");
         if (loggingIn) {
