@@ -24,11 +24,12 @@ import Chat from "../../components/Chat/Chat.tsx";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { useNavigate } from "react-router-dom";
-import {formatTime} from "../../shared/utils.tsx";
+import { formatTime } from "../../shared/utils.tsx";
+import { boolean } from "yup";
 interface GameplayProps {
-  setVolume: (volume: number) => void; // Function to set global volume
-  soundFXVolume: number; // Current sound effects volume level
-  setSoundFXVolume: (volume: number) => void; // Function to set sound effects volume
+  setVolume: (volume: number) => void;
+  soundFXVolume: number;
+  setSoundFXVolume: (volume: number) => void;
 }
 
 interface User {
@@ -63,17 +64,19 @@ interface GameState {
   hint: string;
   cards: string[];
   cardsColors: number[];
+  cardsChoosen: number[];
+  hintTurn: boolean;
+  guessingTurn: boolean;
 }
 
-// Main component definition
 const Gameplay: React.FC<GameplayProps> = ({
   setVolume,
   soundFXVolume,
   setSoundFXVolume,
 }) => {
-  const [musicVolume, setMusicVolume] = useState(50); // Music volume level
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
-  const { t } = useTranslation(); // Translation hook
+  const [musicVolume, setMusicVolume] = useState(50);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { t } = useTranslation();
   const [isCardVisible, setIsCardVisible] = useState(false);
   const [cardText, setCardText] = useState("");
   const [cardDisplayText, setCardDisplayText] = useState("");
@@ -94,16 +97,18 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [blueTeamScore, setBlueTeamScore] = useState(0);
   const [redTeamScore, setRedTeamScore] = useState(0);
   const [whosTurn, setWhosTurn] = useState<string>("red");
-  const [isGuessingTime, setIsGuessingTime] = useState(false);
-  const [isHintTime, setIsHintTime] = useState(true);
+  const [isGuessingTime, setIsGuessingTime] = useState(false); // or true
+  const [isHintTime, setIsHintTime] = useState(false); // or true
   const [remainingTime, setRemainingTime] = useState(0);
   const [winningTeam, setWinningTeam] = useState<string>("red");
-  // Toggles the settings modal visibility
+  const [selectedCards, setSelectedCards] = useState<number[]>([]);
+  const [cardsToReveal, setCardsToReveal] = useState<number[]>([]);
+  const [hasEndRoundBeenCalled, setHasEndRoundBeenCalled] = useState(false);
+  const clickAudio = new Audio(cardSound);
+
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
-
-  const clickAudio = new Audio(cardSound);
 
   const toggleCardImage = (index: number) => {
     if (amIRedTeamLeader || amIBlueTeamLeader || whosTurn !== myTeam) return;
@@ -121,7 +126,7 @@ const Gameplay: React.FC<GameplayProps> = ({
       setCards((prevCards) => {
         const newCards = [...prevCards];
         const cardColor = gameSession?.gameState.cardsColors[index];
-  
+
         switch (cardColor) {
           case 0:
             newCards[index] = cardWhiteImg;
@@ -138,10 +143,22 @@ const Gameplay: React.FC<GameplayProps> = ({
           default:
             newCards[index] = cardWhiteImg;
         }
-  
+
         return newCards;
       });
-    }, 170); // 0.17s
+    }, 170);
+  };
+
+  const handleCardSelection = (index: number) => {
+    if (amIRedTeamLeader || amIBlueTeamLeader) return;
+
+    setSelectedCards((prevSelectedCards) => {
+      if (prevSelectedCards.includes(index)) {
+        return prevSelectedCards.filter((cardIndex) => cardIndex !== index);
+      } else {
+        return [...prevSelectedCards, index];
+      }
+    });
   };
 
   const toggleBlackCardVisibility = () => {
@@ -152,6 +169,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
   const handleGlobalKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Enter" && cardText.trim()) {
+      sendHint();
       setCardDisplayText(cardText);
       setIsCardVisible(false);
       setCardText("");
@@ -160,6 +178,41 @@ const Gameplay: React.FC<GameplayProps> = ({
       setIsCardVisible(false);
       setCardText("");
     }
+  };
+
+  const revealCardsVotedByTeam = () => {
+    console.log("ZACZYNAM REVEALOWAC KARTY");
+    console.log(cardsToReveal);
+    if (!gameSession?.gameState || cardsToReveal.length === 0) return;
+
+    setFlipStates((prevFlipStates) => {
+      const newFlipStates = [...prevFlipStates];
+      cardsToReveal.forEach((cardIndex) => {
+        newFlipStates[cardIndex] = true;
+      });
+      return newFlipStates;
+    });
+
+    setCards((prevCards) => {
+      const newCards = [...prevCards];
+      cardsToReveal.forEach((cardIndex) => {
+        const cardColor = gameSession.gameState.cardsColors[cardIndex];
+        switch (cardColor) {
+          case 1:
+            newCards[cardIndex] = cardRedImg;
+            break;
+          case 2:
+            newCards[cardIndex] = cardBlueImg;
+            break;
+          case 3:
+            newCards[cardIndex] = cardBlackImg;
+            break;
+          default:
+            newCards[cardIndex] = cardWhiteImg;
+        }
+      });
+      return newCards;
+    });
   };
 
   useEffect(() => {
@@ -209,9 +262,11 @@ const Gameplay: React.FC<GameplayProps> = ({
           } else if (data.gameState?.redTeamLeader?.id === userId) {
             setAmIRedTeamLeader(true);
           }
-
           setBlueTeamScore(data.gameState?.blueTeamScore || 0);
           setRedTeamScore(data.gameState?.redTeamScore || 0);
+          setIsHintTime(data.gameState?.hintTurn);
+          setIsGuessingTime(data.gameState?.guessingTurn);
+          setCardsToReveal(data.gameState?.cardsChoosen || []);
         })
         .catch((err) => console.error("Failed to load game session", err));
     } else {
@@ -224,11 +279,34 @@ const Gameplay: React.FC<GameplayProps> = ({
       webSocketFactory: () => socket,
       onConnect: () => {
         // Subscribe to the game session updates
-        stompClient.subscribe(`/game/${storedGameId}`, (message) => {
+        stompClient.subscribe(`/game/${storedGameId}/timer`, (message) => {
           const updatedGameSession = JSON.parse(message.body);
           if (updatedGameSession) {
             setRedTeamPlayers(updatedGameSession.connectedUsers[0] || []);
             setBlueTeamPlayers(updatedGameSession.connectedUsers[1] || []);
+            setWhosTurn(
+              updatedGameSession.gameState?.teamTurn === 0 ? "red" : "blue"
+            );
+            setIsHintTime(updatedGameSession.gameState?.hintTurn);
+            setIsGuessingTime(updatedGameSession.gameState?.guessingTurn);
+            setCardsToReveal(updatedGameSession.gameState?.cardsChoosen || []);
+            if (
+              updatedGameSession.gameState?.hint !==
+              gameSession?.gameState?.hint
+            ) {
+              setGameSession((prevState) => {
+                if (!prevState) {
+                  return updatedGameSession;
+                }
+                return {
+                  ...prevState,
+                  gameState: {
+                    ...prevState.gameState,
+                    hint: updatedGameSession.gameState.hint,
+                  },
+                };
+              });
+            }
           }
         });
       },
@@ -236,98 +314,117 @@ const Gameplay: React.FC<GameplayProps> = ({
         console.error("STOMP error", frame);
       },
     });
-
     stompClient.activate();
+    revealCardsVotedByTeam();
 
     document.addEventListener("keydown", handleGlobalKeyDown);
     return () => {
       document.removeEventListener("keydown", handleGlobalKeyDown);
     };
-  }, [cardText, navigate]);
+  }, [cardText, navigate, cardsToReveal, isHintTime, isGuessingTime]);
 
-  useEffect(() => {
-    if (gameSession?.timeForAHint && isHintTime) {
-      const timeForHint = Number(gameSession.timeForAHint);
-      setRemainingTime(timeForHint); 
-    } else if (gameSession?.timeForGuessing && isGuessingTime) {
-      const timeForGuessing = Number(gameSession.timeForGuessing);
-      setRemainingTime(timeForGuessing);  
-    }
-  }, [gameSession, isHintTime, isGuessingTime]);
-
-  
-  useEffect(() => {
-    console.log(amIBlueTeamLeader);
-    console.log(amIRedTeamLeader);
-    const timer = setInterval(() => {
-      setRemainingTime((prevTime) => {
-        if (prevTime <= 1) {
-          clearInterval(timer);  
-          
-          endRound();
-
-          return 0; 
-        }
-        return prevTime - 1; 
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [isHintTime, isGuessingTime]); 
-
-  const endRound = () => {
-    if (isHintTime) {
-      setIsHintTime(false);
-      setIsGuessingTime(true);
-    } else if (isGuessingTime) {
-      setIsHintTime(true);
-      setIsGuessingTime(false);
-      changeTurns();
-    }
-  }
-
-  const changeTurns = async() => {
+  const sendHint = () => {
+    if (!cardText.trim()) return;
     const storedGameId = localStorage.getItem("gameId");
-    const nextTurn = whosTurn === "red" ? "blue" : "red";  
-    setWhosTurn(nextTurn); 
 
-    fetch(
-      `http://localhost:8080/api/game-state/${storedGameId}/next-turn?turn=${whosTurn === "red" ? 0 : 1}`,
-      {
-        method: "GET",
-      }
-    );
+    if (!amIRedTeamLeader && !amIBlueTeamLeader) return;
+
+    fetch(`http://localhost:8080/api/game-session/${storedGameId}/send-hint`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        credentials: "include",
+      },
+      body: JSON.stringify({ hint: cardText }),
+    });
+
+    setCardText(""); 
   };
 
-  const endGameIfFinished = () => {
-      const maxScore = 6; 
-  
-      if (blueTeamScore >= maxScore || myTeam === "blue") {
-        if(myTeam === "blue")
-          navigate("/win-loss", { state: { result: "Victory"} });
-        else 
-          navigate("/win-loss", { state: { result: "Loss"} });
-      } else if (redTeamScore >= maxScore) {
-        if(myTeam === "red")
-          navigate("/win-loss", { state: { result: "Victory"} });
-        else
-          navigate("/win-loss", { state: { result: "Loss"} });
-      }
+  const submitVotes = () => {
+    const storedGameId = localStorage.getItem("gameId");
+
+    fetch(`http://localhost:8080/api/game-state/${storedGameId}/vote`, {
+      method: "POST",
+      body: JSON.stringify({ selectedCards }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.text())
+      .then((text) => {
+        if (text === "Votes submitted successfully") {
+          console.log("Votes submitted successfully");
+        } else {
+          console.error("Unexpected server response:", text);
+        }
+      })
+      .catch((error) => {
+        console.error("Error submitting votes:", error);
+      });
   };
 
-  const terminateGameBcOfBlackCard = () => {
-    if (myTeam === "red") {
-      navigate("/win-loss", { state: { result: "Loss"} });
-    }
-    else {
-      navigate("/win-loss", { state: { result: "Victory"} });
-    }
-  }
-  
-  return ( 
+  // const endGameIfFinished = () => {
+  //   const maxScore = 6;
+
+  //   if (blueTeamScore >= maxScore || myTeam === "blue") {
+  //     if (myTeam === "blue")
+  //       navigate("/win-loss", { state: { result: "Victory" } });
+  //     else navigate("/win-loss", { state: { result: "Loss" } });
+  //   } else if (redTeamScore >= maxScore) {
+  //     if (myTeam === "red")
+  //       navigate("/win-loss", { state: { result: "Victory" } });
+  //     else navigate("/win-loss", { state: { result: "Loss" } });
+  //   }
+  // };
+
+  // const terminateGameBcOfBlackCard = () => {
+  //   if (myTeam === whosTurn) {
+  //     navigate("/win-loss", { state: { result: "Loss" } });
+  //   } else {
+  //     navigate("/win-loss", { state: { result: "Victory" } });
+  //   }
+  // };
+
+  return (
     <>
       <BackgroundContainer>
-        <GameTitleBar />
+        <span className="below timer">
+          {(() => {
+            if (
+              (amIBlueTeamLeader || amIRedTeamLeader) &&
+              isHintTime &&
+              whosTurn === myTeam
+            ) {
+              return "Podaj podpowiedz";
+            } else if (
+              (amIBlueTeamLeader || amIRedTeamLeader) &&
+              isGuessingTime &&
+              whosTurn === myTeam
+            ) {
+              return "Twoja druzyna zgaduje";
+            } else if (
+              !amIBlueTeamLeader &&
+              !amIRedTeamLeader &&
+              isHintTime &&
+              whosTurn === myTeam
+            ) {
+              return "Lider wybiera podpowiedz";
+            } else if (isHintTime && whosTurn !== myTeam) {
+              return "Podpowiedz druzyny przeciwnej";
+            } else if (
+              !amIBlueTeamLeader &&
+              !amIRedTeamLeader &&
+              isGuessingTime &&
+              whosTurn === myTeam
+            ) {
+              return "Zgadujesz";
+            } else if (isGuessingTime && whosTurn !== myTeam) {
+              return "Zgaduje druzyna przeciwna";
+            }
+          })()}
+        </span>
+
         {/* Settings button */}
         <Button variant="circle" soundFXVolume={soundFXVolume}>
           <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
@@ -354,52 +451,61 @@ const Gameplay: React.FC<GameplayProps> = ({
         <div className="content-container">
           <div className="timer-container">
             <div className="horizontal-gold-bar"></div>
-
-            {isHintTime ? (
-              <span className="timer">{formatTime(remainingTime)}</span>
-            ) : (
-              <span className="timer">{formatTime(remainingTime)}</span>
-            )}
+            <span className="timer">
+              {formatTime(
+                isHintTime
+                  ? Number(gameSession?.timeForAHint)
+                  : Number(gameSession?.timeForGuessing)
+              )}
+            </span>
           </div>
           <div className="cards-section">
             {cards.map((cardImage, index) => (
               <div
                 key={index}
-                className="card-container"
-                onClick={() => toggleCardImage(index)}
+                className={`card-container ${
+                  selectedCards.includes(index) ? "selected-card" : ""
+                } ${amIRedTeamLeader || amIBlueTeamLeader ? "disabled" : ""}`}
+                onClick={() => handleCardSelection(index)}
               >
-              <img
-                className={`card ${
-                  flipStates[index] || (amIRedTeamLeader && amIBlueTeamLeader) ? "flip" : ""
-                }`}
-                src={
-                  (amIRedTeamLeader || amIBlueTeamLeader) // If leader, show colors
-                    ? (() => {
-                        const cardColor = gameSession?.gameState.cardsColors[index];
-                        switch (cardColor) {
-                          case 1:
-                            return cardRedImg;
-                          case 2:
-                            return cardBlueImg;
-                          case 3:
-                            return cardBlackImg;
-                          default:
-                            return cardWhiteImg;
-                        }
-                      })()
-                    : cardImage
-                }
-                alt={`card-${index}`}
-              />
-              {(!flipStates[index])&& (
-                <span
-                  className={`card-text ${
-                    gameSession?.gameState.cardsColors[index] != 0 && (amIRedTeamLeader || amIBlueTeamLeader) ? "gold-text" : ""
+                <img
+                  className={`card ${
+                    flipStates[index] || (amIRedTeamLeader && amIBlueTeamLeader)
+                      ? "flip"
+                      : ""
                   }`}
-                >
-                  {gameSession?.gameState.cards[index]}
-                </span>
-              )}
+                  src={
+                    amIRedTeamLeader || amIBlueTeamLeader
+                      ? (() => {
+                          const cardColor =
+                            gameSession?.gameState.cardsColors[index];
+                          switch (cardColor) {
+                            case 1:
+                              return cardRedImg;
+                            case 2:
+                              return cardBlueImg;
+                            case 3:
+                              return cardBlackImg;
+                            default:
+                              return cardWhiteImg;
+                          }
+                        })()
+                      : cardImage
+                  }
+                  alt={`card-${index}`}
+                />
+                {!flipStates[index] && (
+                  <span
+                    className={`card-text ${
+                      gameSession?.gameState.cardsColors[index] != 0 &&
+                      (amIRedTeamLeader || amIBlueTeamLeader)
+                        ? "gold-text"
+                        : ""
+                    }`}
+                  >
+                    {gameSession?.gameState.cards[index]}
+                  </span>
+                )}
               </div>
             ))}
           </div>
@@ -408,8 +514,39 @@ const Gameplay: React.FC<GameplayProps> = ({
               <img className="shelf" src={shelfImg} />
             </div>
             <div className="item">
-              <Button variant="room" soundFXVolume={soundFXVolume} onClick={endRound} disabled={whosTurn !== myTeam}>
+              <Button
+                variant="room"
+                soundFXVolume={soundFXVolume}
+                className={
+                  ((amIBlueTeamLeader || amIRedTeamLeader) &&
+                    isHintTime &&
+                    whosTurn !== myTeam) ||
+                  ((amIBlueTeamLeader || amIRedTeamLeader) && isGuessingTime) ||
+                  (!amIBlueTeamLeader && !amIRedTeamLeader && isHintTime) ||
+                  (!amIBlueTeamLeader &&
+                    !amIRedTeamLeader &&
+                    isGuessingTime &&
+                    whosTurn !== myTeam)
+                    ? "hidden"
+                    : ""
+                }
+              >
                 <span className="button-text">{t("end-round")}</span>
+              </Button>
+              <Button
+                variant="room"
+                soundFXVolume={soundFXVolume}
+                onClick={submitVotes}
+                className={
+                  amIBlueTeamLeader ||
+                  amIRedTeamLeader ||
+                  (isHintTime && whosTurn === myTeam) ||
+                  whosTurn !== myTeam
+                    ? "hidden"
+                    : ""
+                }
+              >
+                <span className="button-text">Lock in</span>
               </Button>
               <div className="horizontal-gold-bar" />
             </div>
@@ -420,7 +557,7 @@ const Gameplay: React.FC<GameplayProps> = ({
                 onClick={toggleBlackCardVisibility}
               >
                 <span className="codename-card-text">
-                  {cardDisplayText || ""}
+                  {gameSession?.gameState.hint || ""}
                 </span>
                 <img className="codename-card" src={cardBlackImg} />
               </div>
@@ -440,7 +577,9 @@ const Gameplay: React.FC<GameplayProps> = ({
               className="codename-input"
               value={cardText}
               onChange={(e) => setCardText(e.target.value)}
-              disabled={!amIRedTeamLeader && !amIBlueTeamLeader || whosTurn !== myTeam}
+              disabled={
+                (!amIRedTeamLeader && !amIBlueTeamLeader) || whosTurn !== myTeam
+              }
             />
           </div>
         )}

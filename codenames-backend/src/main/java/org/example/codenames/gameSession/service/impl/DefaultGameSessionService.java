@@ -12,10 +12,7 @@ import org.example.codenames.user.service.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class DefaultGameSessionService implements GameSessionService {
@@ -40,6 +37,10 @@ public class DefaultGameSessionService implements GameSessionService {
         gameState.setBlueTeamScore(0);
         gameState.setRedTeamScore(0);
 
+        List<Integer> cardsVotes = new ArrayList<>(Collections.nCopies(gameState.getCards().length, 0));
+
+        gameState.setCardsVotes(cardsVotes);
+
         GameSession newGame = new GameSession(
                 GameSession.sessionStatus.CREATED,
                 UUID.randomUUID(),
@@ -58,7 +59,6 @@ public class DefaultGameSessionService implements GameSessionService {
                 gameState
         );
 
-        System.out.println("Nowa gra" + newGame.getGameState().getTeamTurn());
         gameSessionRepository.save(newGame);
         return newGame.getSessionId().toString();
     }
@@ -78,7 +78,6 @@ public class DefaultGameSessionService implements GameSessionService {
         return gameSessionRepository.findBySessionId(sessionId)
                 .map(gameSession -> {
                     if (gameSession.getGameState() != null) {
-                        System.out.println("aaaaaaaaaaaaaaaaaaaa");
                         return gameSession.getGameState().getCards();
                     }
                     throw new IllegalStateException("GameState is null for the given session.");
@@ -154,8 +153,8 @@ public class DefaultGameSessionService implements GameSessionService {
             throw new IllegalStateException("Expected exactly two teams for leader assignment.");
         }
 
-        User blueTeamLeader = findLeader(teams.get(0), votes.get(0));
-        User redTeamLeader = findLeader(teams.get(1), votes.get(1));
+        User redTeamLeader = findLeader(teams.get(0), votes.get(0));
+        User blueTeamLeader = findLeader(teams.get(1), votes.get(1));
 
         // Create or update GameState with the leaders
         GameState gameState = session.getGameState();

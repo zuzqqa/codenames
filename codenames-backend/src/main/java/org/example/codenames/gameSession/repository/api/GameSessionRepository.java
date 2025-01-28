@@ -13,4 +13,5 @@ public interface GameSessionRepository extends MongoRepository<GameSession, Stri
     Optional<GameSession> findByGameName(String gameName);
     Optional<GameSession> findBySessionId(UUID sessionId);
     List<GameSession> findAll();
+    List<GameSession> findAllByStatus(GameSession.sessionStatus sessionStatus);
 }
