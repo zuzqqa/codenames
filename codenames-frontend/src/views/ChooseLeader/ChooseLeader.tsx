@@ -55,7 +55,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [selectedPlayer, setSelectedPlayer] = useState<User | null>(null);
-  const timeForVoting = 10 // Time for voting in seconds
+  const timeForVoting = 30 // Time for voting in seconds
   const [votingStartTime, setVotingStartTime] = useState<number>(Date.now()); // Voting start time
   const [timeLeft, setTimeLeft] = useState(timeForVoting); // Timer state (2 minutes = 120 seconds)
   const navigate = useNavigate(); // Hook for navigation
