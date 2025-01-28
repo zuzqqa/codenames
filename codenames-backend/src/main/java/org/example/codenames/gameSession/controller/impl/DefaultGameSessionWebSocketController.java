@@ -88,6 +88,16 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         }
     }
 
+    @PostMapping("/{id}/start")
+    public ResponseEntity<Void> startGame(@PathVariable UUID id) {
+        try {
+            gameSessionService.updateStatus(id, GameSession.sessionStatus.IN_PROGRESS);
+            gameSessionService.updateVotingStartTime(id);
+            messagingTemplate.convertAndSend("/game/" + id, gameSessionRepository.findBySessionId(id));
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
     @PostMapping("/{gameId}/start")
     public ResponseEntity<Void> startGame(@PathVariable UUID gameId) {
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId)

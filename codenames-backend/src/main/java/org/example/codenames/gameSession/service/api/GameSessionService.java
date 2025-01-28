@@ -10,6 +10,8 @@ import java.util.UUID;
 public interface GameSessionService {
     String createGameSession(CreateGameRequest request);
 
+    void updateVotingStartTime(UUID sessionId);
+
     GameSession getGameSessionById(UUID gameId);
 
     String[] getCardsBySessionId(UUID sessionId);
