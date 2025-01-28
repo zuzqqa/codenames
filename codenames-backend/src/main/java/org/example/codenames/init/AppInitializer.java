@@ -79,10 +79,8 @@ public class AppInitializer implements InitializingBean {
                     cardService.createCard(card);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
             }
         } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

@@ -3,11 +3,14 @@ package org.example.codenames.gameSession.controller.impl;
 import org.example.codenames.gameSession.controller.api.GameSessionController;
 import org.example.codenames.gameSession.entity.CreateGameRequest;
 import org.example.codenames.gameSession.entity.GameSession;
+import org.example.codenames.gameSession.entity.HintRequest;
 import org.example.codenames.gameSession.entity.VoteRequest;
+import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -19,10 +22,14 @@ import java.util.UUID;
 @RequestMapping("/api/game-session")
 public class DefaultGameSessionController implements GameSessionController {
     private final GameSessionService gameSessionService;
+    private final GameSessionRepository gameSessionRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Autowired
-    public DefaultGameSessionController(GameSessionService gameSessionService) {
+    public DefaultGameSessionController(GameSessionService gameSessionService, GameSessionRepository gameSessionRepository, SimpMessagingTemplate messagingTemplate) {
         this.gameSessionService = gameSessionService;
+        this.gameSessionRepository = gameSessionRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @GetMapping("/{gameId}")
@@ -63,8 +70,6 @@ public class DefaultGameSessionController implements GameSessionController {
             else {
                 return ResponseEntity.status(208).body("Duplicate action detected, already reported.");
             }
-        } else {
-            System.out.println("GameSession not found for gameId: " + id);
         }
 
         return ResponseEntity.ok().build();

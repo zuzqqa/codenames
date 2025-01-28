@@ -2,6 +2,7 @@ package org.example.codenames.gameState.service.api;
 
 import org.example.codenames.gameState.entity.GameState;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface GameStateService {
@@ -9,5 +10,7 @@ public interface GameStateService {
 
     void generateRandomCardsColors(GameState gameState);
 
-    void changeTurns(UUID gameId, Integer turn);
+    void updateVotes(UUID id, List <Integer> selectedCards);
+
+    void cardsChoosen(UUID gameId);
 }

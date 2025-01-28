@@ -1,9 +1,11 @@
 package org.example.codenames.gameSession.controller.impl;
 
 import lombok.AllArgsConstructor;
+import org.example.codenames.DynamicGameTurnScheduler;
 import org.example.codenames.gameSession.controller.api.GameSessionWebSocketController;
 import org.example.codenames.gameSession.entity.CreateGameRequest;
 import org.example.codenames.gameSession.entity.GameSession;
+import org.example.codenames.gameSession.entity.HintRequest;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +25,14 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
     private final GameSessionService gameSessionService;
     private final SimpMessagingTemplate messagingTemplate;
     private final GameSessionRepository gameSessionRepository;
+    private final DynamicGameTurnScheduler turnScheduler;
 
     @Autowired
-    public DefaultGameSessionWebSocketController(SimpMessagingTemplate messagingTemplate, GameSessionService gameSessionService, GameSessionRepository gameSessionRepository) {
+    public DefaultGameSessionWebSocketController(SimpMessagingTemplate messagingTemplate, GameSessionService gameSessionService, GameSessionRepository gameSessionRepository, DynamicGameTurnScheduler turnScheduler) {
         this.gameSessionService = gameSessionService;
         this.messagingTemplate = messagingTemplate;
         this.gameSessionRepository = gameSessionRepository;
+        this.turnScheduler = turnScheduler;
     }
 
     @PostMapping("/create")
@@ -84,26 +88,29 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         }
     }
 
-    @PostMapping("/{id}/start")
-    public ResponseEntity<Void> startGame(@PathVariable UUID id) {
-        try {
-            gameSessionService.updateStatus(id, GameSession.sessionStatus.IN_PROGRESS);
-            messagingTemplate.convertAndSend("/game/" + id, gameSessionRepository.findBySessionId(id));
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
+    @PostMapping("/{gameId}/start")
+    public ResponseEntity<Void> startGame(@PathVariable UUID gameId) {
+        GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
+                .orElseThrow(() -> new RuntimeException("Gra nie znaleziona"));
+
+        gameSession.setStatus(GameSession.sessionStatus.IN_PROGRESS);
+        gameSessionRepository.save(gameSession);
+        messagingTemplate.convertAndSend("/game/" + gameId, gameSessionRepository.findBySessionId(gameId));
+
+        turnScheduler.scheduleGameTurns(gameSession);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{id}/finish")
     public ResponseEntity<Void> finishGame(@PathVariable UUID id) {
-        try {
-            gameSessionService.updateStatus(id, GameSession.sessionStatus.FINISHED);
-            messagingTemplate.convertAndSend("/game/" + id, gameSessionRepository.findBySessionId(id));
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
+        turnScheduler.cancelGameTurns(id);
+
+        GameSession gameSession = gameSessionRepository.findBySessionId(id)
+                .orElseThrow(() -> new RuntimeException("Gra nie znaleziona"));
+        gameSession.setStatus(GameSession.sessionStatus.FINISHED);
+        gameSessionRepository.save(gameSession);
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/all")
@@ -116,5 +123,17 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         messagingTemplate.convertAndSend("/game/all" , gameSessions);
 
         return ResponseEntity.ok(gameSessions);
+    }
+
+    @PostMapping("/{gameId}/send-hint")
+    public ResponseEntity<Void> sendHint(@PathVariable UUID gameId, @RequestBody HintRequest hintRequest) {
+        GameSession gameSession = gameSessionRepository.findBySessionId(gameId).orElseThrow(() ->
+                new IllegalArgumentException("Gra o ID " + gameId + " nie istnieje"));
+
+        gameSession.getGameState().setHint(hintRequest.getHint());
+        gameSessionRepository.save(gameSession);
+
+        messagingTemplate.convertAndSend("/game/" + gameId + "/timer", gameSession);
+        return ResponseEntity.ok().build();
     }
 }

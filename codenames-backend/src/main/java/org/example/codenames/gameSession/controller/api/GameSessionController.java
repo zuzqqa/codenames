@@ -2,6 +2,7 @@ package org.example.codenames.gameSession.controller.api;
 
 import org.example.codenames.gameSession.entity.CreateGameRequest;
 import org.example.codenames.gameSession.entity.GameSession;
+import org.example.codenames.gameSession.entity.HintRequest;
 import org.example.codenames.gameSession.entity.VoteRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
