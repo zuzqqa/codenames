@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Hook for programmatic navigation
+import {data, useNavigate} from "react-router-dom"; // Hook for programmatic navigation
 import { useTranslation } from "react-i18next"; // Hook for translations
 
 import BackgroundContainer from "../../containers/Background/Background";
@@ -43,6 +43,7 @@ interface GameSession {
   timeForAHint: string;
   timeForGuessing: string;
   connectedUsers: User[][];
+  votingStartTime: number;
 }
 
 // Main component definition
@@ -54,7 +55,9 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [selectedPlayer, setSelectedPlayer] = useState<User | null>(null);
-  const [timeLeft, setTimeLeft] = useState(10); // Timer state (2 minutes = 120 seconds)
+  const timeForVoting = 30 // Time for voting in seconds
+  const [votingStartTime, setVotingStartTime] = useState<number>(Date.now()); // Voting start time
+  const [timeLeft, setTimeLeft] = useState(timeForVoting); // Timer state (2 minutes = 120 seconds)
   const navigate = useNavigate(); // Hook for navigation
   const { t } = useTranslation(); // Hook for translations
   const [gameSession, setGameSession] = useState<GameSession | null>(null);
@@ -98,6 +101,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
           } else {
             setMyTeam(null);
           }
+          setVotingStartTime(data.votingStartTime);
         })
         .catch((err) => console.error("Failed to load game session", err));
     } else {
@@ -105,7 +109,8 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     }
 
     const timer = setInterval(() => {
-      setTimeLeft((prevTime) => prevTime - 1);
+      const currentTime = new Date().getTime();
+      setTimeLeft(timeForVoting - Math.round((currentTime - votingStartTime)/1000))
     }, 1000);
 
     // WebSocket connection using SockJS and STOMP

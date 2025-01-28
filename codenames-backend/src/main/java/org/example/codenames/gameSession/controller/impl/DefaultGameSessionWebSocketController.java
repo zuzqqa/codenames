@@ -94,6 +94,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
                 .orElseThrow(() -> new RuntimeException("Gra nie znaleziona"));
 
         gameSession.setStatus(GameSession.sessionStatus.IN_PROGRESS);
+        gameSession.setVotingStartTime(System.currentTimeMillis());
         gameSessionRepository.save(gameSession);
         messagingTemplate.convertAndSend("/game/" + gameId, gameSessionRepository.findBySessionId(gameId));
 

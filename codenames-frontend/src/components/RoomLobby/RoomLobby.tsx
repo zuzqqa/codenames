@@ -190,6 +190,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
         { method: "POST" }
       );
       if (response.ok) {
+        console.log("Game started");
         navigate("/choose-leader");
       } else {
         console.error("Failed to start the game");

@@ -37,4 +37,5 @@ public class GameSession {
     private List<List<User>> connectedUsers;
     private List<List<Integer>> votes;
     private GameState gameState;
+    private Long votingStartTime;
 }

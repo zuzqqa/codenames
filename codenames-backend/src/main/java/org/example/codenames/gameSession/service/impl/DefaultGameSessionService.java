@@ -6,7 +6,6 @@ import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.gameState.entity.GameState;
 import org.example.codenames.gameState.service.api.GameStateService;
-import org.example.codenames.gameState.service.impl.DefaultGameStateService;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.service.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,13 +55,21 @@ public class DefaultGameSessionService implements GameSessionService {
                     add(new ArrayList<>());
                     add(new ArrayList<>());
                 }},
-                gameState
+                gameState,
+                System.currentTimeMillis()
         );
 
         gameSessionRepository.save(newGame);
         return newGame.getSessionId().toString();
     }
 
+    @Override
+    public void updateVotingStartTime(UUID sessionId) {
+        GameSession session = gameSessionRepository.findBySessionId(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Session not found"));
+        session.setVotingStartTime(System.currentTimeMillis());
+        gameSessionRepository.save(session);
+    }
 
     @Override
     public GameSession getGameSessionById(UUID gameId) {
