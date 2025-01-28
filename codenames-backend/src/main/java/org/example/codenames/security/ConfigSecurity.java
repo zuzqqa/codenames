@@ -40,12 +40,11 @@ public class ConfigSecurity {
                 //.cors().and()     //We either have to do this or add requestMatchers for OPTIONS, leaving this for now to explore it further
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-//                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight requests
-//                                .requestMatchers("/api/users", "/api/users/authenticate", "/api/users/getId", "/api/users/getUsername", "/api/users/createGuest", "/api/users/username/**").permitAll()
-//                                .requestMatchers("/api/email/send", "/api/game-session/create", "api/game-session/**", "api/game-state/**").permitAll()
-//                                .requestMatchers("/ws/**").permitAll()
-//                                .anyRequest().authenticated() // Allow access to registration and authentication endpoints
-                                .anyRequest().permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight requests
+                                .requestMatchers("/api/users", "/api/users/authenticate", "/api/users/getId", "/api/users/getUsername", "/api/users/createGuest", "/api/users/username/**").permitAll()
+                                .requestMatchers("/api/email/send", "/api/game-session/create", "api/game-session/**", "api/game-state/**").permitAll()
+                                .requestMatchers("/ws/**").permitAll()
+                                .anyRequest().authenticated() // Allow access to registration and authentication endpoints
                                 )
                 .sessionManagement(sessionManagement ->
                         sessionManagement
