@@ -5,9 +5,9 @@ import org.example.codenames.card.repository.CardRepository;
 import org.example.codenames.card.service.api.CardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class DefaultCardService implements CardService {
@@ -20,37 +20,20 @@ public class DefaultCardService implements CardService {
     }
 
     @Override
-    public void createCard(Card card) {
-        cardRepository.save(card);
-    }
-
-    @Override
     public Optional<Card> getCardById(String id) {
         return cardRepository.findById(id);
     }
 
     @Override
-    public Optional<Card> getCardByName(String name) {
-        return cardRepository.findByName(name);
+    public Card createCard(Card card) {
+        return cardRepository.save(card);
     }
 
     @Override
-    public List<Card> getAllCards() {
-        return cardRepository.findAll();
-    }
-
-    @Override
-    public Card updateCard(String id, Card updatedCard) {
-        return cardRepository.findById(id)
-                .map(card -> {
-                    card.setName(updatedCard.getName());
-                    return cardRepository.save(card);
-                })
-                .orElse(null);
-    }
-
-    @Override
-    public void deleteCardById(String id) {
-        cardRepository.deleteById(id);
+    public List<String> getCardsInLanguage(String language) {
+        return cardRepository.findAll().stream()
+                .map(card -> card.getNames().getOrDefault(language, ""))
+                .filter(name -> !name.isEmpty())
+                .collect(Collectors.toList());
     }
 }

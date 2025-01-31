@@ -34,5 +34,13 @@
   "choose-team-leader-1": "Choose your",
   "choose-team-leader-2": "team leader",
   "Defeat": "Defeat",
-  "Victory": "Victory"
+  "Victory": "Victory",
+  "deck-language": "Deck language",
+  "guess-duration": "Time for a guess:",
+  "give-hint": "Give a hint",
+  "team-guessing": "Your team is guessing",
+  "leader-choosing-hint": "Leader is choosing a hint",
+  "opposing-team-hint": "Hint from opposing team",
+  "guessing": "You are guessing",
+  "opposing-team-guessing": "Opposing team is guessing"
 }

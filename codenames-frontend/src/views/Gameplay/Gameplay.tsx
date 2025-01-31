@@ -219,16 +219,14 @@ const Gameplay: React.FC<GameplayProps> = ({
   
 
   useEffect(() => {
-    console.log("Odebrano nowe dane z WebSocket:", gameSessionData);
     setGameSession(gameSessionData);
     setWhosTurn(gameSession?.gameState?.teamTurn === 0 ? "red" : "blue");
     setIsGuessingTime(gameSession?.gameState?.guessingTurn);
     setIsHintTime(gameSession?.gameState?.hintTurn);
     setCardsToReveal(gameSession?.gameState?.cardsChoosen || []);
-  }, [gameSessionData, whosTurn, isHintTime, isGuessingTime]);
+  }, [gameSessionData, whosTurn]);
   
   useEffect(() => {
-    console.log("Stan gry po aktualizacji:", gameSession);
     setGameSession(gameSession);
     setWhosTurn(gameSession?.gameState?.teamTurn === 0 ? "red" : "blue");
     setIsGuessingTime(gameSession?.gameState?.guessingTurn);
@@ -376,31 +374,31 @@ const Gameplay: React.FC<GameplayProps> = ({
               isHintTime &&
               whosTurn === myTeam
             ) {
-              return "Podaj podpowiedz";
+              return t('give-hint');
             } else if (
               (amIBlueTeamLeader || amIRedTeamLeader) &&
               isGuessingTime &&
               whosTurn === myTeam
             ) {
-              return "Twoja druzyna zgaduje";
+              return t('team-guessing');
             } else if (
               !amIBlueTeamLeader &&
               !amIRedTeamLeader &&
               isHintTime &&
               whosTurn === myTeam
             ) {
-              return "Lider wybiera podpowiedz";
+              return t('leader-choosing-hint');
             } else if (isHintTime && whosTurn !== myTeam) {
-              return "Podpowiedz druzyny przeciwnej";
+              return t('opposing-team-hint');
             } else if (
               !amIBlueTeamLeader &&
               !amIRedTeamLeader &&
               isGuessingTime &&
               whosTurn === myTeam
             ) {
-              return "Zgadujesz";
+              return t('guessing');
             } else if (isGuessingTime && whosTurn !== myTeam) {
-              return "Zgaduje druzyna przeciwna";
+              return t('opposing-team-guessing');
             }
           })()}
         </span>

@@ -23,25 +23,38 @@ public class DefaultGameStateService implements GameStateService {
         this.gameSessionRepository = gameSessionRepository;
     }
 
-    public void generateRandomCardsNames(GameState gameState) {
+    public void generateRandomCardsNames(GameState gameState, String language) {
         List<Card> allCards = cardRepository.findAll();
 
         Random random = new Random();
-        List<Integer> selectedIndexes = new ArrayList<>();
+        Set<Integer> selectedIndexes = new HashSet<>();
+
+        // Wybieramy 25 losowych kart
         while (selectedIndexes.size() < 25) {
-            int randomIndex = random.nextInt(allCards.size());
-            if (!selectedIndexes.contains(randomIndex)) {
-                selectedIndexes.add(randomIndex);
-            }
+            selectedIndexes.add(random.nextInt(allCards.size()));
         }
 
         String[] cards = new String[25];
-        for (int i = 0; i < selectedIndexes.size(); i++) {
-            cards[i] = allCards.get(selectedIndexes.get(i)).getName();
+        int i = 0;
+        for (Integer index : selectedIndexes) {
+            Card card = allCards.get(index);
+            String cardName = getCardNameInLanguage(card, language);
+            cards[i++] = cardName;
         }
 
+        System.out.println(Arrays.toString(cards));
         gameState.setCards(cards);
     }
+
+    private String getCardNameInLanguage(Card card, String language) {
+        if ("pl".equals(language)) {
+            return card.getId();
+        } else if ("en".equals(language)) {
+            return card.getNames().getOrDefault("en", card.getId());
+        }
+        return card.getId();
+    }
+
 
     public void generateRandomCardsColors(GameState gameState) {
         List<Integer> cardColorsList = new ArrayList<>();

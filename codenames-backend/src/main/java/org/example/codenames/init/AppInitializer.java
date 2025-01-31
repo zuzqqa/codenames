@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -20,6 +21,7 @@ public class AppInitializer implements InitializingBean {
 
     private final UserService userService;
     private final CardService cardService;
+
     @Autowired
     public AppInitializer(UserService userService, CardService cardService) {
         this.userService = userService;
@@ -29,59 +31,65 @@ public class AppInitializer implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         initializeCards();
+        initializeUsers();
+    }
+
+    private void initializeUsers() {
+        createUser("1", "admin", "admin", "admin@adminish.com", "ROLE_ADMIN");
+        createUser("2", "Anna", "anna", "anna@normalna.com", "USER");
+        createUser("3", "Adam", "adam", "adam@normalny.com", "USER");
+    }
+
+    private void createUser(String id, String username, String password, String email, String roles) {
         User user = User.builder()
-                .id("1")
-                .username("admin")
-                .password("admin")
-                .email("admin@adminish.com")
-                .roles("ROLE_ADMIN")
+                .id(id)
+                .username(username)
+                .password(password)
+                .email(email)
+                .roles(roles)
                 .build();
-
-        userService.createUser(user);
-
-        user = User.builder()
-                .id("2")
-                .username("Anna")
-                .password("anna")
-                .email("anna@normalna.com")
-                .roles("USER")
-                .build();
-
-        userService.createUser(user);
-
-        user = User.builder()
-                .id("3")
-                .username("Adam")
-                .password("adam")
-                .email("adam@normalny.com")
-                .roles("USER")
-                .build();
-
         userService.createUser(user);
     }
 
-    private void initializeCards() throws Exception {
-        String filePath = "/cards.txt";
+    private void initializeCards() throws IOException {
+        loadCardsForLanguage("/cards_pl.txt", "/cards_en.txt");
+    }
 
-        try (InputStream inputStream = getClass().getResourceAsStream(filePath)) {
-            if (inputStream == null) {
-                throw new IOException("File not found.");
+    private void loadCardsForLanguage(String plFilePath, String enFilePath) throws IOException {
+        try (
+                InputStream plInputStream = getClass().getResourceAsStream(plFilePath);
+                InputStream enInputStream = getClass().getResourceAsStream(enFilePath)
+        ) {
+            if (plInputStream == null || enInputStream == null) {
+                throw new IOException("Files not found: " + plFilePath + " or " + enFilePath);
             }
 
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-                List<String> names = reader.lines().collect(Collectors.toList());
+            try (
+                    BufferedReader plReader = new BufferedReader(new InputStreamReader(plInputStream));
+                    BufferedReader enReader = new BufferedReader(new InputStreamReader(enInputStream))
+            ) {
+                List<String> plCardNames = plReader.lines().collect(Collectors.toList());
+                List<String> enCardNames = enReader.lines().collect(Collectors.toList());
 
-                for (String name : names) {
-                    Card card = Card.builder()
-                            .name(name)
-                            .build();
+                if (plCardNames.size() != enCardNames.size()) {
+                    throw new IOException("Files do not have the same number of lines");
+                }
 
+                for (int i = 0; i < plCardNames.size(); i++) {
+                    String plCardName = plCardNames.get(i);
+                    String enCardName = enCardNames.get(i);
+
+                    Optional<Card> existingCardOpt = cardService.getCardById(plCardName);
+                    Card card = existingCardOpt.orElseGet(() -> {
+                        Card newCard = new Card(plCardName);
+                        cardService.createCard(newCard);
+                        return newCard;
+                    });
+
+                    card.addTranslation("en", enCardName);
                     cardService.createCard(card);
                 }
-            } catch (IOException e) {
             }
-        } catch (IOException e) {
         }
     }
-
 }

@@ -14,4 +14,5 @@ public class CreateGameRequest {
     public Integer maxPlayers;
     public Duration timeForAHint;
     public Duration timeForGuessing;
+    public String language;
 }

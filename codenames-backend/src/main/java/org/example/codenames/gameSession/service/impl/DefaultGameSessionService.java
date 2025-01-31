@@ -1,5 +1,6 @@
 package org.example.codenames.gameSession.service.impl;
 
+import org.example.codenames.card.service.api.CardService;
 import org.example.codenames.gameSession.entity.CreateGameRequest;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
@@ -19,18 +20,20 @@ public class DefaultGameSessionService implements GameSessionService {
     private final GameSessionRepository gameSessionRepository;
     private final UserService userService;
     private final GameStateService gameStateService;
+    private final CardService cardService;
 
     @Autowired
-    public DefaultGameSessionService(GameSessionRepository gameSessionRepository, UserService userService, GameStateService gameStateService) {
+    public DefaultGameSessionService(GameSessionRepository gameSessionRepository, UserService userService, GameStateService gameStateService, CardService cardService) {
         this.gameSessionRepository = gameSessionRepository;
         this.userService = userService;
         this.gameStateService = gameStateService;
+        this.cardService = cardService;
     }
 
     @Override
     public String createGameSession(CreateGameRequest request) {
         GameState gameState = new GameState();
-        gameStateService.generateRandomCardsNames(gameState);
+        gameStateService.generateRandomCardsNames(gameState, request.getLanguage());
         gameStateService.generateRandomCardsColors(gameState);
         gameState.setTeamTurn(0);
         gameState.setBlueTeamScore(0);
@@ -165,13 +168,6 @@ public class DefaultGameSessionService implements GameSessionService {
 
         // Create or update GameState with the leaders
         GameState gameState = session.getGameState();
-
-        if (gameState == null) {
-            gameState = new GameState();
-            gameStateService.generateRandomCardsNames(gameState);
-            gameStateService.generateRandomCardsColors(gameState);
-            session.setGameState(gameState);
-        }
 
         gameState.setBlueTeamLeader(blueTeamLeader);
         gameState.setRedTeamLeader(redTeamLeader);

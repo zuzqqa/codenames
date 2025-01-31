@@ -1,8 +1,8 @@
-import {ErrorMessage, useFormik} from 'formik';
+import { ErrorMessage, useFormik } from 'formik';
 import * as Yup from 'yup';
 import Button from "../Button/Button.tsx";
 import backButton from "../../assets/icons/arrow-back.png";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import "./CreateGameForm.css";
@@ -14,7 +14,7 @@ interface CreateGameFormProps {
     soundFXVolume: number;
 }
 
-const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
+const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [error, setError] = useState<string | null>(null);
@@ -27,6 +27,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
             gameDuration: 0,
             hintTime: 0,
             guessingTime: 0,
+            deckLanguage: 'en',  // Nowa właściwość dla języka kart
         },
 
         validationSchema: Yup.object({
@@ -45,19 +46,20 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
                         'Content-Type': 'application/json',
                     },
                 });
-        
+
                 if (!getIdResponse.ok) {
                     setError('Failed to fetch ID');
                     return;
                 }
-        
+
                 const getIdData = await getIdResponse.text();
 
                 const requestData = {
                     gameName: values.gameName,
                     maxPlayers: values.playerSlider,
-                    timeForAHint: `PT${values.hintTime}S`,       
-                    timeForGuessing: `PT${values.guessingTime}S`,    
+                    timeForAHint: `PT${values.hintTime}S`,
+                    timeForGuessing: `PT${values.guessingTime}S`,
+                    language: values.deckLanguage,  
                 };
 
                 const response = await fetch('http://localhost:8080/api/game-session/create', {
@@ -83,25 +85,25 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
 
     const handleBack = async () => {
         const storedGameId = localStorage.getItem('gameId');
-    
-        if(!storedGameId) {
+
+        if (!storedGameId) {
             setError('No game session found');
             return;
         }
-    
+
         try {
-            const response = await fetch(`http://localhost:8080/api/game-session/${storedGameId}/finish`,{
+            const response = await fetch(`http://localhost:8080/api/game-session/${storedGameId}/finish`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: null,
             });
-                
+
             if (!response.ok) {
                 throw new Error('Failed to abort the game');
             }
-    
+
             navigate('/games');
         } catch (error) {
             setError('Failed to abort the game. Please try again.');
@@ -156,8 +158,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
                             onChange={formik.handleChange}
                             value={formik.values.hintTime}
                         />
-                        <label>{ t('guess-duration') }</label>  
-                        {/* dodać tłumaczenie "time to guess" */}
+                        <label>{ t('guess-duration') }</label>
                         <input
                             id="guessingTime"
                             className='input-box'
@@ -166,6 +167,19 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({soundFXVolume}) => {
                             onChange={formik.handleChange}
                             value={formik.values.guessingTime}
                         />
+
+                        {/* Dodajemy rozwijaną listę dla języka kart */}
+                        <label htmlFor="deckLanguage">{ t('deck-language') }</label>
+                        <select
+                            id="deckLanguage"
+                            name="deckLanguage"
+                            onChange={formik.handleChange}
+                            value={formik.values.deckLanguage}
+                            className="input-box"
+                        >
+                            <option value="en">English</option>
+                            <option value="pl">Polski</option>
+                        </select>
                     </div>
                     {error && <div className="error">{error}</div>}
                     <Button type="submit" variant="room" soundFXVolume={soundFXVolume}>
