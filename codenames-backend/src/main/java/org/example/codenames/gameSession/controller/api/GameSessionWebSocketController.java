@@ -25,4 +25,6 @@ public interface GameSessionWebSocketController {
 
     ResponseEntity<?>  getGameSessions();
     ResponseEntity<?> sendHint(@PathVariable UUID gameId, @RequestBody HintRequest hintRequest);
+    ResponseEntity<?> changeTurn(@PathVariable UUID id);
+
 }

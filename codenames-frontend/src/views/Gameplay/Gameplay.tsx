@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import BackgroundContainer from "../../containers/Background/Background";
 
 import Button from "../../components/Button/Button";
-import GameTitleBar from "../../components/GameTitleBar/GameTitleBar";
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 
 import settingsIcon from "../../assets/icons/settings.png";
@@ -16,16 +15,14 @@ import cardRedImg from "../../assets/images/card-red.jpg";
 import cardBlueImg from "../../assets/images/card-blue.jpg";
 import polygon1Img from "../../assets/images/polygon1.png";
 import polygon2Img from "../../assets/images/polygon2.png";
-import { convertDurationToSeconds } from "../../shared/utils.tsx";
 import cardSound from "../../assets/sounds/card-filp.mp3";
 
 import "./Gameplay.css";
 import Chat from "../../components/Chat/Chat.tsx";
 import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
 import { useNavigate } from "react-router-dom";
-import { formatTime } from "../../shared/utils.tsx";
-import { boolean } from "yup";
+import { useWebSocket } from "./useWebSocket";
+
 interface GameplayProps {
   setVolume: (volume: number) => void;
   soundFXVolume: number;
@@ -80,7 +77,10 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [isCardVisible, setIsCardVisible] = useState(false);
   const [cardText, setCardText] = useState("");
   const [cardDisplayText, setCardDisplayText] = useState("");
-  const [gameSession, setGameSession] = useState<GameSession | null>(null);
+  const storedGameId = localStorage.getItem("gameId");
+  const gameSessionData = useWebSocket(storedGameId);
+  const [gameSession, setGameSession] = useState<GameSession>();
+
   const [redTeamPlayers, setRedTeamPlayers] = useState<User[]>([]);
   const [blueTeamPlayers, setBlueTeamPlayers] = useState<User[]>([]);
   const [client, setClient] = useState<Client | null>(null);
@@ -97,9 +97,8 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [blueTeamScore, setBlueTeamScore] = useState(0);
   const [redTeamScore, setRedTeamScore] = useState(0);
   const [whosTurn, setWhosTurn] = useState<string>("red");
-  const [isGuessingTime, setIsGuessingTime] = useState(false); // or true
-  const [isHintTime, setIsHintTime] = useState(false); // or true
-  const [remainingTime, setRemainingTime] = useState(0);
+  const [isGuessingTime, setIsGuessingTime] = useState<boolean>(); 
+  const [isHintTime, setIsHintTime] = useState<boolean>(); 
   const [winningTeam, setWinningTeam] = useState<string>("red");
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
   const [cardsToReveal, setCardsToReveal] = useState<number[]>([]);
@@ -180,9 +179,65 @@ const Gameplay: React.FC<GameplayProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (!storedGameId) {
+      navigate("/games");
+      return;
+    }
+  
+    const fetchGameSession = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/game-session/${storedGameId}`);
+        if (!response.ok) throw new Error("Failed to fetch game session");
+        const data = await response.json();
+  
+        const getIdResponse = await fetch("http://localhost:8080/api/users/getId", {
+          method: "GET",
+          credentials: "include",
+        });
+        if (!getIdResponse.ok) throw new Error("Failed to fetch user ID");
+  
+        const userId = await getIdResponse.text(); 
+  
+        setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
+        setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
+        setGameSession(data);
+        setRedTeamPlayers(data.connectedUsers[0] || []);
+        setBlueTeamPlayers(data.connectedUsers[1] || []);
+        setWhosTurn(data.gameState?.teamTurn === 0 ? "red" : "blue");
+        setIsHintTime(data.gameState?.hintTurn);
+        setIsGuessingTime(data.gameState?.guessingTurn);
+        setCardsToReveal(data.gameState?.cardsChoosen || []);
+        setMyTeam(data.connectedUsers[0].find((user: User) => user.id === userId) ? "red" : "blue");
+      } catch (err) {
+        console.error("Failed to load game session", err);
+      }
+    };
+  
+    fetchGameSession();
+  }, [storedGameId, navigate]);
+  
+
+  useEffect(() => {
+    console.log("Odebrano nowe dane z WebSocket:", gameSessionData);
+    setGameSession(gameSessionData);
+    setWhosTurn(gameSession?.gameState?.teamTurn === 0 ? "red" : "blue");
+    setIsGuessingTime(gameSession?.gameState?.guessingTurn);
+    setIsHintTime(gameSession?.gameState?.hintTurn);
+    setCardsToReveal(gameSession?.gameState?.cardsChoosen || []);
+  }, [gameSessionData, whosTurn, isHintTime, isGuessingTime]);
+  
+  useEffect(() => {
+    console.log("Stan gry po aktualizacji:", gameSession);
+    setGameSession(gameSession);
+    setWhosTurn(gameSession?.gameState?.teamTurn === 0 ? "red" : "blue");
+    setIsGuessingTime(gameSession?.gameState?.guessingTurn);
+    setIsHintTime(gameSession?.gameState?.hintTurn);
+    setCardsToReveal(gameSession?.gameState?.cardsChoosen || []);
+    revealCardsVotedByTeam();
+  }, [gameSession, whosTurn, isHintTime, isGuessingTime]);
+
   const revealCardsVotedByTeam = () => {
-    console.log("ZACZYNAM REVEALOWAC KARTY");
-    console.log(cardsToReveal);
     if (!gameSession?.gameState || cardsToReveal.length === 0) return;
 
     setFlipStates((prevFlipStates) => {
@@ -214,114 +269,39 @@ const Gameplay: React.FC<GameplayProps> = ({
       return newCards;
     });
   };
-
+  
   useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter" && cardText.trim()) {
+        sendHint();
+        setCardDisplayText(cardText);
+        setIsCardVisible(false);
+        setCardText("");
+      }
+      if (event.key === "Escape") {
+        setIsCardVisible(false);
+        setCardText("");
+      }
+    };
+  
+    document.addEventListener("keydown", handleKeyDown);
+  
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [cardText]);
+
+  
+  const change_turn = () => {
     const storedGameId = localStorage.getItem("gameId");
 
-    if (storedGameId) {
-      fetch(`http://localhost:8080/api/game-session/${storedGameId}`)
-        .then((response) => response.json())
-        .then(async (data: GameSession) => {
-          const hintTimeInSeconds = convertDurationToSeconds(data.timeForAHint);
-          const guessingTimeInSeconds = convertDurationToSeconds(
-            data.timeForGuessing
-          );
-
-          setGameSession({
-            ...data,
-            timeForAHint: hintTimeInSeconds.toString(),
-            timeForGuessing: guessingTimeInSeconds.toString(),
-          });
-
-          if (data.connectedUsers) {
-            setRedTeamPlayers(data.connectedUsers[0] || []);
-            setBlueTeamPlayers(data.connectedUsers[1] || []);
-          }
-
-          const getIdResponse = await fetch(
-            "http://localhost:8080/api/users/getId",
-            {
-              method: "GET",
-              credentials: "include",
-            }
-          );
-          const userId = await getIdResponse.text();
-
-          if (data.connectedUsers[0]?.some((user) => user.id === userId)) {
-            setMyTeam("red");
-          } else if (
-            data.connectedUsers[1]?.some((user) => user.id === userId)
-          ) {
-            setMyTeam("blue");
-          } else {
-            setMyTeam(null);
-          }
-
-          if (data.gameState?.blueTeamLeader?.id === userId) {
-            setAmIBlueTeamLeader(true);
-          } else if (data.gameState?.redTeamLeader?.id === userId) {
-            setAmIRedTeamLeader(true);
-          }
-          setBlueTeamScore(data.gameState?.blueTeamScore || 0);
-          setRedTeamScore(data.gameState?.redTeamScore || 0);
-          setIsHintTime(data.gameState?.hintTurn);
-          setIsGuessingTime(data.gameState?.guessingTurn);
-          setCardsToReveal(data.gameState?.cardsChoosen || []);
-        })
-        .catch((err) => console.error("Failed to load game session", err));
-    } else {
-      navigate("/games");
-    }
-
-    // WebSocket connection using SockJS and STOMP
-    const socket = new SockJS("http://localhost:8080/ws");
-    const stompClient = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        // Subscribe to the game session updates
-        stompClient.subscribe(`/game/${storedGameId}/timer`, (message) => {
-          const updatedGameSession = JSON.parse(message.body);
-          if (updatedGameSession) {
-            setRedTeamPlayers(updatedGameSession.connectedUsers[0] || []);
-            setBlueTeamPlayers(updatedGameSession.connectedUsers[1] || []);
-            setWhosTurn(
-              updatedGameSession.gameState?.teamTurn === 0 ? "red" : "blue"
-            );
-            setIsHintTime(updatedGameSession.gameState?.hintTurn);
-            setIsGuessingTime(updatedGameSession.gameState?.guessingTurn);
-            setCardsToReveal(updatedGameSession.gameState?.cardsChoosen || []);
-            if (
-              updatedGameSession.gameState?.hint !==
-              gameSession?.gameState?.hint
-            ) {
-              setGameSession((prevState) => {
-                if (!prevState) {
-                  return updatedGameSession;
-                }
-                return {
-                  ...prevState,
-                  gameState: {
-                    ...prevState.gameState,
-                    hint: updatedGameSession.gameState.hint,
-                  },
-                };
-              });
-            }
-          }
-        });
-      },
-      onStompError: (frame) => {
-        console.error("STOMP error", frame);
+    fetch(`http://localhost:8080/api/game-session/${storedGameId}/change-turn`, {
+      method: "GET",
+      headers: {
+        credentials: "include",
       },
     });
-    stompClient.activate();
-    revealCardsVotedByTeam();
-
-    document.addEventListener("keydown", handleGlobalKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleGlobalKeyDown);
-    };
-  }, [cardText, navigate, cardsToReveal, isHintTime, isGuessingTime]);
+  }
 
   const sendHint = () => {
     if (!cardText.trim()) return;
@@ -450,14 +430,9 @@ const Gameplay: React.FC<GameplayProps> = ({
         <Chat />
         <div className="content-container">
           <div className="timer-container">
-            <div className="horizontal-gold-bar"></div>
+            {/* <div className="horizontal-gold-bar"></div>
             <span className="timer">
-              {formatTime(
-                isHintTime
-                  ? Number(gameSession?.timeForAHint)
-                  : Number(gameSession?.timeForGuessing)
-              )}
-            </span>
+            </span> */}
           </div>
           <div className="cards-section">
             {cards.map((cardImage, index) => (
@@ -530,13 +505,13 @@ const Gameplay: React.FC<GameplayProps> = ({
                     ? "hidden"
                     : ""
                 }
+                onClick={change_turn}
               >
                 <span className="button-text">{t("end-round")}</span>
               </Button>
               <Button
                 variant="room"
                 soundFXVolume={soundFXVolume}
-                onClick={submitVotes}
                 className={
                   amIBlueTeamLeader ||
                   amIRedTeamLeader ||
@@ -545,6 +520,7 @@ const Gameplay: React.FC<GameplayProps> = ({
                     ? "hidden"
                     : ""
                 }
+                onClick={submitVotes}
               >
                 <span className="button-text">Lock in</span>
               </Button>

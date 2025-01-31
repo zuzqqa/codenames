@@ -24,8 +24,17 @@ public class GameState {
     private String[] cards;
     private Integer[] cardsColors;
     private List<Integer> cardsVotes;
-    private List<Integer> cardsChoosen = new ArrayList<>();
+    private List<Integer> cardsChoosen;
     private String hint;
-    private boolean isHintTurn;
-    private boolean isGuessingTurn ;
+    private boolean isHintTurn = true;
+    private boolean isGuessingTurn = false;
+
+    public void toggleTurn() {
+        this.isHintTurn = !this.isHintTurn;
+        this.isGuessingTurn = !this.isGuessingTurn;
+
+        if (!this.isHintTurn) {
+            this.teamTurn = (this.teamTurn == 0) ? 1 : 0;
+        }
+    }
 }
