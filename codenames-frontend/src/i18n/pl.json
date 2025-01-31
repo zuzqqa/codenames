@@ -35,5 +35,13 @@
   "choose-team-leader-1": "Wybierz swojego",
   "choose-team-leader-2": "lidera drużyny",
   "Defeat": "Porażka",
-  "Victory": "Zwycięstwo"
+  "Victory": "Zwycięstwo",
+  "deck-language": "Język talii",
+  "guess-duration": "Czas na zgadywanie:",
+  "give-hint": "Podaj podpowiedz",
+  "team-guessing": "Twoja drużyna zgaduje",
+  "leader-choosing-hint": "Lider wybiera podpowiedz",
+  "opposing-team-hint": "Podpowiedz drużyny przeciwnej",
+  "guessing": "Zgadujesz",
+  "opposing-team-guessing": "Zgaduje drużyna przeciwna"
 }

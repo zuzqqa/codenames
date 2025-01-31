@@ -144,9 +144,8 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     const storedGameId = localStorage.getItem("gameId");
 
     if (storedGameId) {
-      // Upewniamy się, że mamy zapisany gameId
-      const getIdResponse = await fetch(
-        `http://localhost:8080/api/game-session/${storedGameId}/assign-leaders`,
+      await fetch(
+        `http://localhost:8080/api/game-session/${storedGameId}/assign-leaders?language=${localStorage.getItem('i18nextLng') || 'en'}`, 
         {
           method: "GET",
           credentials: "include",

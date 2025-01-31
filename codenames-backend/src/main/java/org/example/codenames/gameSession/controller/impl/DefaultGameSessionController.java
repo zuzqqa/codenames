@@ -22,14 +22,10 @@ import java.util.UUID;
 @RequestMapping("/api/game-session")
 public class DefaultGameSessionController implements GameSessionController {
     private final GameSessionService gameSessionService;
-    private final GameSessionRepository gameSessionRepository;
-    private final SimpMessagingTemplate messagingTemplate;
 
     @Autowired
     public DefaultGameSessionController(GameSessionService gameSessionService, GameSessionRepository gameSessionRepository, SimpMessagingTemplate messagingTemplate) {
         this.gameSessionService = gameSessionService;
-        this.gameSessionRepository = gameSessionRepository;
-        this.messagingTemplate = messagingTemplate;
     }
 
     @GetMapping("/{gameId}")

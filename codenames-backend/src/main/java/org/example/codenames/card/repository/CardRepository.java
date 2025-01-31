@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface CardRepository extends MongoRepository<Card, String> {
-    Optional<Card> findByName(String Name);
+    Optional<Card> findById(String id);
 }
