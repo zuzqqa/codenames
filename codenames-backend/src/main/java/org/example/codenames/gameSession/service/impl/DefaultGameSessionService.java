@@ -270,5 +270,16 @@ public class DefaultGameSessionService implements GameSessionService {
 
         return removed;
     }
+
+
+    public void changeTurn(UUID gameId) {
+        GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        GameState gameState = gameSession.getGameState();
+        gameState.toggleTurn();
+        gameStateService.cardsChoosen(gameSession);
+        gameSessionRepository.save(gameSession);
+    }
 }
 

@@ -1,7 +1,6 @@
 package org.example.codenames.gameSession.controller.impl;
 
 import lombok.AllArgsConstructor;
-import org.example.codenames.DynamicGameTurnScheduler;
 import org.example.codenames.gameSession.controller.api.GameSessionWebSocketController;
 import org.example.codenames.gameSession.entity.CreateGameRequest;
 import org.example.codenames.gameSession.entity.GameSession;
@@ -25,14 +24,12 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
     private final GameSessionService gameSessionService;
     private final SimpMessagingTemplate messagingTemplate;
     private final GameSessionRepository gameSessionRepository;
-    private final DynamicGameTurnScheduler turnScheduler;
 
     @Autowired
-    public DefaultGameSessionWebSocketController(SimpMessagingTemplate messagingTemplate, GameSessionService gameSessionService, GameSessionRepository gameSessionRepository, DynamicGameTurnScheduler turnScheduler) {
+    public DefaultGameSessionWebSocketController(SimpMessagingTemplate messagingTemplate, GameSessionService gameSessionService, GameSessionRepository gameSessionRepository) {
         this.gameSessionService = gameSessionService;
         this.messagingTemplate = messagingTemplate;
         this.gameSessionRepository = gameSessionRepository;
-        this.turnScheduler = turnScheduler;
     }
 
     @PostMapping("/create")
@@ -43,6 +40,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         response.put("gameId", gameId);
 
         messagingTemplate.convertAndSend("/game/all" , gameSessionService.getAllGameSessions());
+
 
         return ResponseEntity.ok(response);
     }
@@ -98,13 +96,11 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         gameSessionRepository.save(gameSession);
         messagingTemplate.convertAndSend("/game/" + gameId, gameSessionRepository.findBySessionId(gameId));
 
-        turnScheduler.scheduleGameTurns(gameSession);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{id}/finish")
     public ResponseEntity<Void> finishGame(@PathVariable UUID id) {
-        turnScheduler.cancelGameTurns(id);
 
         GameSession gameSession = gameSessionRepository.findBySessionId(id)
                 .orElseThrow(() -> new RuntimeException("Gra nie znaleziona"));
@@ -136,5 +132,16 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
         messagingTemplate.convertAndSend("/game/" + gameId + "/timer", gameSession);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/change-turn")
+    public ResponseEntity<?> changeTurn(@PathVariable UUID id) {
+        gameSessionService.changeTurn(id);
+
+        GameSession gameSession = gameSessionRepository.findBySessionId(id).orElseThrow(() ->
+                new IllegalArgumentException("Gra o ID " + id + " nie istnieje"));
+
+        messagingTemplate.convertAndSend("/game/" + id + "/timer", gameSession);
+        return ResponseEntity.ok("Turn changed");
     }
 }

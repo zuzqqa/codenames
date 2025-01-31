@@ -33,4 +33,5 @@ public interface GameSessionService {
     List<GameSession> getAllGameSessions();
 
     boolean removePlayerFromSession(UUID gameId, String userId);
+    void changeTurn(UUID gameId);
 }

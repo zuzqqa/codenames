@@ -83,10 +83,7 @@ public class DefaultGameStateService implements GameStateService {
         gameSessionRepository.save(gameSession);
     }
 
-    public void cardsChoosen(UUID gameId) {
-        GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
-                .orElseThrow(() -> new RuntimeException("Session not found"));
-
+    public void cardsChoosen(GameSession gameSession) {
         if (gameSession.getGameState().getCardsVotes().isEmpty()) {
             return;
         }
@@ -104,7 +101,6 @@ public class DefaultGameStateService implements GameStateService {
             }
         }
 
-
         List<Integer> zeroVotes = new ArrayList<>();
         int numberOfCards = gameSession.getGameState().getCards().length;
         for (int i = 0; i < numberOfCards; i++) {
@@ -117,7 +113,7 @@ public class DefaultGameStateService implements GameStateService {
         gameSessionRepository.save(gameSession);
     }
 
-    private int getTeamSize(GameSession gameSession) {
+    public int getTeamSize(GameSession gameSession) {
         return gameSession.getGameState().getTeamTurn();
     }
 }
