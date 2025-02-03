@@ -51,15 +51,15 @@
 
 .btn-circle-back {
   border-radius: 50%;
-  width: 2rem;
-  height: 2.5rem;
+  width: 2.5rem;
+  height: 2.7rem;
   align-items: center;
   border-width: 0.125rem;
   border-color: #fcf18b;
   background-image: linear-gradient(to top, #22303b, #0b1319);
 }
 
-.btn-search{
+.btn-search {
   width: 2rem;
   height: 2.5rem;
 }

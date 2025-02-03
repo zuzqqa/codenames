@@ -1,71 +1,77 @@
 form {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-width: 80%;
-    height: 80%;
-    margin: auto;
-    padding: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
+  height: 80%;
+  margin: auto;
+  padding: 0.8rem;
 }
+
 .form-content {
-    display: grid;
-    grid-template-columns: 70% 30%;
-    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
-    row-gap: 20px;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(360deg, #F0E0B5 0%, #EED8B0 88.89%);
-    box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.3), inset 0 0 15px 5px rgba(0, 0, 0, 0.4);
-    border-radius: 20px;
-    padding: 1rem;
-    min-width: 90%;
-    margin: auto;
-    margin-bottom: 15px;
-    margin-top: 6%;
-    height: 75%;
-    font-size: 1.3rem;
-
-
+  display: grid;
+  grid-template-columns: 70% 30%;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+  row-gap: 0.8rem;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(360deg, #f0e0b5 0%, #eed8b0 88.89%);
+  box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.3),
+    inset 0 0 15px 5px rgba(0, 0, 0, 0.4);
+  border-radius: 27px;
+  padding: 1.5rem;
+  width: 90%;
+  margin: auto;
+  margin-bottom: calc(0.2em + 0.5vw);
+  margin-top: 0.5em;
+  height: 75%;
+  font-size: calc(0.23rem + 1vw);
+  letter-spacing: 1px;
+  color: #5b544e;
 }
 
 #playerSlider {
-    width: 60%;
-    /* padding: 15px; */
-    margin: 10px 0;
-    border-radius: 5px;
-    font-size: 1.3rem;
-    background-color: #F0E0B5; /* Dark input background to match the theme */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Subtle shadow */
-    border-radius: 17px;
+  width: 60%;
+  /* padding: 15px; */
+  margin: 10px 0;
+  border-radius: 5px;
+  font-size: 1.3rem;
+  background-color: #f0e0b5; /* Dark input background to match the theme */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+  border-radius: 27px;
 }
+
 .error-message {
-    color: red;
-    font-size: 0.9rem;
-    margin-top: -10px;
+  color: red;
+  font-size: 0.9rem;
+  margin-top: -10px;
 }
 
-.slider-value{
-    margin-left: 15px;
+.slider-value {
+  margin-left: 15px;
 }
 
-
-.input-box{
-    padding: 10px 15px;
-    font-size: 1.2rem;
-    font-family: inherit;
-    color: #000000; /* White text color */
-    background-color: #F0E0B5; /* Dark input background to match the theme */
-    border: none; /* Subtle border color */
-    border-radius: 17px; /* Rounded corners */
-    outline: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Subtle shadow */
-    transition: border-color 0.3s, box-shadow 0.3s; /* Smooth hover/active transitions */
-    text-indent: 1px;
+.input-box {
+  padding: 8px 15px;
+  font-size: calc(0.1rem + 1vw);
+  font-family: "Wellfleet", sans-serif;
+  color: #5b544e;
+  background-color: #f0e0b5; /* Dark input background to match the theme */
+  border: none; /* Subtle border color */
+  border-radius: 10px; /* Rounded corners */
+  outline: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+  transition: border-color 0.3s, box-shadow 0.3s; /* Smooth hover/active transitions */
+  text-indent: 1px;
 }
 
-.back-button{
-    margin-left: -10px;
-    margin-top: -10px;
+#gameName {
+  font-size: calc(0.2rem + 1vw);
+  padding: 0.8rem;
+}
+
+.back-button {
+  margin-left: -10px;
+  margin-top: -10px;
 }
