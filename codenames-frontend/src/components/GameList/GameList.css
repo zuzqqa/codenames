@@ -8,6 +8,7 @@
 .search-button img{
     height: 8vh;
 }
+
 .list-container {
     overflow-y: auto; /* Enable vertical scrolling */
     max-height: 75%;
@@ -26,23 +27,20 @@
     display: flex;
     flex-direction: column;
     padding: 0;
-    border-radius: 20px;
+    border-radius: 17px;
     background: linear-gradient(360deg, #F0E0B5 0%, #EED8B0 88.89%);
-    box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 20px 30px rgba(0, 0, 0, 0.3);
     width: 97%;
+
 }
 
 .list-container li{
     font-size: 1.3rem;
-
     width: 100%;
-    border-style: none none solid none;
-    box-shadow: 0 5px 5px 0 #ac9c81 inset;    
-    border-color: #544534; /* Możesz dodać border dla podkreślenia */
-    border-width: 1px;
+    box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.4);
+    border:none;
 }
 
-/* Style for each game session button */
 button.variant-session {
     display: flex;
     justify-content: space-between;
@@ -119,44 +117,55 @@ button.variant-session:hover {
 
     margin-top: 6%;
     padding-bottom: 7vh;
-
-  
 }
 
-.search-bar{
+.search-bar {
     z-index: 100;
-}
-
-.search-bar-background{
     position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0);
-    width: 45vw;
+    right: 39.6%;
+    top: 19%;
+    width: 0; /* Początkowa szerokość 0 */
     height: 8vh;
+    transition: width 1s ease; /* Animacja tylko dla szerokości */
+  }
+  
+  .search-bar-visible {
+    
+    width: 17rem;
+  }
+  
+  .search-bar-background {
+    width: 100%;
+    height: 100%;
     margin-top: -3vh;
     min-height: 60px;
-}
-
-.search-input-container{
-    width: 35vw;
-    margin-left: 20px;
-    margin-top: -1.4vh;
-
-}
-
-.search-bar-container{
+  }
+  
+  .search-input-container {
     position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0);
+    padding: 5px 10px;
+    width: 7rem;
+    margin-left: 3.8em;
+    margin-top: -8.2vh;
+  }
+  
+  .search-input-container input {
+    padding: 8px 10px;
+    font-size: calc(0.3em + 0.6vw);
+  }
+  
+  .search-bar-container {
+    position: relative;
     width: 100%;
     display: flex;
     justify-content: space-between;
-}
-
-.search-icon{
+  }
+  
+  .search-icon {
+    right: 0;
     width: 2rem;
     height: 2rem;
-    margin-right: -1vw;
-    margin-top: -1.2vh;
-
-}
+    margin-left: 13.5rem;
+    margin-top: -7.4vh;
+  }
+  
