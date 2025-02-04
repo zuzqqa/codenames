@@ -9,7 +9,7 @@ import Button from "../Button/Button.tsx";
 import backButton from "../../assets/icons/arrow-back.png";
 import playerIcon from "../../assets/images/player-icon.png";
 import "./RoomLobby.css";
-import {convertDurationToSeconds} from "../../shared/utils.tsx";
+import {convertDurationToMMSS} from "../../shared/utils.tsx";
 
 interface RoomLobbyProps {
   soundFXVolume: number;
@@ -53,8 +53,8 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       fetch(`http://localhost:8080/api/game-session/${storedGameId}`)
         .then((response) => response.json())
         .then((data: GameSession) => {
-          const hintTimeInSeconds = convertDurationToSeconds(data.timeForAHint);
-          const guessingTimeInSeconds = convertDurationToSeconds(
+          const hintTimeInSeconds = convertDurationToMMSS(data.timeForAHint);
+          const guessingTimeInSeconds = convertDurationToMMSS(
             data.timeForGuessing
           );
 
@@ -178,6 +178,9 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     } catch (error) {
       console.error("Error removing player", error);
     }
+
+    localStorage.removeItem("gameId");
+    navigate("/games");
   };
 
   const start_game = async () => {
@@ -215,20 +218,19 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
         <div className="background" style={{ gridColumn: "2", gridRow: "2" }}>
           {gameSession && (
             <div className="content">
-              <div className="game-name">{gameSession.gameName}</div>
-              <div className="div-id">ID: {gameSession.sessionId}</div>
-              <div>
-                {t("slots")}{" "}
-                {gameSession.connectedUsers
-                  ? blueTeamPlayers.length +
-                    redTeamPlayers.length
-                  : 0}
-                /{gameSession.maxPlayers}
-              </div>
+                <div className="game-name">{gameSession.gameName}</div>
+              <div className="div-slots">
+                  {t("slots")}{" "}
+                  {gameSession.connectedUsers
+                    ? blueTeamPlayers.length +
+                      redTeamPlayers.length
+                    : 0}
+                  /{gameSession.maxPlayers}
+                </div>
               <div>{t("hint-duration")}</div>
-              <div>{gameSession.timeForAHint} s</div>
-              <div>{t("guessing-duration")}</div>
-              <div>{gameSession.timeForGuessing} s</div>
+              <div>{gameSession.timeForAHint}</div>
+              <div>{t("guess-duration")}</div>
+              <div>{gameSession.timeForGuessing}</div>
               <div className="lobby-players">
                 <Button
                   variant={"room"}

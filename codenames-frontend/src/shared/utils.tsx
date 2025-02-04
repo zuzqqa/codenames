@@ -20,32 +20,40 @@ export const logout = async () => {
   }
 };
 
-export function convertDurationToSeconds(duration: string | number): number {
-  if (typeof duration === "string") {
-    const regex = /^PT(\d+)([SMH])$/;
-    const match = duration.match(regex);
+export function convertDurationToMMSS(duration: string | number): string {
+  let totalSeconds: number;
 
-    if (match) {
-      const value = parseInt(match[1], 10);
-      const unit = match[2];
-
-      if (unit === "S") {
-        return value;
-      } else if (unit === "M") {
-        return value * 60;
-      } else if (unit === "H") {
-        return value * 3600;
-      } else {
-        console.warn("Unhandled unit:", unit);
-        return 0;
-      }
+  if (typeof duration === "number") {
+    totalSeconds = duration;
+  } else {
+    if (/^\d{1,2}:\d{2}$/.test(duration)) {
+      // Obsługuje format "mm:ss"
+      const [minutes, seconds] = duration.split(":").map(Number);
+      totalSeconds = minutes * 60 + seconds;
     } else {
-      console.warn("Invalid duration format:", duration);
+      // Obsługuje format "PTxxMxxS"
+      const regex = /^PT(?:(\d+)M)?(?:(\d+)S)?$/;
+      const match = duration.match(regex);
+
+      if (match) {
+        const minutes = parseInt(match[1] || "0", 10);
+        const seconds = parseInt(match[2] || "0", 10);
+        totalSeconds = minutes * 60 + seconds;
+      } else {
+        console.warn("Invalid duration format:", duration);
+        return "00:00"; // Jeśli niepoprawny format
+      }
     }
   }
 
-  return typeof duration === "number" ? duration : 0;
+  // Konwertuje sekundy na format "mm:ss"
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  // Zwraca w formacie "mm:ss"
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
+
 
 export function formatTime(seconds: number) {
   const minutes = Math.floor(seconds / 60);
