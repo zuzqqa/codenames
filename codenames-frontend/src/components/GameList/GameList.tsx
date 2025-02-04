@@ -50,12 +50,20 @@ const GameList: React.FC<GameListProps> = ({
 }) => {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const toggleSearch = () => {
-    setIsSearchVisible(!isSearchVisible);
+    if (!isSearchVisible) {
+      setIsSearchVisible(true); // Najpierw ustawiamy widoczność
+      setTimeout(() => setIsAnimating(true), 10); // Po krótkiej chwili dodajemy animację
+    } else {
+        setTimeout(() => setIsAnimating(false), 500); 
+        setIsSearchVisible(false);
+         // Najpierw usuwamy animację
+    }
     setSearchTerm("");
     setFilteredSessions(gameSessions);
   };
@@ -79,7 +87,7 @@ const GameList: React.FC<GameListProps> = ({
       {isSearchVisible && (
         <div
           className={`search-bar ${
-            isSearchVisible ? "search-bar-visible" : ""
+            isAnimating ? "search-bar-animating" : ""
           }`}
         >
           <img
@@ -88,7 +96,9 @@ const GameList: React.FC<GameListProps> = ({
             className="search-bar-background"
           />
           <div className="search-bar-container">
-            <div className="search-input-container">
+            <div className={`search-input-container ${
+            isAnimating ? "search-bar-visible" : ""
+          }`}>
               <input
                 className="input-field"
                 type="text"
@@ -100,7 +110,9 @@ const GameList: React.FC<GameListProps> = ({
             <img
               src={searchIcon}
               alt="search"
-              className="search-icon"
+              className={`search-icon ${
+                isAnimating ? "search-bar-visible" : ""
+              }`}
               onClick={toggleSearch}
             />
           </div>
