@@ -13,8 +13,8 @@ import cardWhiteImg from "../../assets/images/card-white.png";
 import cardBlackImg from "../../assets/images/card-black.png";
 import cardRedImg from "../../assets/images/card-red.jpg";
 import cardBlueImg from "../../assets/images/card-blue.jpg";
-import polygon1Img from "../../assets/images/polygon1.png";
-import polygon2Img from "../../assets/images/polygon2.png";
+import polygon1Img from "../../assets/images/Polygon1.png";
+import polygon2Img from "../../assets/images/Polygon2.png";
 import cardSound from "../../assets/sounds/card-filp.mp3";
 
 import "./Gameplay.css";
