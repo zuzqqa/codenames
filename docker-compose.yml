@@ -1,0 +1,47 @@
+services:
+  backend:
+      build:
+        context: ./codenames-backend
+      container_name: codenames-backend
+      ports:
+        - "8080:8080"
+      environment:
+        - SPRING_PROFILES_ACTIVE=dev
+        - SECRET=${SECRET}
+        - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
+        - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
+        - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+        - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+
+      volumes:
+        - ./codenames-backend:/opt/codenames-backend
+      depends_on:
+        - mongodb
+
+  frontend:
+    build:
+      context: ./codenames-frontend
+    container_name: codenames-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./codenames-frontend:/app
+      - /app/node_modules 
+    command: ["npm", "run", "dev", "--", "--host"]
+    depends_on:
+      - backend
+
+  mongodb:
+    image: mongo
+    container_name: codenames-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - mongo_data:/data/db
+      - ./codenames-backend/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      
+volumes:
+  mongo_data:

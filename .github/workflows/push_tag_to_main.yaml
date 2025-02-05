@@ -1,0 +1,40 @@
+name: Push Tag to Main
+
+on:
+  push:
+    branches:
+      - main  
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: Fetch tags
+        run: git fetch --tags
+
+      - name: Get the latest tag on main
+        run: |
+          current_version=$(git describe --tags --abbrev=0 origin/main)
+          echo "Current version on main: $current_version"
+        
+      - name: Read selected version from file
+        run: |
+          selected_version=$(cat selected_version.txt)
+          echo "Selected version from file: $selected_version"
+
+          if [ "$selected_version" != "$current_version" ]; then
+            echo "The selected version $selected_version is different from the current version on main. Creating the tag."
+            git checkout main
+            git tag $selected_version
+          else
+            echo "The selected version is the same as the current version. No tag will be created."
+            exit 0  # No need to create the tag if it's the same
+          fi
+
+      - name: Push the tag to the remote repository
+        run: |
+          git push origin $selected_version
