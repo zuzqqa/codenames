@@ -26,8 +26,8 @@ jobs:
 
     - name: List tags in the repository
       run: |
-        git fetch --tags  # Pobierz tagi
-        git tag           # Wypisz dostępne tagi
+        git fetch --tags 
+        git tag           
 
     - name: Get last tag and set version
       run: |
