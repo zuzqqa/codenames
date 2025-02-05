@@ -18,7 +18,7 @@ jobs:
 
       - name: Get the latest tag on main
         run: |
-          current_version=$(git describe --tags --abbrev=0 origin/main)
+          current_version=$(git describe --tags --abbrev=0)
           echo "Current version on main: $current_version"
         
       - name: Read selected version from file
