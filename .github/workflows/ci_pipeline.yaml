@@ -41,15 +41,13 @@ jobs:
     steps:
       - name: Checkout repo 
         uses: actions/checkout@v4
-      
-      - name: Debug - Check package-lock.json
-        run: ls -la codenames-frontend
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
+          cache-dependency-path: codenames-frontend/package-lock.json
 
       - name: Install dependencies
         run: |
