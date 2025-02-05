@@ -3,40 +3,65 @@ name: Push Tag to Main
 on:
   push:
     branches:
-      - main  
+      - main
 
 jobs:
   create-tag:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      
+
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
 
       - name: Fetch tags
-        run: git fetch --tags
+        run: |
+          set -x  # Włączenie debugowania
+          git fetch --tags
+          echo "✅ Tagi pobrane"
 
       - name: Get the latest tag on main
         run: |
-          LATEST_TAG=$(git describe --tags --abbrev=0 $(git rev-list --tags --max-count=1))
-          echo "Latest tag is: $LATEST_TAG"
-        
+          set -x  # Włączenie debugowania
+          LATEST_TAG=$(git describe --tags --abbrev=0 $(git rev-list --tags --max-count=1) 2>/dev/null || echo "none")
+          echo "🔍 Latest tag on main: $LATEST_TAG"
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+
       - name: Read selected version from file
         run: |
-          selected_version=$(cat scripts/selected_version.txt)
-          echo "Selected version from file: $selected_version"
+          set -x  # Włączenie debugowania
+          selected_version=$(cat selected_version.txt)
+          echo "📄 Selected version from file: $selected_version"
+
+          echo "SELECTED_VERSION=$selected_version" >> $GITHUB_ENV
+
+      - name: Compare versions and create tag if needed
+        run: |
+          set -x  # Włączenie debugowania
+          current_version="${{ env.LATEST_TAG }}"
+          selected_version="${{ env.SELECTED_VERSION }}"
+
+          echo "🔍 Current version: $current_version"
+          echo "🔍 Selected version: $selected_version"
 
           if [ "$selected_version" != "$current_version" ]; then
-            echo "The selected version $selected_version is different from the current version on main. Creating the tag."
+            echo "🚀 Creating new tag: $selected_version"
             git checkout main
             git tag $selected_version
           else
-            echo "The selected version is the same as the current version. No tag will be created."
-            exit 0  # No need to create the tag if it's the same
+            echo "⚠️ Selected version is the same as the latest version. No new tag will be created."
+            exit 0
           fi
+
+      - name: Verify that the tag was created
+        run: |
+          set -x  # Włączenie debugowania
+          echo "🔎 Checking existing tags..."
+          git tag
+          echo "🔎 Checking if the new tag exists..."
+          git show-ref --tags | grep ${{ env.SELECTED_VERSION }} || echo "❌ Tag not found!"
 
       - name: Push the tag to the remote repository
         run: |
-          git push origin $selected_version
+          set -x  # Włączenie debugowania
+          echo "🚀 Pushing tag: ${{ env.SELECTED_VERSION }}"
+          git push origin ${{ env.SELECTED_VERSION }}
