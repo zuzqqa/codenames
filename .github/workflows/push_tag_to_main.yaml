@@ -1,4 +1,4 @@
-name: Push Tag to Main
+name: 🚀 Push Tag to Main
 
 on:
   push:
@@ -12,38 +12,33 @@ jobs:
       contents: write
       
     steps:
-      - name: Checkout the repository
+      - name: 📥 Checkout the repository
         uses: actions/checkout@v4
 
-      - name: Fetch tags
+      - name: 🔄 Fetch tags
         run: |
-          set -x  # Włączenie debugowania
           git fetch --tags
           echo "✅ Tagi pobrane"
 
-      - name: Get the latest tag on main
+      - name: 🔍 Get the latest tag on main
         run: |
-          set -x  # Włączenie debugowania
           LATEST_TAG=$(git describe --tags --abbrev=0 $(git rev-list --tags --max-count=1) 2>/dev/null || echo "none")
-          echo "🔍 Latest tag on main: $LATEST_TAG"
+          echo "Latest tag on main: $LATEST_TAG"
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
 
-      - name: Read selected version from file
+      - name: 📄 Read selected version from file
         run: |
-          set -x  # Włączenie debugowania
           selected_version=$(cat scripts/selected_version.txt)
           echo "📄 Selected version from file: $selected_version"
-
           echo "SELECTED_VERSION=$selected_version" >> $GITHUB_ENV
 
-      - name: Compare versions and create tag if needed
+      - name: 🔄 Compare versions and create tag if needed
         run: |
-          set -x  # Włączenie debugowania
           current_version="${{ env.LATEST_TAG }}"
           selected_version="${{ env.SELECTED_VERSION }}"
 
-          echo "🔍 Current version: $current_version"
-          echo "🔍 Selected version: $selected_version"
+          echo "Current version: $current_version"
+          echo "Selected version: $selected_version"
 
           if [ "$selected_version" != "$current_version" ]; then
             echo "🚀 Creating new tag: $selected_version"
@@ -54,16 +49,12 @@ jobs:
             exit 0
           fi
 
-      - name: Verify that the tag was created
+      - name: 🔎 Verify that the tag was created
         run: |
-          set -x  # Włączenie debugowania
-          echo "🔎 Checking existing tags..."
           git tag
-          echo "🔎 Checking if the new tag exists..."
           git show-ref --tags | grep ${{ env.SELECTED_VERSION }} || echo "❌ Tag not found!"
 
-      - name: Push the tag to the remote repository
+      - name: 📤 Push the tag to the remote repository
         run: |
-          set -x  # Włączenie debugowania
           echo "🚀 Pushing tag: ${{ env.SELECTED_VERSION }}"
           git push origin ${{ env.SELECTED_VERSION }}
