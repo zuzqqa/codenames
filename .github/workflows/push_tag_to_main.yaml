@@ -23,7 +23,7 @@ jobs:
         
       - name: Read selected version from file
         run: |
-          selected_version=$(cat selected_version.txt)
+          selected_version=$(cat scripts/selected_version.txt)
           echo "Selected version from file: $selected_version"
 
           if [ "$selected_version" != "$current_version" ]; then
