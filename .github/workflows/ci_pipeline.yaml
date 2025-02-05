@@ -57,4 +57,4 @@ jobs:
       - name: Build
         run: |
             cd codenames-frontend
-            npm run dev
+            npm run build

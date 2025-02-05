@@ -20,9 +20,7 @@ interface LoadingPageProps {
 
 // Simple LoadingPage Component
 const LoadingPage: React.FC<LoadingPageProps> = ({
-  setVolume,
   soundFXVolume,
-  setSoundFXVolume,
 }) => {
   const { t } = useTranslation(); // Hook for translation
   const navigate = useNavigate(); // Hook for navigation
