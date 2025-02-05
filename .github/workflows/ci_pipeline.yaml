@@ -29,7 +29,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
     
-        - name: Set environment variables
+    - name: Set environment variables
       run: |
         echo "SPRING_PROFILES_ACTIVE=dev" >> $GITHUB_ENV
         echo "SECRET=${{ secrets.SECRET }}" >> $GITHUB_ENV
