@@ -20,9 +20,6 @@ jobs:
         run: |
           LATEST_TAG=$(git describe --tags --abbrev=0 $(git rev-list --tags --max-count=1))
           echo "Latest tag is: $LATEST_TAG"
-          
-          current_version=$(git describe --tags --abbrev=0)
-          echo "Current version on main: $current_version"
         
       - name: Read selected version from file
         run: |
