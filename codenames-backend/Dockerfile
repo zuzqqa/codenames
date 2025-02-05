@@ -1,20 +1,17 @@
-# Use the official Eclipse Temurin image as the base image
-FROM eclipse-temurin:17.0.6_10-jre
+FROM eclipse-temurin:17.0.6_10-jdk
 
-# Set the labels for the image
-LABEL org.opencontainers.image.title="codenames-spring-backend"
-LABEL org.opencontainers.image.authors="Jakub Walasik"
+LABEL org.opencontainers.image.title="codenames-backend"
+LABEL org.opencontainers.image.authors="Codenames"
 LABEL org.opencontainers.image.version="0.0.1-SNAPSHOT"
+LABEL org.opencontainers.image.description="Spring Boot backend for Codenames app"
 
-# Set environment variables
-ENV VERSION="0.0.1-SNAPSHOT"
-ENV SERVER_PORT=8080
+WORKDIR /opt/codenames-backend
+RUN apt-get update && apt-get install -y maven
 
-# Expose the application port
+COPY pom.xml ./
+COPY src ./src
+RUN mvn dependency:go-offline
+
 EXPOSE 8080
 
-# Copy the jar file to the container
-COPY target/Codenames-${VERSION}.jar /opt/codenames-backend/codenames-backend.jar
-
-# Run the jar file
-CMD ["java", "-jar", "/opt/codenames-backend/codenames-backend.jar"]
+CMD ["mvn", "spring-boot:run"]

@@ -17,6 +17,7 @@ jobs:
         image: mongo
         ports:
           - 27017:27017
+        options: --health-cmd "mongo --eval 'db.runCommand({ connectionStatus: 1 })'" --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
     - name: Checkout repo
@@ -28,7 +29,17 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
-        
+    
+        - name: Set environment variables
+      run: |
+        echo "SPRING_PROFILES_ACTIVE=dev" >> $GITHUB_ENV
+        echo "SECRET=${{ secrets.SECRET }}" >> $GITHUB_ENV
+        echo "SPRING_MAIL_USERNAME=${{ secrets.SPRING_MAIL_USERNAME }}" >> $GITHUB_ENV
+        echo "SPRING_MAIL_PASSWORD=${{ secrets.SPRING_MAIL_PASSWORD }}" >> $GITHUB_ENV
+        echo "MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }}" >> $GITHUB_ENV
+        echo "MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}" >> $GITHUB_ENV
+        echo "SPRING_DATA_MONGODB_URI=mongodb://localhost:27017" >> $GITHUB_ENV
+
     - name: Build with Maven
       run: |
           cd codenames-backend

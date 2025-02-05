@@ -96,6 +96,7 @@ public class DefaultUserController implements UserController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
+        System.out.println("Halo");
         Cookie cookie = new Cookie("authToken", null);
         cookie.setHttpOnly(true);
         cookie.setSecure(false); // Set true for https
