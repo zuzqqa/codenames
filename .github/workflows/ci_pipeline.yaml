@@ -48,6 +48,9 @@ jobs:
           node-version: 20
           cache: 'npm'
 
+      - name: Debug - Check package-lock.json
+        run: ls -la codenames-frontend
+        
       - name: Install dependencies
         run: |
             cd codenames-frontend
