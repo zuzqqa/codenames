@@ -42,15 +42,15 @@ jobs:
       - name: Checkout repo 
         uses: actions/checkout@v4
       
+      - name: Debug - Check package-lock.json
+        run: ls -la codenames-frontend
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
 
-      - name: Debug - Check package-lock.json
-        run: ls -la codenames-frontend
-        
       - name: Install dependencies
         run: |
             cd codenames-frontend
