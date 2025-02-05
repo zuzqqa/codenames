@@ -2,7 +2,7 @@ import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Button from "../Button/Button.tsx";
-import searchBar from "../../assets/images/search-bar.png";
+import searchBar from "../../assets/images/search_bar_background.png";
 import searchIcon from "../../assets/icons/search-icon.png";
 
 import "./GameList.css";
@@ -10,7 +10,7 @@ import "./GameList.css";
 import backButton from "../../assets/icons/arrow-back.png";
 import searchButton from "../../assets/images/search-button.png";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface GameListProps {
   soundFXVolume: number;
@@ -39,7 +39,7 @@ interface GameSession {
   timeForGuessing: string;
   timeForAHint: string;
   numberOfRounds: number;
-  connectedUsers: User[][]; // A table of two arrays representing teams
+  connectedUsers: User[][];
 }
 
 const GameList: React.FC<GameListProps> = ({
@@ -50,14 +50,22 @@ const GameList: React.FC<GameListProps> = ({
 }) => {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const toggleSearch = () => {
-    setIsSearchVisible(!isSearchVisible);
+    if (!isSearchVisible) {
+      setIsSearchVisible(true); // Najpierw ustawiamy widoczność
+      setTimeout(() => setIsAnimating(true), 10); // Po krótkiej chwili dodajemy animację
+    } else {
+        setTimeout(() => setIsAnimating(false), 500); 
+        setIsSearchVisible(false);
+         // Najpierw usuwamy animację
+    }
     setSearchTerm("");
-    setFilteredSessions(gameSessions); // Reset filter when search is closed
+    setFilteredSessions(gameSessions);
   };
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,6 +84,41 @@ const GameList: React.FC<GameListProps> = ({
 
   return (
     <>
+      {isSearchVisible && (
+        <div
+          className={`search-bar ${
+            isAnimating ? "search-bar-animating" : ""
+          }`}
+        >
+          <img
+            src={searchBar}
+            alt="searchbar"
+            className="search-bar-background"
+          />
+          <div className="search-bar-container">
+            <div className={`search-input-container ${
+            isAnimating ? "search-bar-visible" : ""
+          }`}>
+              <input
+                className="input-field"
+                type="text"
+                value={searchTerm}
+                onChange={handleSearch}
+                placeholder="Type to search..."
+              />
+            </div>
+            <img
+              src={searchIcon}
+              alt="search"
+              className={`search-icon ${
+                isAnimating ? "search-bar-visible" : ""
+              }`}
+              onClick={toggleSearch}
+            />
+          </div>
+        </div>
+      )}
+
       <RoomMenu>
         <Button
           className="back-button"
@@ -95,33 +138,6 @@ const GameList: React.FC<GameListProps> = ({
           <img src={searchButton} alt="Search" />
         </Button>
         <span className="room-form-label">{t("join-room-button")}</span>
-
-        {isSearchVisible && (
-          <div className="search-bar">
-            <img
-              src={searchBar}
-              alt="searchbar"
-              className="search-bar-background"
-            />
-            <div className="search-bar-container">
-              <div className="search-input-container">
-                <input
-                  className="input-field"
-                  type="text"
-                  value={searchTerm}
-                  onChange={handleSearch}
-                  placeholder="Search games..."
-                />
-              </div>
-              <img
-                src={searchIcon}
-                alt="search"
-                className="search-icon"
-                onClick={toggleSearch}
-              />
-            </div>
-          </div>
-        )}
 
         <div
           className="list-container"

@@ -4,7 +4,7 @@
   background-repeat: no-repeat;
   background-position: center;
   height: 70%;
-  width: 40%;
+  width: 30%;
   border-radius: 17px;
   box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.25);
   z-index: 1;
@@ -13,4 +13,11 @@
   grid-template-rows: 10% auto;
   margin-top: 7vh;
   position: relative;
+}
+
+@media (min-height: 1080px) {
+  .room-menu-container {
+    width: 29%;
+    height: 58%;
+  }
 }

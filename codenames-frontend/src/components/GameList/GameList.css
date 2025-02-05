@@ -1,162 +1,182 @@
-.search-button{
-    position: absolute;
-    right: 0;
-    margin-top: -1.2vh;
-
+.search-button {
+  position: absolute;
+  right: 0;
+  margin-top: -1.2vh;
 }
 
-.search-button img{
-    height: 8vh;
+.search-button img {
+  height: 8vh;
 }
+
 .list-container {
-    overflow-y: auto; /* Enable vertical scrolling */
-    max-height: 75%;
-    margin-top: 9%;
-    border-radius: 20px;
-    width: 80%;
-    position: absolute;
-    left: 50%;
-    transform: translate(-53%, 0);
-  }
-
-.list-content{
-    margin: 0 auto;
-    overflow: hidden;
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    border-radius: 20px;
-    background: linear-gradient(360deg, #F0E0B5 0%, #EED8B0 88.89%);
-    box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.3);
-    width: 97%;
+  overflow-y: auto; /* Enable vertical scrolling */
+  max-height: 75%;
+  margin-top: 9%;
+  border-radius: 20px;
+  width: 80%;
+  position: absolute;
+  left: 50%;
+  transform: translate(-53%, 0);
 }
 
-.list-container li{
-    font-size: 1.3rem;
-
-    width: 100%;
-    border-style: none none solid none;
-    box-shadow: 0 5px 5px 0 #ac9c81 inset;    
-    border-color: #544534; /* Możesz dodać border dla podkreślenia */
-    border-width: 1px;
+.list-content {
+  margin: 0 auto;
+  overflow: hidden;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border-radius: 17px;
+  background: linear-gradient(360deg, #f0e0b5 0%, #eed8b0 88.89%);
+  box-shadow: inset 0 20px 30px rgba(0, 0, 0, 0.3);
+  width: 97%;
 }
 
-/* Style for each game session button */
+.list-container li {
+  font-size: 1.3rem;
+  width: 100%;
+  box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.4);
+  border: none;
+}
+
 button.variant-session {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 15px;
-    background-color: #fff8e5;
-    border: none;
-    border-radius: 8px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-    cursor: pointer;
-    font-family: 'Arial', sans-serif;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #fff8e5;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  font-family: "Arial", sans-serif;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 button.variant-session:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* Room info container */
 .room-info {
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
 }
 
 .room-name {
-    font-size: 1.3rem;
-    font-weight: bold;
-    color: #4a4a4a;
+  font-size: 1.3rem;
+  font-weight: bold;
+  font-family: 'Wellfleet', sans-serif;
+  color: #4a4a4a;
 }
 
 .room-players {
-    font-size: 1rem;
-    color: #7b7b7b;
+  font-size: 1rem;
+  color: #7b7b7b;
 }
 
 /* Custom Scrollbar */
 .list-container::-webkit-scrollbar {
-    width: 18px; /* Width of the scrollbar */
+  width: 18px; /* Width of the scrollbar */
 }
 
 .list-container::-webkit-scrollbar-track {
-    background: linear-gradient(to bottom, #d0c7a1, #d0c5a1);
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
-    border-radius: 7px;
+  background: linear-gradient(to bottom, #d0c7a1, #d0c5a1);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+  border-radius: 7px;
 }
 
 .list-container::-webkit-scrollbar-thumb {
-    background: #650a0a; /* Gold thumb color */
-    border-radius: 7px;
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+  background: #650a0a; /* Gold thumb color */
+  border-radius: 7px;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 .list-container::-webkit-scrollbar-thumb:hover {
-    background: #720c0c; /* Lighter gold on hover */
+  background: #720c0c; /* Lighter gold on hover */
 }
 
-.room-form-label{
-    text-align: center;
-    font-size: 6vh;
+.room-form-label {
+  text-align: center;
+  font-size: 6vh;
 
-    background-image: linear-gradient(to bottom, #fcf18b, #ffd363);
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-  
-    position: relative;
-    z-index: 10;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
+  background-image: linear-gradient(to bottom, #fcf18b, #ffd363);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 
-    margin-top: 6%;
-    padding-bottom: 7vh;
+  position: relative;
+  z-index: 10;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 
-  
+  margin-top: 6%;
+  padding-bottom: 7vh;
 }
 
-.search-bar{
-    z-index: 100;
+.search-bar {
+  z-index: 100;
+  position: absolute;
+  left: 59.66%;
+  top: 19%;
+  width: 0;
+  height: 8vh;
+  transition: width 1s ease-in-out;
 }
 
-.search-bar-background{
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0);
-    width: 45vw;
-    height: 8vh;
-    margin-top: -3vh;
-    min-height: 60px;
+.search-bar.search-bar-animating {
+  width: 17rem;
 }
 
-.search-input-container{
-    width: 35vw;
-    margin-left: 20px;
-    margin-top: -1.4vh;
-
+.search-bar-background {
+  width: 100%;
+  height: 100%;
+  margin-top: -3vh;
+  min-height: 60px;
 }
 
-.search-bar-container{
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0);
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
+.search-input-container {
+  position: absolute;
+  padding: 5px 10px;
+  width: 0;
+  margin-left: 3.8em;
+  margin-top: -8.2vh;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out 0.8s;
 }
 
-.search-icon{
-    width: 2rem;
-    height: 2rem;
-    margin-right: -1vw;
-    margin-top: -1.2vh;
+.search-input-container input {
+  padding: 8px 10px;
+  font-size: calc(0.3em + 0.6vw);
+}
 
+.search-input-container.search-bar-visible {
+  width: 7rem;
+  opacity: 1;
+}
+
+.search-bar-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.search-icon {
+  right: 0;
+  width: 0;
+  height: 2rem;
+  margin-left: 13.5rem;
+  margin-top: -7.4vh;
+  transition-delay: 1.2s;
+  transition: opacity 0.8s ease-in-out, width 0.8s ease-in-out 0.8s;
+}
+
+.search-icon.search-bar-visible {
+  width: 2rem;
+  opacity: 1;
 }

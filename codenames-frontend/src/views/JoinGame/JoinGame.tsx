@@ -38,10 +38,9 @@ interface GameSession {
   timeForGuessing: string;
   timeForAHint: string;
   numberOfRounds: number;
-  connectedUsers: User[][]; // A table of two arrays representing teams
+  connectedUsers: User[][]; 
 }
 
-// Main component definition
 const JoinGame: React.FC<JoinGameProps> = ({
   setVolume,
   soundFXVolume,
@@ -53,7 +52,6 @@ const JoinGame: React.FC<JoinGameProps> = ({
   const [filteredGames, setFilteredGames] = useState<GameSession[]>([]);
 
   useEffect(() => {
-    // Funkcja do pobierania gier
     getGames();
 
     const socket = new SockJS("http://localhost:8080/ws");
@@ -79,7 +77,7 @@ const JoinGame: React.FC<JoinGameProps> = ({
     stompClient.activate();
 
     return () => {
-      stompClient.deactivate(); // Zatrzymaj połączenie WebSocket przy odmontowywaniu komponentu
+      stompClient.deactivate(); 
     };
   }, []);
 
@@ -87,7 +85,6 @@ const JoinGame: React.FC<JoinGameProps> = ({
     fetch("http://localhost:8080/api/game-session/all")
       .then((response) => response.json())
       .then((data) => {
-        // Filtrujemy gry, aby pokazać tylko te z statusem 'CREATED'
         const createdGames = data.filter(
           (game: GameSession) => game.status === "CREATED"
         );
@@ -99,7 +96,6 @@ const JoinGame: React.FC<JoinGameProps> = ({
       });
   };
 
-  // Toggles the settings modal visibility
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };

@@ -20,14 +20,12 @@ public class DefaultGameSessionService implements GameSessionService {
     private final GameSessionRepository gameSessionRepository;
     private final UserService userService;
     private final GameStateService gameStateService;
-    private final CardService cardService;
 
     @Autowired
-    public DefaultGameSessionService(GameSessionRepository gameSessionRepository, UserService userService, GameStateService gameStateService, CardService cardService) {
+    public DefaultGameSessionService(GameSessionRepository gameSessionRepository, UserService userService, GameStateService gameStateService) {
         this.gameSessionRepository = gameSessionRepository;
         this.userService = userService;
         this.gameStateService = gameStateService;
-        this.cardService = cardService;
     }
 
     @Override
@@ -200,6 +198,10 @@ public class DefaultGameSessionService implements GameSessionService {
 
         if (gameSession == null) {
             throw new IllegalArgumentException("Game session not found for ID: " + sessionId);
+        }
+
+        if (gameSession.getMaxPlayers() == gameSession.getConnectedUsers().stream().mapToInt(List::size).sum()){
+            return false;
         }
 
         List<List<User>> connectedUsers = gameSession.getConnectedUsers();
