@@ -55,6 +55,8 @@ jobs:
       with:
         push: true
         tags: codenames/codenames-backend:latest
+        context: ./codenames-backend  
+        file: ./codenames-backend/Dockerfile  
 
   frontend: 
     name: Build frontend
@@ -92,3 +94,5 @@ jobs:
         with:
           push: true
           tags: codenames/codenames-frontend:latest
+          context: ./codenames-frontend 
+          file: ./codenames-frontend/Dockerfile  
