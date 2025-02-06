@@ -14,7 +14,7 @@ interface MessageModalProps {
   isOpen: boolean;
   onClose: () => void;
   soundFXVolume: number;
-  setIsConfirmationModalOpen: (open: boolean) => void; // New prop to control the confirmation modal
+  setIsConfirmationModalOpen: (open: boolean) => void; 
 }
 
 const MessageModal: React.FC<MessageModalProps> = ({
@@ -26,7 +26,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false); // New state for loading
+  const [isLoading, setIsLoading] = useState(false); 
   const { t } = useTranslation();
 
   if (!isOpen) return null;
@@ -40,11 +40,12 @@ const MessageModal: React.FC<MessageModalProps> = ({
     setIsLoading(true);
 
     const dataToSend = {
-      dataToSend: "E-mail: " + email + "\nMessage: " + message,
+      email: email,
+      dataToSend: "Message: " + message,
     };
 
     try {
-      const response = await fetch("http://localhost:8080/api/email/send", {
+      const response = await fetch("http://localhost:8080/api/email/send-report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dataToSend),
@@ -61,7 +62,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
     } catch (err: any) {
       setError(err.message);
     } finally {
-      setIsLoading(false); // Stop loading
+      setIsLoading(false); 
     }
   };
 
