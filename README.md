@@ -130,9 +130,3 @@ Alternatively, you can set these variables directly in your system as environmen
 * [Jakub Walasik](https://github.com/jwalasik3)
 
 See also the list of [contributors](https://github.com/zuzqqa/codenames/contributors) who participated in this project.
-
-## 🎉 Acknowledgements <a name = "acknowledgement"></a>
-
-- Hat tip to anyone whose code was used.
-- Inspired by the original Codenames board game.
-- Special thanks to our professors and classmates for feedback during the development process.
