@@ -41,7 +41,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
 
     const dataToSend = {
       email: email,
-      dataToSend: "Message: " + message,
+      dataToSend: "MESSAGE: " + message,
     };
 
     try {
