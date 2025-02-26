@@ -20,6 +20,7 @@ import cardBlueImg from "../../assets/images/card-blue.jpg";
 import polygon1Img from "../../assets/images/Polygon1.png";
 import polygon2Img from "../../assets/images/Polygon2.png";
 import cardSound from "../../assets/sounds/card-filp.mp3";
+import votingLabel from "../../assets/images/medieval-label.png";
 
 import "./Gameplay.css";
 import Chat from "../../components/Chat/Chat.tsx";
@@ -85,7 +86,6 @@ interface GameState {
   guessingTurn: boolean;
 }
 
-
 /**
  * React functional component responsible for handling gameplay-related settings,
  * such as volume adjustments.
@@ -127,10 +127,11 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [blueTeamScore, setBlueTeamScore] = useState(0);
   const [redTeamScore, setRedTeamScore] = useState(0);
   const [whosTurn, setWhosTurn] = useState<string>("red");
-  const [isGuessingTime, setIsGuessingTime] = useState<boolean>(); 
-  const [isHintTime, setIsHintTime] = useState<boolean>(); 
+  const [isGuessingTime, setIsGuessingTime] = useState<boolean>();
+  const [isHintTime, setIsHintTime] = useState<boolean>();
   const [winningTeam, setWinningTeam] = useState<string>("red");
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
+  const [votedCards, setVotedCards] = useState<number[]>([]);
   const [cardsToReveal, setCardsToReveal] = useState<number[]>([]);
   const [hasEndRoundBeenCalled, setHasEndRoundBeenCalled] = useState(false);
   const clickAudio = new Audio(cardSound);
@@ -139,7 +140,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     setIsSettingsOpen(!isSettingsOpen);
   };
 
-  /** 
+  /**
    * This function returns the appropriate banner based on whether the user is a team leader
    * and the team the user belongs to (blue or red).
    */
@@ -149,7 +150,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     } else if (amIRedTeamLeader) {
       return bannerRedLeader;
     } else {
-      return myTeam === 'blue' ? bannerBlue : bannerRed;
+      return myTeam === "blue" ? bannerBlue : bannerRed;
     }
   };
 
@@ -228,21 +229,26 @@ const Gameplay: React.FC<GameplayProps> = ({
       navigate("/games");
       return;
     }
-  
+
     const fetchGameSession = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/game-session/${storedGameId}`);
+        const response = await fetch(
+          `http://localhost:8080/api/game-session/${storedGameId}`
+        );
         if (!response.ok) throw new Error("Failed to fetch game session");
         const data = await response.json();
-  
-        const getIdResponse = await fetch("http://localhost:8080/api/users/getId", {
-          method: "GET",
-          credentials: "include",
-        });
+
+        const getIdResponse = await fetch(
+          "http://localhost:8080/api/users/getId",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
         if (!getIdResponse.ok) throw new Error("Failed to fetch user ID");
-  
-        const userId = await getIdResponse.text(); 
-  
+
+        const userId = await getIdResponse.text();
+
         setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
         setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
         setGameSession(data);
@@ -252,15 +258,18 @@ const Gameplay: React.FC<GameplayProps> = ({
         setIsHintTime(data.gameState?.hintTurn);
         setIsGuessingTime(data.gameState?.guessingTurn);
         setCardsToReveal(data.gameState?.cardsChoosen || []);
-        setMyTeam(data.connectedUsers[0].find((user: User) => user.id === userId) ? "red" : "blue");
+        setMyTeam(
+          data.connectedUsers[0].find((user: User) => user.id === userId)
+            ? "red"
+            : "blue"
+        );
       } catch (err) {
         console.error("Failed to load game session", err);
       }
     };
-  
+
     fetchGameSession();
   }, [storedGameId, navigate]);
-  
 
   useEffect(() => {
     setGameSession(gameSessionData);
@@ -269,7 +278,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     setIsHintTime(gameSession?.gameState?.hintTurn);
     setCardsToReveal(gameSession?.gameState?.cardsChoosen || []);
   }, [gameSessionData, whosTurn]);
-  
+
   useEffect(() => {
     setGameSession(gameSession);
     setIsGuessingTime(gameSession?.gameState?.guessingTurn);
@@ -310,7 +319,7 @@ const Gameplay: React.FC<GameplayProps> = ({
       return newCards;
     });
   };
-  
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Enter" && cardText.trim()) {
@@ -324,25 +333,27 @@ const Gameplay: React.FC<GameplayProps> = ({
         setCardText("");
       }
     };
-  
+
     document.addEventListener("keydown", handleKeyDown);
-  
+
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [cardText]);
 
-  
   const change_turn = () => {
     const storedGameId = localStorage.getItem("gameId");
 
-    fetch(`http://localhost:8080/api/game-session/${storedGameId}/change-turn`, {
-      method: "GET",
-      headers: {
-        credentials: "include",
-      },
-    });
-  }
+    fetch(
+      `http://localhost:8080/api/game-session/${storedGameId}/change-turn`,
+      {
+        method: "GET",
+        headers: {
+          credentials: "include",
+        },
+      }
+    );
+  };
 
   const sendHint = () => {
     if (!cardText.trim()) return;
@@ -359,7 +370,7 @@ const Gameplay: React.FC<GameplayProps> = ({
       body: JSON.stringify({ hint: cardText }),
     });
 
-    setCardText(""); 
+    setCardText("");
   };
 
   const submitVotes = () => {
@@ -410,38 +421,38 @@ const Gameplay: React.FC<GameplayProps> = ({
   return (
     <>
       <BackgroundContainer>
-        <span className={`below timer ${myTeam === 'blue' ? 'blue' : 'red'}`}>
+        <span className={`below timer ${myTeam === "blue" ? "blue" : "red"}`}>
           {(() => {
             if (
               (amIBlueTeamLeader || amIRedTeamLeader) &&
               isHintTime &&
               whosTurn === myTeam
             ) {
-              return t('give-hint');
+              return t("give-hint");
             } else if (
               (amIBlueTeamLeader || amIRedTeamLeader) &&
               isGuessingTime &&
               whosTurn === myTeam
             ) {
-              return t('team-guessing');
+              return t("team-guessing");
             } else if (
               !amIBlueTeamLeader &&
               !amIRedTeamLeader &&
               isHintTime &&
               whosTurn === myTeam
             ) {
-              return t('leader-choosing-hint');
+              return t("leader-choosing-hint");
             } else if (isHintTime && whosTurn !== myTeam) {
-              return t('opposing-team-hint');
+              return t("opposing-team-hint");
             } else if (
               !amIBlueTeamLeader &&
               !amIRedTeamLeader &&
               isGuessingTime &&
               whosTurn === myTeam
             ) {
-              return t('guessing');
+              return t("guessing");
             } else if (isGuessingTime && whosTurn !== myTeam) {
-              return t('opposing-team-guessing');
+              return t("opposing-team-guessing");
             }
           })()}
         </span>
@@ -468,8 +479,12 @@ const Gameplay: React.FC<GameplayProps> = ({
         <img className="polygon2" src={polygon2Img} />
         <div className="timer points-red">{redTeamScore}</div>
         <div className="timer points-blue">{blueTeamScore}</div>
-        <div className="banner-container"><img src={getBanner()} /></div>
-        <div className="banner-container"><img src={getBanner()} /></div>
+        <div className="banner-container">
+          <img src={getBanner()} />
+        </div>
+        <div className="banner-container">
+          <img src={getBanner()} />
+        </div>
         <Chat />
         <div className="content-container">
           <div className="timer-container">
@@ -512,6 +527,23 @@ const Gameplay: React.FC<GameplayProps> = ({
                   }
                   alt={`card-${index}`}
                 />
+
+                {votedCards[index] > 0 && (
+                  <div className="corner-icon-container">
+                    <img
+                      className="corner-icon"
+                      src={votingLabel}
+                      alt="corner icon"
+                    />
+                    <span className="corner-text">
+                      votedCards[index]/
+                      {whosTurn === "red"
+                        ? redTeamPlayers.length
+                        : blueTeamPlayers.length}
+                    </span>
+                  </div>
+                )}
+
                 {!flipStates[index] && (
                   <span
                     className={`card-text ${

@@ -3,7 +3,7 @@ package org.example.codenames.gameState.service.impl;
 import org.example.codenames.card.entity.Card;
 import org.example.codenames.card.repository.CardRepository;
 import org.example.codenames.gameSession.entity.GameSession;
-import org.example.codenames.gameSession.repository.GameSessionRepository;
+import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameState.entity.GameState;
 import org.example.codenames.gameState.service.api.GameStateService;
 
