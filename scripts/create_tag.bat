@@ -28,6 +28,16 @@ for /f "tokens=1,2,3 delims=." %%a in ("%clean_version%") do (
     set patch=%%c
 )
 
+for /f "tokens=1-3 delims=." %%a in ("%clean_version%") do (
+    set major=%%a
+    set minor=%%b
+    set patch=%%c
+)
+
+if not defined major ( echo Error: Invalid version format & exit /b 1 )
+if not defined minor ( echo Error: Invalid version format & exit /b 1 )
+if not defined patch ( echo Error: Invalid version format & exit /b 1 )
+
 :: Function to increment version
 if "%version_type%"=="1" (
     set /a patch+=1
