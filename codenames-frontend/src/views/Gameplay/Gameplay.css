@@ -67,21 +67,21 @@
 }
 
 .selected-card {
-  position: relative; 
-  box-sizing: border-box; 
+  position: relative;
+  box-sizing: border-box;
   animation: pulse 0.5s infinite alternate;
 }
 
 .selected-card:before {
-  content: ''; 
-  position: absolute; 
+  content: "";
+  position: absolute;
   top: 0;
   left: 0px;
   right: 0px;
   bottom: 0px;
   border: 2px solid rgba(255, 223, 0, 0.6);
   border-radius: 8px;
-  pointer-events: none; 
+  pointer-events: none;
 }
 
 @keyframes pulse {
@@ -92,7 +92,6 @@
     transform: scale(1.05);
   }
 }
-
 
 .gold-text {
   color: transparent;
@@ -321,7 +320,6 @@ button {
 
 .below.timer {
   top: 1.40em;
-  
 }
 
 .hidden {

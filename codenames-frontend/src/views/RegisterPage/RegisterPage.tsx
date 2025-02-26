@@ -19,12 +19,25 @@ import {logout} from "../../shared/utils.tsx";
 import {useNavigate} from "react-router-dom";
 import Cookies from "js-cookie";
 
+/**
+ * Props for the RegisterPage component.
+ * @typedef {Object} RegisterProps
+ * @property {function(number): void} setVolume - Function to set the global music volume.
+ * @property {number} soundFXVolume - Current volume level of sound effects.
+ * @property {function(number): void} setSoundFXVolume - Function to set the sound effects volume.
+ */
 interface RegisterProps {
     setVolume: (volume: number) => void;
     soundFXVolume: number;
     setSoundFXVolume: (volume: number) => void;
 }
 
+/**
+ * RegisterPage component handles user registration.
+ *
+ * @param {RegisterProps} props - Component properties.
+ * @returns {JSX.Element} The rendered RegisterPage component.
+ */
 const RegisterPage: React.FC<RegisterProps> = ({
     setVolume,
     soundFXVolume,
@@ -40,14 +53,29 @@ const RegisterPage: React.FC<RegisterProps> = ({
     const navigate = useNavigate(); // Hook for navigation
     const [emailError, setEmailError] = useState<string | null>(null);
 
+    /**
+     * Handles email input change.
+     *
+     * @param {ChangeEvent<HTMLInputElement>} e - Event object.
+     */
     const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
     }
 
+    /**
+     * Handles login input change.
+     *
+     * @param {ChangeEvent<HTMLInputElement>} e - Event object.
+     */
     const handleLoginChange = (e: ChangeEvent<HTMLInputElement>) => {
         setLogin(e.target.value);
     };
 
+    /**
+     * Handles password input change.
+     *
+     * @param {ChangeEvent<HTMLInputElement>} e - Event object.
+     */
     const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
         const inputValue = e.target.value;
@@ -59,12 +87,22 @@ const RegisterPage: React.FC<RegisterProps> = ({
         }
     };
 
+    /**
+     * Validates email format.
+     *
+     * @param {string} email - The email to validate.
+     * @returns {boolean} True if the email is valid, false otherwise.
+     */
     const validateEmail = (email: string): boolean => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     };
 
-
+    /**
+     * Handles form submission and sends registration request.
+     *
+     * @param {FormEvent<HTMLFormElement>} e - Event object.
+     */
     const handleSubmit  = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -101,12 +139,15 @@ const RegisterPage: React.FC<RegisterProps> = ({
         }
     };
 
+    /**
+     * Toggles the settings modal visibility.
+     */
     const toggleSettings = () => {
         setIsSettingsOpen(!isSettingsOpen);
     };
 
+    // Redirect user to /games if already logged in
     useEffect(() => {
-        console.log("Sprawdzam");
         const loggedIn = Cookies.get('loggedIn'); // Retrieve the cookie value
 
         // Ensure 'loggedIn' is true

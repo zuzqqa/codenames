@@ -11,13 +11,11 @@
   font-size: calc(0.4rem + 1vw);
   text-transform: uppercase;
 
-
-  background: linear-gradient(to top, #32464D, #2c3d46, #22303b);
+  background: linear-gradient(to top, #32464d, #2c3d46, #22303b);
   border-style: outset;
   border-width: 2px;
   border-color: #fcdc8b80;
   border-radius: 17px;
-
 
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   z-index: 10;
@@ -29,7 +27,7 @@
   color: transparent;
   background-clip: text;
   -webkit-background-clip: text;
-  background-image: linear-gradient(to top, #FFD363, #FCF18B);
+  background-image: linear-gradient(to top, #ffd363, #fcf18b);
   width: 10vw;
   user-select: none;
   -webkit-user-select: none;

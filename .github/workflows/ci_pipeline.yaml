@@ -3,30 +3,30 @@ name: 🚀 Codenames CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - main  # Trigger pipeline on pushes to the main branch
   pull_request:
     branches:
-      - main
+      - main  # Trigger pipeline on pull requests to the main branch
 
 jobs:
   backend:
     name: 🏗️ Build Backend
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
     services:
       mongodb:
-        image: mongo
+        image: mongo  # Use the official MongoDB image
         ports:
-          - 27017:27017
+          - 27017:27017  # Map MongoDB's default port
 
     steps:
       - name: 📥 Checkout repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  
+          fetch-depth: 0  # Ensure the entire history is fetched for versioning
 
       - name: 🔍 List tags in the repository
         run: |
-          git fetch --tags 
+          git fetch --tags
           git tag           
 
       - name: 🏷️ Get last tag and set version
@@ -38,9 +38,9 @@ jobs:
       - name: ☕ Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: maven
+          java-version: '17'  # Specify Java 17
+          distribution: 'temurin'  # Use the Temurin JDK distribution
+          cache: maven  # Enable caching for Maven dependencies
     
       - name: 🌍 Set environment variables
         run: |
@@ -59,18 +59,18 @@ jobs:
 
   frontend: 
     name: 🎨 Build Frontend
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
 
     steps:
       - name: 📥 Checkout repo 
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4  # Checkout the repository code
 
       - name: 🛠️ Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: codenames-frontend/package-lock.json
+          node-version: 20  # Use Node.js v20
+          cache: 'npm'  # Enable npm caching
+          cache-dependency-path: codenames-frontend/package-lock.json  # Cache dependencies based on package-lock.json
 
       - name: 📦 Install dependencies
         run: |

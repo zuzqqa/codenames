@@ -126,10 +126,10 @@
   background-clip: text;
   -webkit-background-clip: text;
   background-image: linear-gradient(to right, #fff7ab, #dab274);
-  color: transparent; 
+  color: transparent;
 }
 
-.btn-join-team{
+.btn-join-team {
   background: linear-gradient(to top, #ccbf9a, #dccfaa);
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 17px;
@@ -160,7 +160,8 @@
   background-image: linear-gradient(to top, #22303b, #0b1319);
 }
 
-.btn-logout img, .btn-logout-back img {
+.btn-logout img,
+.btn-logout-back img {
   margin-left: 1rem;
   margin-top: 0.25rem;
 }
