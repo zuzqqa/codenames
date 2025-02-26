@@ -27,7 +27,7 @@ services:
     volumes:
       - ./codenames-frontend:/app
       - /app/node_modules 
-    command: ["npm", "run", "dev", "--", "--host"]
+    command: ["npm", "run", "dev", "--", "--host", "--force"]
     depends_on:
       - backend
 

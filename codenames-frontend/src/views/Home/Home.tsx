@@ -124,7 +124,7 @@ const Home: React.FC<HomeProps> = ({
                     onClick={() => navigate("/login")}
                   >
                     <span className="button-text">
-                      {t("login-button-text")}
+                      {t("login-button-text")}sda
                     </span>
                   </Button>
                 </div>
