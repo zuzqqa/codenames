@@ -6,6 +6,11 @@ import BackgroundContainer from "../../containers/Background/Background";
 import Button from "../../components/Button/Button";
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 
+import bannerBlue from "../../assets/images/banner-blue.png";
+import bannerBlueLeader from "../../assets/images/banner-blue-leader.png";
+import bannerRed from "../../assets/images/banner-red.png";
+import bannerRedLeader from "../../assets/images/banner-red-leader.png";
+
 import settingsIcon from "../../assets/icons/settings.png";
 import shelfImg from "../../assets/images/shelf.png";
 import cardsStackImg from "../../assets/images/cards-stack.png";
@@ -107,6 +112,17 @@ const Gameplay: React.FC<GameplayProps> = ({
 
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
+  };
+
+  /** get game medival banner in correct version */
+  const getBanner = () => {
+    if (amIBlueTeamLeader) {
+      return bannerBlueLeader;
+    } else if (amIRedTeamLeader) {
+      return bannerRedLeader;
+    } else {
+      return myTeam === 'blue' ? bannerBlue : bannerRed;
+    }
   };
 
   const toggleCardImage = (index: number) => {
@@ -228,7 +244,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   
   useEffect(() => {
     setGameSession(gameSession);
-    setWhosTurn(gameSession?.gameState?.teamTurn === 0 ? "red" : "blue");
+    // setWhosTurn(gameSession?.gameState?.teamTurn === 0 ? "red" : "blue");
     setIsGuessingTime(gameSession?.gameState?.guessingTurn);
     setIsHintTime(gameSession?.gameState?.hintTurn);
     setCardsToReveal(gameSession?.gameState?.cardsChoosen || []);
@@ -367,7 +383,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   return (
     <>
       <BackgroundContainer>
-        <span className="below timer">
+        <span className={`below timer ${myTeam === 'blue' ? 'blue' : 'red'}`}>
           {(() => {
             if (
               (amIBlueTeamLeader || amIRedTeamLeader) &&
@@ -425,6 +441,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         <img className="polygon2" src={polygon2Img} />
         <div className="timer points-red">{redTeamScore}</div>
         <div className="timer points-blue">{blueTeamScore}</div>
+        <div className="banner-container"><img src={getBanner()} /></div>
         <Chat />
         <div className="content-container">
           <div className="timer-container">

@@ -148,10 +148,17 @@ button {
   border-radius: 1.6875rem;
   box-shadow: 0 0.25rem 0.25rem 0 rgba(0, 0, 0, 0.25);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-  background-image: linear-gradient(to top, #991b1b, #e52121);
   letter-spacing: 2px;
   color: #fcf18b;
   z-index: 1;
+}
+
+.blue{
+  background-image: linear-gradient(to top, #0b3f51, #1b74bb);
+}
+
+.red{
+  background-image: linear-gradient(to top, #991b1b, #e52121);
 }
 
 .timer-container {
@@ -164,6 +171,7 @@ button {
   position: absolute;
   top: 15%;
   left: 2%;
+  background-image: linear-gradient(to top, #991b1b, #e52121);
 }
 
 .points-blue {
@@ -187,6 +195,16 @@ button {
   top: 13%;
   left: 0%;
   margin-top: 5rem;
+}
+
+.banner-container{
+  position: absolute;
+  top: 15%;
+  right: 8%;
+}
+
+.banner-container img{
+  width: 130px;
 }
 
 .shelf {
@@ -303,6 +321,7 @@ button {
 
 .below.timer {
   top: 1.40em;
+  
 }
 
 .hidden {
