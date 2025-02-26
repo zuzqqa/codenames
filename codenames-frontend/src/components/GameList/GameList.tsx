@@ -12,6 +12,9 @@ import searchButton from "../../assets/images/search-button.png";
 
 import { useState } from "react";
 
+/**
+ * Props interface for GameList component.
+ */
 interface GameListProps {
   soundFXVolume: number;
   gameSessions: GameSession[];
@@ -19,29 +22,46 @@ interface GameListProps {
   setFilteredSessions: (sessions: GameSession[]) => void;
 }
 
+/**
+ * Interface representing a user.
+ */
 interface User {
   userId: string;
   username: string;
 }
 
+/**
+ * Enum representing session statuses.
+ */
 enum SessionStatus {
   CREATED = "CREATED",
   IN_PROGRESS = "IN_PROGRESS",
   FINISHED = "FINISHED",
 }
 
+/**
+ * Interface representing a game session.
+ */
 interface GameSession {
-  status: SessionStatus;
-  sessionId: string;
-  gameName: string;
-  maxPlayers: number;
-  durationOfTheRound: string;
-  timeForGuessing: string;
-  timeForAHint: string;
-  numberOfRounds: number;
-  connectedUsers: User[][];
+  status: SessionStatus; // Current status of the game session
+  sessionId: string; // Unique session identifier
+  gameName: string; // Name of the game session
+  maxPlayers: number; // Maximum number of players
+  durationOfTheRound: string; // Duration of each round
+  timeForGuessing: string; // Time allocated for guessing
+  timeForAHint: string; // Time allocated for hints
+  numberOfRounds: number; // Total number of rounds in the game
+  connectedUsers: User[][]; // Array of connected users
 }
 
+/**
+ * GameList component that displays a list of available game sessions.
+ * Users can search for a specific game session and join it.
+ *
+ * @component
+ * @param {GameListProps} props - The component props
+ * @returns {JSX.Element} The rendered GameList component
+ */
 const GameList: React.FC<GameListProps> = ({
   soundFXVolume,
   gameSessions,
@@ -55,19 +75,26 @@ const GameList: React.FC<GameListProps> = ({
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  /**
+   * Toggles the visibility of the search bar.
+   */
   const toggleSearch = () => {
     if (!isSearchVisible) {
-      setIsSearchVisible(true); // Najpierw ustawiamy widoczność
-      setTimeout(() => setIsAnimating(true), 10); // Po krótkiej chwili dodajemy animację
+      setIsSearchVisible(true); 
+      setTimeout(() => setIsAnimating(true), 10); 
     } else {
-        setTimeout(() => setIsAnimating(false), 500); 
-        setIsSearchVisible(false);
-         // Najpierw usuwamy animację
+      setTimeout(() => setIsAnimating(false), 500);
+      setIsSearchVisible(false);
     }
     setSearchTerm("");
     setFilteredSessions(gameSessions);
   };
 
+  /**
+   * Handles the search input change and filters game sessions accordingly.
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} event - The input change event
+   */
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.toLowerCase();
     setSearchTerm(value);
@@ -77,6 +104,11 @@ const GameList: React.FC<GameListProps> = ({
     setFilteredSessions(filtered);
   };
 
+  /**
+   * Joins a specific game session and navigates to the game lobby.
+   *
+   * @param {string} sessionId - The session ID of the game to join
+   */
   const join_specific_game = (sessionId: string) => {
     localStorage.setItem("gameId", sessionId);
     navigate("/game-lobby");
@@ -86,9 +118,7 @@ const GameList: React.FC<GameListProps> = ({
     <>
       {isSearchVisible && (
         <div
-          className={`search-bar ${
-            isAnimating ? "search-bar-animating" : ""
-          }`}
+          className={`search-bar ${isAnimating ? "search-bar-animating" : ""}`}
         >
           <img
             src={searchBar}
@@ -96,9 +126,11 @@ const GameList: React.FC<GameListProps> = ({
             className="search-bar-background"
           />
           <div className="search-bar-container">
-            <div className={`search-input-container ${
-            isAnimating ? "search-bar-visible" : ""
-          }`}>
+            <div
+              className={`search-input-container ${
+                isAnimating ? "search-bar-visible" : ""
+              }`}
+            >
               <input
                 className="input-field"
                 type="text"

@@ -1,4 +1,3 @@
-/* === General App Wrapper Styles === */
 .app-wrapper {
   position: absolute;
   top: 0;
@@ -15,9 +14,6 @@
   align-items: center;
 }
 
-/* === Column and Row Layout === */
-
-/* First column: Contains two rows */
 .first-column {
   display: grid;
   grid-template-rows: 0.8fr 0.8fr; /* Two rows of equal height */
@@ -35,7 +31,6 @@
   padding-top: 1rem; /* Add space above the second row */
 }
 
-/* Second column: Mirrors first column layout */
 .second-column {
   grid-column: 3;
   grid-template-rows: 0.8fr 0.8fr;
@@ -46,9 +41,6 @@
   align-items: center;
 }
 
-/* === Decorative Elements === */
-
-/* Gold Bar: Divider between columns */
 .gold-bar {
   grid-column: 2;
   grid-row: 1 / span 4; /* Spans all rows */

@@ -1,11 +1,3 @@
-/**
- * The `WinLossView` component in TypeScript React displays a victory or defeat message with a timer
- * for automatic redirection and cleanup of chat messages.
- * @returns The `WinLossView` component is being returned. It is a functional component in React that
- * displays a victory or defeat message based on the result passed through the location state. If there
- * is no result, it navigates back to the home page. The component also includes hooks for translation,
- * programmatic navigation, and managing component state and effects.
- */
 import { useNavigate, useLocation } from "react-router-dom"; // Hook for programmatic navigation
 import React, { useEffect } from "react"; // Hook for managing component state and effects
 import { useTranslation } from "react-i18next"; // Hook for translation
@@ -17,6 +9,13 @@ import "../../styles/App.css";
 import "../Home/Home.css";
 import "./WinLossView.css";
 
+/**
+ * The `WinLossView` component displays a victory or defeat message and automatically redirects
+ * the user to the home page after a timeout. It also clears stored chat messages on mount.
+ *
+ * @component
+ * @returns {JSX.Element | null} The `WinLossView` component.
+ */
 const WinLossView: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -29,6 +28,10 @@ const WinLossView: React.FC = () => {
     return null;
   }
 
+  /**
+   * Sets a timeout to navigate back to the home page after 15 seconds.
+   * The timeout is cleared when the component unmounts.
+   */
   useEffect(() => {
     const timer = setTimeout(() => {
       navigate("/");
@@ -37,6 +40,9 @@ const WinLossView: React.FC = () => {
     return () => clearTimeout(timer);
   }, [navigate]);
 
+  /**
+   * Clears stored chat messages from local storage when the component mounts.
+   */
   useEffect(() => {
     if(localStorage.getItem("chatMessages")) {
       localStorage.removeItem("chatMessages");

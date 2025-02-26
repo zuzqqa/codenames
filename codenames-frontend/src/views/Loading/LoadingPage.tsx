@@ -12,16 +12,22 @@ import "../../styles/App.css";
 import "../Home/Home.css";
 import "./LoadingPage.css";
 
+/**
+ * Props type definition for the LoadingPage component.
+ */
 interface LoadingPageProps {
   setVolume: (volume: number) => void; // Function to set global volume
   soundFXVolume: number; // Current sound effects volume level
   setSoundFXVolume: (volume: number) => void; // Function to set sound effects volume
 }
 
-// Simple LoadingPage Component
-const LoadingPage: React.FC<LoadingPageProps> = ({
-  soundFXVolume,
-}) => {
+/**
+ * LoadingPage component that displays a loading screen before navigating to the game selection page.
+ *
+ * @param {LoadingPageProps} props - Component props.
+ * @returns {JSX.Element} The rendered LoadingPage component.
+ */
+const LoadingPage: React.FC<LoadingPageProps> = ({ soundFXVolume }) => {
   const { t } = useTranslation(); // Hook for translation
   const navigate = useNavigate(); // Hook for navigation
 
@@ -37,7 +43,10 @@ const LoadingPage: React.FC<LoadingPageProps> = ({
     // Dynamically set CSS variable for the animation duration
     const progressBar = document.getElementById("progressBar");
     if (progressBar) {
-      progressBar.style.setProperty("--progress-duration", `${randomDuration}ms`);
+      progressBar.style.setProperty(
+        "--progress-duration",
+        `${randomDuration}ms`
+      );
     }
 
     // Cleanup timeout on unmount
