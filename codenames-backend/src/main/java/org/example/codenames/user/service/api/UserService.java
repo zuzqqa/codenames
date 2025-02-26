@@ -1,29 +1,23 @@
 package org.example.codenames.user.service.api;
 
-import com.mongodb.client.MongoIterable;
 import org.example.codenames.user.entity.User;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service for managing users.
+ */
 public interface UserService {
+    void createUser(User user);
 
-    // Create a new user
-    public void createUser(User user);
+    Optional<User> getUserById(String id);
 
-    // Read: find user by ID
-    public Optional<User> getUserById(String id);
+    Optional<User> getUserByUsername(String username);
 
-    // Read: find user by username
-    public Optional<User> getUserByUsername(String username);
+    List<User> getAllUsers();
 
-    // Read: get all users
-    public List<User> getAllUsers();
+    User updateUser(String id, User updatedUser);
 
-    // Update an existing user
-    public User updateUser(String id, User updatedUser);
-
-    // Delete a user by ID
-    public void deleteUserById(String id);
+    void deleteUserById(String id);
 }

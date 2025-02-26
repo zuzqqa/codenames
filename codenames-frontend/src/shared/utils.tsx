@@ -1,3 +1,9 @@
+/**
+ * Logs out the user by sending a request to the server and clearing session cookies.
+ * If successful, the user is redirected to the loading screen.
+ * @async
+ * @function logout
+ */
 export const logout = async () => {
   try {
     const response = await fetch("http://localhost:8080/api/users/logout", {
@@ -20,6 +26,11 @@ export const logout = async () => {
   }
 };
 
+/**
+ * Converts a duration from various formats (number, "mm:ss", "PTxxMxxS") to "mm:ss" format.
+ * @param {string | number} duration - The duration to convert.
+ * @returns {string} - The formatted duration as "mm:ss".
+ */
 export function convertDurationToMMSS(duration: string | number): string {
   let totalSeconds: number;
 
@@ -27,11 +38,9 @@ export function convertDurationToMMSS(duration: string | number): string {
     totalSeconds = duration;
   } else {
     if (/^\d{1,2}:\d{2}$/.test(duration)) {
-      // Obsługuje format "mm:ss"
       const [minutes, seconds] = duration.split(":").map(Number);
       totalSeconds = minutes * 60 + seconds;
     } else {
-      // Obsługuje format "PTxxMxxS"
       const regex = /^PT(?:(\d+)M)?(?:(\d+)S)?$/;
       const match = duration.match(regex);
 
@@ -41,20 +50,25 @@ export function convertDurationToMMSS(duration: string | number): string {
         totalSeconds = minutes * 60 + seconds;
       } else {
         console.warn("Invalid duration format:", duration);
-        return "00:00"; // Jeśli niepoprawny format
+        return "00:00";
       }
     }
   }
 
-  // Konwertuje sekundy na format "mm:ss"
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
 
-  // Zwraca w formacie "mm:ss"
-  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+    2,
+    "0"
+  )}`;
 }
 
-
+/**
+ * Formats a given time in seconds to "mm:ss" format.
+ * @param {number} seconds - The number of seconds to format.
+ * @returns {string} - The formatted time as "mm:ss".
+ */
 export function formatTime(seconds: number) {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;

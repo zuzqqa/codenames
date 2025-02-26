@@ -2,27 +2,43 @@ import React, {ReactNode} from "react";
 import "./Button.css";
 import soundFile from "../../assets/sounds/old-radio-button-click-97549.mp3";
 
-// ButtonProps interface defines the button's properties
+/**
+ * Props interface for the Button component.
+ */
 interface ButtonProps {
-    children: ReactNode; // Content inside the button (text/icons)
-    onClick?: () => void; // Click handler function (optional)
-    type?: "button" | "submit" | "reset"; // Button type (default is "button")
-
+    /** Content inside the button (text/icons) */
+    children: ReactNode; 
+    /** Click handler function (optional) */
+    onClick?: () => void;
+    /** Button type (default is "button") */
+    type?: "button" | "submit" | "reset";
+    /** Button variant for styles (default is "primary") */
     variant?: "primary" | "primary-1" | "room" | "circle" | "circle-back" | "session" | "help" | "eye" | "eye2" | "logout" | "search" | "join-team"; // Button variant for styles (default is "primary")
-    disabled?: boolean; // Disabled state (default is false)
-    soundFXVolume: number; // Sound volume for the click effect
-    onChange?: () => void; // Change handler function (optional)
+    /** Disabled state (default is false) */
+    disabled?: boolean; 
+    /** Sound volume for the click effect */
+    soundFXVolume: number; 
+    /** Change handler function (optional) */
+    onChange?: () => void; 
+    /** Additional custom class names */
     className?: string;
 }
 
-// Function to play button click sound with adjusted volume
+/**
+ * Plays a button click sound with adjusted volume.
+ * @param volume The volume level for the sound effect (0-100).
+ */
 const playSound = (volume: number) => {
     const audio = new Audio(soundFile);
     audio.volume = volume / 100;
     audio.play().then();
 };
 
-// Button component with dynamic styling and sound on click
+/**
+ * Button component with dynamic styling and sound effects.
+ * @param {ButtonProps} props - The properties for the button component.
+ * @returns {JSX.Element} A styled button element.
+ */
 const Button: React.FC<ButtonProps> = ({
                                            children,
                                            onClick,

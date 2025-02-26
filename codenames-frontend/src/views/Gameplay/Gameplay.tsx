@@ -23,23 +23,35 @@ import { Client } from "@stomp/stompjs";
 import { useNavigate } from "react-router-dom";
 import { useWebSocket } from "./useWebSocket";
 
+/**
+ * Represents properties for controlling gameplay-related settings, such as volume levels.
+ */
 interface GameplayProps {
   setVolume: (volume: number) => void;
   soundFXVolume: number;
   setSoundFXVolume: (volume: number) => void;
 }
 
+/**
+ * Represents a user in the game session.
+ */
 interface User {
   id: string;
   username: string;
 }
 
+/**
+ * Enumeration of possible game session statuses.
+ */
 enum SessionStatus {
   CREATED = "CREATED",
   IN_PROGRESS = "IN_PROGRESS",
   FINISHED = "FINISHED",
 }
 
+/**
+ * Represents a game session with its properties and state.
+ */
 interface GameSession {
   status: SessionStatus;
   sessionId: string;
@@ -52,6 +64,9 @@ interface GameSession {
   gameState: GameState;
 }
 
+/**
+ * Represents a game state with its properties.
+ */
 interface GameState {
   blueTeamLeader: User;
   redTeamLeader: User;
@@ -66,6 +81,17 @@ interface GameState {
   guessingTurn: boolean;
 }
 
+
+/**
+ * React functional component responsible for handling gameplay-related settings,
+ * such as volume adjustments.
+ *
+ * @param {Object} props - The component props.
+ * @param {function(number): void} props.setVolume - Function to update the overall game volume.
+ * @param {number} props.soundFXVolume - The current volume level for sound effects.
+ * @param {function(number): void} props.setSoundFXVolume - Function to update the sound effects volume.
+ *  * @returns {JSX.Element} The rendered GameLobby component
+ */
 const Gameplay: React.FC<GameplayProps> = ({
   setVolume,
   soundFXVolume,

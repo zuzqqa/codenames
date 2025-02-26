@@ -1,11 +1,9 @@
-/* Container for the language slider */
 .language-slider-container {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Styling for the arrow buttons */
 .arrow-button {
   background: none;
   border: none;
@@ -13,12 +11,10 @@
   padding: 0.3125rem;
 }
 
-/* Arrow image styling */
 .arrow-button img {
   height: 80%;
 }
 
-/* Styling for the language display box */
 .language-display {
   width: 55%;
   font-size: calc(0.2em + 1vw);
@@ -34,12 +30,11 @@
   );
   box-shadow: 0rem 0.25rem 0.75rem rgba(0, 0, 0, 0.6);
   user-select: none;
-  -webkit-user-select: none; 
-  -moz-user-select: none; 
-  -ms-user-select: none; 
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
-/* Text inside the language display box */
 .language-display p {
   padding: 0;
   margin: 0.3em;
@@ -56,7 +51,6 @@
   text-shadow: 0.3125rem 0.3125rem 0.3125rem rgba(0, 0, 0, 0.4);
 }
 
-/* Styling for reversing the arrow image direction */
 .reverse-image {
   transform: rotateY(180deg);
 }

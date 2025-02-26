@@ -16,14 +16,27 @@ import "./CreateGame.css";
 import {logout} from "../../shared/utils.tsx";
 import logoutButton from "../../assets/icons/logout.svg";
 
-// Define the type for props passed to the CreateGame component
+/**
+ * Props interface for CreateGame component.
+ * @typedef {Object} CreateGameProps
+ * @property {function(number): void} setVolume - Function to set global volume
+ * @property {number} soundFXVolume - Current sound effects volume level
+ * @property {function(number): void} setSoundFXVolume - Function to set sound effects volume
+ */
 interface CreateGameProps {
-  setVolume: (volume: number) => void; // Function to set global volume
-  soundFXVolume: number; // Current sound effects volume level
-  setSoundFXVolume: (volume: number) => void; // Function to set sound effects volume
+  setVolume: (volume: number) => void;
+  soundFXVolume: number;
+  setSoundFXVolume: (volume: number) => void;
 }
 
-// Main component definition
+/**
+ * CreateGame component allows users to create a new game session.
+ * It includes settings management and user logout functionality.
+ * 
+ * @component
+ * @param {CreateGameProps} props - Component properties
+ * @returns {JSX.Element} The rendered CreateGame component
+ */
 const CreateGame: React.FC<CreateGameProps> = ({
   setVolume,
   soundFXVolume,
@@ -33,7 +46,9 @@ const CreateGame: React.FC<CreateGameProps> = ({
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const { t } = useTranslation(); // Translation hook
 
-  // Toggles the settings modal visibility
+  /**
+   * Toggles the settings modal visibility.
+   */
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };

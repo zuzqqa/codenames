@@ -2,6 +2,14 @@ import React from "react";
 
 import "./SettingsFooter.css";
 
+/**
+ * SettingsFooter Component
+ *
+ * A footer component displayed at the bottom of the settings page.
+ *
+ * @component
+ * @returns {JSX.Element} - Rendered footer component
+ */
 const SettingsFooter: React.FC = () => {
   return (
     <div className="settings-footer">

@@ -1,6 +1,5 @@
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
-// STOMP client for WebSockets
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -11,21 +10,48 @@ import playerIcon from "../../assets/images/player-icon.png";
 import "./RoomLobby.css";
 import { convertDurationToMMSS } from "../../shared/utils.tsx";
 
+/**
+ * Properties for the RoomLobby component.
+ * @typedef {Object} RoomLobbyProps
+ * @property {number} soundFXVolume - The volume of sound effects.
+ */
 interface RoomLobbyProps {
   soundFXVolume: number;
 }
 
+/**
+ * Represents a user in the game session.
+ * @typedef {Object} User
+ * @property {string} userId - The unique ID of the user.
+ * @property {string} username - The username of the player.
+ */
 interface User {
   userId: string;
   username: string;
 }
 
+/**
+ * Enum for session status.
+ * @readonly
+ * @enum {string}
+ */
 enum SessionStatus {
   CREATED = "CREATED",
   IN_PROGRESS = "IN_PROGRESS",
   FINISHED = "FINISHED",
 }
 
+/**
+ * Represents a game session.
+ * @typedef {Object} GameSession
+ * @property {SessionStatus} status - The current status of the session.
+ * @property {string} sessionId - The unique ID of the session.
+ * @property {string} gameName - The name of the game.
+ * @property {number} maxPlayers - The maximum number of players allowed.
+ * @property {string} timeForAHint - The time limit for hints.
+ * @property {string} timeForGuessing - The time limit for guessing.
+ * @property {User[][]} connectedUsers - List of users in each team.
+ */
 interface GameSession {
   status: SessionStatus;
   sessionId: string;
@@ -36,7 +62,12 @@ interface GameSession {
   connectedUsers: User[][];
 }
 
-// In your component
+/**
+ * RoomLobby component.
+ *
+ * @param {RoomLobbyProps} props - The properties for the RoomLobby component.
+ * @returns {JSX.Element} The RoomLobby component.
+ */
 const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -104,6 +135,9 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     };
   }, [navigate]);
 
+  /**
+   * Adds the current player to the red team.
+   */
   const addPlayerToRedTeam = async () => {
     // Fetch player ID, then add to red team via REST API
     const storedGameId = localStorage.getItem("gameId");
@@ -130,6 +164,9 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     }
   };
 
+  /**
+   * Adds the current player to the blue team.
+   */
   const addPlayerToBlueTeam = async () => {
     // Fetch player ID, then add to blue team via REST API
     const storedGameId = localStorage.getItem("gameId");
@@ -156,6 +193,9 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     }
   };
 
+  /**
+   * Removes the current player from the game session.
+   */
   const removePlayer = async () => {
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
@@ -183,6 +223,9 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     navigate("/games");
   };
 
+  /**
+   * Starts the game session.
+   */
   const start_game = async () => {
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
@@ -241,8 +284,8 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                 </Button>
                 <div className="players-container">
                   <div className="cloud-container">
-                    <div className="cloud blue-cloud"/>
-                    <div className="cloud red-cloud"/>
+                    <div className="cloud blue-cloud" />
+                    <div className="cloud red-cloud" />
                   </div>
                   <div className="team">
                     <Button
