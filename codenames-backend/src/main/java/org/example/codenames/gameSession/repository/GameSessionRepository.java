@@ -1,4 +1,4 @@
-package org.example.codenames.gameSession.repository.api;
+package org.example.codenames.gameSession.repository;
 
 import org.example.codenames.gameSession.entity.GameSession;
 
