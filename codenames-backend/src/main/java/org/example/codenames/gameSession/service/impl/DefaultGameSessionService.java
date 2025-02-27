@@ -2,7 +2,7 @@ package org.example.codenames.gameSession.service.impl;
 
 import org.example.codenames.gameSession.entity.CreateGameRequest;
 import org.example.codenames.gameSession.entity.GameSession;
-import org.example.codenames.gameSession.repository.GameSessionRepository;
+import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.gameState.entity.GameState;
 import org.example.codenames.gameState.service.api.GameStateService;
