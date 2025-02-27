@@ -3,7 +3,7 @@ package org.example.codenames.gameSession.controller.impl;
 import org.example.codenames.gameSession.controller.api.GameSessionController;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.entity.VoteRequest;
-import org.example.codenames.gameSession.repository.GameSessionRepository;
+import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
