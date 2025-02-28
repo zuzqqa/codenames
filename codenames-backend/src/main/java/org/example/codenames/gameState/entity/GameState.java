@@ -79,11 +79,15 @@ public class GameState {
      * Change turn
      */
     public void toggleTurn() {
-        this.isHintTurn = !this.isHintTurn;
-        this.isGuessingTurn = !this.isGuessingTurn;
-
         if (!this.isHintTurn) {
             this.teamTurn = (this.teamTurn == 0) ? 1 : 0;
         }
+
+        System.out.println(this.isHintTurn);
+        System.out.println(this.teamTurn);
+        System.out.println(this.isGuessingTurn);
+
+        this.isHintTurn = !this.isHintTurn;
+        this.isGuessingTurn = !this.isGuessingTurn;
     }
 }

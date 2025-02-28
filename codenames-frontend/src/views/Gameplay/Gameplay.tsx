@@ -84,6 +84,7 @@ interface GameState {
   cardsChoosen: number[];
   hintTurn: boolean;
   guessingTurn: boolean;
+  cardsVotes: number[];
 }
 
 /**
@@ -127,15 +128,15 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [blueTeamScore, setBlueTeamScore] = useState(0);
   const [redTeamScore, setRedTeamScore] = useState(0);
   const [whosTurn, setWhosTurn] = useState<string>("blue");
-  const [isGuessingTime, setIsGuessingTime] = useState<boolean>(); 
-  const [isHintTime, setIsHintTime] = useState<boolean>(); 
+  const [isGuessingTime, setIsGuessingTime] = useState<boolean>();
+  const [isHintTime, setIsHintTime] = useState<boolean>();
   const [winningTeam, setWinningTeam] = useState<string>("blue");
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
-  const [votedCards, setVotedCards] = useState<number[]>([]);
   const [cardsToReveal, setCardsToReveal] = useState<number[]>([]);
   const [hasEndRoundBeenCalled, setHasEndRoundBeenCalled] = useState(false);
   const clickAudio = new Audio(cardSound);
-
+  const [votedCards, setVotedCards] = useState<number[]>([]);
+  const [isVoteSubmitted, setIsVoteSubmitted] = useState<boolean>(false);
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
@@ -224,6 +225,57 @@ const Gameplay: React.FC<GameplayProps> = ({
             ? "red"
             : "blue"
         );
+        setVotedCards(data.gameState?.cardsVotes || []);
+      } catch (err) {
+        console.error("Failed to load game session", err);
+      }
+    };
+
+    setIsVoteSubmitted(JSON.parse(localStorage.getItem("vote submitted") ?? "false"));
+
+    fetchGameSession();
+  }, []);
+
+  useEffect(() => {
+    if (!storedGameId) {
+      navigate("/games");
+      return;
+    }
+
+    const fetchGameSession = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/game-session/${storedGameId}`
+        );
+        if (!response.ok) throw new Error("Failed to fetch game session");
+        const data = await response.json();
+
+        const getIdResponse = await fetch(
+          "http://localhost:8080/api/users/getId",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+        if (!getIdResponse.ok) throw new Error("Failed to fetch user ID");
+
+        const userId = await getIdResponse.text();
+
+        setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
+        setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
+        setGameSession(data);
+        setRedTeamPlayers(data.connectedUsers[0] || []);
+        setBlueTeamPlayers(data.connectedUsers[1] || []);
+        setWhosTurn(data.gameState?.teamTurn === 0 ? "red" : "blue");
+        setIsHintTime(data.gameState?.hintTurn);
+        setIsGuessingTime(data.gameState?.guessingTurn);
+        setCardsToReveal(data.gameState?.cardsChoosen || []);
+        setMyTeam(
+          data.connectedUsers[0].find((user: User) => user.id === userId)
+            ? "red"
+            : "blue"
+        );
+        setVotedCards(data.gameState?.cardsVotes || []);
       } catch (err) {
         console.error("Failed to load game session", err);
       }
@@ -233,28 +285,42 @@ const Gameplay: React.FC<GameplayProps> = ({
   }, [storedGameId, navigate]);
 
   useEffect(() => {
+    if (
+      whosTurn !== (gameSession?.gameState?.teamTurn === 0 ? "red" : "blue")
+    ) {
+      setWhosTurn(gameSession?.gameState?.teamTurn === 0 ? "red" : "blue");
+      setIsVoteSubmitted(false);
+      localStorage.setItem("vote submitted", JSON.stringify(isVoteSubmitted));
+      setSelectedCards([]);
+    }
+  }, [gameSession?.gameState?.teamTurn]);
+
+  useEffect(() => {
     setGameSession(gameSessionData);
-    setWhosTurn(gameSession?.gameState?.teamTurn === 0 ? "red" : "blue");
     setIsGuessingTime(gameSession?.gameState?.guessingTurn);
     setIsHintTime(gameSession?.gameState?.hintTurn);
     setCardsToReveal(gameSession?.gameState?.cardsChoosen || []);
     setRedTeamScore(gameSession?.gameState?.redTeamScore || 0);
     setBlueTeamScore(gameSession?.gameState?.blueTeamScore || 0);
-  }, [gameSessionData, whosTurn]);
+    setVotedCards(gameSession?.gameState?.cardsVotes || []);
+  }, [gameSessionData]);
 
   useEffect(() => {
     setGameSession(gameSession);
     setIsGuessingTime(gameSession?.gameState?.guessingTurn);
     setIsHintTime(gameSession?.gameState?.hintTurn);
     setCardsToReveal(gameSession?.gameState?.cardsChoosen || []);
+    setVotedCards(gameSession?.gameState?.cardsVotes || []);
     revealCardsVotedByTeam();
   }, [gameSession, whosTurn, isHintTime, isGuessingTime]);
 
   // Checking the end of game condition
   useEffect(() => {
-    if(redTeamScore >= 5 || blueTeamScore >= 6) {
+    if (redTeamScore >= 5 || blueTeamScore >= 6) {
       setWinningTeam(redTeamScore >= blueTeamScore ? "red" : "blue");
-      navigate("/win-loss", { state: { result: winningTeam === myTeam ? "Victory" : "Loss" } });
+      navigate("/win-loss", {
+        state: { result: winningTeam === myTeam ? "Victory" : "Loss" },
+      });
     }
   }, [redTeamScore, blueTeamScore]);
 
@@ -347,7 +413,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   const submitVotes = () => {
     const storedGameId = localStorage.getItem("gameId");
 
-    fetch(`http://localhost:8080/api/game-state/${storedGameId}/vote`, {
+    fetch(`http://localhost:8080/api/game-session/${storedGameId}/voteCards`, {
       method: "POST",
       body: JSON.stringify({ selectedCards }),
       headers: {
@@ -365,7 +431,9 @@ const Gameplay: React.FC<GameplayProps> = ({
       .catch((error) => {
         console.error("Error submitting votes:", error);
       });
-    setSelectedCards([]);
+
+    setIsVoteSubmitted(true);
+    localStorage.setItem("vote submitted", JSON.stringify(isVoteSubmitted));
   };
 
   return (
@@ -430,7 +498,9 @@ const Gameplay: React.FC<GameplayProps> = ({
         <div className="timer points-red">{redTeamScore} / 5</div>
         <div className="timer points-blue">{blueTeamScore} / 6</div>
         {/*<div className="banner-container"><img src={getBanner()} /></div>*/}
-        <div className="banner-container"><img src={getBanner()} /></div>
+        <div className="banner-container">
+          <img src={getBanner()} />
+        </div>
         <Chat />
         <div className="content-container">
           <div className="timer-container">
@@ -444,7 +514,7 @@ const Gameplay: React.FC<GameplayProps> = ({
                 key={index}
                 className={`card-container ${
                   selectedCards.includes(index) ? "selected-card" : ""
-                } ${amIRedTeamLeader || amIBlueTeamLeader ? "disabled" : ""}`}
+                } ${amIRedTeamLeader || amIBlueTeamLeader || whosTurn != myTeam ? "disabled" : ""}`}
                 onClick={() => handleCardSelection(index)}
               >
                 <img
@@ -473,7 +543,6 @@ const Gameplay: React.FC<GameplayProps> = ({
                   }
                   alt={`card-${index}`}
                 />
-
                 {votedCards[index] > 0 && (
                   <div className="corner-icon-container">
                     <img
@@ -482,10 +551,10 @@ const Gameplay: React.FC<GameplayProps> = ({
                       alt="corner icon"
                     />
                     <span className="corner-text">
-                      votedCards[index]/
+                      {votedCards[index]}/
                       {whosTurn === "red"
-                        ? redTeamPlayers.length
-                        : blueTeamPlayers.length}
+                        ? redTeamPlayers.length - 1
+                        : blueTeamPlayers.length - 1}
                     </span>
                   </div>
                 )}
@@ -530,21 +599,23 @@ const Gameplay: React.FC<GameplayProps> = ({
               >
                 <span className="button-text">{t("end-round")}</span>
               </Button>
-              <Button
-                variant="room"
-                soundFXVolume={soundFXVolume}
-                className={
-                  amIBlueTeamLeader ||
-                  amIRedTeamLeader ||
-                  (isHintTime && whosTurn === myTeam) ||
-                  whosTurn !== myTeam
-                    ? "hidden"
-                    : ""
-                }
-                onClick={submitVotes}
-              >
-                <span className="button-text">Lock in</span>
-              </Button>
+              {!isVoteSubmitted && (
+                <Button
+                  variant="room"
+                  soundFXVolume={soundFXVolume}
+                  className={
+                    amIBlueTeamLeader ||
+                    amIRedTeamLeader ||
+                    (isHintTime && whosTurn === myTeam) ||
+                    whosTurn !== myTeam
+                      ? "hidden"
+                      : ""
+                  }
+                  onClick={submitVotes}
+                >
+                  <span className="button-text">{t("lock-in")}</span>
+                </Button>
+              )}
               <div className="horizontal-gold-bar" />
             </div>
             <div className="item">

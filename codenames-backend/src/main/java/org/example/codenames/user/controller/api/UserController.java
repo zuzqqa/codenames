@@ -1,12 +1,9 @@
 package org.example.codenames.user.controller.api;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.userDetails.AuthRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.CookieValue;
 
 import java.util.List;
 import java.util.Map;

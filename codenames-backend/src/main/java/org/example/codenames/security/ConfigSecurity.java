@@ -23,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 /**
  * Security configuration class that defines authentication and authorization settings for the application.
  */
+@SuppressWarnings("ALL")
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity

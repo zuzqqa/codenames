@@ -342,6 +342,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+  animation: hit 0.5s ease-in-out;
 }
 
 .corner-icon-container .corner-icon {
@@ -358,4 +359,13 @@ button {
   font-size: calc(0.1rem + 0.8vw);
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
   transform: rotate(1deg);
+}
+
+@keyframes hit {
+  0% { transform: rotate(30deg) scale(1); }
+  20% { transform: rotate(28deg) scale(1.1); }
+  40% { transform: rotate(32deg) scale(0.9); }
+  60% { transform: rotate(29deg) scale(1.05); }
+  80% { transform: rotate(31deg) scale(0.95); }
+  100% { transform: rotate(30deg) scale(1); }
 }
