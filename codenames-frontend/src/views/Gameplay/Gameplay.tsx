@@ -126,10 +126,10 @@ const Gameplay: React.FC<GameplayProps> = ({
   const navigate = useNavigate();
   const [blueTeamScore, setBlueTeamScore] = useState(0);
   const [redTeamScore, setRedTeamScore] = useState(0);
-  const [whosTurn, setWhosTurn] = useState<string>("red");
-  const [isGuessingTime, setIsGuessingTime] = useState<boolean>();
-  const [isHintTime, setIsHintTime] = useState<boolean>();
-  const [winningTeam, setWinningTeam] = useState<string>("red");
+  const [whosTurn, setWhosTurn] = useState<string>("blue");
+  const [isGuessingTime, setIsGuessingTime] = useState<boolean>(); 
+  const [isHintTime, setIsHintTime] = useState<boolean>(); 
+  const [winningTeam, setWinningTeam] = useState<string>("blue");
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
   const [votedCards, setVotedCards] = useState<number[]>([]);
   const [cardsToReveal, setCardsToReveal] = useState<number[]>([]);
@@ -152,45 +152,6 @@ const Gameplay: React.FC<GameplayProps> = ({
     } else {
       return myTeam === "blue" ? bannerBlue : bannerRed;
     }
-  };
-
-  const toggleCardImage = (index: number) => {
-    if (amIRedTeamLeader || amIBlueTeamLeader || whosTurn !== myTeam) return;
-    if (flipStates[index]) return;
-
-    clickAudio.volume = soundFXVolume / 100;
-    clickAudio.play();
-    setFlipStates((prevFlipStates) => {
-      const newFlipStates = [...prevFlipStates];
-      newFlipStates[index] = !newFlipStates[index];
-      return newFlipStates;
-    });
-
-    setTimeout(() => {
-      setCards((prevCards) => {
-        const newCards = [...prevCards];
-        const cardColor = gameSession?.gameState.cardsColors[index];
-
-        switch (cardColor) {
-          case 0:
-            newCards[index] = cardWhiteImg;
-            break;
-          case 1:
-            newCards[index] = cardRedImg;
-            break;
-          case 2:
-            newCards[index] = cardBlueImg;
-            break;
-          case 3:
-            newCards[index] = cardBlackImg;
-            break;
-          default:
-            newCards[index] = cardWhiteImg;
-        }
-
-        return newCards;
-      });
-    }, 170);
   };
 
   const handleCardSelection = (index: number) => {
@@ -277,6 +238,8 @@ const Gameplay: React.FC<GameplayProps> = ({
     setIsGuessingTime(gameSession?.gameState?.guessingTurn);
     setIsHintTime(gameSession?.gameState?.hintTurn);
     setCardsToReveal(gameSession?.gameState?.cardsChoosen || []);
+    setRedTeamScore(gameSession?.gameState?.redTeamScore || 0);
+    setBlueTeamScore(gameSession?.gameState?.blueTeamScore || 0);
   }, [gameSessionData, whosTurn]);
 
   useEffect(() => {
@@ -286,6 +249,14 @@ const Gameplay: React.FC<GameplayProps> = ({
     setCardsToReveal(gameSession?.gameState?.cardsChoosen || []);
     revealCardsVotedByTeam();
   }, [gameSession, whosTurn, isHintTime, isGuessingTime]);
+
+  // Checking the end of game condition
+  useEffect(() => {
+    if(redTeamScore >= 5 || blueTeamScore >= 6) {
+      setWinningTeam(redTeamScore >= blueTeamScore ? "red" : "blue");
+      navigate("/win-loss", { state: { result: winningTeam === myTeam ? "Victory" : "Loss" } });
+    }
+  }, [redTeamScore, blueTeamScore]);
 
   const revealCardsVotedByTeam = () => {
     if (!gameSession?.gameState || cardsToReveal.length === 0) return;
@@ -394,29 +365,8 @@ const Gameplay: React.FC<GameplayProps> = ({
       .catch((error) => {
         console.error("Error submitting votes:", error);
       });
+    setSelectedCards([]);
   };
-
-  // const endGameIfFinished = () => {
-  //   const maxScore = 6;
-
-  //   if (blueTeamScore >= maxScore || myTeam === "blue") {
-  //     if (myTeam === "blue")
-  //       navigate("/win-loss", { state: { result: "Victory" } });
-  //     else navigate("/win-loss", { state: { result: "Loss" } });
-  //   } else if (redTeamScore >= maxScore) {
-  //     if (myTeam === "red")
-  //       navigate("/win-loss", { state: { result: "Victory" } });
-  //     else navigate("/win-loss", { state: { result: "Loss" } });
-  //   }
-  // };
-
-  // const terminateGameBcOfBlackCard = () => {
-  //   if (myTeam === whosTurn) {
-  //     navigate("/win-loss", { state: { result: "Loss" } });
-  //   } else {
-  //     navigate("/win-loss", { state: { result: "Victory" } });
-  //   }
-  // };
 
   return (
     <>
@@ -477,14 +427,10 @@ const Gameplay: React.FC<GameplayProps> = ({
 
         <img className="polygon1" src={polygon1Img} />
         <img className="polygon2" src={polygon2Img} />
-        <div className="timer points-red">{redTeamScore}</div>
-        <div className="timer points-blue">{blueTeamScore}</div>
-        <div className="banner-container">
-          <img src={getBanner()} />
-        </div>
-        <div className="banner-container">
-          <img src={getBanner()} />
-        </div>
+        <div className="timer points-red">{redTeamScore} / 5</div>
+        <div className="timer points-blue">{blueTeamScore} / 6</div>
+        {/*<div className="banner-container"><img src={getBanner()} /></div>*/}
+        <div className="banner-container"><img src={getBanner()} /></div>
         <Chat />
         <div className="content-container">
           <div className="timer-container">

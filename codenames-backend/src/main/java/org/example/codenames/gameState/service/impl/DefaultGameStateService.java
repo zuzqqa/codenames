@@ -90,19 +90,21 @@ public class DefaultGameStateService implements GameStateService {
      *
      * @param gameState the game state to update
      */
+    // TODO: Method uses hardcoded values for number of cards, consider using constants or configuration
     public void generateRandomCardsColors(GameState gameState) {
         List<Integer> cardColorsList = new ArrayList<>();
-
-        for (int i = 0; i < 6; i++) {
+        int numberOfBlueCards = 6;
+        int numberOfRedCards = 6;
+        for (int i = 0; i < numberOfRedCards; i++) {
             cardColorsList.add(1);
         }
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < numberOfBlueCards; i++) {
             cardColorsList.add(2);
         }
-
+        // Adding neutral cards
         cardColorsList.add(3);
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < 25 - (numberOfRedCards + numberOfBlueCards); i++) {
             cardColorsList.add(0);
         }
 
@@ -156,6 +158,17 @@ public class DefaultGameStateService implements GameStateService {
         for (int i = 0; i < cardVotes.size(); i++) {
             if (cardVotes.get(i) == teamSize) {
                 gameSession.getGameState().getCardsChoosen().add(i);
+                if(gameSession.getGameState().getCardsColors()[i] == 1){
+                    gameSession.getGameState().setRedTeamScore(gameSession.getGameState().getRedTeamScore() + 1);
+                } else if(gameSession.getGameState().getCardsColors()[i] == 2){
+                    gameSession.getGameState().setBlueTeamScore(gameSession.getGameState().getBlueTeamScore() + 1);
+                } else if(gameSession.getGameState().getCardsColors()[i] == 3){
+                    if (gameSession.getGameState().getTeamTurn() == 1) {
+                        gameSession.getGameState().setBlueTeamScore(100);
+                    } else {
+                        gameSession.getGameState().setRedTeamScore(100);
+                    }
+                }
             }
         }
 
