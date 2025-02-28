@@ -98,8 +98,8 @@ public class DefaultUserController implements UserController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User updatedUser) {
-        User user = userService.updateUser(id, updatedUser);
-        return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
+        Optional<User> user = userService.updateUser(id, updatedUser);
+        return user.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     /**

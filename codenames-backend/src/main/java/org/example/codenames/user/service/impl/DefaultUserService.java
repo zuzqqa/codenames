@@ -85,14 +85,13 @@ public class DefaultUserService implements UserService {
      * @return the updated user, if found
      */
     @Override
-    public User updateUser(String id, User updatedUser) {
-        return userRepository.findById(id)
+    public Optional<User> updateUser(String id, User updatedUser) {
+        return Optional.ofNullable(userRepository.findById(id)
                 .map(user -> {
                     user.setUsername(updatedUser.getUsername());
                     user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
                     return userRepository.save(user);
-                })
-                .orElse(null);
+                }).orElseThrow(() -> new IllegalArgumentException("User not found")));
     }
 
     /**
