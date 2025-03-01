@@ -44,8 +44,6 @@ public class DefaultGameStateWebSocketController implements GameSateWebSocketCon
         GameSession gameSession = gameSessionRepository.findBySessionId(id).orElseThrow(() ->
                 new IllegalArgumentException("Game with an ID of " + id + " does not exist."));
 
-        System.out.println(gameSession.getGameState().getCardsVotes());
-
         // Send the game session to all clients
         messagingTemplate.convertAndSend("/game/" + id + "/timer", gameSession);
 
