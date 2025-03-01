@@ -42,5 +42,8 @@
   "leader-choosing-hint": "Leader is choosing a hint",
   "opposing-team-hint": "Hint from opposing team",
   "guessing": "You are guessing",
-  "opposing-team-guessing": "Opposing team is guessing"
+  "opposing-team-guessing": "Opposing team is guessing",
+  "email-error-message": "Invalid email. Use format: example@domain.com.",
+  "username-error-message": "Username can only contain letters and numbers.",
+  "password-error-message": "Password must be 8+ chars, with upper, lower, number & special char."
 }

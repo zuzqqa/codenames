@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.userDetails.AuthRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ import java.util.Map;
  *
  */
 public interface UserController {
-    ResponseEntity<Void> createUser(User user, HttpServletResponse response);
+    ResponseEntity<Map<String, String>> createUser(@RequestBody User user, HttpServletResponse response);
 
     ResponseEntity<User> getUserById(String id);
 

@@ -42,12 +42,21 @@ public class DefaultUserService implements UserService {
      * @param user the user to be created
      */
     @Override
-    public void createUser(User user) {
+    public Optional<String> createUser(User user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            return Optional.of("Użytkownik z tym adresem e-mail już istnieje.");
+        }
+        if (userRepository.existsByUsername(user.getUsername())) {
+            return Optional.of("Użytkownik o tej nazwie już istnieje.");
+        }
+
         if (!user.isGuest()) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         userRepository.save(user);
+        return Optional.empty();
     }
+
 
     /**
      * Retrieves a user by their ID.

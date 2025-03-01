@@ -231,7 +231,9 @@ const Gameplay: React.FC<GameplayProps> = ({
       }
     };
 
-    setIsVoteSubmitted(JSON.parse(localStorage.getItem("vote submitted") ?? "false"));
+    setIsVoteSubmitted(
+      JSON.parse(localStorage.getItem("vote submitted") ?? "false")
+    );
 
     fetchGameSession();
   }, []);
@@ -514,7 +516,11 @@ const Gameplay: React.FC<GameplayProps> = ({
                 key={index}
                 className={`card-container ${
                   selectedCards.includes(index) ? "selected-card" : ""
-                } ${amIRedTeamLeader || amIBlueTeamLeader || whosTurn != myTeam ? "disabled" : ""}`}
+                } ${
+                  amIRedTeamLeader || amIBlueTeamLeader || whosTurn != myTeam
+                    ? "disabled"
+                    : ""
+                }`}
                 onClick={() => handleCardSelection(index)}
               >
                 <img

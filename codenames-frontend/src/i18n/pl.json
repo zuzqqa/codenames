@@ -43,5 +43,8 @@
   "leader-choosing-hint": "Lider wybiera podpowiedz",
   "opposing-team-hint": "Podpowiedz drużyny przeciwnej",
   "guessing": "Zgadujesz",
-  "opposing-team-guessing": "Zgaduje drużyna przeciwna"
+  "opposing-team-guessing": "Zgaduje drużyna przeciwna",
+  "email-error-message": "Nieprawidłowy email. Użyj formatu: przykład@domena.com.",
+  "username-error-message": "Nazwa użytkownika może zawierać tylko litery i cyfry.",
+  "password-error-message": "Hasło musi mieć min. 8 znaków, zawierać wielką i małą literę, cyfrę oraz znak specjalny."
 }

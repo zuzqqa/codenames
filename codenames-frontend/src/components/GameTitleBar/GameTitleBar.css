@@ -1,5 +1,5 @@
 .footer-bar {
-  height: 5vh;
+  height: 4vh;
 
   display: flex;
   position: absolute;
@@ -15,7 +15,7 @@
   border-style: outset;
   border-width: 2px;
   border-color: #fcdc8b80;
-  border-radius: 17px;
+  border-radius: 27px;
 
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   z-index: 10;

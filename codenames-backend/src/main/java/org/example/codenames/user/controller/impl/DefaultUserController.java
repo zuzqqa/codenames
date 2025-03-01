@@ -11,6 +11,7 @@ import org.example.codenames.user.controller.api.UserController;
 import org.example.codenames.user.service.api.UserService;
 import org.example.codenames.userDetails.AuthRequest;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,8 +45,15 @@ public class DefaultUserController implements UserController {
      * @return ResponseEntity with status 200 OK
      */
     @PostMapping
-    public ResponseEntity<Void> createUser(@RequestBody User user, HttpServletResponse response) {
-        userService.createUser(user);
+    public ResponseEntity<Map<String, String>> createUser(@RequestBody User user, HttpServletResponse response) {
+        Optional<String> errorMessage = userService.createUser(user);
+
+        if (errorMessage.isPresent()) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", errorMessage.get());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+
         String token = jwtService.generateToken(user.getUsername());
         response.addCookie(setAuthCookie(token, true));
         return ResponseEntity.ok().build();
@@ -148,7 +156,6 @@ public class DefaultUserController implements UserController {
      */
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        System.out.println("Halo");
         Cookie cookie = new Cookie("authToken", null);
         cookie.setHttpOnly(true);
         cookie.setSecure(false); // Set true for https

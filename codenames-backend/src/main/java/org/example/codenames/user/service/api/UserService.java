@@ -9,7 +9,7 @@ import java.util.Optional;
  * Service for managing users.
  */
 public interface UserService {
-    void createUser(User user);
+    Optional<String> createUser(User user);
 
     Optional<User> getUserById(String id);
 
