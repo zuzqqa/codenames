@@ -170,3 +170,7 @@
     opacity: 0;
   }
 }
+
+.notification:before {
+  background-color: #1B74BB !important;
+}

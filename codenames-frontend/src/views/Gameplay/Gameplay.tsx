@@ -425,7 +425,6 @@ const Gameplay: React.FC<GameplayProps> = ({
       .then((response) => response.text())
       .then((text) => {
         if (text === "Votes submitted successfully") {
-          console.log("Votes submitted successfully");
         } else {
           console.error("Unexpected server response:", text);
         }

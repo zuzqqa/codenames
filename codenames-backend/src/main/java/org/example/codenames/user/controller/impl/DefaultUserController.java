@@ -1,5 +1,7 @@
 package org.example.codenames.user.controller.impl;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -11,19 +13,23 @@ import org.example.codenames.user.controller.api.UserController;
 import org.example.codenames.user.service.api.UserService;
 import org.example.codenames.userDetails.AuthRequest;
 
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.*;
 
 /**
  * Default implementation of the {@link UserController} interface.
@@ -36,6 +42,7 @@ public class DefaultUserController implements UserController {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final JavaMailSender mailSender;
 
     /**
      * Creates a new user and generates an authentication token.
@@ -45,7 +52,7 @@ public class DefaultUserController implements UserController {
      * @return ResponseEntity with status 200 OK
      */
     @PostMapping
-    public ResponseEntity<Map<String, String>> createUser(@RequestBody User user, HttpServletResponse response) {
+    public ResponseEntity<Map<String, String>> createUser(@RequestBody User user, HttpServletResponse response, @RequestParam String language) throws MessagingException, IOException {
         Optional<String> errorMessage = userService.createUser(user);
 
         if (errorMessage.isPresent()) {
@@ -55,8 +62,41 @@ public class DefaultUserController implements UserController {
         }
 
         String token = jwtService.generateToken(user.getUsername());
-        response.addCookie(setAuthCookie(token, true));
+
+        if (!user.isGuest()) {
+            String activationLink = "http://localhost:8080/api/users/activate/" + token;
+
+            ClassPathResource resource = new ClassPathResource("mail-templates/activate_account_templates/activate_account_" + language + ".html");
+            String htmlContent = new String(Files.readAllBytes(resource.getFile().toPath()), StandardCharsets.UTF_8);
+
+            htmlContent = htmlContent.replace("${activationLink}", activationLink);
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(user.getEmail());
+            helper.setSubject(Objects.equals(language, "pl") ? "Aktywacja konta" : "Account activation");
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+        }
+        if (user.isGuest()) {
+            response.addCookie(setAuthCookie(token, true));
+        }
+
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/activate/{token}")
+    public RedirectView activateAccount(@PathVariable String token) {
+        try {
+            String username = jwtService.getUsernameFromToken(token);
+            userService.activateUser(username);
+
+            return new RedirectView("http://localhost:5173/login?activated=true&username=" + username);
+        } catch (Exception e) {
+            return new RedirectView("http://localhost:5173/register?activated=false");
+        }
     }
 
     /**
@@ -127,16 +167,20 @@ public class DefaultUserController implements UserController {
      * Authenticates a user and sets an authentication cookie.
      *
      * @param authRequest the authentication request containing username and password
-     * @param response the HTTP response to add the authentication cookie
+     * @param response    the HTTP response to add the authentication cookie
      * @return ResponseEntity with status 200 OK
      */
     @PostMapping("/authenticate")
-    public ResponseEntity<Void> authenticateAndSetCookie(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
+    public ResponseEntity<String> authenticateAndSetCookie(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
             );
             if (authentication.isAuthenticated()) {
+                if(!userService.isAccountActivated(authRequest.getUsername())){
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Konto nie jest aktywne. Sprawdź e-mail i aktywuj swoje konto.");
+                }
+
                 String token = jwtService.generateToken(authRequest.getUsername());
                 response.addCookie(setAuthCookie(token, true));
                 return ResponseEntity.ok().build();
@@ -161,7 +205,10 @@ public class DefaultUserController implements UserController {
         cookie.setSecure(false); // Set true for https
         cookie.setPath("/");
         cookie.setMaxAge(0);
-        response.addCookie(setAuthCookie(null, false));
+
+        Cookie authCookie = setAuthCookie(null, false);
+
+        response.addCookie(authCookie);
 
         return ResponseEntity.ok().build();
     }

@@ -46,5 +46,11 @@
   "opposing-team-guessing": "Zgaduje drużyna przeciwna",
   "email-error-message": "Nieprawidłowy email. Użyj formatu: przykład@domena.com.",
   "username-error-message": "Nazwa użytkownika może zawierać tylko litery i cyfry.",
-  "password-error-message": "Hasło musi mieć min. 8 znaków, zawierać wielką i małą literę, cyfrę oraz znak specjalny."
+  "password-error-message": "Hasło musi mieć min. 8 znaków, zawierać wielką i małą literę, cyfrę oraz znak specjalny.",
+  "e-mail-exists-error": "Użytkownik z tym adresem e-mail już istnieje.",
+  "username-exists-error": "Użytkownik z tą nazwą użytkownika już istnieje.",
+  "activation-link-sent": "Link aktywacyjny został wysłany na twój adres e-mail.",
+  "account-not-activated-error": "Link aktywacyjny wygasł, zarejestruj się ponownie.",
+  "account-activated-notification": "Twoje konto zostało aktywowane, zaloguj się.",
+  "account-not-activated": "Twoje konto nie zostało aktywowane."
 }

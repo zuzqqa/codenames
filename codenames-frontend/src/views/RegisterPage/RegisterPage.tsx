@@ -16,8 +16,9 @@ import eyeIcon from "../../assets/icons/eye.svg";
 import eyeSlashIcon from "../../assets/icons/eye-slash.svg";
 import logoutButton from "../../assets/icons/logout.svg";
 import { logout } from "../../shared/utils.tsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
+
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 
@@ -55,9 +56,12 @@ const RegisterPage: React.FC<RegisterProps> = ({
   const { t } = useTranslation();
   const navigate = useNavigate(); // Hook for navigation
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
-  const [showToast, setShowToast] = useState(false);
-  const [timer1, setTimer1] = useState<any | null>(null);
-  const [timer2, setTimer2] = useState<any | null>(null);
+  const [notifications, setNotifications] = useState<
+    { id: string; message: string }[]
+  >([]);
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const isActivated = searchParams.get("activated") === "false";
 
   /**
    * Handles email input change.
@@ -135,13 +139,81 @@ const RegisterPage: React.FC<RegisterProps> = ({
   }, [errors]);
 
   /**
-   * Handles manual closing of a toast notification.
+   * useEffect hook for handling the automatic removal of notification messages after a delay.
+   *
+   * - Adds a fade-out effect to the toast notification before removal.
+   * - Removes notifications from the state after a timeout.
+   *
+   * @param {Array<{ id: string; message: string }>} errors - Array of notification messages with unique IDs.
+   */
+  useEffect(() => {
+    if (notifications.length === 0) return;
+
+    const timers: number[] = notifications.map((notification) => {
+      const toastElement = document.getElementById(notification.id);
+
+      if (toastElement) {
+        // Fade out the toast after 8 seconds
+        const fadeOutTimer = setTimeout(() => {
+          toastElement.classList.add("hide");
+        }, 8000);
+
+        // Remove the message from state after 8.5 seconds
+        const removeTimer = setTimeout(() => {
+          setNotifications((prevNotifications) =>
+            prevNotifications.filter((n) => n.id !== notification.id)
+          );
+        }, 8500);
+
+        return removeTimer;
+      } else {
+        // Remove message if toast element is not found
+        return setTimeout(() => {
+          setNotifications((prevNotifications) =>
+            prevNotifications.filter((n) => n.id !== notification.id)
+          );
+        }, 8000);
+      }
+    });
+
+    return () => timers.forEach(clearTimeout);
+  }, [notifications]);
+
+  /**
+   * useEffect hook for handling the automatic removal of error messages after a delay.
+   *
+   * - Adds a fade-out effect to the toast error before removal.
+   * - Removes errors from the state after a timeout.
+   *
+   * @param {Array<{ id: string; message: string }>} errors - Array of error messages with unique IDs.
+   */
+  useEffect(() => {
+    if (isActivated) {
+      setErrors((prevErrors) => {
+        const errorExists = prevErrors.some(
+          (e) => e.message === t("account-not-activated-error")
+        );
+
+        if (!errorExists) {
+          return [
+            ...prevErrors,
+            { id: generateId(), message: t("account-not-activated-error") },
+          ];
+        }
+
+        return prevErrors;
+      });
+    }
+  }, [isActivated]);
+
+  /**
+   * Handles manual closing of a toast error.
    *
    * - Fades out the toast visually before removing it from the state.
    *
    * @param {string} id - The unique identifier of the error toast to be closed.
    */
-  const handleCloseToast = (id: string) => {
+  const handleCloseErrorToast = (id: string) => {
     const toastElement = document.getElementById(id);
     if (toastElement) {
       toastElement.classList.add("hide");
@@ -149,6 +221,26 @@ const RegisterPage: React.FC<RegisterProps> = ({
       setTimeout(() => {
         setErrors((prevErrors) =>
           prevErrors.filter((error) => error.id !== id)
+        );
+      }, 500);
+    }
+  };
+
+  /**
+   * Handles manual closing of a toast notification.
+   *
+   * - Fades out the toast visually before removing it from the state.
+   *
+   * @param {string} id - The unique identifier of the notification toast to be closed.
+   */
+  const handleCloseNotificationToast = (id: string) => {
+    const toastElement = document.getElementById(id);
+    if (toastElement) {
+      toastElement.classList.add("hide");
+
+      setTimeout(() => {
+        setNotifications((prevNotifications) =>
+          prevNotifications.filter((notification) => notification.id !== id)
         );
       }, 500);
     }
@@ -203,6 +295,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newErrors: { id: string; message: string }[] = [];
+    const newNotifications: { id: string; message: string }[] = [];
 
     if (!validateEmail(email))
       newErrors.push({
@@ -227,22 +320,38 @@ const RegisterPage: React.FC<RegisterProps> = ({
 
     const userData = { email, username: login, password, roles: "USER" };
     try {
-      const response = await fetch("http://localhost:8080/api/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData),
-        credentials: "include",
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/users?language=${
+          localStorage.getItem("i18nextLng") || "en"
+        }`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userData),
+          credentials: "include",
+        }
+      );
 
       if (response.ok) {
-        document.cookie = "loggedIn=true";
-        window.location.href = "/loading";
+        newNotifications.push({
+          id: generateId(),
+          message: t("activation-link-sent"),
+        });
+        setNotifications([...newNotifications]);
       } else {
         const errorData = await response.json();
-        newErrors.push({
-          id: generateId(),
-          message: errorData.error || t("generic-error"),
-        });
+
+        if (errorData.error === "Username already exists.") {
+          newErrors.push({
+            id: generateId(),
+            message: t("username-exists-error"),
+          });
+        } else if (errorData.error === "E-mail already exists.") {
+          newErrors.push({
+            id: generateId(),
+            message: t("e-mail-exists-error"),
+          });
+        }
         setErrors([...newErrors]);
       }
     } catch (error) {
@@ -261,9 +370,10 @@ const RegisterPage: React.FC<RegisterProps> = ({
   // Redirect user to /games if already logged in
   useEffect(() => {
     const loggedIn = Cookies.get("loggedIn"); // Retrieve the cookie value
+    const jwtToken = Cookies.get("authToken");
 
     // Ensure 'loggedIn' is true
-    if (loggedIn === "true") {
+    if (loggedIn === "true" && jwtToken) {
       navigate("/games"); // Redirect to /games if logged in
     }
   }, [navigate]);
@@ -287,7 +397,10 @@ const RegisterPage: React.FC<RegisterProps> = ({
       </Button>
       {document.cookie
         .split("; ")
-        .find((cookie) => cookie.startsWith("loggedIn=")) && (
+        .find(
+          (cookie) =>
+            cookie.startsWith("loggedIn=") && cookie.startsWith("authToken=")
+        ) && (
         <Button variant="logout" soundFXVolume={soundFXVolume}>
           <img src={logoutButton} onClick={logout} alt="Logout" />
         </Button>
@@ -372,9 +485,37 @@ const RegisterPage: React.FC<RegisterProps> = ({
                 </div>
                 <i
                   className="fa-solid fa-xmark close"
-                  onClick={() => handleCloseToast(error.id)}
+                  onClick={() => handleCloseErrorToast(error.id)}
                 ></i>
                 <div className="progress active"></div>
+              </div>
+            ))}
+          </div>
+        )}
+        {notifications.length > 0 && (
+          <div className="toast-container">
+            {notifications.map((notification) => (
+              <div
+                id={notification.id}
+                key={notification.id}
+                className="toast active"
+              >
+                <div className="toast-content">
+                  <i
+                    className="fa fa-info-circle fa-3x"
+                    style={{ color: "#1B74BB" }}
+                    aria-hidden="true"
+                  ></i>
+                  <div className="message">
+                    <span className="text text-1">Notification</span>
+                    <span className="text text-2">{notification.message}</span>
+                  </div>
+                </div>
+                <i
+                  className="fa-solid fa-xmark close"
+                  onClick={() => handleCloseNotificationToast(notification.id)}
+                ></i>
+                <div className="progress active notification"></div>
               </div>
             ))}
           </div>

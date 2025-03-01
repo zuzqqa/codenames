@@ -1,5 +1,6 @@
 package org.example.codenames.userDetails;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.codenames.user.repository.api.UserRepository;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 /**
  * Implementation of {@link UserDetailsService} that uses {@link UserRepository} to load user details.
  */
+@Slf4j
 @Service
 public class UserEntityDetailsService implements UserDetailsService {
     /**

@@ -40,7 +40,7 @@ public class DefaultGameStateWebSocketController implements GameSateWebSocketCon
     @PostMapping("/{id}/voteCards")
     public ResponseEntity<?> submitVotes(@PathVariable UUID id, @RequestBody CardsVoteRequest cardsVoteRequest) {
         gameStateService.updateVotes(id, cardsVoteRequest.getSelectedCards());
-        System.out.println(cardsVoteRequest.getSelectedCards());
+
         GameSession gameSession = gameSessionRepository.findBySessionId(id).orElseThrow(() ->
                 new IllegalArgumentException("Game with an ID of " + id + " does not exist."));
 
