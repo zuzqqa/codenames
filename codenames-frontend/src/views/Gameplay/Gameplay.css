@@ -25,7 +25,7 @@
 .cards-section {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 15px;
+  gap: 2vh;
   padding-top: 20px;
   justify-items: center;
 }
@@ -67,21 +67,21 @@
 }
 
 .selected-card {
-  position: relative; 
-  box-sizing: border-box; 
+  position: relative;
+  box-sizing: border-box;
   animation: pulse 0.5s infinite alternate;
 }
 
 .selected-card:before {
-  content: ''; 
-  position: absolute; 
+  content: "";
+  position: absolute;
   top: 0;
   left: 0px;
   right: 0px;
   bottom: 0px;
   border: 2px solid rgba(255, 223, 0, 0.6);
   border-radius: 8px;
-  pointer-events: none; 
+  pointer-events: none;
 }
 
 @keyframes pulse {
@@ -92,7 +92,6 @@
     transform: scale(1.05);
   }
 }
-
 
 .gold-text {
   color: transparent;
@@ -154,11 +153,11 @@ button {
   z-index: 1;
 }
 
-.blue{
+.blue {
   background-image: linear-gradient(to top, #0b3f51, #1b74bb);
 }
 
-.red{
+.red {
   background-image: linear-gradient(to top, #991b1b, #e52121);
 }
 
@@ -198,14 +197,14 @@ button {
   margin-top: 5rem;
 }
 
-.banner-container{
+.banner-container {
   position: absolute;
   top: 15%;
   right: 8%;
 }
 
-.banner-container img{
-  width: 130px;
+.banner-container img {
+  width: 9vw;
 }
 
 .shelf {
@@ -321,8 +320,7 @@ button {
 }
 
 .below.timer {
-  top: 1.40em;
-  
+  top: 1.4em;
 }
 
 .hidden {
@@ -331,4 +329,43 @@ button {
 
 .card-container.disabled {
   pointer-events: none;
+}
+
+.corner-icon-container {
+  position: absolute;
+  top: -9%;
+  right: -10%;
+  width: 40% !important;
+  height: 45%;
+  z-index: 2;
+  transform: rotate(30deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: hit 0.5s ease-in-out;
+}
+
+.corner-icon-container .corner-icon {
+  position: relative;
+  width: 100%;
+  transform: rotate(27deg);
+}
+
+.corner-text {
+  position: absolute;
+  color: #4F3D2A;
+  margin: auto;
+  margin-left: 0.3em;
+  font-size: calc(0.1rem + 0.8vw);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  transform: rotate(1deg);
+}
+
+@keyframes hit {
+  0% { transform: rotate(30deg) scale(1); }
+  20% { transform: rotate(28deg) scale(1.1); }
+  40% { transform: rotate(32deg) scale(0.9); }
+  60% { transform: rotate(29deg) scale(1.05); }
+  80% { transform: rotate(31deg) scale(0.95); }
+  100% { transform: rotate(30deg) scale(1); }
 }

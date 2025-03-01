@@ -19,6 +19,7 @@ import java.util.function.Function;
 /**
  * Service responsible for handling JWT operations such as token generation, validation, and extraction of claims.
  */
+@SuppressWarnings("deprecation")
 @Service
 public class JwtService {
     /**
