@@ -16,15 +16,32 @@ import eyeIcon from "../../assets/icons/eye.svg";
 import eyeSlashIcon from "../../assets/icons/eye-slash.svg";
 import logoutButton from "../../assets/icons/logout.svg";
 import { logout } from "../../shared/utils.tsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 
+const generateId = () =>
+  Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+
+/**
+ *
+ * Props for the RegisterPage component.
+ * @typedef {Object} RegisterProps
+ * @property {function(number): void} setVolume - Function to set the global music volume.
+ * @property {number} soundFXVolume - Current volume level of sound effects.
+ * @property {function(number): void} setSoundFXVolume - Function to set the sound effects volume.
+ */
 interface RegisterProps {
   setVolume: (volume: number) => void;
   soundFXVolume: number;
   setSoundFXVolume: (volume: number) => void;
 }
 
+/**
+ * RegisterPage component handles user registration.
+ *
+ * @param {RegisterProps} props - Component properties.
+ * @returns {JSX.Element} The rendered RegisterPage component.
+ */
 const RegisterPage: React.FC<RegisterProps> = ({
   setVolume,
   soundFXVolume,
@@ -38,16 +55,37 @@ const RegisterPage: React.FC<RegisterProps> = ({
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate(); // Hook for navigation
-  const [emailError, setEmailError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
+  const [notifications, setNotifications] = useState<
+    { id: string; message: string }[]
+  >([]);
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const isActivated = searchParams.get("activated") === "false";
 
+  /**
+   * Handles email input change.
+   *
+   * @param {ChangeEvent<HTMLInputElement>} e - Event object.
+   */
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
 
+  /**
+   * Handles login input change.
+   *
+   * @param {ChangeEvent<HTMLInputElement>} e - Event object.
+   */
   const handleLoginChange = (e: ChangeEvent<HTMLInputElement>) => {
     setLogin(e.target.value);
   };
 
+  /**
+   * Handles password input change.
+   *
+   * @param {ChangeEvent<HTMLInputElement>} e - Event object.
+   */
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
     const inputValue = e.target.value;
@@ -59,57 +97,283 @@ const RegisterPage: React.FC<RegisterProps> = ({
     }
   };
 
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  /**
+   * useEffect hook for handling the automatic removal of error messages after a delay.
+   *
+   * - Adds a fade-out effect to the toast notification before removal.
+   * - Removes errors from the state after a timeout.
+   *
+   * @param {Array<{ id: string; message: string }>} errors - Array of error messages with unique IDs.
+   */
+  useEffect(() => {
+    if (errors.length === 0) return;
+
+    const timers: number[] = errors.map((error) => {
+      const toastElement = document.getElementById(error.id);
+
+      if (toastElement) {
+        // Fade out the toast after 8 seconds
+        const fadeOutTimer = setTimeout(() => {
+          toastElement.classList.add("hide");
+        }, 8000);
+
+        // Remove the error from state after 8.5 seconds
+        const removeTimer = setTimeout(() => {
+          setErrors((prevErrors) =>
+            prevErrors.filter((e) => e.id !== error.id)
+          );
+        }, 8500);
+
+        return removeTimer;
+      } else {
+        // Remove error if toast element is not found
+        return setTimeout(() => {
+          setErrors((prevErrors) =>
+            prevErrors.filter((e) => e.id !== error.id)
+          );
+        }, 8000);
+      }
+    });
+
+    return () => timers.forEach(clearTimeout);
+  }, [errors]);
+
+  /**
+   * useEffect hook for handling the automatic removal of notification messages after a delay.
+   *
+   * - Adds a fade-out effect to the toast notification before removal.
+   * - Removes notifications from the state after a timeout.
+   *
+   * @param {Array<{ id: string; message: string }>} errors - Array of notification messages with unique IDs.
+   */
+  useEffect(() => {
+    if (notifications.length === 0) return;
+
+    const timers: number[] = notifications.map((notification) => {
+      const toastElement = document.getElementById(notification.id);
+
+      if (toastElement) {
+        // Fade out the toast after 8 seconds
+        const fadeOutTimer = setTimeout(() => {
+          toastElement.classList.add("hide");
+        }, 8000);
+
+        // Remove the message from state after 8.5 seconds
+        const removeTimer = setTimeout(() => {
+          setNotifications((prevNotifications) =>
+            prevNotifications.filter((n) => n.id !== notification.id)
+          );
+        }, 8500);
+
+        return removeTimer;
+      } else {
+        // Remove message if toast element is not found
+        return setTimeout(() => {
+          setNotifications((prevNotifications) =>
+            prevNotifications.filter((n) => n.id !== notification.id)
+          );
+        }, 8000);
+      }
+    });
+
+    return () => timers.forEach(clearTimeout);
+  }, [notifications]);
+
+  /**
+   * useEffect hook for handling the automatic removal of error messages after a delay.
+   *
+   * - Adds a fade-out effect to the toast error before removal.
+   * - Removes errors from the state after a timeout.
+   *
+   * @param {Array<{ id: string; message: string }>} errors - Array of error messages with unique IDs.
+   */
+  useEffect(() => {
+    if (isActivated) {
+      setErrors((prevErrors) => {
+        const errorExists = prevErrors.some(
+          (e) => e.message === t("account-not-activated-error")
+        );
+
+        if (!errorExists) {
+          return [
+            ...prevErrors,
+            { id: generateId(), message: t("account-not-activated-error") },
+          ];
+        }
+
+        return prevErrors;
+      });
+    }
+  }, [isActivated]);
+
+  /**
+   * Handles manual closing of a toast error.
+   *
+   * - Fades out the toast visually before removing it from the state.
+   *
+   * @param {string} id - The unique identifier of the error toast to be closed.
+   */
+  const handleCloseErrorToast = (id: string) => {
+    const toastElement = document.getElementById(id);
+    if (toastElement) {
+      toastElement.classList.add("hide");
+
+      setTimeout(() => {
+        setErrors((prevErrors) =>
+          prevErrors.filter((error) => error.id !== id)
+        );
+      }, 500);
+    }
   };
 
+  /**
+   * Handles manual closing of a toast notification.
+   *
+   * - Fades out the toast visually before removing it from the state.
+   *
+   * @param {string} id - The unique identifier of the notification toast to be closed.
+   */
+  const handleCloseNotificationToast = (id: string) => {
+    const toastElement = document.getElementById(id);
+    if (toastElement) {
+      toastElement.classList.add("hide");
+
+      setTimeout(() => {
+        setNotifications((prevNotifications) =>
+          prevNotifications.filter((notification) => notification.id !== id)
+        );
+      }, 500);
+    }
+  };
+
+  /**
+   * Validates the email format.
+   *
+   * @param {string} email - The email string to validate.
+   * @returns {boolean} True if the email is valid, otherwise false.
+   */
+  const validateEmail = (email: string): boolean =>
+    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i.test(email);
+
+  /**
+   * Validates the username format.
+   *
+   * - Only allows alphanumeric characters.
+   * - Ensures the username is not empty.
+   *
+   * @param {string} username - The username string to validate.
+   * @returns {boolean} True if the username is valid, otherwise false.
+   */
+  const validateUsername = (username: string): boolean =>
+    /^[a-zA-Z0-9]+$/.test(username) && username.length > 0;
+
+  /**
+   * Validates the password format.
+   *
+   * - Must contain at least one uppercase letter.
+   * - Must contain at least one lowercase letter.
+   * - Must contain at least one number.
+   * - Must contain at least one special character.
+   * - Must be at least 8 characters long.
+   *
+   * @param {string} password - The password string to validate.
+   * @returns {boolean} True if the password meets the criteria, otherwise false.
+   */
+  const validatePassword = (password: string): boolean =>
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
+
+  /**
+   * Handles form submission for user registration.
+   *
+   * - Validates input fields.
+   * - Displays appropriate error messages.
+   * - Sends registration request to the server.
+   * - Redirects to loading page on success.
+   *
+   * @param {FormEvent<HTMLFormElement>} e - The form event triggered on submit.
+   */
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const newErrors: { id: string; message: string }[] = [];
+    const newNotifications: { id: string; message: string }[] = [];
 
-    if (!validateEmail(email)) {
-      setEmailError("Invalid email format.");
-      return;
-    }
-    setEmailError(null);
-
-    const userData = { email, username: login, password, roles: "USER" };
-
-    try {
-      const response = await fetch("http://localhost:8080/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
-        credentials: "include", // Include cookies in the request
+    if (!validateEmail(email))
+      newErrors.push({
+        id: generateId(),
+        message: t("email-error-message"),
       });
 
+    if (!validateUsername(login))
+      newErrors.push({
+        id: generateId(),
+        message: t("username-error-message"),
+      });
+
+    if (!validatePassword(password))
+      newErrors.push({
+        id: generateId(),
+        message: t("password-error-message"),
+      });
+
+    setErrors(newErrors);
+    if (newErrors.length > 0) return;
+
+    const userData = { email, username: login, password, roles: "USER" };
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/users?language=${
+          localStorage.getItem("i18nextLng") || "en"
+        }`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userData),
+          credentials: "include",
+        }
+      );
+
       if (response.ok) {
-        const result = await response.text();
-        window.location.href = "/loading";
-        document.cookie = "loggedIn=true";
+        newNotifications.push({
+          id: generateId(),
+          message: t("activation-link-sent"),
+        });
+        setNotifications([...newNotifications]);
       } else {
-        const error = await response.text();
-        console.error("Registration failed:", error);
-        alert("Failed to register: " + error);
+        const errorData = await response.json();
+
+        if (errorData.error === "Username already exists.") {
+          newErrors.push({
+            id: generateId(),
+            message: t("username-exists-error"),
+          });
+        } else if (errorData.error === "E-mail already exists.") {
+          newErrors.push({
+            id: generateId(),
+            message: t("e-mail-exists-error"),
+          });
+        }
+        setErrors([...newErrors]);
       }
     } catch (error) {
-      console.error("Error during registration:", error);
-      alert("An error occurred during registration. Please try again later.");
+      newErrors.push({ id: generateId(), message: t("network-error") });
+      setErrors([...newErrors]);
     }
   };
 
+  /**
+   * Toggles the settings modal visibility.
+   */
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
 
+  // Redirect user to /games if already logged in
   useEffect(() => {
-    console.log("Sprawdzam");
     const loggedIn = Cookies.get("loggedIn"); // Retrieve the cookie value
+    const jwtToken = Cookies.get("authToken");
 
     // Ensure 'loggedIn' is true
-    if (loggedIn === "true") {
+    if (loggedIn === "true" && jwtToken) {
       navigate("/games"); // Redirect to /games if logged in
     }
   }, [navigate]);
@@ -133,7 +397,10 @@ const RegisterPage: React.FC<RegisterProps> = ({
       </Button>
       {document.cookie
         .split("; ")
-        .find((cookie) => cookie.startsWith("loggedIn=")) && (
+        .find(
+          (cookie) =>
+            cookie.startsWith("loggedIn=") && cookie.startsWith("authToken=")
+        ) && (
         <Button variant="logout" soundFXVolume={soundFXVolume}>
           <img src={logoutButton} onClick={logout} alt="Logout" />
         </Button>
@@ -145,14 +412,14 @@ const RegisterPage: React.FC<RegisterProps> = ({
           textAlign: "left",
           marginLeft: "35%",
           letterSpacing: "3px",
-          marginBottom: "-1.2%",
+          marginBottom: "-2.2%",
         }}
         shadowStyle={{
           fontSize: "4rem",
           textAlign: "left",
           marginLeft: "35%",
           letterSpacing: "3px",
-          marginBottom: "-1.2%",
+          marginBottom: "-2.2%",
         }}
       >
         {t("register-button-text")}
@@ -199,19 +466,60 @@ const RegisterPage: React.FC<RegisterProps> = ({
             >
               <span className="button-text">{t("submit-button")}</span>
             </Button>
-            <Button
-              type="button"
-              variant="primary"
-              soundFXVolume={soundFXVolume}
-              onClick={() =>
-                (window.location.href =
-                  "http://localhost:8080/oauth2/authorization/google")
-              }
-            >
-              <span className="button-text">Zaloguj przez Google</span>
-            </Button>
           </form>
         </div>
+        {errors.length > 0 && (
+          <div className="toast-container">
+            {errors.map((error) => (
+              <div id={error.id} key={error.id} className="toast active">
+                <div className="toast-content">
+                  <i
+                    className="fa fa-exclamation-circle fa-3x"
+                    style={{ color: "#561723" }}
+                    aria-hidden="true"
+                  ></i>
+                  <div className="message">
+                    <span className="text text-1">Error</span>
+                    <span className="text text-2">{error.message}</span>
+                  </div>
+                </div>
+                <i
+                  className="fa-solid fa-xmark close"
+                  onClick={() => handleCloseErrorToast(error.id)}
+                ></i>
+                <div className="progress active"></div>
+              </div>
+            ))}
+          </div>
+        )}
+        {notifications.length > 0 && (
+          <div className="toast-container">
+            {notifications.map((notification) => (
+              <div
+                id={notification.id}
+                key={notification.id}
+                className="toast active"
+              >
+                <div className="toast-content">
+                  <i
+                    className="fa fa-info-circle fa-3x"
+                    style={{ color: "#1B74BB" }}
+                    aria-hidden="true"
+                  ></i>
+                  <div className="message">
+                    <span className="text text-1">Notification</span>
+                    <span className="text text-2">{notification.message}</span>
+                  </div>
+                </div>
+                <i
+                  className="fa-solid fa-xmark close"
+                  onClick={() => handleCloseNotificationToast(notification.id)}
+                ></i>
+                <div className="progress active notification"></div>
+              </div>
+            ))}
+          </div>
+        )}
       </LoginRegisterContainer>
     </BackgroundContainer>
   );

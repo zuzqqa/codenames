@@ -9,16 +9,30 @@ import "./CreateGameForm.css";
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import React from "react";
 
-// Typ dla CreateGameFormProps
+/**
+ * Props for CreateGameForm component.
+ * @typedef {Object} CreateGameFormProps
+ * @property {number} soundFXVolume - Volume level for sound effects.
+ */
 interface CreateGameFormProps {
   soundFXVolume: number;
 }
 
+/**
+ * CreateGameForm component allows users to create a game session.
+ * Includes form validation and interaction with the backend API.
+ *
+ * @param {CreateGameFormProps} props - Component properties.
+ * @returns {JSX.Element} The rendered CreateGameForm component.
+ */
 const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Formik configuration for managing form state and validation.
+   */
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -63,6 +77,10 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
         .required("Required"),
     }),
 
+    /**
+     * Handles form submission and creates a new game session.
+     * @param {Object} values - Form values.
+     */
     onSubmit: async (values) => {
       try {
         const getIdResponse = await fetch(
@@ -115,6 +133,9 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
     },
   });
 
+  /**
+   * Handles navigation back and optionally aborts a game session.
+   */
   const handleBack = async () => {
     const storedGameId = localStorage.getItem("gameId");
 
@@ -145,6 +166,11 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
     }
   };
 
+  /**
+   * Formats time input (MM:SS) while typing.
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The input event.
+   * @param {string} name - The name of the form field.
+   */
   const formatTimeInput = (
     e: React.ChangeEvent<HTMLInputElement>,
     name: string
@@ -159,6 +185,11 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
     formik.setFieldValue(name, formattedValue);
   };
 
+  /**
+   * Converts MM:SS format to ISO duration format.
+   * @param {string} time - The time string in MM:SS format.
+   * @returns {string} - The formatted duration string.
+   */
   const convertToDuration = (time: string) => {
     const [minutes, seconds] = time.split(":").map(Number);
     return `PT${minutes}M${seconds}S`;

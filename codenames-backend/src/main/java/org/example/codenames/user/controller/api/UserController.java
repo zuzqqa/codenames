@@ -1,13 +1,13 @@
 package org.example.codenames.user.controller.api;
 
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.userDetails.AuthRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.CookieValue;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -18,36 +18,24 @@ import java.util.Map;
  * It also provides an endpoint for user authentication
  *
  */
-
 public interface UserController {
+    ResponseEntity<Map<String, String>> createUser(@RequestBody User user, HttpServletResponse response, String language) throws MessagingException, IOException;
 
-    // Create a new user
-    public ResponseEntity<Void> createUser(User user, HttpServletResponse response);
+    ResponseEntity<User> getUserById(String id);
 
-    // Get a user by ID
-    public ResponseEntity<User> getUserById(String id);
+    List<User> getAllUsers();
 
-    // Get all users
-    public List<User> getAllUsers();
+    ResponseEntity<Map<String, String>> getUserByToken(String token);
 
-    // Get a user by token
-    public ResponseEntity<Map<String, String>> getUserByToken(String token);
+    ResponseEntity<User> updateUser(String id, User updatedUser);
 
-    // Update a user by ID
-    public ResponseEntity<User> updateUser(String id, User updatedUser);
+    ResponseEntity<Void> deleteUserById(String id);
 
-    // Delete a user by ID
-    public ResponseEntity<Void> deleteUserById(String id);
+    ResponseEntity<String> authenticateAndSetCookie(AuthRequest authRequest, HttpServletResponse response);
 
-    // Authenticate a user and get a JWT token in response body
-    public ResponseEntity<Void> authenticateAndSetCookie(AuthRequest authRequest, HttpServletResponse response);
+    ResponseEntity<Void> logout(HttpServletResponse response);
 
-    //Logout
-    public ResponseEntity<Void> logout(HttpServletResponse response);
+    ResponseEntity<String> getUsernameByToken(String token);
 
-    //Get Username by token
-    public ResponseEntity<String> getUsernameByToken(String token);
-
-    //Get id by token
-    public ResponseEntity<String> getIdByToken(String token);
+    ResponseEntity<String> getIdByToken(String token);
 }

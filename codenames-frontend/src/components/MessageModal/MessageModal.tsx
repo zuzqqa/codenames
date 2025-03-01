@@ -10,6 +10,14 @@ import spinner from "../../assets/icons/spinner.svg";
 
 import "./MessageModal.css";
 
+/**
+ * Props for the MessageModal component.
+ * @typedef {Object} MessageModalProps
+ * @property {boolean} isOpen - Determines if the modal is open.
+ * @property {Function} onClose - Function to close the modal.
+ * @property {number} soundFXVolume - Volume level for sound effects.
+ * @property {Function} setIsConfirmationModalOpen - Function to toggle confirmation modal.
+ */
 interface MessageModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -17,6 +25,11 @@ interface MessageModalProps {
   setIsConfirmationModalOpen: (open: boolean) => void; 
 }
 
+/**
+ * MessageModal component allows users to send messages via email.
+ * @param {MessageModalProps} props - Component properties.
+ * @returns {JSX.Element | null} The rendered MessageModal component.
+ */
 const MessageModal: React.FC<MessageModalProps> = ({
   isOpen,
   onClose,
@@ -31,6 +44,10 @@ const MessageModal: React.FC<MessageModalProps> = ({
 
   if (!isOpen) return null;
 
+  /**
+   * Handles form submission, sending an email with the message.
+   * @async
+   */
   const handleSubmit = async () => {
     if (!email || !message) {
       alert("Please fill in all fields.");
@@ -41,7 +58,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
 
     const dataToSend = {
       email: email,
-      dataToSend: "Message: " + message,
+      dataToSend: "MESSAGE: " + message,
     };
 
     try {

@@ -1,35 +1,35 @@
-/* LoginPage.css */
-
-/* Ensure the form container adjusts to the grid cell */
 .login-container {
-    grid-column: 1 / span 3; /* Stretch across all columns */
-    grid-row: 1 / span 4; /* Stretch across all rows */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%; /* Match the height of its parent */
-    width: 100%; /* Match the width of its parent */
+  grid-column: 1 / span 3; /* Stretch across all columns */
+  grid-row: 1 / span 4; /* Stretch across all rows */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%; /* Match the height of its parent */
+  width: 100%; /* Match the width of its parent */
 }
 
-/* Ensure the form itself fills the container */
 .login-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 90%; /* Full height of parent */
-    width: 90%; /* Full width of parent */
-    padding: 20px; /* Padding for spacing */
-    border-radius: 17px; /* Rounded corners */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 90%; /* Full height of parent */
+  width: 90%; /* Full width of parent */
+  padding: 20px; /* Padding for spacing */
+  border-radius: 17px; /* Rounded corners */
 }
 
 .login-form button {
-    font-size: 1.2rem;
-    padding: 10px;
-    border: none;
-    border-radius: 17px;
-    cursor: pointer;
-    align-self: center; /* Align the button to the right */
-    margin-top: 5%; /* Add some spacing above the button */
+  font-size: 1.2rem;
+  padding: 10px;
+  border: none;
+  border-radius: 17px;
+  cursor: pointer;
+  align-self: center; /* Align the button to the right */
+  margin-top: 5%; /* Add some spacing above the button */
+}
+
+.notification:before {
+  background-color: #1B74BB !important;
 }

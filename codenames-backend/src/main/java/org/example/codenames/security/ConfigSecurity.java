@@ -28,23 +28,38 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Security configuration class that defines authentication and authorization settings for the application.
+ */
+@SuppressWarnings("ALL")
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class ConfigSecurity {
-
     private final UserRepository userRepository;
     private final JwtAuthFilter jwtAuthFilter;
     private final UserService userService;
     private final JwtService jwtService;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
+    /**
+     * Bean definition for UserEntityDetailsService, which loads user-specific data.
+     *
+     * @return an instance of UserEntityDetailsService
+     */
     @Bean
     public UserEntityDetailsService userEntityDetailsService() {
         return new UserEntityDetailsService(userRepository);
     }
 
+    /**
+     * Configures the security filter chain, setting authorization rules and adding authentication filters.
+     *
+     * @param http the HttpSecurity instance to configure
+     * @return a configured SecurityFilterChain
+     * @throws Exception if a configuration error occurs
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf().disable()
@@ -52,7 +67,7 @@ public class ConfigSecurity {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight requests
-                                .requestMatchers("/api/users", "/api/users/authenticate", "/api/users/getId", "/api/users/getUsername", "/api/users/createGuest", "/api/users/username/**").permitAll()
+                                .requestMatchers("/api/users", "/api/users/authenticate", "/api/users/getId", "/api/users/getUsername", "/api/users/createGuest", "/api/users/username/**", "/api/users/activate/**").permitAll()
                                 .requestMatchers("/api/email/send-report", "/api/game-session/create", "api/game-session/**", "api/game-state/**", "api/cards/**").permitAll()
                                 .requestMatchers("/oauth2/**", "/api/auth/**").permitAll()
                                 .anyRequest().authenticated() // Allow access to registration and authentication endpoints
@@ -72,6 +87,11 @@ public class ConfigSecurity {
                 .build();
     }
 
+    /**
+     * Bean definition for password encoding using BCrypt.
+     *
+     * @return an instance of BCryptPasswordEncoder
+     */
     @Bean
     public OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService() {
         return new OAuth2UserServiceImpl(userService, jwtService);
@@ -87,14 +107,28 @@ public class ConfigSecurity {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Configures the authentication provider using DAO-based authentication.
+     *
+     * @return an instance of AuthenticationProvider
+     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+
         provider.setUserDetailsService(userEntityDetailsService());
         provider.setPasswordEncoder(passwordEncoder());
+
         return provider;
     }
 
+    /**
+     * Configures the authentication manager using the provided authentication configuration.
+     *
+     * @param authenticationConfiguration the authentication configuration
+     * @return an instance of AuthenticationManager
+     * @throws Exception if a configuration error occurs
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();

@@ -6,6 +6,10 @@ import BackgroundContainer from "../../containers/Background/Background";
 import Button from "../../components/Button/Button";
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 
+import bannerBlue from "../../assets/images/banner-blue.png";
+import bannerBlueLeader from "../../assets/images/banner-blue-leader.png";
+import bannerRed from "../../assets/images/banner-red.png";
+import bannerRedLeader from "../../assets/images/banner-red-leader.png";
 import settingsIcon from "../../assets/icons/settings.png";
 import shelfImg from "../../assets/images/shelf.png";
 import cardsStackImg from "../../assets/images/cards-stack.png";
@@ -16,6 +20,7 @@ import cardBlueImg from "../../assets/images/card-blue.jpg";
 import polygon1Img from "../../assets/images/Polygon1.png";
 import polygon2Img from "../../assets/images/Polygon2.png";
 import cardSound from "../../assets/sounds/card-filp.mp3";
+import votingLabel from "../../assets/images/medieval-label.png";
 
 import "./Gameplay.css";
 import Chat from "../../components/Chat/Chat.tsx";
@@ -23,23 +28,35 @@ import { Client } from "@stomp/stompjs";
 import { useNavigate } from "react-router-dom";
 import { useWebSocket } from "./useWebSocket";
 
+/**
+ * Represents properties for controlling gameplay-related settings, such as volume levels.
+ */
 interface GameplayProps {
   setVolume: (volume: number) => void;
   soundFXVolume: number;
   setSoundFXVolume: (volume: number) => void;
 }
 
+/**
+ * Represents a user in the game session.
+ */
 interface User {
   id: string;
   username: string;
 }
 
+/**
+ * Enumeration of possible game session statuses.
+ */
 enum SessionStatus {
   CREATED = "CREATED",
   IN_PROGRESS = "IN_PROGRESS",
   FINISHED = "FINISHED",
 }
 
+/**
+ * Represents a game session with its properties and state.
+ */
 interface GameSession {
   status: SessionStatus;
   sessionId: string;
@@ -52,6 +69,9 @@ interface GameSession {
   gameState: GameState;
 }
 
+/**
+ * Represents a game state with its properties.
+ */
 interface GameState {
   blueTeamLeader: User;
   redTeamLeader: User;
@@ -64,8 +84,19 @@ interface GameState {
   cardsChoosen: number[];
   hintTurn: boolean;
   guessingTurn: boolean;
+  cardsVotes: number[];
 }
 
+/**
+ * React functional component responsible for handling gameplay-related settings,
+ * such as volume adjustments.
+ *
+ * @param {Object} props - The component props.
+ * @param {function(number): void} props.setVolume - Function to update the overall game volume.
+ * @param {number} props.soundFXVolume - The current volume level for sound effects.
+ * @param {function(number): void} props.setSoundFXVolume - Function to update the sound effects volume.
+ *  * @returns {JSX.Element} The rendered GameLobby component
+ */
 const Gameplay: React.FC<GameplayProps> = ({
   setVolume,
   soundFXVolume,
@@ -96,56 +127,32 @@ const Gameplay: React.FC<GameplayProps> = ({
   const navigate = useNavigate();
   const [blueTeamScore, setBlueTeamScore] = useState(0);
   const [redTeamScore, setRedTeamScore] = useState(0);
-  const [whosTurn, setWhosTurn] = useState<string>("red");
-  const [isGuessingTime, setIsGuessingTime] = useState<boolean>(); 
-  const [isHintTime, setIsHintTime] = useState<boolean>(); 
-  const [winningTeam, setWinningTeam] = useState<string>("red");
+  const [whosTurn, setWhosTurn] = useState<string>("blue");
+  const [isGuessingTime, setIsGuessingTime] = useState<boolean>();
+  const [isHintTime, setIsHintTime] = useState<boolean>();
+  const [winningTeam, setWinningTeam] = useState<string>("blue");
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
   const [cardsToReveal, setCardsToReveal] = useState<number[]>([]);
   const [hasEndRoundBeenCalled, setHasEndRoundBeenCalled] = useState(false);
   const clickAudio = new Audio(cardSound);
-
+  const [votedCards, setVotedCards] = useState<number[]>([]);
+  const [isVoteSubmitted, setIsVoteSubmitted] = useState<boolean>(false);
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
 
-  const toggleCardImage = (index: number) => {
-    if (amIRedTeamLeader || amIBlueTeamLeader || whosTurn !== myTeam) return;
-    if (flipStates[index]) return;
-
-    clickAudio.volume = soundFXVolume / 100;
-    clickAudio.play();
-    setFlipStates((prevFlipStates) => {
-      const newFlipStates = [...prevFlipStates];
-      newFlipStates[index] = !newFlipStates[index];
-      return newFlipStates;
-    });
-
-    setTimeout(() => {
-      setCards((prevCards) => {
-        const newCards = [...prevCards];
-        const cardColor = gameSession?.gameState.cardsColors[index];
-
-        switch (cardColor) {
-          case 0:
-            newCards[index] = cardWhiteImg;
-            break;
-          case 1:
-            newCards[index] = cardRedImg;
-            break;
-          case 2:
-            newCards[index] = cardBlueImg;
-            break;
-          case 3:
-            newCards[index] = cardBlackImg;
-            break;
-          default:
-            newCards[index] = cardWhiteImg;
-        }
-
-        return newCards;
-      });
-    }, 170);
+  /**
+   * This function returns the appropriate banner based on whether the user is a team leader
+   * and the team the user belongs to (blue or red).
+   */
+  const getBanner = () => {
+    if (amIBlueTeamLeader) {
+      return bannerBlueLeader;
+    } else if (amIRedTeamLeader) {
+      return bannerRedLeader;
+    } else {
+      return myTeam === "blue" ? bannerBlue : bannerRed;
+    }
   };
 
   const handleCardSelection = (index: number) => {
@@ -184,21 +191,26 @@ const Gameplay: React.FC<GameplayProps> = ({
       navigate("/games");
       return;
     }
-  
+
     const fetchGameSession = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/game-session/${storedGameId}`);
+        const response = await fetch(
+          `http://localhost:8080/api/game-session/${storedGameId}`
+        );
         if (!response.ok) throw new Error("Failed to fetch game session");
         const data = await response.json();
-  
-        const getIdResponse = await fetch("http://localhost:8080/api/users/getId", {
-          method: "GET",
-          credentials: "include",
-        });
+
+        const getIdResponse = await fetch(
+          "http://localhost:8080/api/users/getId",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
         if (!getIdResponse.ok) throw new Error("Failed to fetch user ID");
-  
-        const userId = await getIdResponse.text(); 
-  
+
+        const userId = await getIdResponse.text();
+
         setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
         setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
         setGameSession(data);
@@ -208,32 +220,111 @@ const Gameplay: React.FC<GameplayProps> = ({
         setIsHintTime(data.gameState?.hintTurn);
         setIsGuessingTime(data.gameState?.guessingTurn);
         setCardsToReveal(data.gameState?.cardsChoosen || []);
-        setMyTeam(data.connectedUsers[0].find((user: User) => user.id === userId) ? "red" : "blue");
+        setMyTeam(
+          data.connectedUsers[0].find((user: User) => user.id === userId)
+            ? "red"
+            : "blue"
+        );
+        setVotedCards(data.gameState?.cardsVotes || []);
       } catch (err) {
         console.error("Failed to load game session", err);
       }
     };
-  
+
+    setIsVoteSubmitted(
+      JSON.parse(localStorage.getItem("vote submitted") ?? "false")
+    );
+
+    fetchGameSession();
+  }, []);
+
+  useEffect(() => {
+    if (!storedGameId) {
+      navigate("/games");
+      return;
+    }
+
+    const fetchGameSession = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/game-session/${storedGameId}`
+        );
+        if (!response.ok) throw new Error("Failed to fetch game session");
+        const data = await response.json();
+
+        const getIdResponse = await fetch(
+          "http://localhost:8080/api/users/getId",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+        if (!getIdResponse.ok) throw new Error("Failed to fetch user ID");
+
+        const userId = await getIdResponse.text();
+
+        setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
+        setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
+        setGameSession(data);
+        setRedTeamPlayers(data.connectedUsers[0] || []);
+        setBlueTeamPlayers(data.connectedUsers[1] || []);
+        setWhosTurn(data.gameState?.teamTurn === 0 ? "red" : "blue");
+        setIsHintTime(data.gameState?.hintTurn);
+        setIsGuessingTime(data.gameState?.guessingTurn);
+        setCardsToReveal(data.gameState?.cardsChoosen || []);
+        setMyTeam(
+          data.connectedUsers[0].find((user: User) => user.id === userId)
+            ? "red"
+            : "blue"
+        );
+        setVotedCards(data.gameState?.cardsVotes || []);
+      } catch (err) {
+        console.error("Failed to load game session", err);
+      }
+    };
+
     fetchGameSession();
   }, [storedGameId, navigate]);
-  
+
+  useEffect(() => {
+    if (
+      whosTurn !== (gameSession?.gameState?.teamTurn === 0 ? "red" : "blue")
+    ) {
+      setWhosTurn(gameSession?.gameState?.teamTurn === 0 ? "red" : "blue");
+      setIsVoteSubmitted(false);
+      localStorage.setItem("vote submitted", JSON.stringify(isVoteSubmitted));
+      setSelectedCards([]);
+    }
+  }, [gameSession?.gameState?.teamTurn]);
 
   useEffect(() => {
     setGameSession(gameSessionData);
-    setWhosTurn(gameSession?.gameState?.teamTurn === 0 ? "red" : "blue");
     setIsGuessingTime(gameSession?.gameState?.guessingTurn);
     setIsHintTime(gameSession?.gameState?.hintTurn);
     setCardsToReveal(gameSession?.gameState?.cardsChoosen || []);
-  }, [gameSessionData, whosTurn]);
-  
+    setRedTeamScore(gameSession?.gameState?.redTeamScore || 0);
+    setBlueTeamScore(gameSession?.gameState?.blueTeamScore || 0);
+    setVotedCards(gameSession?.gameState?.cardsVotes || []);
+  }, [gameSessionData]);
+
   useEffect(() => {
     setGameSession(gameSession);
-    setWhosTurn(gameSession?.gameState?.teamTurn === 0 ? "red" : "blue");
     setIsGuessingTime(gameSession?.gameState?.guessingTurn);
     setIsHintTime(gameSession?.gameState?.hintTurn);
     setCardsToReveal(gameSession?.gameState?.cardsChoosen || []);
+    setVotedCards(gameSession?.gameState?.cardsVotes || []);
     revealCardsVotedByTeam();
   }, [gameSession, whosTurn, isHintTime, isGuessingTime]);
+
+  // Checking the end of game condition
+  useEffect(() => {
+    if (redTeamScore >= 5 || blueTeamScore >= 6) {
+      setWinningTeam(redTeamScore >= blueTeamScore ? "red" : "blue");
+      navigate("/win-loss", {
+        state: { result: winningTeam === myTeam ? "Victory" : "Loss" },
+      });
+    }
+  }, [redTeamScore, blueTeamScore]);
 
   const revealCardsVotedByTeam = () => {
     if (!gameSession?.gameState || cardsToReveal.length === 0) return;
@@ -267,7 +358,7 @@ const Gameplay: React.FC<GameplayProps> = ({
       return newCards;
     });
   };
-  
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Enter" && cardText.trim()) {
@@ -281,25 +372,27 @@ const Gameplay: React.FC<GameplayProps> = ({
         setCardText("");
       }
     };
-  
+
     document.addEventListener("keydown", handleKeyDown);
-  
+
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [cardText]);
 
-  
   const change_turn = () => {
     const storedGameId = localStorage.getItem("gameId");
 
-    fetch(`http://localhost:8080/api/game-session/${storedGameId}/change-turn`, {
-      method: "GET",
-      headers: {
-        credentials: "include",
-      },
-    });
-  }
+    fetch(
+      `http://localhost:8080/api/game-session/${storedGameId}/change-turn`,
+      {
+        method: "GET",
+        headers: {
+          credentials: "include",
+        },
+      }
+    );
+  };
 
   const sendHint = () => {
     if (!cardText.trim()) return;
@@ -316,13 +409,13 @@ const Gameplay: React.FC<GameplayProps> = ({
       body: JSON.stringify({ hint: cardText }),
     });
 
-    setCardText(""); 
+    setCardText("");
   };
 
   const submitVotes = () => {
     const storedGameId = localStorage.getItem("gameId");
 
-    fetch(`http://localhost:8080/api/game-state/${storedGameId}/vote`, {
+    fetch(`http://localhost:8080/api/game-session/${storedGameId}/voteCards`, {
       method: "POST",
       body: JSON.stringify({ selectedCards }),
       headers: {
@@ -332,7 +425,6 @@ const Gameplay: React.FC<GameplayProps> = ({
       .then((response) => response.text())
       .then((text) => {
         if (text === "Votes submitted successfully") {
-          console.log("Votes submitted successfully");
         } else {
           console.error("Unexpected server response:", text);
         }
@@ -340,65 +432,46 @@ const Gameplay: React.FC<GameplayProps> = ({
       .catch((error) => {
         console.error("Error submitting votes:", error);
       });
+
+    setIsVoteSubmitted(true);
+    localStorage.setItem("vote submitted", JSON.stringify(isVoteSubmitted));
   };
-
-  // const endGameIfFinished = () => {
-  //   const maxScore = 6;
-
-  //   if (blueTeamScore >= maxScore || myTeam === "blue") {
-  //     if (myTeam === "blue")
-  //       navigate("/win-loss", { state: { result: "Victory" } });
-  //     else navigate("/win-loss", { state: { result: "Loss" } });
-  //   } else if (redTeamScore >= maxScore) {
-  //     if (myTeam === "red")
-  //       navigate("/win-loss", { state: { result: "Victory" } });
-  //     else navigate("/win-loss", { state: { result: "Loss" } });
-  //   }
-  // };
-
-  // const terminateGameBcOfBlackCard = () => {
-  //   if (myTeam === whosTurn) {
-  //     navigate("/win-loss", { state: { result: "Loss" } });
-  //   } else {
-  //     navigate("/win-loss", { state: { result: "Victory" } });
-  //   }
-  // };
 
   return (
     <>
       <BackgroundContainer>
-        <span className="below timer">
+        <span className={`below timer ${myTeam === "blue" ? "blue" : "red"}`}>
           {(() => {
             if (
               (amIBlueTeamLeader || amIRedTeamLeader) &&
               isHintTime &&
               whosTurn === myTeam
             ) {
-              return t('give-hint');
+              return t("give-hint");
             } else if (
               (amIBlueTeamLeader || amIRedTeamLeader) &&
               isGuessingTime &&
               whosTurn === myTeam
             ) {
-              return t('team-guessing');
+              return t("team-guessing");
             } else if (
               !amIBlueTeamLeader &&
               !amIRedTeamLeader &&
               isHintTime &&
               whosTurn === myTeam
             ) {
-              return t('leader-choosing-hint');
+              return t("leader-choosing-hint");
             } else if (isHintTime && whosTurn !== myTeam) {
-              return t('opposing-team-hint');
+              return t("opposing-team-hint");
             } else if (
               !amIBlueTeamLeader &&
               !amIRedTeamLeader &&
               isGuessingTime &&
               whosTurn === myTeam
             ) {
-              return t('guessing');
+              return t("guessing");
             } else if (isGuessingTime && whosTurn !== myTeam) {
-              return t('opposing-team-guessing');
+              return t("opposing-team-guessing");
             }
           })()}
         </span>
@@ -423,8 +496,12 @@ const Gameplay: React.FC<GameplayProps> = ({
 
         <img className="polygon1" src={polygon1Img} />
         <img className="polygon2" src={polygon2Img} />
-        <div className="timer points-red">{redTeamScore}</div>
-        <div className="timer points-blue">{blueTeamScore}</div>
+        <div className="timer points-red">{redTeamScore} / 5</div>
+        <div className="timer points-blue">{blueTeamScore} / 6</div>
+        {/*<div className="banner-container"><img src={getBanner()} /></div>*/}
+        <div className="banner-container">
+          <img src={getBanner()} />
+        </div>
         <Chat />
         <div className="content-container">
           <div className="timer-container">
@@ -438,7 +515,11 @@ const Gameplay: React.FC<GameplayProps> = ({
                 key={index}
                 className={`card-container ${
                   selectedCards.includes(index) ? "selected-card" : ""
-                } ${amIRedTeamLeader || amIBlueTeamLeader ? "disabled" : ""}`}
+                } ${
+                  amIRedTeamLeader || amIBlueTeamLeader || whosTurn != myTeam
+                    ? "disabled"
+                    : ""
+                }`}
                 onClick={() => handleCardSelection(index)}
               >
                 <img
@@ -467,6 +548,22 @@ const Gameplay: React.FC<GameplayProps> = ({
                   }
                   alt={`card-${index}`}
                 />
+                {votedCards[index] > 0 && (
+                  <div className="corner-icon-container">
+                    <img
+                      className="corner-icon"
+                      src={votingLabel}
+                      alt="corner icon"
+                    />
+                    <span className="corner-text">
+                      {votedCards[index]}/
+                      {whosTurn === "red"
+                        ? redTeamPlayers.length - 1
+                        : blueTeamPlayers.length - 1}
+                    </span>
+                  </div>
+                )}
+
                 {!flipStates[index] && (
                   <span
                     className={`card-text ${
@@ -507,21 +604,23 @@ const Gameplay: React.FC<GameplayProps> = ({
               >
                 <span className="button-text">{t("end-round")}</span>
               </Button>
-              <Button
-                variant="room"
-                soundFXVolume={soundFXVolume}
-                className={
-                  amIBlueTeamLeader ||
-                  amIRedTeamLeader ||
-                  (isHintTime && whosTurn === myTeam) ||
-                  whosTurn !== myTeam
-                    ? "hidden"
-                    : ""
-                }
-                onClick={submitVotes}
-              >
-                <span className="button-text">Lock in</span>
-              </Button>
+              {!isVoteSubmitted && (
+                <Button
+                  variant="room"
+                  soundFXVolume={soundFXVolume}
+                  className={
+                    amIBlueTeamLeader ||
+                    amIRedTeamLeader ||
+                    (isHintTime && whosTurn === myTeam) ||
+                    whosTurn !== myTeam
+                      ? "hidden"
+                      : ""
+                  }
+                  onClick={submitVotes}
+                >
+                  <span className="button-text">{t("lock-in")}</span>
+                </Button>
+              )}
               <div className="horizontal-gold-bar" />
             </div>
             <div className="item">

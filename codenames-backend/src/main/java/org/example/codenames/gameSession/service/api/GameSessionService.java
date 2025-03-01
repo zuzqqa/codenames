@@ -7,10 +7,11 @@ import org.example.codenames.user.entity.User;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Game session service interface.
+ */
 public interface GameSessionService {
     String createGameSession(CreateGameRequest request);
-
-    void updateVotingStartTime(UUID sessionId);
 
     GameSession getGameSessionById(UUID gameId);
 
@@ -18,11 +19,7 @@ public interface GameSessionService {
 
     Integer[] getCardsColorsBySessionId(UUID sessionId);
 
-    void updateStatus(UUID id, GameSession.sessionStatus sessionStatus);
-
     void submitVote(UUID id, String userId, String votedUserId);
-
-    List<List<Integer>> getVotes(UUID sessionId);
 
     void assignTeamLeaders(UUID sessionId);
 
@@ -33,5 +30,6 @@ public interface GameSessionService {
     List<GameSession> getAllGameSessions();
 
     boolean removePlayerFromSession(UUID gameId, String userId);
+
     void changeTurn(UUID gameId);
 }

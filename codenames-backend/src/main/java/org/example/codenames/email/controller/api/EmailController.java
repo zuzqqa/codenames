@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 
+/**
+ * Email controller interface.
+ */
 public interface EmailController {
     ResponseEntity<String> sendEmail(@RequestBody EmailRequest request, String language) throws MessagingException, IOException;
 }
