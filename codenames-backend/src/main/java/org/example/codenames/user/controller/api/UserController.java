@@ -1,10 +1,13 @@
 package org.example.codenames.user.controller.api;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.userDetails.AuthRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +19,7 @@ import java.util.Map;
  *
  */
 public interface UserController {
-    ResponseEntity<Void> createUser(User user, HttpServletResponse response);
+    ResponseEntity<Map<String, String>> createUser(@RequestBody User user, HttpServletResponse response, String language) throws MessagingException, IOException;
 
     ResponseEntity<User> getUserById(String id);
 
@@ -28,7 +31,7 @@ public interface UserController {
 
     ResponseEntity<Void> deleteUserById(String id);
 
-    ResponseEntity<Void> authenticateAndSetCookie(AuthRequest authRequest, HttpServletResponse response);
+    ResponseEntity<String> authenticateAndSetCookie(AuthRequest authRequest, HttpServletResponse response);
 
     ResponseEntity<Void> logout(HttpServletResponse response);
 

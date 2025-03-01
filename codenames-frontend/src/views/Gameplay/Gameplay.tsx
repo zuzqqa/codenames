@@ -231,7 +231,9 @@ const Gameplay: React.FC<GameplayProps> = ({
       }
     };
 
-    setIsVoteSubmitted(JSON.parse(localStorage.getItem("vote submitted") ?? "false"));
+    setIsVoteSubmitted(
+      JSON.parse(localStorage.getItem("vote submitted") ?? "false")
+    );
 
     fetchGameSession();
   }, []);
@@ -423,7 +425,6 @@ const Gameplay: React.FC<GameplayProps> = ({
       .then((response) => response.text())
       .then((text) => {
         if (text === "Votes submitted successfully") {
-          console.log("Votes submitted successfully");
         } else {
           console.error("Unexpected server response:", text);
         }
@@ -514,7 +515,11 @@ const Gameplay: React.FC<GameplayProps> = ({
                 key={index}
                 className={`card-container ${
                   selectedCards.includes(index) ? "selected-card" : ""
-                } ${amIRedTeamLeader || amIBlueTeamLeader || whosTurn != myTeam ? "disabled" : ""}`}
+                } ${
+                  amIRedTeamLeader || amIBlueTeamLeader || whosTurn != myTeam
+                    ? "disabled"
+                    : ""
+                }`}
                 onClick={() => handleCardSelection(index)}
               >
                 <img

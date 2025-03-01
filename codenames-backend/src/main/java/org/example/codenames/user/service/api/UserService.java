@@ -9,7 +9,7 @@ import java.util.Optional;
  * Service for managing users.
  */
 public interface UserService {
-    void createUser(User user);
+    Optional<String> createUser(User user);
 
     Optional<User> getUserById(String id);
 
@@ -20,4 +20,8 @@ public interface UserService {
     User updateUser(String id, User updatedUser);
 
     void deleteUserById(String id);
+
+    void activateUser(String username);
+
+    boolean isAccountActivated(String username);
 }

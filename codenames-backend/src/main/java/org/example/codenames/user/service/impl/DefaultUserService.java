@@ -5,6 +5,8 @@ import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.api.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -42,11 +44,23 @@ public class DefaultUserService implements UserService {
      * @param user the user to be created
      */
     @Override
-    public void createUser(User user) {
+    public Optional<String> createUser(User user) {
+        user.setStatus(User.userStatus.INACTIVE);
+
+        if (!user.isGuest() && userRepository.existsByEmail(user.getEmail())) {
+            return Optional.of("E-mail already exists.");
+        }
+        if (!user.isGuest() && userRepository.existsByUsername(user.getUsername())) {
+            return Optional.of("Username already exists.");
+        }
+
         if (!user.isGuest()) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
+
         userRepository.save(user);
+
+        return Optional.empty();
     }
 
     /**
@@ -102,5 +116,23 @@ public class DefaultUserService implements UserService {
     @Override
     public void deleteUserById(String id) {
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public void activateUser(String username) {
+        userRepository.findByUsername(username).map(user -> {
+            user.setStatus(User.userStatus.ACTIVE);
+
+            return userRepository.save(user);
+        })
+        .orElse(null);
+    }
+
+    @Override
+    public boolean isAccountActivated(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        return user.getStatus() == User.userStatus.ACTIVE;
     }
 }
