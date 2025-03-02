@@ -31,6 +31,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 
+import com.github.javafaker.Faker;
+
 /**
  * Default implementation of the {@link UserController} interface.
  */
@@ -252,9 +254,10 @@ public class DefaultUserController implements UserController {
      */
     @PostMapping("/createGuest")
     public ResponseEntity<Void> createGuest(HttpServletResponse response) {
-        String guestId = "guest" + System.currentTimeMillis();
+        String username = userService.generateUniqueUsername();
+
         User guest = User.builder()
-                .username(guestId)
+                .username(username)
                 .password("")
                 .roles("ROLE_GUEST")
                 .isGuest(true)

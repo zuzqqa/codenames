@@ -1,5 +1,6 @@
 package org.example.codenames.user.service.impl;
 
+import com.github.javafaker.Faker;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.api.UserService;
@@ -134,5 +135,22 @@ public class DefaultUserService implements UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         return user.getStatus() == User.userStatus.ACTIVE;
+    }
+
+    @Override
+    public String generateUniqueUsername() {
+        Faker faker = new Faker();
+
+        String[] adjectives = {"Fast", "Mighty", "Clever", "Brave", "Lucky", "Fierce", "Gentle"};
+        String username;
+
+        do {
+            String adjective = adjectives[faker.random().nextInt(adjectives.length)];
+            String noun = faker.animal().name();
+            username = (adjective + noun).replace(" ", "");
+
+        } while (userRepository.existsByUsername(username));
+
+        return username;
     }
 }
