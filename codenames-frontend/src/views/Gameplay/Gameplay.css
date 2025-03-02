@@ -286,9 +286,21 @@ button {
   }
 }
 
-.codename-input {
+.codename-input-container {
   position: fixed;
-  top: 50%;
+  display: flex;
+  flex-direction: column; /* Stack input and slider */
+  justify-content: center;
+  align-items: center;
+  width: 25%;
+  padding: 5px;
+  padding-top: 50px;
+}
+
+.codename-input {
+  flex: 1;
+  position: fixed;
+  top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
   transform-origin: center;
@@ -302,6 +314,48 @@ button {
   border: none;
   outline: none;
   animation: inputScaleUp 0.5s ease-out forwards;
+}
+
+.codename-input-container .codename-slider {
+  width: 80%;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background: #605e5e !important;
+  height: 2px !important;
+  border-radius: 2px !important;
+  outline: none !important;
+  opacity: 0.9 !important;
+  transition: opacity 0.2s !important;
+}
+
+.codename-input-container .codename-slider:hover {
+  opacity: 1 !important;
+}
+
+.codename-input-container .codename-slider::-webkit-slider-runnable-track {
+  width: 100% !important;
+  height: 2px !important;
+  background: #605e5e !important;
+  border: #000000; /* To musi byc zeby dalo sie kolor zmienic mimo ze chuja robi xD */
+}
+
+.codename-input-container .codename-slider::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 12px !important;
+  height: 12px !important;
+  background: #f9e9d1 !important; /* kropka */
+  border-radius: 50% !important;
+  cursor: pointer !important;
+  margin-top: -5px !important;
+}
+
+.slider-value {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #f9e9d1;
+  margin-top: 5px;
+  margin-right: 12px;
 }
 
 @keyframes inputScaleUp {
