@@ -52,5 +52,6 @@
   "account-not-activated-error": "Link expired, register again.",
   "account-activated-notification": "Your account was activated, log in.",
   "account-not-activated": "Your account was not activated.",
-  "or": "or"
+  "or": "or",
+  "hint-one-word": "Hint must be one word."
 }
