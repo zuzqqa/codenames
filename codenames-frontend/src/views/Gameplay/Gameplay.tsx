@@ -349,6 +349,12 @@ const Gameplay: React.FC<GameplayProps> = ({
     });
   };
 
+  /**
+   * useEffect hook for handling exiting and confirming inputting the hint.
+   * - Listens for the "Enter" key to confirm the hint.
+   * - Listens for the "Escape" key to exit the hint input.
+   */
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Enter" && cardText.trim()) {
