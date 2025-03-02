@@ -52,5 +52,6 @@
   "activation-link-sent": "Link aktywacyjny został wysłany na twój adres e-mail.",
   "account-not-activated-error": "Link aktywacyjny wygasł, zarejestruj się ponownie.",
   "account-activated-notification": "Twoje konto zostało aktywowane, zaloguj się.",
-  "account-not-activated": "Twoje konto nie zostało aktywowane."
+  "account-not-activated": "Twoje konto nie zostało aktywowane.",
+  "or": "lub"
 }

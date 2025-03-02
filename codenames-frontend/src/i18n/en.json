@@ -51,5 +51,6 @@
   "activation-link-sent": "Activation link was sent to your e-mail address.",
   "account-not-activated-error": "Link expired, register again.",
   "account-activated-notification": "Your account was activated, log in.",
-  "account-not-activated": "Your account was not activated."
+  "account-not-activated": "Your account was not activated.",
+  "or": "or"
 }

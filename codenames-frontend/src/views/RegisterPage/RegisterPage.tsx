@@ -18,6 +18,7 @@ import logoutButton from "../../assets/icons/logout.svg";
 import { logout } from "../../shared/utils.tsx";
 import { useNavigate, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -467,6 +468,23 @@ const RegisterPage: React.FC<RegisterProps> = ({
               <span className="button-text">{t("submit-button")}</span>
             </Button>
           </form>
+          <div className="or-container">
+            <div className="gold-line"></div>
+            <span className="or-text">{t("or")}</span>
+            <div className="gold-line"></div>
+          </div>
+          <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+            <GoogleLogin
+              text="signup_with"
+              onSuccess={() => {
+                window.location.href =
+                  "http://localhost:8080/oauth2/authorization/google";
+              }}
+              onError={() => {
+                console.log("Google login failed");
+              }}
+            />
+          </GoogleOAuthProvider>
         </div>
         {errors.length > 0 && (
           <div className="toast-container">
