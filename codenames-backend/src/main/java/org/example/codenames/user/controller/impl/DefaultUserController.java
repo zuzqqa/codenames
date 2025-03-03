@@ -80,6 +80,7 @@ public class DefaultUserController implements UserController {
 
             mailSender.send(message);
         }
+
         if (user.isGuest()) {
             response.addCookie(setAuthCookie(token, true));
         }

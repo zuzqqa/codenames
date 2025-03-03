@@ -1,7 +1,7 @@
 .register-container {
-  margin-top: 7px;
+  margin-top: 0;
   grid-column: 1 / span 3; /* Stretch across all columns */
-  grid-row: 1 / span 4; /* Stretch across all rows */
+  grid-row: 1 / span 6; /* Stretch across all rows */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -15,10 +15,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 70%; /* Full height of parent */
+  height: 60%; /* Full height of parent */
   width: 90%; /* Full width of parent */
   padding: 10px; /* Padding for spacing */
   border-radius: 17px; /* Rounded corners */
+  margin-bottom: 0;
+  margin-top: 1vw;
+  padding-bottom: 0;
 }
 
 .register-form button {
@@ -27,7 +30,7 @@
   border-radius: 17px;
   cursor: pointer;
   align-self: center; /* Align the button to the right */
-  margin-top: 3%; /* Add some spacing above the button */
+  margin-top: 1%; /* Add some spacing above the button */
 }
 
 .toast-container {
@@ -173,4 +176,29 @@
 
 .notification:before {
   background-color: #1B74BB !important;
+}
+
+.or-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 15px;
+}
+
+.or-text {
+  padding-left: 2px;
+  font-size: calc(0.2vw + 1em);
+  font-weight: bold;
+  background: linear-gradient(to right, #FFD363, #FCF18B);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0 10px; 
+}
+
+.gold-line {
+  flex-grow: 1;
+  height: 2px;
+  max-width: 30%;
+  background: linear-gradient(to right, transparent, #FFD363, transparent);
 }
