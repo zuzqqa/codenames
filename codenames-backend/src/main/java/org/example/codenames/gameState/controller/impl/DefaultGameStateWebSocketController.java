@@ -52,6 +52,7 @@ public class DefaultGameStateWebSocketController implements GameSateWebSocketCon
 
         gameStateService.cardsChoosen(gameSession);
 
+        System.out.println(gameSession.getGameState().getCardsChoosen());
         // Send the game session to all clients
         messagingTemplate.convertAndSend("/game/" + id + "/timer", gameSession);
 

@@ -88,7 +88,7 @@ public class DefaultGameStateService implements GameStateService {
 
     /**
      * Generates and assigns random colors to the 25 cards.
-     * 6 red, 6 blue, 1 assassin, and 12 neutral cards.
+     * 9 red, 8 blue, 1 assassin, and 7 neutral cards.
      *
      * @param gameState the game state to update
      */
@@ -96,8 +96,8 @@ public class DefaultGameStateService implements GameStateService {
     @Override
     public void generateRandomCardsColors(GameState gameState) {
         List<Integer> cardColorsList = new ArrayList<>();
-        int numberOfBlueCards = 6;
-        int numberOfRedCards = 6;
+        int numberOfBlueCards = 8;
+        int numberOfRedCards = 9;
         for (int i = 0; i < numberOfRedCards; i++) {
             cardColorsList.add(1);
         }
@@ -177,15 +177,6 @@ public class DefaultGameStateService implements GameStateService {
                 }
             }
         }
-
-        List<Integer> zeroVotes = new ArrayList<>();
-        int numberOfCards = gameSession.getGameState().getCards().length;
-        for (int i = 0; i < numberOfCards; i++) {
-            zeroVotes.add(0);
-        }
-
-        gameSession.getGameState().getCardsVotes().clear();
-        gameSession.getGameState().setCardsVotes(zeroVotes);
 
         gameSessionRepository.save(gameSession);
     }

@@ -25,7 +25,7 @@ import votingLabel from "../../assets/images/medieval-label.png";
 import "./Gameplay.css";
 import Chat from "../../components/Chat/Chat.tsx";
 import { Client } from "@stomp/stompjs";
-import {useLocation, useNavigate} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useWebSocket } from "./useWebSocket";
 
 /**
@@ -88,7 +88,7 @@ interface GameState {
 }
 
 const generateId = () =>
-    Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+  Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 /**
  * React functional component responsible for handling gameplay-related settings,
  * such as volume adjustments.
@@ -229,6 +229,12 @@ const Gameplay: React.FC<GameplayProps> = ({
   }, []);
 
   useEffect(() => {
+    setCardsToReveal(gameSession?.gameState?.cardsChoosen || []);
+    revealCardsVotedByTeam();
+    console.log("cardsChoosen changed:", gameSession?.gameState?.cardsChoosen);
+  }, [gameSession]);
+
+  useEffect(() => {
     if (!storedGameId) {
       navigate("/games");
       return;
@@ -295,6 +301,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     setRedTeamScore(gameSession?.gameState?.redTeamScore || 0);
     setBlueTeamScore(gameSession?.gameState?.blueTeamScore || 0);
     setVotedCards(gameSession?.gameState?.cardsVotes || []);
+  
     revealCardsVotedByTeam();
   }, [gameSessionData]);
 
@@ -309,7 +316,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
   // Checking the end of game condition
   useEffect(() => {
-    if (redTeamScore >= 5 || blueTeamScore >= 6) {
+    if (redTeamScore >= 9 || blueTeamScore >= 8) {
       setWinningTeam(redTeamScore >= blueTeamScore ? "red" : "blue");
       navigate("/win-loss", {
         state: { result: winningTeam === myTeam ? "Victory" : "Loss" },
@@ -320,18 +327,21 @@ const Gameplay: React.FC<GameplayProps> = ({
   const revealCardsVotedByTeam = () => {
     if (!gameSession?.gameState || cardsToReveal.length === 0) return;
 
+    console.log("Odwracam");
+
     setFlipStates((prevFlipStates) => {
       const newFlipStates = [...prevFlipStates];
       cardsToReveal.forEach((cardIndex) => {
         newFlipStates[cardIndex] = true;
       });
+      console.log("Nowe flipStates:", newFlipStates);
       return newFlipStates;
     });
 
     setCards((prevCards) => {
       const newCards = [...prevCards];
       cardsToReveal.forEach((cardIndex) => {
-        const cardColor = gameSession.gameState.cardsColors[cardIndex];
+        const cardColor = gameSession?.gameState?.cardsColors?.[cardIndex];
         switch (cardColor) {
           case 1:
             newCards[cardIndex] = cardRedImg;
@@ -346,8 +356,11 @@ const Gameplay: React.FC<GameplayProps> = ({
             newCards[cardIndex] = cardWhiteImg;
         }
       });
+      console.log("Nowe karty:", newCards);
+
       return newCards;
     });
+    
   };
 
   /**
@@ -355,7 +368,6 @@ const Gameplay: React.FC<GameplayProps> = ({
    * - Listens for the "Enter" key to confirm the hint.
    * - Listens for the "Escape" key to exit the hint input.
    */
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Enter" && cardText.trim()) {
@@ -379,6 +391,10 @@ const Gameplay: React.FC<GameplayProps> = ({
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [cardText, cardNumber]);
+
+  useEffect(() => {
+    revealCardsVotedByTeam();
+  }, [cardsToReveal]);
 
   const change_turn = () => {
     const storedGameId = localStorage.getItem("gameId");
@@ -460,7 +476,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         // Remove the error from state after 8.5 seconds
         const removeTimer = setTimeout(() => {
           setErrors((prevErrors) =>
-              prevErrors.filter((e) => e.id !== error.id)
+            prevErrors.filter((e) => e.id !== error.id)
           );
         }, 8500);
 
@@ -469,7 +485,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         // Remove error if toast element is not found
         return setTimeout(() => {
           setErrors((prevErrors) =>
-              prevErrors.filter((e) => e.id !== error.id)
+            prevErrors.filter((e) => e.id !== error.id)
           );
         }, 8000);
       }
@@ -492,7 +508,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
       setTimeout(() => {
         setErrors((prevErrors) =>
-            prevErrors.filter((error) => error.id !== id)
+          prevErrors.filter((error) => error.id !== id)
         );
       }, 500);
     }
@@ -505,7 +521,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   const validateCardText = (text: string) => {
     const newErrors: { id: string; message: string }[] = [];
     if (text.split(" ").length == 1) {
-        return true;
+      return true;
     }
     newErrors.push({
       id: generateId(),
@@ -514,7 +530,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
     setErrors(newErrors);
     if (newErrors.length > 0) return;
-  }
+  };
 
   return (
     <>
@@ -717,61 +733,63 @@ const Gameplay: React.FC<GameplayProps> = ({
           </div>
         </div>
         {isCardVisible && (
-            <div className="card-black-overlay">
-              <img
-                  className="card-black-img"
-                  src={cardBlackImg}
-                  alt="Black Card"
+          <div className="card-black-overlay">
+            <img
+              className="card-black-img"
+              src={cardBlackImg}
+              alt="Black Card"
+            />
+            <div className="codename-input-container">
+              <input
+                type="text"
+                placeholder={t("enter-the-codename")}
+                className="codename-input"
+                value={cardText}
+                onChange={(e) => setCardText(e.target.value)}
+                disabled={
+                  (!amIRedTeamLeader && !amIBlueTeamLeader) ||
+                  whosTurn !== myTeam
+                }
               />
-              <div className="codename-input-container">
-                <input
-                    type="text"
-                    placeholder={t("enter-the-codename")}
-                    className="codename-input"
-                    value={cardText}
-                    onChange={(e) => setCardText(e.target.value)}
-                    disabled={
-                        (!amIRedTeamLeader && !amIBlueTeamLeader) || whosTurn !== myTeam
-                    }
-                />
-                <input
-                    type="range"
-                    min={1}
-                    max={whosTurn === "blue" ? 5 : 6}
-                    className="codename-slider"
-                    value={cardNumber}
-                    onChange={(e) => setCardNumber(+e.target.value)}
-                    disabled={
-                        (!amIRedTeamLeader && !amIBlueTeamLeader) || whosTurn !== myTeam
-                    }
-                />
-                <span className="slider-value">{cardNumber}</span>
-              </div>
+              <input
+                type="range"
+                min={1}
+                max={whosTurn === "blue" ? 8 : 9}
+                className="codename-slider"
+                value={cardNumber}
+                onChange={(e) => setCardNumber(+e.target.value)}
+                disabled={
+                  (!amIRedTeamLeader && !amIBlueTeamLeader) ||
+                  whosTurn !== myTeam
+                }
+              />
+              <span className="slider-value">{cardNumber}</span>
             </div>
+          </div>
         )}
         {errors.length > 0 && (
-            <div className="toast-container">
-              {errors.map((error) => (
-                  <div id={error.id} key={error.id} className="toast active">
-                    <div className="toast-content">
-                      <i
-                          className="fa fa-exclamation-circle fa-3x"
-                          style={{ color: "#561723" }}
-                          aria-hidden="true"
-                      ></i>
-                      <div className="message">
-                        <span className="text text-1">Error</span>
-                        <span className="text text-2">{error.message}</span>
-                      </div>
-                    </div>
-                    <i
-                        className="fa-solid fa-xmark close"
-                        onClick={() => handleCloseErrorToast(error.id)}
-                    ></i>
-                    <div className="progress active"></div>
+          <div className="toast-container">
+            {errors.map((error) => (
+              <div id={error.id} key={error.id} className="toast active">
+                <div className="toast-content">
+                  <i
+                    className="fa fa-exclamation-circle fa-3x"
+                    style={{ color: "#561723" }}
+                    aria-hidden="true"
+                  ></i>
+                  <div className="message">
+                    <span className="text text-1">Error</span>
+                    <span className="text text-2">{error.message}</span>
                   </div>
-              ))}
-            </div>
+                </div>
+                <i
+                  className="fa-solid fa-xmark close"
+                  onClick={() => handleCloseErrorToast(error.id)}
+                ></i>
+                <div className="progress active"></div>
+              </div>
+            ))}
+          </div>
         )}
       </BackgroundContainer>
     </>
