@@ -243,10 +243,12 @@ const Gameplay: React.FC<GameplayProps> = ({
 
   // Checking the end of game condition
   useEffect(() => {
-    if(redTeamScore >= 5 || blueTeamScore >= 6) {
-      setWinningTeam(redTeamScore >= blueTeamScore ? "red" : "blue");
-      navigate("/win-loss", { state: { result: winningTeam === myTeam ? "Victory" : "Loss" } });
-    }
+    setTimeout(() => {
+      if(redTeamScore >= 5 || blueTeamScore >= 6) {
+        setWinningTeam(redTeamScore >= blueTeamScore ? "red" : "blue");
+        navigate("/win-loss", { state: { result: winningTeam === myTeam ? "Victory" : "Loss" } });
+      }
+    }, 140);
   }, [redTeamScore, blueTeamScore]);
 
   const revealCardsVotedByTeam = () => {

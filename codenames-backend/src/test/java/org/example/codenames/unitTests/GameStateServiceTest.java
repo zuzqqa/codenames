@@ -7,12 +7,12 @@ import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameState.entity.GameState;
 import org.example.codenames.gameState.service.impl.DefaultGameStateService;
 import org.example.codenames.user.entity.User;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,7 +21,18 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for the {@link DefaultGameStateService} class.
+ * TestPropertySource is used to specify the properties for the test, that otherwise would be read from the application.properties file.
+ * TODO: These tests need Spring Context to be loaded, so they are not unit tests. They should be moved to integration tests.
+ */
+
 @ExtendWith(MockitoExtension.class)
+@TestPropertySource(properties = {
+        "codenames.game.cards-total=25",
+        "codenames.game.cards-red=5",
+        "codenames.game.cards-blue=6"
+})
 class DefaultGameStateServiceTest {
 
     @Mock
@@ -32,13 +43,6 @@ class DefaultGameStateServiceTest {
 
     @InjectMocks
     private DefaultGameStateService gameStateService;
-
-//    @BeforeEach
-//    void setUp() {
-//        gameStateService.cardsTotal = 25;
-//        gameStateService.cardsRed = 6;
-//        gameStateService.cardsBlue = 6;
-//    }
 
     @Test
     void generateRandomCardsNames_ShouldSelect25UniqueCards() {
@@ -59,6 +63,8 @@ class DefaultGameStateServiceTest {
     @Test
     void generateRandomCardsColors_ShouldAssignCorrectDistribution() {
         GameState gameState = new GameState();
+        String[] cards = IntStream.range(0, 25).mapToObj(String::valueOf).toArray(String[]::new);
+        gameState.setCards(cards);
         gameStateService.generateRandomCardsColors(gameState);
 
         assertNotNull(gameState.getCardsColors());

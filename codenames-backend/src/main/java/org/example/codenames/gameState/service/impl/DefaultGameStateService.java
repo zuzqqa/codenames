@@ -54,7 +54,7 @@ public class DefaultGameStateService implements GameStateService {
     }
 
     /**
-     * Generates a set of 25 random card names based on the selected language.
+     * Generates a set of random card names based on the selected language.
      *
      * @param gameState the game state to update
      * @param language  the language for the card names
@@ -65,7 +65,7 @@ public class DefaultGameStateService implements GameStateService {
         Random random = new Random();
         Set<Integer> selectedIndexes = new HashSet<>();
 
-        // Select 25 random cards
+        // Select random cards
         while (selectedIndexes.size() < cardsTotal) {
             selectedIndexes.add(random.nextInt(allCards.size()));
         }

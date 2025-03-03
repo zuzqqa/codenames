@@ -62,9 +62,13 @@ public class DefaultCardService implements CardService {
      */
     @Override
     public List<String> getCardsInLanguage(String language) {
-        return cardRepository.findAll().stream()
-                .map(card -> card.getNames().getOrDefault(language, ""))
-                .filter(name -> !name.isEmpty())
-                .collect(Collectors.toList());
+        if(language != null && !language.isEmpty()) {
+            return cardRepository.findAll().stream()
+                    .map(card -> card.getNames().getOrDefault(language, ""))
+                    .filter(name -> !name.isEmpty())
+                    .collect(Collectors.toList());
+        } else {
+            return List.of();
+        }
     }
 }
