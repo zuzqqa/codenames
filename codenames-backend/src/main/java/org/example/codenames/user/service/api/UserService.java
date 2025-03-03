@@ -24,4 +24,6 @@ public interface UserService {
     void activateUser(String username);
 
     boolean isAccountActivated(String username);
+
+    String generateUniqueUsername();
 }
