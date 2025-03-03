@@ -295,6 +295,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     setRedTeamScore(gameSession?.gameState?.redTeamScore || 0);
     setBlueTeamScore(gameSession?.gameState?.blueTeamScore || 0);
     setVotedCards(gameSession?.gameState?.cardsVotes || []);
+    revealCardsVotedByTeam();
   }, [gameSessionData]);
 
   useEffect(() => {

@@ -13,9 +13,13 @@ import java.util.UUID;
 public interface GameStateService {
     void generateRandomCardsNames(GameState gameState, String language);
 
+    String getCardNameInLanguage(Card card, String language);
+
     void generateRandomCardsColors(GameState gameState);
 
     void updateVotes(UUID id, List <Integer> selectedCards);
 
     void cardsChoosen(GameSession gameSession);
+
+    int getTeamSize(GameSession gameSession);
 }

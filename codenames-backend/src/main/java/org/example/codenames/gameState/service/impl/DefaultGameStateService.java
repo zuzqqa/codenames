@@ -45,6 +45,7 @@ public class DefaultGameStateService implements GameStateService {
      * @param gameState the game state to update
      * @param language  the language for the card names
      */
+    @Override
     public void generateRandomCardsNames(GameState gameState, String language) {
         List<Card> allCards = cardRepository.findAll();
 
@@ -75,7 +76,8 @@ public class DefaultGameStateService implements GameStateService {
      * @param language the language
      * @return the card name in the specified language
      */
-    private String getCardNameInLanguage(Card card, String language) {
+    @Override
+    public String getCardNameInLanguage(Card card, String language) {
         if ("pl".equals(language)) {
             return card.getId();
         } else if ("en".equals(language)) {
@@ -91,6 +93,7 @@ public class DefaultGameStateService implements GameStateService {
      * @param gameState the game state to update
      */
     // TODO: Method uses hardcoded values for number of cards, consider using constants or configuration
+    @Override
     public void generateRandomCardsColors(GameState gameState) {
         List<Integer> cardColorsList = new ArrayList<>();
         int numberOfBlueCards = 6;
@@ -119,6 +122,7 @@ public class DefaultGameStateService implements GameStateService {
      * @param id            the game session ID
      * @param selectedCards list of selected card indexes
      */
+    @Override
     public void updateVotes(UUID id, List<Integer> selectedCards) {
         GameSession gameSession = gameSessionRepository.findBySessionId(id).orElse(null);
         if (gameSession == null) {
@@ -143,6 +147,7 @@ public class DefaultGameStateService implements GameStateService {
      *
      * @param gameSession the current game session
      */
+    @Override
     public void cardsChoosen(GameSession gameSession) {
         if (gameSession.getGameState().getCardsVotes().isEmpty()) {
             return;
@@ -191,6 +196,7 @@ public class DefaultGameStateService implements GameStateService {
      * @param gameSession the game session
      * @return the team turn index
      */
+    @Override
     public int getTeamSize(GameSession gameSession) {
         return gameSession.getGameState().getTeamTurn();
     }

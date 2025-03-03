@@ -344,7 +344,6 @@ public class DefaultGameSessionService implements GameSessionService {
         GameState gameState = gameSession.getGameState();
 
         gameState.toggleTurn();
-        gameStateService.cardsChoosen(gameSession);
 
         gameSessionRepository.save(gameSession);
     }

@@ -3,6 +3,7 @@ package org.example.codenames.gameState.controller.impl;
 import lombok.AllArgsConstructor;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
+import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.gameState.controller.api.GameSateWebSocketController;
 import org.example.codenames.gameState.entity.CardsVoteRequest;
 import org.example.codenames.gameState.service.api.GameStateService;
@@ -16,6 +17,11 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/game-session")
 public class DefaultGameStateWebSocketController implements GameSateWebSocketController {
+    /**
+     * Service for game session operations.
+     */
+    private final GameSessionService gameSessionService;
+
     /**
      * Service for game state related operations.
      */
@@ -43,6 +49,8 @@ public class DefaultGameStateWebSocketController implements GameSateWebSocketCon
 
         GameSession gameSession = gameSessionRepository.findBySessionId(id).orElseThrow(() ->
                 new IllegalArgumentException("Game with an ID of " + id + " does not exist."));
+
+        gameStateService.cardsChoosen(gameSession);
 
         // Send the game session to all clients
         messagingTemplate.convertAndSend("/game/" + id + "/timer", gameSession);
