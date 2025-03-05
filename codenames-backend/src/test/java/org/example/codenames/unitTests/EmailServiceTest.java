@@ -29,7 +29,7 @@ import static org.mockito.Mockito.*;
  * Unit tests for the {@link EmailService} EmailService interface default implementation.
  */
 @ExtendWith(MockitoExtension.class)
-class DefaultEmailServiceTest {
+class EmailServiceTest {
 
 
     @Mock
