@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,26 +20,20 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+import org.testcontainers.utility.DockerImageName;
+
+import java.time.Duration;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Testcontainers
 @SpringBootTest(classes = CodenamesApplication.class)
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class UserControllerTest {
-
-    @Container
-    static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0.4")
-            .waitingFor(Wait.forListeningPort());
-
-
-
-    @DynamicPropertySource
-    static void setProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.data.mongodb.uri", () ->
-                "mongodb://" + mongoDBContainer.getHost() + ":" + mongoDBContainer.getMappedPort(27017) + "/testdb"
-        );
-
-    }
 
     @Autowired
     private UserRepository userRepository;
@@ -51,15 +47,37 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public static MongoDBContainer mongo = new MongoDBContainer(DockerImageName.parse("mongo:5"))
+            .withExposedPorts(27017)
+            .waitingFor(Wait.forLogMessage(".*Waiting for connections.*", 1))
+            .withStartupTimeout(Duration.ofSeconds(60));
+
+    @DynamicPropertySource
+    static void mongoProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.data.mongodb.uri",
+                () -> "mongodb://" + mongo.getHost() + ":" + mongo.getMappedPort(27017) + "/CodenamesDB");
+    }
+
+    @BeforeAll
+    static void setup() {
+        mongo.start();
+    }
 
     @Test
-    public void shouldAddUser() {
+    public void shouldAddUser() throws Exception {
         User user = User.builder()
                 .username("test")
                 .password("test")
                 .email("example@gmail.com")
                 .build();
-        // Add test logic here
+
+        mvc.perform(post("/api/user")
+                        .header("Origin", "http://localhost:8080")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isOk());
+
     }
 }
