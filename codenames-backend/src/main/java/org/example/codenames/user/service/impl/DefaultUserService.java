@@ -39,14 +39,25 @@ public class DefaultUserService implements UserService {
 
     /**
      * Creates a new user.
+     *
      * @param user the user to be created
+     * @return the created user
      */
     @Override
-    public void createUser(User user) {
+    public User createUser(User user) {
+        userRepository.findByUsername(user.getUsername()).ifPresent(existingUser -> {
+            throw new IllegalArgumentException("User already exists");
+        });
+        if(user.getUsername() == null || user.getPassword() == null || user.getEmail() == null) {
+            throw new IllegalArgumentException("All user data must be provided");
+        }
         if (!user.isGuest()) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
+            if(user.getRoles() == null) {
+                user.setRoles("ROLE_USER");
+            }
         }
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     /**

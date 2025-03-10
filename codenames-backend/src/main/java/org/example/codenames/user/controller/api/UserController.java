@@ -19,7 +19,7 @@ import java.util.Map;
  *
  */
 public interface UserController {
-    ResponseEntity<Void> createUser(User user, HttpServletResponse response);
+    ResponseEntity<User> createUser(User user, HttpServletResponse response);
 
     ResponseEntity<User> getUserById(String id);
 

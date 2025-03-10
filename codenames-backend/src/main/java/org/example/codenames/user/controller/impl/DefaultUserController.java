@@ -44,12 +44,17 @@ public class DefaultUserController implements UserController {
      * @return ResponseEntity with status 200 OK
      */
     @PostMapping
-    public ResponseEntity<Void> createUser(@RequestBody User user, HttpServletResponse response) {
-        userService.createUser(user);
-        String token = jwtService.generateToken(user.getUsername());
-        response.addCookie(setAuthCookie(token, true));
-        return ResponseEntity.ok().build();
+    public ResponseEntity<User> createUser(@RequestBody User user, HttpServletResponse response) {
+        try {
+            User createdUser = userService.createUser(user);
+            String token = jwtService.generateToken(user.getUsername());
+            response.addCookie(setAuthCookie(token, true));
+            return ResponseEntity.ok(createdUser);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
+
 
     /**
      * Retrieves a user by their ID.
