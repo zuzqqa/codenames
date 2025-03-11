@@ -2,11 +2,19 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.7.2",
     "@react-oauth/google": "^0.12.1",
+    "express": "^4.21.2",
+    "mediasoup": "^3.15.6",
     "path-browserify": "^1.0.1",
+    "socket.io": "^4.8.1",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@types/node": "^22.13.8",
-    "@types/react": "^19.0.10"
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.10",
+    "@types/react": "^19.0.10",
+    "@types/socket.io": "^3.0.1",
+    "@types/ws": "^8.18.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
   }
 }
