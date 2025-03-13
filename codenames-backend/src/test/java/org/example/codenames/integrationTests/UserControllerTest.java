@@ -51,9 +51,6 @@ public class UserControllerTest {
     private UserRepository userRepository;
 
     @Autowired
-    private UserController userController;
-
-    @Autowired
     private MockMvc mvc;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
