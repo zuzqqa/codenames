@@ -13,10 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Default implementation of the GameSessionWebSocketController interface.
@@ -227,8 +224,21 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         GameSession gameSession = gameSessionRepository.findBySessionId(id).orElseThrow(() ->
                 new IllegalArgumentException("Game with an ID of " + id + " does not exist."));
 
+        List<Integer> zeroVotes = new ArrayList<>();
+        int numberOfCards = gameSession.getGameState().getCards().length;
+
+        for (int i = 0; i < numberOfCards; i++) {
+            zeroVotes.add(0);
+        }
+
+        gameSession.getGameState().getCardsVotes().clear();
+        gameSession.getGameState().setCardsVotes(zeroVotes);
+
+        gameSessionRepository.save(gameSession);
+
         // Send the game session to all clients
         messagingTemplate.convertAndSend("/game/" + id + "/timer", gameSession);
+
 
         return ResponseEntity.ok("Turn changed");
     }

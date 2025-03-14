@@ -25,7 +25,7 @@ import votingLabel from "../../assets/images/medieval-label.png";
 import "./Gameplay.css";
 import Chat from "../../components/Chat/Chat.tsx";
 import { Client } from "@stomp/stompjs";
-import { useLocation, useNavigate } from "react-router-dom";
+import {  useLocation, useNavigate  } from "react-router-dom";
 import { useWebSocket } from "./useWebSocket";
 
 /**
@@ -370,6 +370,12 @@ const Gameplay: React.FC<GameplayProps> = ({
   }, []);
 
   useEffect(() => {
+    setCardsToReveal(gameSession?.gameState?.cardsChoosen || []);
+    revealCardsVotedByTeam();
+    console.log("cardsChoosen changed:", gameSession?.gameState?.cardsChoosen);
+  }, [gameSession]);
+
+  useEffect(() => {
     if (!storedGameId) {
       navigate("/games");
       return;
@@ -472,7 +478,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
   // Checking the end of game condition
   useEffect(() => {
-    if (redTeamScore >= 5 || blueTeamScore >= 6) {
+    if (redTeamScore >= 9 || blueTeamScore >= 8) {
       setWinningTeam(redTeamScore >= blueTeamScore ? "red" : "blue");
       navigate("/win-loss", {
         state: { result: winningTeam === myTeam ? "Victory" : "Loss" },
@@ -483,18 +489,21 @@ const Gameplay: React.FC<GameplayProps> = ({
   const revealCardsVotedByTeam = () => {
     if (!gameSession?.gameState || cardsToReveal.length === 0) return;
 
+    console.log("Odwracam");
+
     setFlipStates((prevFlipStates) => {
       const newFlipStates = [...prevFlipStates];
       cardsToReveal.forEach((cardIndex) => {
         newFlipStates[cardIndex] = true;
       });
+      console.log("Nowe flipStates:", newFlipStates);
       return newFlipStates;
     });
 
     setCards((prevCards) => {
       const newCards = [...prevCards];
       cardsToReveal.forEach((cardIndex) => {
-        const cardColor = gameSession.gameState.cardsColors[cardIndex];
+        const cardColor = gameSession?.gameState?.cardsColors?.[cardIndex];
         switch (cardColor) {
           case 1:
             newCards[cardIndex] = cardRedImg;
@@ -509,8 +518,11 @@ const Gameplay: React.FC<GameplayProps> = ({
             newCards[cardIndex] = cardWhiteImg;
         }
       });
+      console.log("Nowe karty:", newCards);
+
       return newCards;
     });
+    
   };
 
   /**
@@ -518,7 +530,6 @@ const Gameplay: React.FC<GameplayProps> = ({
    * - Listens for the "Enter" key to confirm the hint.
    * - Listens for the "Escape" key to exit the hint input.
    */
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Enter" && cardText.trim()) {
@@ -542,6 +553,10 @@ const Gameplay: React.FC<GameplayProps> = ({
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [cardText, cardNumber]);
+
+  useEffect(() => {
+    revealCardsVotedByTeam();
+  }, [cardsToReveal]);
 
   const change_turn = () => {
     const storedGameId = localStorage.getItem("gameId");

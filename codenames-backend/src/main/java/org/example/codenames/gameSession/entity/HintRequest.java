@@ -11,4 +11,5 @@ public class HintRequest {
      * The hint that the spymaster wants to give to their team.
      */
     private String hint;
+    
 }
