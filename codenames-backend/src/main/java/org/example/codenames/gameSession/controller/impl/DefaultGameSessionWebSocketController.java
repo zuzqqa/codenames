@@ -8,6 +8,7 @@ import org.example.codenames.gameSession.entity.HintRequest;
 import org.example.codenames.gameSession.entity.VoteRequest;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
+import org.example.codenames.gameState.entity.GameState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -200,9 +201,12 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
     public ResponseEntity<Void> sendHint(@PathVariable UUID gameId, @RequestBody HintRequest hintRequest) {
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId).orElseThrow(() ->
                 new IllegalArgumentException("Game with an ID of " + gameId + " does not exist."));
+        GameState gameState = gameSession.getGameState();
 
         // Set the hint for the game session
-        gameSession.getGameState().setHint(hintRequest.getHint());
+        gameState.setHint(hintRequest.getHint());
+        gameState.setHintNumber(hintRequest.getHintNumber());
+
         gameSessionRepository.save(gameSession);
 
         // Send the game session to all clients
@@ -244,9 +248,31 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
     }
 
     /**
+     * Reveal card chosen by the currentSelectionLeader
+     * @param gameId the id of the game session
+     * @param cardIndex index of the card to be revealed
+     *
+     * @return response entity
+     */
+    @Override
+    @PostMapping("/{gameId}/reveal-card")
+    public ResponseEntity<?> revealCard(@PathVariable UUID gameId, @RequestBody String cardIndex) {
+        gameSessionService.revealCard(gameId, cardIndex);
+
+        GameSession gameSession = gameSessionRepository.findBySessionId(gameId).orElseThrow(() ->
+                new IllegalArgumentException("Game with an ID of " + gameId + " does not exist."));
+
+        // Send the game session to all clients
+        messagingTemplate.convertAndSend("/game/" + gameId + "/timer", gameSession);
+
+        return ResponseEntity.ok("Card revealed.");
+    }
+
+    /**
      * Submit a vote for a leader
      * @param gameId the id of the game session
      * @param voteRequest the vote request containing the user id and the id of the user that was voted on
+     *
      * @return the id of the user that was voted on
      */
     @Override
@@ -254,7 +280,6 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
     public ResponseEntity<?> submitVote(@PathVariable UUID gameId, @RequestBody VoteRequest voteRequest) {
         // Submit vote
         gameSessionService.submitVote(gameId, voteRequest.getUserId(), voteRequest.getVotedUserId());
-        gameSessionService.chooseRandomCurrentLeader(gameId);
 
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId).orElseThrow(() ->
                 new IllegalArgumentException("Game with an ID of " + gameId + " does not exist."));

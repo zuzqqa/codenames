@@ -73,8 +73,9 @@ public class DefaultGameStateService implements GameStateService {
     /**
      * Returns the card name in the specified language.
      *
-     * @param card     the card
+     * @param card the card
      * @param language the language
+     *
      * @return the card name in the specified language
      */
     @Override
@@ -120,31 +121,27 @@ public class DefaultGameStateService implements GameStateService {
     /**
      * Updates vote counts for selected card.
      *
-     * @param id the game session ID
+     * @param gameId the game session ID
      * @param voteRequest
      */
     @Override
-    public void updateVotes(UUID id, CardsVoteRequest voteRequest) {
-        GameSession gameSession = gameSessionRepository.findBySessionId(id).orElse(null);
-
-        if (gameSession == null) {
-            throw new IllegalArgumentException("The game ID provided was not found.");
-        }
-
+    public void updateVotes(UUID gameId, CardsVoteRequest voteRequest) {
+        GameSession gameSession = gameSessionRepository.findBySessionId(gameId).orElseThrow(() ->
+                new IllegalArgumentException("Game with an ID of " + gameId + " does not exist."));
         GameState gameState = gameSession.getGameState();
-        int index = voteRequest.getIndex();
-        System.out.println(voteRequest.isAddingVote());
 
-        if (index >= 0 && index < gameState.getCardsVotes().size()) {
-            int currentVotes = gameState.getCardsVotes().get(index);
+        int cardIndex = voteRequest.getCardIndex();
+
+        if (cardIndex >= 0 && cardIndex < gameState.getCardsVotes().size()) {
+            int currentVotes = gameState.getCardsVotes().get(cardIndex);
 
             if (voteRequest.isAddingVote()) {
-                gameState.getCardsVotes().set(index, currentVotes + 1);
+                gameState.getCardsVotes().set(cardIndex, currentVotes + 1);
             } else {
-                gameState.getCardsVotes().set(index, Math.max(0, currentVotes - 1));
+                gameState.getCardsVotes().set(cardIndex, Math.max(0, currentVotes - 1));
             }
         } else {
-            throw new IllegalArgumentException("Nieprawidłowy indeks karty: " + index);
+            throw new IllegalArgumentException("Incorrect card index: " + cardIndex);
         }
 
         gameSessionRepository.save(gameSession);
@@ -154,35 +151,28 @@ public class DefaultGameStateService implements GameStateService {
      * Determines which cards have been chosen based on votes.
      *
      * @param gameSession the current game session
+     * @param cardIndex the index of the card that was chosen
      */
     @Override
-    public void cardsChosen(GameSession gameSession) {
-        if (gameSession.getGameState().getCardsVotes().isEmpty()) {
-            return;
+    public void cardsChosen(GameSession gameSession, int cardIndex) {
+        GameState gameState = gameSession.getGameState();
+
+        if(gameState.getCardsChosen() == null){
+            gameState.setCardsChosen(new ArrayList<>());
         }
 
-        int teamSize = gameSession.getConnectedUsers().get(getTeamSize(gameSession)).size() - 1 == 0 ? 1 : gameSession.getConnectedUsers().get(getTeamSize(gameSession)).size() - 1;
+        gameState.getCardsChosen().add(cardIndex);
+        gameState.setHintNumber(Math.max(0, gameState.getHintNumber() - 1));
 
-        if(gameSession.getGameState().getCardsChosen() == null){
-            gameSession.getGameState().setCardsChosen(new ArrayList<>());
-        }
-        List<Integer> cardVotes = gameSession.getGameState().getCardsVotes();
-
-        for (int i = 0; i < cardVotes.size(); i++) {
-            if (cardVotes.get(i) == teamSize) {
-                gameSession.getGameState().getCardsChosen().add(i);
-
-                if(gameSession.getGameState().getCardsColors()[i] == 1){
-                    gameSession.getGameState().setRedTeamScore(gameSession.getGameState().getRedTeamScore() + 1);
-                } else if(gameSession.getGameState().getCardsColors()[i] == 2){
-                    gameSession.getGameState().setBlueTeamScore(gameSession.getGameState().getBlueTeamScore() + 1);
-                } else if(gameSession.getGameState().getCardsColors()[i] == 3){
-                    if (gameSession.getGameState().getTeamTurn() == 1) {
-                        gameSession.getGameState().setBlueTeamScore(100);
-                    } else {
-                        gameSession.getGameState().setRedTeamScore(100);
-                    }
-                }
+        if(gameState.getCardsColors()[cardIndex] == 1){
+            gameState.setRedTeamScore(gameState.getRedTeamScore() + 1);
+        } else if(gameState.getCardsColors()[cardIndex] == 2){
+            gameState.setBlueTeamScore(gameState.getBlueTeamScore() + 1);
+        } else if(gameState.getCardsColors()[cardIndex] == 3){
+            if (gameState.getTeamTurn() == 1) {
+                gameState.setBlueTeamScore(100);
+            } else {
+                gameState.setRedTeamScore(100);
             }
         }
 
@@ -193,21 +183,11 @@ public class DefaultGameStateService implements GameStateService {
      * Gets the current team's turn.
      *
      * @param gameSession the game session
+     *
      * @return the team turn index
      */
     @Override
     public int getTeamSize(GameSession gameSession) {
         return gameSession.getGameState().getTeamTurn();
     }
-
-//    @Override
-//    public void startRevealingPhase(UUID id) {
-//        GameSession gameSession = gameSessionRepository.findBySessionId(id)
-//                .orElseThrow(() -> new RuntimeException("Session not found"));
-//        GameState gameState = gameSession.getGameState();
-//
-//        gameState.getCardsVotes().clear();
-//
-//        gameState.toggleSelectionTurn();
-//    }
 }

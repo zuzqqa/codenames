@@ -34,4 +34,6 @@ public interface GameSessionService {
     void changeTurn(UUID gameId);
 
     void chooseRandomCurrentLeader(UUID gameId);
+
+    void revealCard(UUID gameId, String cardIndex);
 }

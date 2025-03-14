@@ -71,6 +71,11 @@ public class GameState {
     private String hint;
 
     /**
+     * Hint number
+     */
+    private int hintNumber;
+
+    /**
      * Is hint turn
      */
     private boolean isHintTurn = true;
@@ -79,11 +84,6 @@ public class GameState {
      * Is guessing turn
      */
     private boolean isGuessingTurn = false;
-
-    /**
-     * Is card selection turn
-     */
-    private boolean isSelectionTurn = false;
 
     /**
      * Change turn

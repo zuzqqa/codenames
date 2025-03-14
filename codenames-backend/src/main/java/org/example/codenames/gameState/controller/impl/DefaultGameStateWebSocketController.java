@@ -40,38 +40,22 @@ public class DefaultGameStateWebSocketController implements GameSateWebSocketCon
     /**
      * Submit votes for the game with the given id.
      *
-     * @param id id of the game.
+     * @param gameId id of the game.
      * @param voteRequest
+     *
      * @return ResponseEntity containing the result of the operation.
      */
     @Override
-    @PostMapping("/{id}/voteCards")
-    public ResponseEntity<?> submitVotes(@PathVariable UUID id, @RequestBody CardsVoteRequest voteRequest) {
-        gameStateService.updateVotes(id, voteRequest);
+    @PostMapping("/{gameId}/voteCards")
+    public ResponseEntity<?> submitVotes(@PathVariable UUID gameId, @RequestBody CardsVoteRequest voteRequest) {
+        gameStateService.updateVotes(gameId, voteRequest);
 
-        GameSession gameSession = gameSessionRepository.findBySessionId(id).orElseThrow(() ->
-                new IllegalArgumentException("Game with an ID of " + id + " does not exist."));
+        GameSession gameSession = gameSessionRepository.findBySessionId(gameId).orElseThrow(() ->
+                new IllegalArgumentException("Game with an ID of " + gameId + " does not exist."));
 
-        gameStateService.cardsChoosen(gameSession);
-
-        System.out.println(gameSession.getGameState().getCardsChoosen());
         // Send the game session to all clients
-        messagingTemplate.convertAndSend("/game/" + id + "/timer", gameSession);
+        messagingTemplate.convertAndSend("/game/" + gameId + "/timer", gameSession);
 
         return ResponseEntity.ok("Votes submitted successfully, sent to game");
     }
-
-//    @Override
-//    @PostMapping("/{id}/start-revealing-phase")
-//    public ResponseEntity<?> startRevealingPhase(@PathVariable UUID id){
-//        gameStateService.startRevealingPhase(id);
-//
-//        GameSession gameSession = gameSessionRepository.findBySessionId(id).orElseThrow(() ->
-//                new IllegalArgumentException("Game with an ID of " + id + " does not exist."));
-//
-//        // Send the game session to all clients
-//        messagingTemplate.convertAndSend("/game/" + id + "/timer", gameSession);
-//
-//        return ResponseEntity.ok("Revealing phase started.");
-//    }
 }

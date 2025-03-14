@@ -12,5 +12,5 @@ import java.util.UUID;
  * This controller is used to manage the game states
  */
 public interface GameSateWebSocketController {
-    ResponseEntity<?> submitVotes(@PathVariable UUID id, @RequestBody CardsVoteRequest voteRequest);
+    ResponseEntity<?> submitVotes(@PathVariable UUID gameId, @RequestBody CardsVoteRequest voteRequest);
 }

@@ -28,6 +28,7 @@ public class DefaultGameSessionController implements GameSessionController {
 
     /**
      * Constructor for the DefaultGameSessionController class
+     *
      * @param gameSessionService The GameSessionService instance used to interact with the game session repository
      * @param gameSessionRepository The GameSessionRepository instance used to interact with the game session database
      * @param messagingTemplate The SimpMessagingTemplate instance used to send messages to connected clients
@@ -40,7 +41,9 @@ public class DefaultGameSessionController implements GameSessionController {
 
     /**
      * Get game session by id
+     *
      * @param gameId The id of the game session to retrieve
+     *
      * @return The game session with the specified id
      */
     @GetMapping("/{gameId}")
@@ -56,7 +59,9 @@ public class DefaultGameSessionController implements GameSessionController {
 
     /**
      * Get states of cards in the game session
+     *
      * @param gameId The id of the game session to retrieve
+     *
      * @return The states of cards in the game session
      */
     @GetMapping("/{gameId}/cards")
@@ -66,7 +71,9 @@ public class DefaultGameSessionController implements GameSessionController {
 
     /**
      * Get the colors of cards in the game session
+     *
      * @param gameId The id of the game session to retrieve
+     *
      * @return The colors of cards in the game session
      */
     @GetMapping("/{gameId}/cards-colors")
@@ -76,7 +83,9 @@ public class DefaultGameSessionController implements GameSessionController {
 
     /**
      * Get the votes for leaders
+     *
      * @param gameId the id of the game session
+     *
      * @return the votes for leaders
      */
     @GetMapping("/{gameId}/assign-leaders")
@@ -99,8 +108,10 @@ public class DefaultGameSessionController implements GameSessionController {
 
     /**
      * Get users assigned to a team
+     *
      * @param gameId the id of the game session
      * @param teamIndex the index of the team
+     *
      * @return the votes for leaders
      */
     @GetMapping("/{gameId}/team")

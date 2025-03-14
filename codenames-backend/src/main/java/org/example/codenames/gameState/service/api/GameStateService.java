@@ -19,7 +19,7 @@ public interface GameStateService {
 
     void updateVotes(UUID id, CardsVoteRequest voteRequest);
 
-    void cardsChosen(GameSession gameSession);
+    void cardsChosen(GameSession gameSession, int cardIndex);
 
     int getTeamSize(GameSession gameSession);
 }

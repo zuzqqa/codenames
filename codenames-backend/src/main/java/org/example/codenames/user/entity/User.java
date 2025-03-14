@@ -9,6 +9,8 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Objects;
+
 /**
  * Entity class for the User object.
  */
@@ -62,4 +64,26 @@ public class User {
      * User status.
      */
     private userStatus status;
+
+    /**
+     * Override the equals method to compare two User objects.
+     * @param obj the object to compare to
+     * @return true if the objects are equal, false otherwise
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        User user = (User) obj;
+        return Objects.equals(username, user.username);
+    }
+
+    /**
+     * Override the hashCode method to generate a hash code for the User object.
+     * @return the hash code for the User object
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(username);
+    }
 }

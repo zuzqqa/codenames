@@ -80,6 +80,7 @@ interface GameState {
   redTeamScore: number;
   teamTurn: number;
   hint: string;
+  hintNumber: string;
   cards: string[];
   cardsColors: number[];
   cardsChosen: number[];
@@ -234,7 +235,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         `http://localhost:8080/api/game-session/${storedGameId}/reveal-card`,
         {
           method: "POST",
-          body: JSON.stringify({ index: cardIndex }),
+          body: JSON.stringify({ cardIndex: cardIndex }),
           headers: {
             "Content-Type": "application/json",
           },
@@ -243,35 +244,6 @@ const Gameplay: React.FC<GameplayProps> = ({
     } catch (error) {
       console.error("Error submitting vote:", error);
     }
-
-    if (!gameSession?.gameState || cardsToReveal.length === 0) return;
-
-    setFlipStates((prevFlipStates) => {
-      const newFlipStates = [...prevFlipStates];
-      newFlipStates[cardIndex] = true;
-      return newFlipStates;
-    });
-
-    setCards((prevCards) => {
-      const newCards = [...prevCards];
-      cardsToReveal.forEach((cardIndex) => {
-        const cardColor = gameSession.gameState.cardsColors[cardIndex];
-        switch (cardColor) {
-          case 1:
-            newCards[cardIndex] = cardRedImg;
-            break;
-          case 2:
-            newCards[cardIndex] = cardBlueImg;
-            break;
-          case 3:
-            newCards[cardIndex] = cardBlackImg;
-            break;
-          default:
-            newCards[cardIndex] = cardWhiteImg;
-        }
-      });
-      return newCards;
-    });
   }
 
   /**
@@ -350,7 +322,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         setWhosTurn(data.gameState?.teamTurn === 0 ? "red" : "blue");
         setIsHintTime(data.gameState?.hintTurn);
         setIsGuessingTime(data.gameState?.guessingTurn);
-        setCardsToReveal(data.gameState?.cardsChoosen || []);
+        setCardsToReveal(data.gameState?.cardsChosen || []);
         setMyTeam(
           data.connectedUsers[0].find((user: User) => user.id === userId)
             ? "red"
@@ -370,10 +342,10 @@ const Gameplay: React.FC<GameplayProps> = ({
   }, []);
 
   useEffect(() => {
-    setCardsToReveal(gameSession?.gameState?.cardsChoosen || []);
+    setCardsToReveal(gameSession?.gameState?.cardsChosen || []);
     revealCardsVotedByTeam();
-    console.log("cardsChoosen changed:", gameSession?.gameState?.cardsChoosen);
-  }, [gameSession]);
+    console.log("cardsChosen changed:", gameSession?.gameState?.cardsChosen);
+  }, [gameSession?.gameState?.cardsChosen]);
 
   useEffect(() => {
     if (!storedGameId) {
@@ -409,7 +381,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         setWhosTurn(data.gameState?.teamTurn === 0 ? "red" : "blue");
         setIsHintTime(data.gameState?.hintTurn);
         setIsGuessingTime(data.gameState?.guessingTurn);
-        setCardsToReveal(data.gameState?.cardsChoosen || []);
+        setCardsToReveal(data.gameState?.cardsChosen || []);
         setMyTeam(
           data.connectedUsers[0].find((user: User) => user.id === userId)
             ? "red"
@@ -489,14 +461,11 @@ const Gameplay: React.FC<GameplayProps> = ({
   const revealCardsVotedByTeam = () => {
     if (!gameSession?.gameState || cardsToReveal.length === 0) return;
 
-    console.log("Odwracam");
-
     setFlipStates((prevFlipStates) => {
       const newFlipStates = [...prevFlipStates];
       cardsToReveal.forEach((cardIndex) => {
         newFlipStates[cardIndex] = true;
       });
-      console.log("Nowe flipStates:", newFlipStates);
       return newFlipStates;
     });
 
@@ -518,8 +487,7 @@ const Gameplay: React.FC<GameplayProps> = ({
             newCards[cardIndex] = cardWhiteImg;
         }
       });
-      console.log("Nowe karty:", newCards);
-
+  
       return newCards;
     });
     
@@ -584,13 +552,11 @@ const Gameplay: React.FC<GameplayProps> = ({
         "Content-Type": "application/json",
         credentials: "include",
       },
-      body: JSON.stringify({ hint: cardText + " " + cardNumber }),
+      body: JSON.stringify({ hint: cardText, hintNumber: cardNumber }),
     });
 
     setCardText("");
   };
-
-  const reveal_cards_phase = () => {};
 
   /**
    * useEffect hook for handling the automatic removal of error messages after a delay.
@@ -866,7 +832,7 @@ const Gameplay: React.FC<GameplayProps> = ({
                 onClick={toggleBlackCardVisibility}
               >
                 <span className="codename-card-text">
-                  {gameSession?.gameState.hint || ""}
+                  {gameSession?.gameState.hint + " " + gameSession?.gameState.hintNumber || ""}
                 </span>
                 <img className="codename-card" src={cardBlackImg} />
               </div>
@@ -903,7 +869,7 @@ const Gameplay: React.FC<GameplayProps> = ({
                   (!amIRedTeamLeader && !amIBlueTeamLeader) ||
                   whosTurn !== myTeam
                 }
-              />
+              /> 
               <span className="slider-value">{cardNumber}</span>
             </div>
           </div>

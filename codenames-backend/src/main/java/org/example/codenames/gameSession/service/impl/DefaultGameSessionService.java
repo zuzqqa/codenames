@@ -214,6 +214,7 @@ public class DefaultGameSessionService implements GameSessionService {
      *
      * @param team The team to find the leader for.
      * @param teamVotes The votes for each player in the team.
+     *
      * @return The leader of the team.
      */
     @Override
@@ -241,6 +242,7 @@ public class DefaultGameSessionService implements GameSessionService {
      * @param sessionId The UUID of the game session.
      * @param userId The ID of the user to add.
      * @param teamIndex The index of the team to add the user to.
+     *
      * @return True if the player was added, otherwise false.
      */
     @Override
@@ -294,6 +296,7 @@ public class DefaultGameSessionService implements GameSessionService {
      *
      * @param sessionId The UUID of the game session.
      * @param userId The ID of the user to remove.
+     *
      * @return True if the player was removed, otherwise false.
      */
     @Override
@@ -363,19 +366,43 @@ public class DefaultGameSessionService implements GameSessionService {
         gameSessionRepository.save(gameSession);
     }
 
+    /**
+     * Reveal a card.
+     *
+     * @param gameId id of the game
+     * @param cardIndex index of the card chosen
+     */
+    @Override
+    public void revealCard(UUID gameId, String cardIndex) {
+        GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        gameStateService.cardsChosen(gameSession, Integer.parseInt(cardIndex));
+
+        gameSessionRepository.save(gameSession);
+    }
+
+    /**
+     * Selects a new leader to select cards this round.
+     *
+     * @param gameSession the game session
+     * @param connectedUsers the connected users to the game session
+     *
+     * @return the new leader
+     */
     private static User getNewLeader(GameSession gameSession, List<List<User>> connectedUsers) {
         int currentTeamIndex = gameSession.getGameState().getTeamTurn();
 
         List<User> currentTeamPlayers = connectedUsers.get(currentTeamIndex);
+        List<User> availablePlayers = new ArrayList<>(currentTeamPlayers);
+
+        availablePlayers.remove(gameSession.getGameState().getRedTeamLeader());
+        availablePlayers.remove(gameSession.getGameState().getBlueTeamLeader());
 
         Random rand = new Random();
 
-        User newLeader = currentTeamPlayers.get(rand.nextInt(currentTeamPlayers.size()));
+        User newLeader = availablePlayers.get(rand.nextInt(currentTeamPlayers.size()));
 
-        while(newLeader == gameSession.getGameState().getRedTeamLeader() ||
-                newLeader == gameSession.getGameState().getBlueTeamLeader()) {
-            newLeader = currentTeamPlayers.get(rand.nextInt(currentTeamPlayers.size()));
-        }
         return newLeader;
     }
 }

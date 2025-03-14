@@ -73,7 +73,7 @@ public class ConfigSecurity {
                                 "/api/users/activate/**"
                         ).permitAll()
                         .requestMatchers(
-                                "/api/email/send-report", "/api/game-session/create",
+                                "/api/email/send-report",
                                 "api/game-session/**", "api/game-state/**", "api/cards/**"
                         ).permitAll()
                         .requestMatchers("/oauth2/**", "/api/auth/**").permitAll()
