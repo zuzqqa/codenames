@@ -26,6 +26,11 @@ public class GameState {
     private User redTeamLeader;
 
     /**
+     * Leader with privilege to select cards
+     */
+    private User currentSelectionLeader;
+
+    /**
      * Blue team score
      */
     private Integer blueTeamScore;
@@ -56,9 +61,9 @@ public class GameState {
     private List<Integer> cardsVotes;
 
     /**
-     * Cards choosen to be revealed
+     * Cards chosen to be revealed
      */
-    private List<Integer> cardsChoosen;
+    private List<Integer> cardsChosen;
 
     /**
      * Hint
@@ -74,6 +79,11 @@ public class GameState {
      * Is guessing turn
      */
     private boolean isGuessingTurn = false;
+
+    /**
+     * Is card selection turn
+     */
+    private boolean isSelectionTurn = false;
 
     /**
      * Change turn

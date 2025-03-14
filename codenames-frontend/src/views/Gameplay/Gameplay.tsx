@@ -25,7 +25,7 @@ import votingLabel from "../../assets/images/medieval-label.png";
 import "./Gameplay.css";
 import Chat from "../../components/Chat/Chat.tsx";
 import { Client } from "@stomp/stompjs";
-import {useLocation, useNavigate} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useWebSocket } from "./useWebSocket";
 
 /**
@@ -75,20 +75,22 @@ interface GameSession {
 interface GameState {
   blueTeamLeader: User;
   redTeamLeader: User;
+  currentSelectionLeader: User;
   blueTeamScore: number;
   redTeamScore: number;
   teamTurn: number;
   hint: string;
   cards: string[];
   cardsColors: number[];
-  cardsChoosen: number[];
+  cardsChosen: number[];
   hintTurn: boolean;
   guessingTurn: boolean;
+  selectionTurn: boolean;
   cardsVotes: number[];
 }
 
 const generateId = () =>
-    Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+  Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 /**
  * React functional component responsible for handling gameplay-related settings,
  * such as volume adjustments.
@@ -126,6 +128,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   );
   const [amIRedTeamLeader, setAmIRedTeamLeader] = useState(false);
   const [amIBlueTeamLeader, setAmIBlueTeamLeader] = useState(false);
+  const [amICurrentLeader, setAmICurrentLeader] = useState(false);
   const navigate = useNavigate();
   const [blueTeamScore, setBlueTeamScore] = useState(0);
   const [redTeamScore, setRedTeamScore] = useState(0);
@@ -140,6 +143,10 @@ const Gameplay: React.FC<GameplayProps> = ({
   const clickAudio = new Audio(cardSound);
   const [votedCards, setVotedCards] = useState<number[]>([]);
   const [isVoteSubmitted, setIsVoteSubmitted] = useState<boolean>(false);
+  const [userId, setUserId] = useState<string | null>(
+    localStorage.getItem("userId") || null
+  );
+
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
@@ -158,18 +165,149 @@ const Gameplay: React.FC<GameplayProps> = ({
     }
   };
 
-  const handleCardSelection = (index: number) => {
+  /**
+   * Handles card selection by the player.
+   * Prevents leaders from selecting cards.
+   * Sends selection to the server and updates the local selection state.
+   *
+   * @param {number} cardIndex - The index of the card being selected.
+   */
+  const handleCardSelection = (cardIndex: number) => {
     if (amIRedTeamLeader || amIBlueTeamLeader) return;
 
-    setSelectedCards((prevSelectedCards) => {
-      if (prevSelectedCards.includes(index)) {
-        return prevSelectedCards.filter((cardIndex) => cardIndex !== index);
-      } else {
-        return [...prevSelectedCards, index];
-      }
-    });
+    if (amICurrentLeader) {
+      revealCard(cardIndex);
+    } else {
+      const isAddingVote = selectedCards.includes(cardIndex) ? false : true;
+
+      sendCardSelection(cardIndex, isAddingVote);
+
+      setSelectedCards((prevSelectedCards) =>
+        isAddingVote
+          ? [...prevSelectedCards, cardIndex]
+          : prevSelectedCards.filter((cardIndex) => cardIndex !== cardIndex)
+      );
+    }
   };
 
+  /**
+   * Sends the player's card selection to the server.
+   *
+   * @param {number} cardIndex - The index of the selected card.
+   * @param {boolean} isAddingVote - Whether the player is adding or removing their vote.
+   */
+  const sendCardSelection = async (
+    cardIndex: number,
+    isAddingVote: boolean
+  ) => {
+    const storedGameId = localStorage.getItem("gameId");
+    if (!storedGameId) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/game-session/${storedGameId}/voteCards`,
+        {
+          method: "POST",
+          body: JSON.stringify({ index: cardIndex, addingVote: isAddingVote }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const text = await response.text();
+
+      if (text !== "Vote submitted successfully") {
+        console.error("Unexpected server response:", text);
+      }
+    } catch (error) {
+      console.error("Error submitting vote:", error);
+    }
+  };
+
+  const revealCard = (cardIndex: number) => {
+    const storedGameId = localStorage.getItem("gameId");
+    if (!storedGameId) return;
+
+    try {
+      const response = fetch(
+        `http://localhost:8080/api/game-session/${storedGameId}/reveal-card`,
+        {
+          method: "POST",
+          body: JSON.stringify({ index: cardIndex }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error submitting vote:", error);
+    }
+
+    if (!gameSession?.gameState || cardsToReveal.length === 0) return;
+
+    setFlipStates((prevFlipStates) => {
+      const newFlipStates = [...prevFlipStates];
+      newFlipStates[cardIndex] = true;
+      return newFlipStates;
+    });
+
+    setCards((prevCards) => {
+      const newCards = [...prevCards];
+      cardsToReveal.forEach((cardIndex) => {
+        const cardColor = gameSession.gameState.cardsColors[cardIndex];
+        switch (cardColor) {
+          case 1:
+            newCards[cardIndex] = cardRedImg;
+            break;
+          case 2:
+            newCards[cardIndex] = cardBlueImg;
+            break;
+          case 3:
+            newCards[cardIndex] = cardBlackImg;
+            break;
+          default:
+            newCards[cardIndex] = cardWhiteImg;
+        }
+      });
+      return newCards;
+    });
+  }
+
+  /**
+   * Fetches the user ID from localStorage or from the server if not stored.
+   * Saves the fetched user ID in both localStorage and state.
+   */
+  useEffect(() => {
+    const fetchUserId = async () => {
+      try {
+        const storedId = localStorage.getItem("userId");
+        if (storedId) {
+          setUserId(storedId);
+          return;
+        }
+
+        const response = await fetch("http://localhost:8080/api/users/getId", {
+          method: "GET",
+          credentials: "include",
+        });
+        if (!response.ok) throw new Error("Failed to fetch user ID");
+
+        const id = await response.text();
+        localStorage.setItem("userId", id);
+        setUserId(id);
+      } catch (error) {
+        console.error("Error fetching user ID", error);
+      }
+    };
+
+    fetchUserId();
+  }, []);
+
+  /**
+   * Toggles the visibility of the black card.
+   * Adjusts the volume and plays a click sound.
+   */
   const toggleBlackCardVisibility = () => {
     clickAudio.volume = soundFXVolume / 100;
     clickAudio.play();
@@ -203,6 +341,9 @@ const Gameplay: React.FC<GameplayProps> = ({
 
         setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
         setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
+        setAmICurrentLeader(
+          data.gameState.currentSelectionLeader.id === userId
+        );
         setGameSession(data);
         setRedTeamPlayers(data.connectedUsers[0] || []);
         setBlueTeamPlayers(data.connectedUsers[1] || []);
@@ -255,6 +396,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
         setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
         setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
+        setAmICurrentLeader(data.gameState.currentLeader.id === userId);
         setGameSession(data);
         setRedTeamPlayers(data.connectedUsers[0] || []);
         setBlueTeamPlayers(data.connectedUsers[1] || []);
@@ -267,7 +409,7 @@ const Gameplay: React.FC<GameplayProps> = ({
             ? "red"
             : "blue"
         );
-        setVotedCards(data.gameState?.cardsVotes || []);
+        // setVotedCards(data.gameState?.cardsVotes || []);
       } catch (err) {
         console.error("Failed to load game session", err);
       }
@@ -291,21 +433,42 @@ const Gameplay: React.FC<GameplayProps> = ({
     setGameSession(gameSessionData);
     setIsGuessingTime(gameSession?.gameState?.guessingTurn);
     setIsHintTime(gameSession?.gameState?.hintTurn);
-    setCardsToReveal(gameSession?.gameState?.cardsChoosen || []);
+    setCardsToReveal(gameSession?.gameState?.cardsChosen || []);
     setRedTeamScore(gameSession?.gameState?.redTeamScore || 0);
     setBlueTeamScore(gameSession?.gameState?.blueTeamScore || 0);
-    setVotedCards(gameSession?.gameState?.cardsVotes || []);
+    // setVotedCards(gameSession?.gameState?.cardsVotes || []);
     revealCardsVotedByTeam();
   }, [gameSessionData]);
 
   useEffect(() => {
     setGameSession(gameSession);
+  }, [gameSession]);
+
+  useEffect(() => {
     setIsGuessingTime(gameSession?.gameState?.guessingTurn);
+  }, [gameSession?.gameState?.guessingTurn]);
+
+  useEffect(() => {
     setIsHintTime(gameSession?.gameState?.hintTurn);
-    setCardsToReveal(gameSession?.gameState?.cardsChoosen || []);
-    setVotedCards(gameSession?.gameState?.cardsVotes || []);
+  }, [gameSession?.gameState?.hintTurn]);
+
+  useEffect(() => {
     revealCardsVotedByTeam();
-  }, [gameSession, whosTurn, isHintTime, isGuessingTime]);
+  }, [whosTurn, isHintTime, isGuessingTime]);
+
+  useEffect(() => {
+    if (gameSession?.gameState?.cardsVotes) {
+      setVotedCards(gameSession.gameState.cardsVotes);
+    }
+  }, [gameSession?.gameState?.cardsVotes]);
+
+  useEffect(() => {
+    if (gameSession?.gameState?.currentSelectionLeader) {
+      setAmICurrentLeader(
+        gameSession.gameState.currentSelectionLeader.id === userId
+      );
+    }
+  }, [gameSession?.gameState?.currentSelectionLeader]);
 
   // Checking the end of game condition
   useEffect(() => {
@@ -412,30 +575,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     setCardText("");
   };
 
-  const submitVotes = () => {
-    const storedGameId = localStorage.getItem("gameId");
-
-    fetch(`http://localhost:8080/api/game-session/${storedGameId}/voteCards`, {
-      method: "POST",
-      body: JSON.stringify({ selectedCards }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.text())
-      .then((text) => {
-        if (text === "Votes submitted successfully") {
-        } else {
-          console.error("Unexpected server response:", text);
-        }
-      })
-      .catch((error) => {
-        console.error("Error submitting votes:", error);
-      });
-
-    setIsVoteSubmitted(true);
-    localStorage.setItem("vote submitted", JSON.stringify(isVoteSubmitted));
-  };
+  const reveal_cards_phase = () => {};
 
   /**
    * useEffect hook for handling the automatic removal of error messages after a delay.
@@ -460,7 +600,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         // Remove the error from state after 8.5 seconds
         const removeTimer = setTimeout(() => {
           setErrors((prevErrors) =>
-              prevErrors.filter((e) => e.id !== error.id)
+            prevErrors.filter((e) => e.id !== error.id)
           );
         }, 8500);
 
@@ -469,7 +609,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         // Remove error if toast element is not found
         return setTimeout(() => {
           setErrors((prevErrors) =>
-              prevErrors.filter((e) => e.id !== error.id)
+            prevErrors.filter((e) => e.id !== error.id)
           );
         }, 8000);
       }
@@ -492,7 +632,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
       setTimeout(() => {
         setErrors((prevErrors) =>
-            prevErrors.filter((error) => error.id !== id)
+          prevErrors.filter((error) => error.id !== id)
         );
       }, 500);
     }
@@ -505,7 +645,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   const validateCardText = (text: string) => {
     const newErrors: { id: string; message: string }[] = [];
     if (text.split(" ").length == 1) {
-        return true;
+      return true;
     }
     newErrors.push({
       id: generateId(),
@@ -514,7 +654,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
     setErrors(newErrors);
     if (newErrors.length > 0) return;
-  }
+  };
 
   return (
     <>
@@ -545,10 +685,13 @@ const Gameplay: React.FC<GameplayProps> = ({
             } else if (
               !amIBlueTeamLeader &&
               !amIRedTeamLeader &&
+              !amICurrentLeader &&
               isGuessingTime &&
               whosTurn === myTeam
             ) {
-              return t("guessing");
+              return t("voting-time");
+            } else if (amICurrentLeader && isGuessingTime) {
+              return t("select-cards");
             } else if (isGuessingTime && whosTurn !== myTeam) {
               return t("opposing-team-guessing");
             }
@@ -695,7 +838,6 @@ const Gameplay: React.FC<GameplayProps> = ({
                       ? "hidden"
                       : ""
                   }
-                  onClick={submitVotes}
                 >
                   <span className="button-text">{t("lock-in")}</span>
                 </Button>
@@ -717,61 +859,63 @@ const Gameplay: React.FC<GameplayProps> = ({
           </div>
         </div>
         {isCardVisible && (
-            <div className="card-black-overlay">
-              <img
-                  className="card-black-img"
-                  src={cardBlackImg}
-                  alt="Black Card"
+          <div className="card-black-overlay">
+            <img
+              className="card-black-img"
+              src={cardBlackImg}
+              alt="Black Card"
+            />
+            <div className="codename-input-container">
+              <input
+                type="text"
+                placeholder={t("enter-the-codename")}
+                className="codename-input"
+                value={cardText}
+                onChange={(e) => setCardText(e.target.value)}
+                disabled={
+                  (!amIRedTeamLeader && !amIBlueTeamLeader) ||
+                  whosTurn !== myTeam
+                }
               />
-              <div className="codename-input-container">
-                <input
-                    type="text"
-                    placeholder={t("enter-the-codename")}
-                    className="codename-input"
-                    value={cardText}
-                    onChange={(e) => setCardText(e.target.value)}
-                    disabled={
-                        (!amIRedTeamLeader && !amIBlueTeamLeader) || whosTurn !== myTeam
-                    }
-                />
-                <input
-                    type="range"
-                    min={1}
-                    max={whosTurn === "blue" ? 5 : 6}
-                    className="codename-slider"
-                    value={cardNumber}
-                    onChange={(e) => setCardNumber(+e.target.value)}
-                    disabled={
-                        (!amIRedTeamLeader && !amIBlueTeamLeader) || whosTurn !== myTeam
-                    }
-                />
-                <span className="slider-value">{cardNumber}</span>
-              </div>
+              <input
+                type="range"
+                min={1}
+                max={whosTurn === "blue" ? 5 : 6}
+                className="codename-slider"
+                value={cardNumber}
+                onChange={(e) => setCardNumber(+e.target.value)}
+                disabled={
+                  (!amIRedTeamLeader && !amIBlueTeamLeader) ||
+                  whosTurn !== myTeam
+                }
+              />
+              <span className="slider-value">{cardNumber}</span>
             </div>
+          </div>
         )}
         {errors.length > 0 && (
-            <div className="toast-container">
-              {errors.map((error) => (
-                  <div id={error.id} key={error.id} className="toast active">
-                    <div className="toast-content">
-                      <i
-                          className="fa fa-exclamation-circle fa-3x"
-                          style={{ color: "#561723" }}
-                          aria-hidden="true"
-                      ></i>
-                      <div className="message">
-                        <span className="text text-1">Error</span>
-                        <span className="text text-2">{error.message}</span>
-                      </div>
-                    </div>
-                    <i
-                        className="fa-solid fa-xmark close"
-                        onClick={() => handleCloseErrorToast(error.id)}
-                    ></i>
-                    <div className="progress active"></div>
+          <div className="toast-container">
+            {errors.map((error) => (
+              <div id={error.id} key={error.id} className="toast active">
+                <div className="toast-content">
+                  <i
+                    className="fa fa-exclamation-circle fa-3x"
+                    style={{ color: "#561723" }}
+                    aria-hidden="true"
+                  ></i>
+                  <div className="message">
+                    <span className="text text-1">Error</span>
+                    <span className="text text-2">{error.message}</span>
                   </div>
-              ))}
-            </div>
+                </div>
+                <i
+                  className="fa-solid fa-xmark close"
+                  onClick={() => handleCloseErrorToast(error.id)}
+                ></i>
+                <div className="progress active"></div>
+              </div>
+            ))}
+          </div>
         )}
       </BackgroundContainer>
     </>

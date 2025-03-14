@@ -39,22 +39,36 @@ public class DefaultGameStateWebSocketController implements GameSateWebSocketCon
 
     /**
      * Submit votes for the game with the given id.
+     *
      * @param id id of the game.
-     * @param cardsVoteRequest Request containing the selected cards.
+     * @param voteRequest
      * @return ResponseEntity containing the result of the operation.
      */
+    @Override
     @PostMapping("/{id}/voteCards")
-    public ResponseEntity<?> submitVotes(@PathVariable UUID id, @RequestBody CardsVoteRequest cardsVoteRequest) {
-        gameStateService.updateVotes(id, cardsVoteRequest.getSelectedCards());
+    public ResponseEntity<?> submitVotes(@PathVariable UUID id, @RequestBody CardsVoteRequest voteRequest) {
+        gameStateService.updateVotes(id, voteRequest);
 
         GameSession gameSession = gameSessionRepository.findBySessionId(id).orElseThrow(() ->
                 new IllegalArgumentException("Game with an ID of " + id + " does not exist."));
-
-        gameStateService.cardsChoosen(gameSession);
 
         // Send the game session to all clients
         messagingTemplate.convertAndSend("/game/" + id + "/timer", gameSession);
 
         return ResponseEntity.ok("Votes submitted successfully, sent to game");
     }
+
+//    @Override
+//    @PostMapping("/{id}/start-revealing-phase")
+//    public ResponseEntity<?> startRevealingPhase(@PathVariable UUID id){
+//        gameStateService.startRevealingPhase(id);
+//
+//        GameSession gameSession = gameSessionRepository.findBySessionId(id).orElseThrow(() ->
+//                new IllegalArgumentException("Game with an ID of " + id + " does not exist."));
+//
+//        // Send the game session to all clients
+//        messagingTemplate.convertAndSend("/game/" + id + "/timer", gameSession);
+//
+//        return ResponseEntity.ok("Revealing phase started.");
+//    }
 }

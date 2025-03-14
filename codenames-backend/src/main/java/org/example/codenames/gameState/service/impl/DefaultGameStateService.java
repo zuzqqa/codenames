@@ -4,6 +4,7 @@ import org.example.codenames.card.entity.Card;
 import org.example.codenames.card.repository.CardRepository;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
+import org.example.codenames.gameState.entity.CardsVoteRequest;
 import org.example.codenames.gameState.entity.GameState;
 import org.example.codenames.gameState.service.api.GameStateService;
 
@@ -117,26 +118,33 @@ public class DefaultGameStateService implements GameStateService {
     }
 
     /**
-     * Updates vote counts for selected cards.
+     * Updates vote counts for selected card.
      *
-     * @param id            the game session ID
-     * @param selectedCards list of selected card indexes
+     * @param id the game session ID
+     * @param voteRequest
      */
     @Override
-    public void updateVotes(UUID id, List<Integer> selectedCards) {
+    public void updateVotes(UUID id, CardsVoteRequest voteRequest) {
         GameSession gameSession = gameSessionRepository.findBySessionId(id).orElse(null);
+
         if (gameSession == null) {
-            throw new IllegalArgumentException("Nie znaleziono gry o podanym identyfikatorze.");
+            throw new IllegalArgumentException("The game ID provided was not found.");
         }
 
         GameState gameState = gameSession.getGameState();
+        int index = voteRequest.getIndex();
+        System.out.println(voteRequest.isAddingVote());
 
-        for (Integer cardIndex : selectedCards) {
-            if (cardIndex >= 0 && cardIndex < gameState.getCardsVotes().size()) {
-                gameState.getCardsVotes().set(cardIndex, gameState.getCardsVotes().get(cardIndex) + 1);
+        if (index >= 0 && index < gameState.getCardsVotes().size()) {
+            int currentVotes = gameState.getCardsVotes().get(index);
+
+            if (voteRequest.isAddingVote()) {
+                gameState.getCardsVotes().set(index, currentVotes + 1);
             } else {
-                throw new IllegalArgumentException("Nieprawidłowy indeks karty: " + cardIndex);
+                gameState.getCardsVotes().set(index, Math.max(0, currentVotes - 1));
             }
+        } else {
+            throw new IllegalArgumentException("Nieprawidłowy indeks karty: " + index);
         }
 
         gameSessionRepository.save(gameSession);
@@ -148,21 +156,21 @@ public class DefaultGameStateService implements GameStateService {
      * @param gameSession the current game session
      */
     @Override
-    public void cardsChoosen(GameSession gameSession) {
+    public void cardsChosen(GameSession gameSession) {
         if (gameSession.getGameState().getCardsVotes().isEmpty()) {
             return;
         }
 
         int teamSize = gameSession.getConnectedUsers().get(getTeamSize(gameSession)).size() - 1 == 0 ? 1 : gameSession.getConnectedUsers().get(getTeamSize(gameSession)).size() - 1;
 
-        if(gameSession.getGameState().getCardsChoosen() == null){
-            gameSession.getGameState().setCardsChoosen(new ArrayList<>());
+        if(gameSession.getGameState().getCardsChosen() == null){
+            gameSession.getGameState().setCardsChosen(new ArrayList<>());
         }
         List<Integer> cardVotes = gameSession.getGameState().getCardsVotes();
 
         for (int i = 0; i < cardVotes.size(); i++) {
             if (cardVotes.get(i) == teamSize) {
-                gameSession.getGameState().getCardsChoosen().add(i);
+                gameSession.getGameState().getCardsChosen().add(i);
 
                 if(gameSession.getGameState().getCardsColors()[i] == 1){
                     gameSession.getGameState().setRedTeamScore(gameSession.getGameState().getRedTeamScore() + 1);
@@ -200,4 +208,15 @@ public class DefaultGameStateService implements GameStateService {
     public int getTeamSize(GameSession gameSession) {
         return gameSession.getGameState().getTeamTurn();
     }
+
+//    @Override
+//    public void startRevealingPhase(UUID id) {
+//        GameSession gameSession = gameSessionRepository.findBySessionId(id)
+//                .orElseThrow(() -> new RuntimeException("Session not found"));
+//        GameState gameState = gameSession.getGameState();
+//
+//        gameState.getCardsVotes().clear();
+//
+//        gameState.toggleSelectionTurn();
+//    }
 }

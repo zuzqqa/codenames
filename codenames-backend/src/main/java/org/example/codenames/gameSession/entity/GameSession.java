@@ -30,6 +30,7 @@ public class GameSession {
      */
     public enum sessionStatus {
         CREATED,
+        LEADER_SELECTION,
         IN_PROGRESS,
         FINISHED
     }

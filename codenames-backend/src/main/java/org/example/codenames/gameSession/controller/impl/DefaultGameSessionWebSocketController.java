@@ -139,14 +139,16 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      * @param gameId the game session id
      * @return the response entity
      */
+    @Override
     @PostMapping("/{gameId}/start")
     public ResponseEntity<Void> startGame(@PathVariable UUID gameId) {
+        // Set the game session status to leader selection
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
-                .orElseThrow(() -> new RuntimeException("Gra nie znaleziona"));
+                .orElseThrow(() -> new RuntimeException("Game with an ID of " + gameId + " does not exist."));
 
-        // Set the game session status to in progress
-        gameSession.setStatus(GameSession.sessionStatus.IN_PROGRESS);
+        gameSession.setStatus(GameSession.sessionStatus.LEADER_SELECTION);
         gameSession.setVotingStartTime(System.currentTimeMillis());
+
         gameSessionRepository.save(gameSession);
 
         // Send the game session to all clients
@@ -157,13 +159,13 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
     /**
      * Finish the game
-     * @param id the game session id
+     * @param gameId the game session id
      * @return the response entity
      */
-    @PostMapping("/{id}/finish")
-    public ResponseEntity<Void> finishGame(@PathVariable UUID id) {
-        GameSession gameSession = gameSessionRepository.findBySessionId(id)
-                .orElseThrow(() -> new RuntimeException("Gra nie znaleziona"));
+    @PostMapping("/{gameId}/finish")
+    public ResponseEntity<Void> finishGame(@PathVariable UUID gameId) {
+        GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
+                .orElseThrow(() -> new RuntimeException("Game with an ID of " + gameId + " does not exist."));
 
         // Set the game session status to finished
         gameSession.setStatus(GameSession.sessionStatus.FINISHED);
@@ -233,20 +235,22 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
     /**
      * Submit a vote for a leader
-     * @param id the id of the game session
+     * @param gameId the id of the game session
      * @param voteRequest the vote request containing the user id and the id of the user that was voted on
      * @return the id of the user that was voted on
      */
-    @PostMapping("/{id}/vote")
-    public ResponseEntity<?> submitVote(@PathVariable UUID id, @RequestBody VoteRequest voteRequest) {
+    @Override
+    @PostMapping("/{gameId}/vote")
+    public ResponseEntity<?> submitVote(@PathVariable UUID gameId, @RequestBody VoteRequest voteRequest) {
         // Submit vote
-        gameSessionService.submitVote(id, voteRequest.getUserId(), voteRequest.getVotedUserId());
+        gameSessionService.submitVote(gameId, voteRequest.getUserId(), voteRequest.getVotedUserId());
+        gameSessionService.chooseRandomCurrentLeader(gameId);
 
-        GameSession gameSession = gameSessionRepository.findBySessionId(id).orElseThrow(() ->
-                new IllegalArgumentException("Game with an ID of " + id + " does not exist."));
+        GameSession gameSession = gameSessionRepository.findBySessionId(gameId).orElseThrow(() ->
+                new IllegalArgumentException("Game with an ID of " + gameId + " does not exist."));
 
         // Send the game session to all clients
-        messagingTemplate.convertAndSend("/game/" + id + "/timer", gameSession);
+        messagingTemplate.convertAndSend("/game/" + gameId + "/timer", gameSession);
         
         return ResponseEntity.ok(voteRequest.getVotedUserId());
     }

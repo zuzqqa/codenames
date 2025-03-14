@@ -2,7 +2,6 @@ package org.example.codenames.gameSession.controller.impl;
 
 import org.example.codenames.gameSession.controller.api.GameSessionController;
 import org.example.codenames.gameSession.entity.GameSession;
-import org.example.codenames.gameSession.entity.VoteRequest;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.user.entity.User;
@@ -25,6 +24,7 @@ public class DefaultGameSessionController implements GameSessionController {
      * The GameSessionService instance used to interact with the game session repository
      */
     private final GameSessionService gameSessionService;
+    private final GameSessionRepository gameSessionRepository;
 
     /**
      * Constructor for the DefaultGameSessionController class
@@ -35,6 +35,7 @@ public class DefaultGameSessionController implements GameSessionController {
     @Autowired
     public DefaultGameSessionController(GameSessionService gameSessionService, GameSessionRepository gameSessionRepository, SimpMessagingTemplate messagingTemplate) {
         this.gameSessionService = gameSessionService;
+        this.gameSessionRepository = gameSessionRepository;
     }
 
     /**
@@ -55,41 +56,42 @@ public class DefaultGameSessionController implements GameSessionController {
 
     /**
      * Get states of cards in the game session
-     * @param id The id of the game session to retrieve
+     * @param gameId The id of the game session to retrieve
      * @return The states of cards in the game session
      */
-    @GetMapping("/{id}/cards")
-    public String[] getGameStateCards(@PathVariable UUID id) {
-        return gameSessionService.getCardsBySessionId(id);
+    @GetMapping("/{gameId}/cards")
+    public String[] getGameStateCards(@PathVariable UUID gameId) {
+        return gameSessionService.getCardsBySessionId(gameId);
     }
 
     /**
      * Get the colors of cards in the game session
-     * @param id The id of the game session to retrieve
+     * @param gameId The id of the game session to retrieve
      * @return The colors of cards in the game session
      */
-    @GetMapping("/{id}/cards-colors")
-    public Integer[] getGameStateCardsColors(@PathVariable UUID id) {
-        return gameSessionService.getCardsColorsBySessionId(id);
+    @GetMapping("/{gameId}/cards-colors")
+    public Integer[] getGameStateCardsColors(@PathVariable UUID gameId) {
+        return gameSessionService.getCardsColorsBySessionId(gameId);
     }
 
     /**
      * Get the votes for leaders
-     * @param id the id of the game session
+     * @param gameId the id of the game session
      * @return the votes for leaders
      */
-    @GetMapping("/{id}/assign-leaders")
-    public ResponseEntity<String> getVotes(@PathVariable UUID id) {
-        GameSession gameSession = gameSessionService.getGameSessionById(id);
+    @GetMapping("/{gameId}/assign-leaders")
+    public ResponseEntity<String> getVotes(@PathVariable UUID gameId) {
+        GameSession gameSession = gameSessionService.getGameSessionById(gameId);
+
+        gameSession.setStatus(GameSession.sessionStatus.IN_PROGRESS);
+        gameSessionRepository.save(gameSession);
 
         // Check if game session exists
-        if (gameSession != null) {
-            if (gameSession.getGameState().getBlueTeamLeader() == null) {
-                gameSessionService.assignTeamLeaders(id);
-            }
-            else {
-                return ResponseEntity.status(208).body("Duplicate action detected, already reported.");
-            }
+        if (gameSession.getGameState().getBlueTeamLeader() == null || gameSession.getGameState().getRedTeamLeader() == null) {
+            gameSessionService.assignTeamLeaders(gameId);
+            gameSessionService.chooseRandomCurrentLeader(gameId);
+        } else {
+            return ResponseEntity.status(208).body("Duplicate action detected, already reported.");
         }
 
         return ResponseEntity.ok().build();

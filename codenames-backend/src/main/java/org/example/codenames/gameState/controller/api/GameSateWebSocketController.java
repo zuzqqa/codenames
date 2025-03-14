@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.UUID;
 
+/**
+ * Interface for the GameSateWebSocketController
+ * This controller is used to manage the game states
+ */
 public interface GameSateWebSocketController {
-    ResponseEntity<?> submitVotes(@PathVariable UUID id, @RequestBody CardsVoteRequest cardsVoteRequest);
+    ResponseEntity<?> submitVotes(@PathVariable UUID id, @RequestBody CardsVoteRequest voteRequest);
 }

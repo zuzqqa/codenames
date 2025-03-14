@@ -37,6 +37,7 @@ interface User {
  */
 enum SessionStatus {
   CREATED = "CREATED",
+  LEADER_SELECTION = "LEADER_SELECTION",
   IN_PROGRESS = "IN_PROGRESS",
   FINISHED = "FINISHED",
 }
@@ -115,7 +116,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
             setRedTeamPlayers(updatedGameSession.connectedUsers[0] || []);
             setBlueTeamPlayers(updatedGameSession.connectedUsers[1] || []);
 
-            if (updatedGameSession.status === SessionStatus.IN_PROGRESS) {
+            if (updatedGameSession.status === SessionStatus.LEADER_SELECTION) {
               navigate("/choose-leader");
             }
           }

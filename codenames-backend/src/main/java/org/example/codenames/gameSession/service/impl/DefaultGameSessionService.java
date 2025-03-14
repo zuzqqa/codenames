@@ -12,11 +12,7 @@ import org.example.codenames.user.service.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Default implementation of the {@link GameSessionService}.
@@ -346,6 +342,41 @@ public class DefaultGameSessionService implements GameSessionService {
         gameState.toggleTurn();
 
         gameSessionRepository.save(gameSession);
+    }
+
+    /**
+     * Selects new turn leader.
+     *
+     * @param gameId The UUID of the game session.
+     */
+    @Override
+    public void chooseRandomCurrentLeader(UUID gameId) {
+        GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        List<List<User>> connectedUsers = gameSession.getConnectedUsers();
+
+        User newLeader = getNewLeader(gameSession, connectedUsers);
+
+        gameSession.getGameState().setCurrentSelectionLeader(newLeader);
+
+        gameSessionRepository.save(gameSession);
+    }
+
+    private static User getNewLeader(GameSession gameSession, List<List<User>> connectedUsers) {
+        int currentTeamIndex = gameSession.getGameState().getTeamTurn();
+
+        List<User> currentTeamPlayers = connectedUsers.get(currentTeamIndex);
+
+        Random rand = new Random();
+
+        User newLeader = currentTeamPlayers.get(rand.nextInt(currentTeamPlayers.size()));
+
+        while(newLeader == gameSession.getGameState().getRedTeamLeader() ||
+                newLeader == gameSession.getGameState().getBlueTeamLeader()) {
+            newLeader = currentTeamPlayers.get(rand.nextInt(currentTeamPlayers.size()));
+        }
+        return newLeader;
     }
 }
 
