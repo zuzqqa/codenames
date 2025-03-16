@@ -1,16 +1,11 @@
 package org.example.codenames.integrationTests;
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.example.codenames.CodenamesApplication;
 import org.example.codenames.gameSession.controller.api.GameSessionController;
 
-import org.example.codenames.gameSession.controller.api.GameSessionWebSocketController;
-import org.example.codenames.gameSession.entity.CreateGameRequest;
-import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,15 +21,13 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.SerializationFeature;
 import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
 import java.util.UUID;
 
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -54,8 +47,6 @@ public class GameSessionControllerTest {
 
     @Autowired
     GameSessionRepository gameSessionRepository;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     // MongoDB Testcontainers container.
     public static MongoDBContainer mongo = new MongoDBContainer(DockerImageName.parse("mongo:5"))
@@ -128,6 +119,98 @@ public class GameSessionControllerTest {
                 .andReturn();
         String id = new ObjectMapper().readTree(result.getResponse().getContentAsString()).get("gameId").asText();
         mvc.perform(get("/api/game-session/" + id))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldSubmitVote() throws Exception {
+        // Create a game session first
+        String requestBody = """
+            {
+                "gameName": "voteGame",
+                "maxPlayers": 4,
+                "timeForAHint": "PT1M",
+                "timeForGuessing": "PT1M",
+                "language": "en"
+            }
+            """;
+
+        MvcResult result = mvc.perform(post("/api/game-session/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String gameId = new ObjectMapper().readTree(result.getResponse().getContentAsString()).get("gameId").asText();
+
+        String voteRequest = """
+            {
+                "userId": "user123",
+                "votedUserId": "user456"
+            }
+            """;
+
+        mvc.perform(post("/api/game-session/" + gameId + "/vote")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(voteRequest))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldConnectPlayer() throws Exception {
+        String requestBody = """
+            {
+                "gameName": "connectGame",
+                "maxPlayers": 4,
+                "timeForAHint": "PT1M",
+                "timeForGuessing": "PT1M",
+                "language": "en"
+            }
+            """;
+
+        MvcResult result = mvc.perform(post("/api/game-session/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String gameId = new ObjectMapper().readTree(result.getResponse().getContentAsString()).get("gameId").asText();
+
+        mvc.perform(post("/api/game-session/" + gameId + "/connect")
+                        .param("userId", "testId")
+                        .param("teamIndex", "1"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldDisconnectPlayer() throws Exception {
+        String requestBody = """
+            {
+                "gameName": "disconnectGame",
+                "maxPlayers": 4,
+                "timeForAHint": "PT1M",
+                "timeForGuessing": "PT1M",
+                "language": "en"
+            }
+            """;
+
+        MvcResult result = mvc.perform(post("/api/game-session/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String gameId = new ObjectMapper().readTree(result.getResponse().getContentAsString()).get("gameId").asText();
+
+        // Connect first
+        mvc.perform(post("/api/game-session/" + gameId + "/connect")
+                        .param("userId", "1")
+                        .param("teamIndex", "1"))
+                .andExpect(status().isOk());
+
+        // Now disconnect
+        mvc.perform(delete("/api/game-session/" + gameId + "/disconnect")
+                        .param("userId", "1"))
                 .andExpect(status().isOk());
     }
 }
