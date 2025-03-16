@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -48,7 +49,7 @@ public class DefaultUserService implements UserService {
         userRepository.findByUsername(user.getUsername()).ifPresent(existingUser -> {
             throw new IllegalArgumentException("User already exists");
         });
-        if(user.getUsername() == null || user.getPassword() == null || user.getEmail() == null) {
+        if((user.getUsername() == null || user.getPassword() == null || user.getEmail() == null) && !Objects.equals(user.getRoles(), "ROLE_GUEST")) {
             throw new IllegalArgumentException("All user data must be provided");
         }
         if (!user.isGuest()) {
