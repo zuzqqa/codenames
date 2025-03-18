@@ -1,0 +1,268 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DOCUMENT DEFINITION AND BASIC SETTINGS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[12pt,a4paper]{book}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}         
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FONT AND STYLE PACKS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{mathpazo}             
+\usepackage[semibold]{sourcesanspro}
+\usepackage{sectsty}
+\allsectionsfont{\sffamily} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% COLORS AND GRAPHIC STYLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{color}
+\definecolor{Valentia}{RGB}{233,78,82}
+\definecolor{Titleblue}{RGB}{114,146,162}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LAYOUT AND FORMATTING PACKAGES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{mdframed}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage[absolute]{textpos}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{geometry}
+\usepackage{scrextend}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% HEADER AND FOOTER SETTINGS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyheadoffset{0.005\textwidth}
+\fancyhead[LE]{\thepage}
+\fancyhead[RE]{\nouppercase\leftmark}
+\fancyhead[RO]{\thepage}
+\fancyhead[LO]{\nouppercase\rightmark}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% HYPERLINKS AND CHAPTER STYLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{hyperref}
+\usepackage[Sonny]{fncychap}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BEGINNING OF THE DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TITLE PAGE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{titlepage}
+\newgeometry{left=2.5cm, bottom=3cm, top=2cm, right=2.5cm}
+
+\tikz[remember picture,overlay] \node[opacity=0.03,inner sep=0pt] at (73.6mm, -124.25mm){\includegraphics{characters.png}};
+
+\centering
+\color{black}
+\fontsize{24}{13}\selectfont
+\textbf{DOKUMENT PROJEKTU} \\[2mm]
+\normalsize
+\color{black}
+\bigskip
+\textbf{Wersja dokumentu: [NR-WERSJI]}\\[1mm]
+\bigskip
+\textbf{Data utworzenia: [DD.MM.RRRR]}\\[1mm]
+\bigskip
+\textbf{Data ostatniej aktualizacji: [DD.MM.RRRR]}
+
+% Title of the project
+\color{black}
+\vspace{2cm}
+{\fontsize{28}{32} \selectfont \textbf{Gra internetowa}}\\ 
+\vspace{0.3cm} 
+{\fontsize{45}{32} \selectfont \textbf{Codenames}} 
+
+% Subtitle of the project
+\vspace{2cm}
+\fontsize{15}{18}\selectfont
+\color{black}
+\textbf{[Nazwa dokumentu]\\}
+\bigskip
+\vspace{5cm}
+
+% Information about authors
+\normalsize
+\bigskip
+\fontsize{12}{12}\selectfont
+\vspace{1.5mm}
+\raggedright
+\begin{tabular}{ll}
+\textbf{Redaktor:} & [Imię i nazwisko redaktora] \\[6mm]
+\textbf{Współautorzy:} & [Imiona i nazwiska współautorów] \\[2mm]
+& [Imiona i nazwiska współautorów] \\[2mm]
+& [Imiona i nazwiska współautorów] \\[2mm]
+& [Imiona i nazwiska współautorów] \\[6mm]
+\textbf{Liczba stron:} & [Liczba stron] \\[2mm]
+\end{tabular}
+
+% Logo
+\vspace{\fill}
+\begin{center}
+    \includegraphics[scale=0.3]{logo.png} 
+\end{center}
+\vspace{-15mm}
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% GEOMETRY SETTINGS FOR THE MAIN BODY OF THE DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newgeometry{top=2cm, bottom=2.5cm, left=2cm, right=2cm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CONTENT OF THE DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TABLE OF CONTENTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tableofcontents
+
+\chapter{Wstęp}
+
+\section{Cel dokumentu}
+\subsection{Cel główny}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed laoreet mauris ac eleifend mattis. Duis luctus tempus elit. In non magna placerat, sagittis mauris eu, laoreet velit. Sed lobortis arcu vitae orci gravida auctor. Duis a erat quis elit congue cursus in velit. Etiam magna risus, convallis sed nibh id, tristique fermentum justo. Sed vulputate sollicitudin ultrices. Nunc lobortis ut erat id egestas. Mauris mattis nulla tortor, sed ullamcorper elit convallis venenatis. Suspendisse vestibulum tellus id augue dapibus interdum.
+
+\subsection{Cele szczegółowe}
+\begin{itemize}
+    \item Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+    \item Integer rhoncus diam ut enim lobortis aliquet at vitae nisi,
+    \item Donec a felis sit amet turpis condimentum interdum sed vel arcu,
+    \item Aliquam sollicitudin erat id arcu maximus posuere nec ut velit
+\end{itemize}
+
+\section{Zakres dokumentu}
+\subsection{Zakres produktu}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed laoreet mauris ac eleifend mattis. Duis luctus tempus elit. In non magna placerat, sagittis mauris eu, laoreet velit. Sed lobortis arcu vitae orci gravida auctor. 
+
+\begin{itemize}
+    \item Proin volutpat augue non ex molestie dignissim,
+    \item Proin vel mauris ac sem commodo condimentum,
+    \item Duis tempor mi efficitur erat interdum fermentum,
+    \item Donec malesuada libero quis lorem luctus imperdiet,
+    \item Nullam lobortis nulla sit amet turpis facilisis dictum,
+    \item Integer eget nisl eget purus euismod molestie id vel nibh,
+    \item Nulla quis justo vitae augue rutrum maximus,
+    \item Nunc vestibulum risus nec dolor volutpat, at cursus sapien finibus
+\end{itemize}
+
+\subsection{Zakres organizacyjny}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit:
+\begin{itemize}
+    \item Nullam congue neque quis,
+    \item Pellentesque sit amet erat,
+    \item Proin vel mauris ac sem commodo,
+    \item Nunc vestibulum risus nec,
+    \item Nunc vestibulum risus nec
+\end{itemize}
+
+\subsection{Kryteria sukcesu}
+\begin{itemize}
+    \item Proin volutpat augue non ex molestie dignissim,
+    \item Proin vel mauris ac sem commodo condimentum,
+    \item Duis tempor mi efficitur erat interdum fermentum,
+    \item Donec malesuada libero quis lorem luctus imperdiet,
+    \item Nullam lobortis nulla sit amet turpis facilisis dictum,
+    \item Integer eget nisl eget purus euismod molestie id vel nibh,
+    \item Nulla quis justo vitae augue rutrum maximus,
+\end{itemize}
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapters
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Rozwini\k{e}cie}
+\section{[Podrozdzia\l{} 1]}
+\begin{center}
+\begin{tabular}{|p{4cm}|p{5cm}|p{3cm}|p{2cm}|}
+\hline
+\textbf{Lorem Ipsum} & \textbf{Dolor Sit} & \textbf{Amet} & \textbf{Status} \\
+\hline
+Lorem ipsum dolor & Consectetur adipiscing elit & 01.04.2025 & Lorem \\
+\hline
+Sed do eiusmod & Tempor incididunt ut labore & 15.05.2025 & Lorem \\
+\hline
+Et dolore magna aliqua & Ut enim ad minim veniam & 30.06.2025 & Lorem \\
+\hline
+Quis nostrud exercitation & Ullamco laboris nisi ut aliquip & 31.08.2025 & Lorem \\
+\hline
+Ex ea commodo consequat & Duis aute irure dolor in reprehenderit & 30.09.2025 & Lorem \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{[Podrozdzia\l{} 2]}
+\begin{center}
+\begin{tabular}{|p{10cm}|p{2cm}|p{2cm}|}
+\hline
+\textbf{Lorem Ipsum} & \textbf{Początek} & \textbf{Koniec} \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Faza I: Dolor Sit}} \\
+\hline
+Lorem ipsum dolor sit amet & 01.04.2025 & 15.04.2025 \\
+\hline
+Consectetur adipiscing elit & 10.04.2025 & 25.04.2025 \\
+\hline
+Sed do eiusmod tempor incididunt & 15.04.2025 & 30.04.2025 \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Faza II: Ut Labore}} \\
+\hline
+Et dolore magna aliqua & 20.04.2025 & 30.04.2025 \\
+\hline
+Ut enim ad minim veniam & 01.05.2025 & 15.05.2025 \\
+\hline
+Quis nostrud exercitation ullamco & 10.05.2025 & 20.05.2025 \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Faza III: Ullamco Laboris}} \\
+\hline
+Nisi ut aliquip ex ea commodo consequat & 15.05.2025 & 30.06.2025 \\
+\hline
+Duis aute irure dolor in reprehenderit & 20.05.2025 & 15.07.2025 \\
+\hline
+Excepteur sint occaecat cupidatat non proident & 01.07.2025 & 15.07.2025 \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Faza IV: Sunt In Culpa}} \\
+\hline
+Qui officia deserunt mollit anim & 01.07.2025 & 15.07.2025 \\
+\hline
+Est laborum & 15.07.2025 & 31.07.2025 \\
+\hline
+\end{tabular}
+\end{center}
+
+\newpage
+\thispagestyle{empty}
+\null
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% END PAGE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\thispagestyle{empty}
+\tikz[remember picture,overlay] \node[opacity=0.03,inner sep=0pt] at (73.6mm, -124.25mm){\includegraphics{characters.png}};
+\begin{center}
+    \vspace*{\fill}
+    \includegraphics[width=0.3\textwidth]{logo.png} 
+    \vspace*{\fill}
+\end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% END OF DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
