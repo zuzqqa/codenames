@@ -166,14 +166,26 @@ public class DefaultGameStateService implements GameStateService {
 
         if(gameState.getCardsColors()[cardIndex] == 1){
             gameState.setRedTeamScore(gameState.getRedTeamScore() + 1);
+
+            if (gameState.getTeamTurn() != 0) {
+                this.toogleTurn(gameSession);
+            }
         } else if(gameState.getCardsColors()[cardIndex] == 2){
             gameState.setBlueTeamScore(gameState.getBlueTeamScore() + 1);
+
+            if (gameState.getTeamTurn() != 1) {
+                this.toogleTurn(gameSession);
+            }
         } else if(gameState.getCardsColors()[cardIndex] == 3){
             if (gameState.getTeamTurn() == 1) {
                 gameState.setBlueTeamScore(100);
             } else {
                 gameState.setRedTeamScore(100);
             }
+        }
+
+        if (gameState.getHintNumber() == 0) {
+            this.toogleTurn(gameSession);
         }
 
         gameSessionRepository.save(gameSession);
@@ -189,5 +201,19 @@ public class DefaultGameStateService implements GameStateService {
     @Override
     public int getTeamSize(GameSession gameSession) {
         return gameSession.getGameState().getTeamTurn();
+    }
+
+    @Override
+    public void toogleTurn(GameSession gameSession) {
+        GameState gameState = gameSession.getGameState();
+
+        if (!gameState.isHintTurn()) {
+            gameState.setTeamTurn((gameState.getTeamTurn() == 0) ? 1 : 0);
+        }
+
+        gameState.setHintTurn(!gameState.isHintTurn());
+        gameState.setGuessingTurn(!gameState.isGuessingTurn());
+
+        gameSessionRepository.save(gameSession);
     }
 }

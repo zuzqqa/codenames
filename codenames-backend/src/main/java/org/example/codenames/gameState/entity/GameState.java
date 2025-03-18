@@ -85,15 +85,15 @@ public class GameState {
      */
     private boolean isGuessingTurn = false;
 
-    /**
-     * Change turn
-     */
-    public void toggleTurn() {
-        if (!this.isHintTurn) {
-            this.teamTurn = (this.teamTurn == 0) ? 1 : 0;
-        }
-
-        this.isHintTurn = !this.isHintTurn;
-        this.isGuessingTurn = !this.isGuessingTurn;
-    }
+//    /**
+//     * Change turn
+//     */
+//    public void toggleTurn() {
+//        if (!this.isHintTurn) {
+//            this.teamTurn = (this.teamTurn == 0) ? 1 : 0;
+//        }
+//
+//        this.isHintTurn = !this.isHintTurn;
+//        this.isGuessingTurn = !this.isGuessingTurn;
+//    }
 }

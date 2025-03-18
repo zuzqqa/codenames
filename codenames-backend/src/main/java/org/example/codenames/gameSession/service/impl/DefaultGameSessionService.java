@@ -340,11 +340,7 @@ public class DefaultGameSessionService implements GameSessionService {
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
-        GameState gameState = gameSession.getGameState();
-
-        gameState.toggleTurn();
-
-        gameSessionRepository.save(gameSession);
+        gameStateService.toogleTurn(gameSession);
     }
 
     /**
@@ -401,9 +397,7 @@ public class DefaultGameSessionService implements GameSessionService {
 
         Random rand = new Random();
 
-        User newLeader = availablePlayers.get(rand.nextInt(currentTeamPlayers.size()));
-
-        return newLeader;
+        return availablePlayers.get(rand.nextInt(availablePlayers.size()));
     }
 }
 

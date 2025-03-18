@@ -25,7 +25,7 @@ import votingLabel from "../../assets/images/medieval-label.png";
 import "./Gameplay.css";
 import Chat from "../../components/Chat/Chat.tsx";
 import { Client } from "@stomp/stompjs";
-import {  useLocation, useNavigate  } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useWebSocket } from "./useWebSocket";
 
 /**
@@ -226,6 +226,11 @@ const Gameplay: React.FC<GameplayProps> = ({
     }
   };
 
+  /**
+   * Sends current's leader card selection to the server.
+   *
+   * @param {number} cardIndex - The index of the selected card.
+   */
   const revealCard = (cardIndex: number) => {
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
@@ -235,7 +240,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         `http://localhost:8080/api/game-session/${storedGameId}/reveal-card`,
         {
           method: "POST",
-          body: JSON.stringify({ cardIndex: cardIndex }),
+          body: String(cardIndex),
           headers: {
             "Content-Type": "application/json",
           },
@@ -244,7 +249,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     } catch (error) {
       console.error("Error submitting vote:", error);
     }
-  }
+  };
 
   /**
    * Fetches the user ID from localStorage or from the server if not stored.
@@ -344,7 +349,6 @@ const Gameplay: React.FC<GameplayProps> = ({
   useEffect(() => {
     setCardsToReveal(gameSession?.gameState?.cardsChosen || []);
     revealCardsVotedByTeam();
-    console.log("cardsChosen changed:", gameSession?.gameState?.cardsChosen);
   }, [gameSession?.gameState?.cardsChosen]);
 
   useEffect(() => {
@@ -487,10 +491,9 @@ const Gameplay: React.FC<GameplayProps> = ({
             newCards[cardIndex] = cardWhiteImg;
         }
       });
-  
+
       return newCards;
     });
-    
   };
 
   /**
@@ -832,7 +835,9 @@ const Gameplay: React.FC<GameplayProps> = ({
                 onClick={toggleBlackCardVisibility}
               >
                 <span className="codename-card-text">
-                  {gameSession?.gameState.hint + " " + gameSession?.gameState.hintNumber || ""}
+                  {gameSession?.gameState.hint +
+                    " " +
+                    gameSession?.gameState.hintNumber || ""}
                 </span>
                 <img className="codename-card" src={cardBlackImg} />
               </div>
@@ -869,7 +874,7 @@ const Gameplay: React.FC<GameplayProps> = ({
                   (!amIRedTeamLeader && !amIBlueTeamLeader) ||
                   whosTurn !== myTeam
                 }
-              /> 
+              />
               <span className="slider-value">{cardNumber}</span>
             </div>
           </div>

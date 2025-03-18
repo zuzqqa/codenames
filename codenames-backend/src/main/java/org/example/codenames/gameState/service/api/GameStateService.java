@@ -22,4 +22,6 @@ public interface GameStateService {
     void cardsChosen(GameSession gameSession, int cardIndex);
 
     int getTeamSize(GameSession gameSession);
+
+    void toogleTurn(GameSession gameSession);
 }
