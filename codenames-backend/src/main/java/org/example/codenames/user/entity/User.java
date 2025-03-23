@@ -20,6 +20,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Builder
 public class User {
     /**
+     * Enum for user status.
+     */
+    public enum userStatus {
+        INACTIVE,
+        ACTIVE
+    }
+
+    /**
      * The unique identifier for the user.
      */
     @Id
@@ -49,4 +57,9 @@ public class User {
      * The flag indicating if the user is a guest.
      */
     private boolean isGuest;
+
+    /**
+     * User status.
+     */
+    private userStatus status;
 }

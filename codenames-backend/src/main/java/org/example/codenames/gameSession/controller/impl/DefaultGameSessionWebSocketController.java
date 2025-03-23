@@ -5,6 +5,7 @@ import org.example.codenames.gameSession.controller.api.GameSessionWebSocketCont
 import org.example.codenames.gameSession.entity.CreateGameRequest;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.entity.HintRequest;
+import org.example.codenames.gameSession.entity.VoteRequest;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -199,13 +200,13 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
     @PostMapping("/{gameId}/send-hint")
     public ResponseEntity<Void> sendHint(@PathVariable UUID gameId, @RequestBody HintRequest hintRequest) {
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId).orElseThrow(() ->
-                new IllegalArgumentException("Gra o ID " + gameId + " nie istnieje"));
+                new IllegalArgumentException("Game with an ID of " + gameId + " does not exist."));
 
         // Set the hint for the game session
         gameSession.getGameState().setHint(hintRequest.getHint());
         gameSessionRepository.save(gameSession);
 
-        // Send the hint to all clients
+        // Send the game session to all clients
         messagingTemplate.convertAndSend("/game/" + gameId + "/timer", gameSession);
 
         return ResponseEntity.ok().build();
@@ -222,11 +223,31 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         gameSessionService.changeTurn(id);
 
         GameSession gameSession = gameSessionRepository.findBySessionId(id).orElseThrow(() ->
-                new IllegalArgumentException("Gra o ID " + id + " nie istnieje"));
+                new IllegalArgumentException("Game with an ID of " + id + " does not exist."));
 
         // Send the game session to all clients
         messagingTemplate.convertAndSend("/game/" + id + "/timer", gameSession);
 
         return ResponseEntity.ok("Turn changed");
+    }
+
+    /**
+     * Submit a vote for a leader
+     * @param id the id of the game session
+     * @param voteRequest the vote request containing the user id and the id of the user that was voted on
+     * @return the id of the user that was voted on
+     */
+    @PostMapping("/{id}/vote")
+    public ResponseEntity<?> submitVote(@PathVariable UUID id, @RequestBody VoteRequest voteRequest) {
+        // Submit vote
+        gameSessionService.submitVote(id, voteRequest.getUserId(), voteRequest.getVotedUserId());
+
+        GameSession gameSession = gameSessionRepository.findBySessionId(id).orElseThrow(() ->
+                new IllegalArgumentException("Game with an ID of " + id + " does not exist."));
+
+        // Send the game session to all clients
+        messagingTemplate.convertAndSend("/game/" + id + "/timer", gameSession);
+        
+        return ResponseEntity.ok(voteRequest.getVotedUserId());
     }
 }
