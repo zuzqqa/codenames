@@ -1,6 +1,5 @@
 package org.example.codenames.gameState.controller.api;
 
-import org.example.codenames.gameState.entity.CardsVoteRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +10,5 @@ import java.util.UUID;
  * Controller for game state related operations.
  */
 public interface GameStateController {
-    ResponseEntity<?> submitVotes(@PathVariable UUID id, @RequestBody CardsVoteRequest cardsVoteRequest);
-
     ResponseEntity<List<String>> getCards(@PathVariable UUID gameId, @RequestParam String language);
 }

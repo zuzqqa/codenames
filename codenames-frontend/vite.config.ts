@@ -20,7 +20,12 @@ export default defineConfig({
         global: true,
         process: true,
       },
-      exclude: ['fs'], // Exclude unnecessary modules
+      exclude: ['fs'],
     }),
   ],
+  resolve: {
+    alias: {
+      "@": "/src",
+    },
+  }  
 });

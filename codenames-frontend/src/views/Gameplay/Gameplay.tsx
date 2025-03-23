@@ -20,11 +20,12 @@ import cardBlueImg from "../../assets/images/card-blue.jpg";
 import polygon1Img from "../../assets/images/Polygon1.png";
 import polygon2Img from "../../assets/images/Polygon2.png";
 import cardSound from "../../assets/sounds/card-filp.mp3";
+import votingLabel from "../../assets/images/medieval-label.png";
 
 import "./Gameplay.css";
 import Chat from "../../components/Chat/Chat.tsx";
 import { Client } from "@stomp/stompjs";
-import { useNavigate } from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import { useWebSocket } from "./useWebSocket";
 
 /**
@@ -83,9 +84,11 @@ interface GameState {
   cardsChoosen: number[];
   hintTurn: boolean;
   guessingTurn: boolean;
+  cardsVotes: number[];
 }
 
-
+const generateId = () =>
+    Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 /**
  * React functional component responsible for handling gameplay-related settings,
  * such as volume adjustments.
@@ -106,7 +109,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   const { t } = useTranslation();
   const [isCardVisible, setIsCardVisible] = useState(false);
   const [cardText, setCardText] = useState("");
-  const [cardDisplayText, setCardDisplayText] = useState("");
+  const [cardNumber, setCardNumber] = useState(1);
   const storedGameId = localStorage.getItem("gameId");
   const gameSessionData = useWebSocket(storedGameId);
   const [gameSession, setGameSession] = useState<GameSession>();
@@ -127,19 +130,21 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [blueTeamScore, setBlueTeamScore] = useState(0);
   const [redTeamScore, setRedTeamScore] = useState(0);
   const [whosTurn, setWhosTurn] = useState<string>("blue");
-  const [isGuessingTime, setIsGuessingTime] = useState<boolean>(); 
-  const [isHintTime, setIsHintTime] = useState<boolean>(); 
+  const [isGuessingTime, setIsGuessingTime] = useState<boolean>();
+  const [isHintTime, setIsHintTime] = useState<boolean>();
   const [winningTeam, setWinningTeam] = useState<string>("blue");
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
   const [cardsToReveal, setCardsToReveal] = useState<number[]>([]);
+  const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
   const [hasEndRoundBeenCalled, setHasEndRoundBeenCalled] = useState(false);
   const clickAudio = new Audio(cardSound);
-
+  const [votedCards, setVotedCards] = useState<number[]>([]);
+  const [isVoteSubmitted, setIsVoteSubmitted] = useState<boolean>(false);
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
 
-  /** 
+  /**
    * This function returns the appropriate banner based on whether the user is a team leader
    * and the team the user belongs to (blue or red).
    */
@@ -149,7 +154,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     } else if (amIRedTeamLeader) {
       return bannerRedLeader;
     } else {
-      return myTeam === 'blue' ? bannerBlue : bannerRed;
+      return myTeam === "blue" ? bannerBlue : bannerRed;
     }
   };
 
@@ -171,39 +176,31 @@ const Gameplay: React.FC<GameplayProps> = ({
     setIsCardVisible(true);
   };
 
-  const handleGlobalKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Enter" && cardText.trim()) {
-      sendHint();
-      setCardDisplayText(cardText);
-      setIsCardVisible(false);
-      setCardText("");
-    }
-    if (event.key === "Escape") {
-      setIsCardVisible(false);
-      setCardText("");
-    }
-  };
-
   useEffect(() => {
     if (!storedGameId) {
       navigate("/games");
       return;
     }
-  
+
     const fetchGameSession = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/game-session/${storedGameId}`);
+        const response = await fetch(
+          `http://localhost:8080/api/game-session/${storedGameId}`
+        );
         if (!response.ok) throw new Error("Failed to fetch game session");
         const data = await response.json();
-  
-        const getIdResponse = await fetch("http://localhost:8080/api/users/getId", {
-          method: "GET",
-          credentials: "include",
-        });
+
+        const getIdResponse = await fetch(
+          "http://localhost:8080/api/users/getId",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
         if (!getIdResponse.ok) throw new Error("Failed to fetch user ID");
-  
-        const userId = await getIdResponse.text(); 
-  
+
+        const userId = await getIdResponse.text();
+
         setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
         setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
         setGameSession(data);
@@ -213,42 +210,110 @@ const Gameplay: React.FC<GameplayProps> = ({
         setIsHintTime(data.gameState?.hintTurn);
         setIsGuessingTime(data.gameState?.guessingTurn);
         setCardsToReveal(data.gameState?.cardsChoosen || []);
-        setMyTeam(data.connectedUsers[0].find((user: User) => user.id === userId) ? "red" : "blue");
+        setMyTeam(
+          data.connectedUsers[0].find((user: User) => user.id === userId)
+            ? "red"
+            : "blue"
+        );
+        setVotedCards(data.gameState?.cardsVotes || []);
       } catch (err) {
         console.error("Failed to load game session", err);
       }
     };
-  
+
+    setIsVoteSubmitted(
+      JSON.parse(localStorage.getItem("vote submitted") ?? "false")
+    );
+
+    fetchGameSession();
+  }, []);
+
+  useEffect(() => {
+    if (!storedGameId) {
+      navigate("/games");
+      return;
+    }
+
+    const fetchGameSession = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/game-session/${storedGameId}`
+        );
+        if (!response.ok) throw new Error("Failed to fetch game session");
+        const data = await response.json();
+
+        const getIdResponse = await fetch(
+          "http://localhost:8080/api/users/getId",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+        if (!getIdResponse.ok) throw new Error("Failed to fetch user ID");
+
+        const userId = await getIdResponse.text();
+
+        setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
+        setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
+        setGameSession(data);
+        setRedTeamPlayers(data.connectedUsers[0] || []);
+        setBlueTeamPlayers(data.connectedUsers[1] || []);
+        setWhosTurn(data.gameState?.teamTurn === 0 ? "red" : "blue");
+        setIsHintTime(data.gameState?.hintTurn);
+        setIsGuessingTime(data.gameState?.guessingTurn);
+        setCardsToReveal(data.gameState?.cardsChoosen || []);
+        setMyTeam(
+          data.connectedUsers[0].find((user: User) => user.id === userId)
+            ? "red"
+            : "blue"
+        );
+        setVotedCards(data.gameState?.cardsVotes || []);
+      } catch (err) {
+        console.error("Failed to load game session", err);
+      }
+    };
+
     fetchGameSession();
   }, [storedGameId, navigate]);
-  
+
+  useEffect(() => {
+    if (
+      whosTurn !== (gameSession?.gameState?.teamTurn === 0 ? "red" : "blue")
+    ) {
+      setWhosTurn(gameSession?.gameState?.teamTurn === 0 ? "red" : "blue");
+      setIsVoteSubmitted(false);
+      localStorage.setItem("vote submitted", JSON.stringify(isVoteSubmitted));
+      setSelectedCards([]);
+    }
+  }, [gameSession?.gameState?.teamTurn]);
 
   useEffect(() => {
     setGameSession(gameSessionData);
-    setWhosTurn(gameSession?.gameState?.teamTurn === 0 ? "red" : "blue");
     setIsGuessingTime(gameSession?.gameState?.guessingTurn);
     setIsHintTime(gameSession?.gameState?.hintTurn);
     setCardsToReveal(gameSession?.gameState?.cardsChoosen || []);
     setRedTeamScore(gameSession?.gameState?.redTeamScore || 0);
     setBlueTeamScore(gameSession?.gameState?.blueTeamScore || 0);
-  }, [gameSessionData, whosTurn]);
-  
+    setVotedCards(gameSession?.gameState?.cardsVotes || []);
+  }, [gameSessionData]);
+
   useEffect(() => {
     setGameSession(gameSession);
     setIsGuessingTime(gameSession?.gameState?.guessingTurn);
     setIsHintTime(gameSession?.gameState?.hintTurn);
     setCardsToReveal(gameSession?.gameState?.cardsChoosen || []);
+    setVotedCards(gameSession?.gameState?.cardsVotes || []);
     revealCardsVotedByTeam();
   }, [gameSession, whosTurn, isHintTime, isGuessingTime]);
 
   // Checking the end of game condition
   useEffect(() => {
-    setTimeout(() => {
-      if(redTeamScore >= 5 || blueTeamScore >= 6) {
-        setWinningTeam(redTeamScore >= blueTeamScore ? "red" : "blue");
-        navigate("/win-loss", { state: { result: winningTeam === myTeam ? "Victory" : "Loss" } });
-      }
-    }, 140);
+    if (redTeamScore >= 5 || blueTeamScore >= 6) {
+      setWinningTeam(redTeamScore >= blueTeamScore ? "red" : "blue");
+      navigate("/win-loss", {
+        state: { result: winningTeam === myTeam ? "Victory" : "Loss" },
+      });
+    }
   }, [redTeamScore, blueTeamScore]);
 
   const revealCardsVotedByTeam = () => {
@@ -283,39 +348,50 @@ const Gameplay: React.FC<GameplayProps> = ({
       return newCards;
     });
   };
-  
+
+  /**
+   * useEffect hook for handling exiting and confirming inputting the hint.
+   * - Listens for the "Enter" key to confirm the hint.
+   * - Listens for the "Escape" key to exit the hint input.
+   */
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Enter" && cardText.trim()) {
-        sendHint();
-        setCardDisplayText(cardText);
-        setIsCardVisible(false);
-        setCardText("");
+        if (validateCardText(cardText)) {
+          sendHint();
+          setIsCardVisible(false);
+          setCardText("");
+          setCardNumber(1);
+        }
       }
       if (event.key === "Escape") {
         setIsCardVisible(false);
         setCardText("");
+        setCardNumber(1);
       }
     };
-  
+
     document.addEventListener("keydown", handleKeyDown);
-  
+
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [cardText]);
+  }, [cardText, cardNumber]);
 
-  
   const change_turn = () => {
     const storedGameId = localStorage.getItem("gameId");
 
-    fetch(`http://localhost:8080/api/game-session/${storedGameId}/change-turn`, {
-      method: "GET",
-      headers: {
-        credentials: "include",
-      },
-    });
-  }
+    fetch(
+      `http://localhost:8080/api/game-session/${storedGameId}/change-turn`,
+      {
+        method: "GET",
+        headers: {
+          credentials: "include",
+        },
+      }
+    );
+  };
 
   const sendHint = () => {
     if (!cardText.trim()) return;
@@ -329,16 +405,16 @@ const Gameplay: React.FC<GameplayProps> = ({
         "Content-Type": "application/json",
         credentials: "include",
       },
-      body: JSON.stringify({ hint: cardText }),
+      body: JSON.stringify({ hint: cardText + " " + cardNumber }),
     });
 
-    setCardText(""); 
+    setCardText("");
   };
 
   const submitVotes = () => {
     const storedGameId = localStorage.getItem("gameId");
 
-    fetch(`http://localhost:8080/api/game-state/${storedGameId}/vote`, {
+    fetch(`http://localhost:8080/api/game-session/${storedGameId}/voteCards`, {
       method: "POST",
       body: JSON.stringify({ selectedCards }),
       headers: {
@@ -348,7 +424,6 @@ const Gameplay: React.FC<GameplayProps> = ({
       .then((response) => response.text())
       .then((text) => {
         if (text === "Votes submitted successfully") {
-          console.log("Votes submitted successfully");
         } else {
           console.error("Unexpected server response:", text);
         }
@@ -356,44 +431,125 @@ const Gameplay: React.FC<GameplayProps> = ({
       .catch((error) => {
         console.error("Error submitting votes:", error);
       });
-    setSelectedCards([]);
+
+    setIsVoteSubmitted(true);
+    localStorage.setItem("vote submitted", JSON.stringify(isVoteSubmitted));
   };
+
+  /**
+   * useEffect hook for handling the automatic removal of error messages after a delay.
+   *
+   * - Adds a fade-out effect to the toast notification before removal.
+   * - Removes errors from the state after a timeout.
+   *
+   * @param {Array<{ id: string; message: string }>} errors - Array of error messages with unique IDs.
+   */
+  useEffect(() => {
+    if (errors.length === 0) return;
+
+    const timers: number[] = errors.map((error) => {
+      const toastElement = document.getElementById(error.id);
+
+      if (toastElement) {
+        // Fade out the toast after 8 seconds
+        const fadeOutTimer = setTimeout(() => {
+          toastElement.classList.add("hide");
+        }, 8000);
+
+        // Remove the error from state after 8.5 seconds
+        const removeTimer = setTimeout(() => {
+          setErrors((prevErrors) =>
+              prevErrors.filter((e) => e.id !== error.id)
+          );
+        }, 8500);
+
+        return removeTimer;
+      } else {
+        // Remove error if toast element is not found
+        return setTimeout(() => {
+          setErrors((prevErrors) =>
+              prevErrors.filter((e) => e.id !== error.id)
+          );
+        }, 8000);
+      }
+    });
+
+    return () => timers.forEach(clearTimeout);
+  }, [errors]);
+
+  /**
+   * Handles manual closing of a toast error.
+   *
+   * - Fades out the toast visually before removing it from the state.
+   *
+   * @param {string} id - The unique identifier of the error toast to be closed.
+   */
+  const handleCloseErrorToast = (id: string) => {
+    const toastElement = document.getElementById(id);
+    if (toastElement) {
+      toastElement.classList.add("hide");
+
+      setTimeout(() => {
+        setErrors((prevErrors) =>
+            prevErrors.filter((error) => error.id !== id)
+        );
+      }, 500);
+    }
+  };
+
+  /**
+   * Validates the hint text to ensure it is a single word.
+   * @param text - The hint text to validate.
+   */
+  const validateCardText = (text: string) => {
+    const newErrors: { id: string; message: string }[] = [];
+    if (text.split(" ").length == 1) {
+        return true;
+    }
+    newErrors.push({
+      id: generateId(),
+      message: t("hint-one-word"),
+    });
+
+    setErrors(newErrors);
+    if (newErrors.length > 0) return;
+  }
 
   return (
     <>
       <BackgroundContainer>
-        <span className={`below timer ${myTeam === 'blue' ? 'blue' : 'red'}`}>
+        <span className={`below timer ${myTeam === "blue" ? "blue" : "red"}`}>
           {(() => {
             if (
               (amIBlueTeamLeader || amIRedTeamLeader) &&
               isHintTime &&
               whosTurn === myTeam
             ) {
-              return t('give-hint');
+              return t("give-hint");
             } else if (
               (amIBlueTeamLeader || amIRedTeamLeader) &&
               isGuessingTime &&
               whosTurn === myTeam
             ) {
-              return t('team-guessing');
+              return t("team-guessing");
             } else if (
               !amIBlueTeamLeader &&
               !amIRedTeamLeader &&
               isHintTime &&
               whosTurn === myTeam
             ) {
-              return t('leader-choosing-hint');
+              return t("leader-choosing-hint");
             } else if (isHintTime && whosTurn !== myTeam) {
-              return t('opposing-team-hint');
+              return t("opposing-team-hint");
             } else if (
               !amIBlueTeamLeader &&
               !amIRedTeamLeader &&
               isGuessingTime &&
               whosTurn === myTeam
             ) {
-              return t('guessing');
+              return t("guessing");
             } else if (isGuessingTime && whosTurn !== myTeam) {
-              return t('opposing-team-guessing');
+              return t("opposing-team-guessing");
             }
           })()}
         </span>
@@ -418,10 +574,12 @@ const Gameplay: React.FC<GameplayProps> = ({
 
         <img className="polygon1" src={polygon1Img} />
         <img className="polygon2" src={polygon2Img} />
-        <div className="timer points-red">{redTeamScore} / 5</div>
-        <div className="timer points-blue">{blueTeamScore} / 6</div>
+        <div className="timer points-red">{redTeamScore} / 6</div>
+        <div className="timer points-blue">{blueTeamScore} / 5</div>
         {/*<div className="banner-container"><img src={getBanner()} /></div>*/}
-        <div className="banner-container"><img src={getBanner()} /></div>
+        <div className="banner-container">
+          <img src={getBanner()} />
+        </div>
         <Chat />
         <div className="content-container">
           <div className="timer-container">
@@ -435,7 +593,11 @@ const Gameplay: React.FC<GameplayProps> = ({
                 key={index}
                 className={`card-container ${
                   selectedCards.includes(index) ? "selected-card" : ""
-                } ${amIRedTeamLeader || amIBlueTeamLeader ? "disabled" : ""}`}
+                } ${
+                  amIRedTeamLeader || amIBlueTeamLeader || whosTurn != myTeam
+                    ? "disabled"
+                    : ""
+                }`}
                 onClick={() => handleCardSelection(index)}
               >
                 <img
@@ -464,6 +626,22 @@ const Gameplay: React.FC<GameplayProps> = ({
                   }
                   alt={`card-${index}`}
                 />
+                {votedCards[index] > 0 && (
+                  <div className="corner-icon-container">
+                    <img
+                      className="corner-icon"
+                      src={votingLabel}
+                      alt="corner icon"
+                    />
+                    <span className="corner-text">
+                      {votedCards[index]}/
+                      {whosTurn === "red"
+                        ? redTeamPlayers.length - 1
+                        : blueTeamPlayers.length - 1}
+                    </span>
+                  </div>
+                )}
+
                 {!flipStates[index] && (
                   <span
                     className={`card-text ${
@@ -504,21 +682,23 @@ const Gameplay: React.FC<GameplayProps> = ({
               >
                 <span className="button-text">{t("end-round")}</span>
               </Button>
-              <Button
-                variant="room"
-                soundFXVolume={soundFXVolume}
-                className={
-                  amIBlueTeamLeader ||
-                  amIRedTeamLeader ||
-                  (isHintTime && whosTurn === myTeam) ||
-                  whosTurn !== myTeam
-                    ? "hidden"
-                    : ""
-                }
-                onClick={submitVotes}
-              >
-                <span className="button-text">Lock in</span>
-              </Button>
+              {!isVoteSubmitted && (
+                <Button
+                  variant="room"
+                  soundFXVolume={soundFXVolume}
+                  className={
+                    amIBlueTeamLeader ||
+                    amIRedTeamLeader ||
+                    (isHintTime && whosTurn === myTeam) ||
+                    whosTurn !== myTeam
+                      ? "hidden"
+                      : ""
+                  }
+                  onClick={submitVotes}
+                >
+                  <span className="button-text">{t("lock-in")}</span>
+                </Button>
+              )}
               <div className="horizontal-gold-bar" />
             </div>
             <div className="item">
@@ -536,23 +716,61 @@ const Gameplay: React.FC<GameplayProps> = ({
           </div>
         </div>
         {isCardVisible && (
-          <div className="card-black-overlay">
-            <img
-              className="card-black-img"
-              src={cardBlackImg}
-              alt="Black Card"
-            />
-            <input
-              type="text"
-              placeholder={t("enter-the-codename")}
-              className="codename-input"
-              value={cardText}
-              onChange={(e) => setCardText(e.target.value)}
-              disabled={
-                (!amIRedTeamLeader && !amIBlueTeamLeader) || whosTurn !== myTeam
-              }
-            />
-          </div>
+            <div className="card-black-overlay">
+              <img
+                  className="card-black-img"
+                  src={cardBlackImg}
+                  alt="Black Card"
+              />
+              <div className="codename-input-container">
+                <input
+                    type="text"
+                    placeholder={t("enter-the-codename")}
+                    className="codename-input"
+                    value={cardText}
+                    onChange={(e) => setCardText(e.target.value)}
+                    disabled={
+                        (!amIRedTeamLeader && !amIBlueTeamLeader) || whosTurn !== myTeam
+                    }
+                />
+                <input
+                    type="range"
+                    min={1}
+                    max={whosTurn === "blue" ? 5 : 6}
+                    className="codename-slider"
+                    value={cardNumber}
+                    onChange={(e) => setCardNumber(+e.target.value)}
+                    disabled={
+                        (!amIRedTeamLeader && !amIBlueTeamLeader) || whosTurn !== myTeam
+                    }
+                />
+                <span className="slider-value">{cardNumber}</span>
+              </div>
+            </div>
+        )}
+        {errors.length > 0 && (
+            <div className="toast-container">
+              {errors.map((error) => (
+                  <div id={error.id} key={error.id} className="toast active">
+                    <div className="toast-content">
+                      <i
+                          className="fa fa-exclamation-circle fa-3x"
+                          style={{ color: "#561723" }}
+                          aria-hidden="true"
+                      ></i>
+                      <div className="message">
+                        <span className="text text-1">Error</span>
+                        <span className="text text-2">{error.message}</span>
+                      </div>
+                    </div>
+                    <i
+                        className="fa-solid fa-xmark close"
+                        onClick={() => handleCloseErrorToast(error.id)}
+                    ></i>
+                    <div className="progress active"></div>
+                  </div>
+              ))}
+            </div>
         )}
       </BackgroundContainer>
     </>

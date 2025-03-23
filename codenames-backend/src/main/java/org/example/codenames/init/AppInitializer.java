@@ -60,6 +60,10 @@ public class AppInitializer implements InitializingBean {
         createUser("1", "admin", "admin", "admin@adminish.com", "ROLE_ADMIN");
         createUser("2", "Anna", "anna", "anna@normalna.com", "ROLE_USER");
         createUser("3", "Adam", "adam", "adam@normalny.com", "ROLE_USER");
+
+        userService.activateUser("admin");
+        userService.activateUser("Anna");
+        userService.activateUser("Adam");
     }
 
     /**

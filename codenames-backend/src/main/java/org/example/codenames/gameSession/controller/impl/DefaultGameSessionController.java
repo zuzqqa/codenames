@@ -74,19 +74,6 @@ public class DefaultGameSessionController implements GameSessionController {
     }
 
     /**
-     * Submit a vote for a card
-     * @param id the id of the game session
-     * @param voteRequest the vote request containing the user id and the id of the card that was voted on
-     * @return the id of the card that was voted on
-     */
-    @PostMapping("/{id}/vote")
-    public ResponseEntity<?> submitVote(@PathVariable UUID id, @RequestBody VoteRequest voteRequest) {
-        gameSessionService.submitVote(id, voteRequest.getUserId(), voteRequest.getVotedUserId());
-
-        return ResponseEntity.ok(voteRequest.getVotedUserId());
-    }
-
-    /**
      * Get the votes for leaders
      * @param id the id of the game session
      * @return the votes for leaders

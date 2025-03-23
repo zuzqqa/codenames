@@ -169,6 +169,7 @@ public class DefaultGameStateService implements GameStateService {
         for (int i = 0; i < cardVotes.size(); i++) {
             if (cardVotes.get(i) == teamSize) {
                 gameSession.getGameState().getCardsChoosen().add(i);
+
                 if(gameSession.getGameState().getCardsColors()[i] == 1){
                     gameSession.getGameState().setRedTeamScore(gameSession.getGameState().getRedTeamScore() + 1);
                 } else if(gameSession.getGameState().getCardsColors()[i] == 2){

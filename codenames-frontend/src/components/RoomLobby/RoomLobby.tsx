@@ -158,7 +158,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     );
 
     if (response.ok) {
-      console.log("Player added to red team");
     } else {
       console.error("Failed to add player to red team");
     }
@@ -187,7 +186,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     );
 
     if (response.ok) {
-      console.log("Player added to blue team");
     } else {
       console.error("Failed to add player to blue team");
     }
@@ -236,7 +234,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
         { method: "POST" }
       );
       if (response.ok) {
-        console.log("Game started");
         navigate("/choose-leader");
       } else {
         console.error("Failed to start the game");
