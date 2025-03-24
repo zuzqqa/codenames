@@ -2,7 +2,7 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 
 import "../../styles/App.css";
-import "./LoginPage.css";
+import "../LoginPage/LoginPage.css";
 
 import BackgroundContainer from "../../containers/Background/Background";
 import Button from "../../components/Button/Button";
@@ -11,83 +11,66 @@ import TitleComponent from "../../components/Title/Title";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar.tsx";
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
 import settingsIcon from "../../assets/icons/settings.png";
-import eyeIcon from "../../assets/icons/eye.svg";
-import eyeSlashIcon from "../../assets/icons/eye-slash.svg";
 import logoutButton from "../../assets/icons/logout.svg";
 
 import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister.tsx";
 import {logout} from "../../shared/utils.tsx";
 import {useNavigate} from "react-router-dom";
 
-interface LoginProps {
+interface ResetPasswordRequestProps {
     setVolume: (volume: number) => void;
     soundFXVolume: number;
     setSoundFXVolume: (volume: number) => void;
 }
 
-const LoginPage: React.FC<LoginProps> = ({
-    setVolume,
-    soundFXVolume,
-    setSoundFXVolume,
+const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
+                                             setVolume,
+                                             soundFXVolume,
+                                             setSoundFXVolume,
                                          }) => {
-    const [login, setLogin] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const [musicVolume, setMusicVolume] = useState(50); // Music volume level
+    const [email, setEmail] = useState<string>("");
+    const [musicVolume, setMusicVolume] = useState(soundFXVolume); // Music volume level
     const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const { t } = useTranslation();
     const navigate = useNavigate();
 
-    const handleLoginChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setLogin(e.target.value);
-    };
-
-    const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setPassword(e.target.value);
-        const inputValue = e.target.value;
-
-        if (inputValue.length > password.length) {
-            setPassword(password + inputValue[inputValue.length - 1]);
-        } else {
-            setPassword(password.slice(0, -1)); // Handle backspace
-        }
-    };
+    const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setEmail(e.target.value);
+    }
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        const userData = { username: login, password };
-
+        if (!email) {
+            alert("Give your email address.");
+            return;
+        }
         try {
-            const response = await fetch("http://localhost:8080/api/users/authenticate", {
+            const response = await fetch("http://localhost:8080/api/email/reset-password", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(userData),
-                credentials: "include", // Include cookies in the request
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email }),
             });
 
-            if (response.ok) {
-                document.cookie = "loggedIn=true";
-                window.location.href = "/loading";
+            if (!response.ok) {
+                throw new Error("Failed to send email. Please try again later.");
             } else {
-                const error = await response.text();
-                alert("Failed to log in: " + error);
+                alert("Password reset email sent successfully to your mailbox.");
+                navigate("/login");
             }
         } catch (error) {
-            alert("An error occurred during login. Please try again later." + error);
+            alert("An error occurred while sending reset email. Please try again later." + error);
+            return;
         }
     };
 
     const toggleSettings = () => {
         setIsSettingsOpen(!isSettingsOpen);
     };
-  
+
     const updateMusicVolume = (volume: number) => {
         setMusicVolume(volume);
         setVolume(volume); // Update global volume
-      };
+    };
 
     return (
         <BackgroundContainer>
@@ -122,40 +105,19 @@ const LoginPage: React.FC<LoginProps> = ({
                     <form className="login-form" onSubmit={handleSubmit}>
                         <FormInput
                             type="text"
-                            placeholder="LOGIN"
-                            value={login}
-                            onChange={handleLoginChange}
-                        />
-                        <FormInput
-                            type="text"
-                            placeholder={ t('PASSWORD') }
-                            value={!isPasswordVisible ? '●'.repeat(password.length) : password}
-                            onChange={handlePasswordChange}
-                            button={
-                                <Button
-                                    variant="eye"
-                                    soundFXVolume={soundFXVolume}
-                                    onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                                >
-                                    <img 
-                                        src={isPasswordVisible ? eyeSlashIcon : eyeIcon} 
-                                        alt={isPasswordVisible ? "Hide password" : "Show password"} 
-                                    />
-                                </Button>
-                            }
+                            placeholder="Email"
+                            value={email}
+                            onChange={handleEmailChange}
                         />
                         <Button type="submit" variant="primary" soundFXVolume={soundFXVolume}>
                             <span className="button-text">{ t('submit-button') }</span>
                         </Button>
                     </form>
-                    <Button type="button" variant="small" onClick={() => navigate("/send-reset-password")} soundFXVolume={soundFXVolume}>
-                        <span>{ t('forgot-password-text') }</span>
-                    </Button>
                 </div>
             </LoginRegisterContainer>
         </BackgroundContainer>
     );
 }
 
-export default LoginPage;
+export default ResetPasswordRequestPage;
 

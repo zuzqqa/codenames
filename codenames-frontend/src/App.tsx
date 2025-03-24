@@ -23,6 +23,8 @@ import RegisterPage from "./views/RegisterPage/RegisterPage";
 import PrivateRoute from "./utils/PrivateRoute"; 
 import WinLossView from "./views/WinLossView/WinLossView";
 import LoadingPage from "./views/Loading/LoadingPage";
+import ResetPasswordPage from "./views/ResetPassword/ResetPasswordPage.tsx";
+import ResetPasswordRequestPage from "./views/ResetPassword/ResetPasswordRequestPage.tsx";
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); 
@@ -122,6 +124,26 @@ const App: React.FC = () => {
                 soundFXVolume={soundFXVolume}
               />
             )
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <ResetPasswordPage
+                setVolume={setVolume}
+                setSoundFXVolume={setSoundFX}
+                soundFXVolume={soundFXVolume}
+            />
+          }
+        />
+        <Route
+          path="/send-reset-password"
+          element={
+            <ResetPasswordRequestPage
+                setVolume={setVolume}
+                setSoundFXVolume={setSoundFX}
+                soundFXVolume={soundFXVolume}
+            />
           }
         />
         <Route
