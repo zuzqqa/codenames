@@ -9,6 +9,7 @@ import java.util.Optional;
  * Service for managing users.
  */
 public interface UserService {
+  
     Optional<String> createUser(User user);
 
     Optional<User> getUserById(String id);
@@ -17,7 +18,7 @@ public interface UserService {
 
     List<User> getAllUsers();
 
-    User updateUser(String id, User updatedUser);
+    Optional<User> updateUser(String id, User updatedUser);
 
     void deleteUserById(String id);
 

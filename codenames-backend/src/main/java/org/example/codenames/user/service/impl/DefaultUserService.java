@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -42,9 +43,12 @@ public class DefaultUserService implements UserService {
 
     /**
      * Creates a new user.
+     *
      * @param user the user to be created
+     * @return the created user
      */
     @Override
+
     public Optional<String> createUser(User user) {
         user.setStatus(User.userStatus.INACTIVE);
 
@@ -54,13 +58,13 @@ public class DefaultUserService implements UserService {
         if (!user.isGuest() && userRepository.existsByUsername(user.getUsername())) {
             return Optional.of("Username already exists.");
         }
-
         if (!user.isGuest()) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
+            if(user.getRoles() == null) {
+                user.setRoles("ROLE_USER");
+            }
         }
-
         userRepository.save(user);
-
         return Optional.empty();
     }
 
@@ -100,14 +104,13 @@ public class DefaultUserService implements UserService {
      * @return the updated user, if found
      */
     @Override
-    public User updateUser(String id, User updatedUser) {
-        return userRepository.findById(id)
+    public Optional<User> updateUser(String id, User updatedUser) {
+        return Optional.ofNullable(userRepository.findById(id)
                 .map(user -> {
                     user.setUsername(updatedUser.getUsername());
                     user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
                     return userRepository.save(user);
-                })
-                .orElse(null);
+                }).orElseThrow(() -> new IllegalArgumentException("User not found")));
     }
 
     /**

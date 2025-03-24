@@ -8,6 +8,7 @@ import org.example.codenames.gameState.entity.GameState;
 import org.example.codenames.gameState.service.api.GameStateService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -28,6 +29,19 @@ public class DefaultGameStateService implements GameStateService {
     private final GameSessionRepository gameSessionRepository;
 
     /**
+     * Game parameters specified in application.properties file
+     */
+
+    @Value("${codenames.game.cards-total}")
+    private int cardsTotal;
+
+    @Value("${codenames.game.cards-red}")
+    private int cardsRed;
+
+    @Value("${codenames.game.cards-blue}")
+    private int cardsBlue;
+
+    /**
      * Constructs a new DefaultGameStateService.
      *
      * @param cardRepository the repository for cards
@@ -40,7 +54,7 @@ public class DefaultGameStateService implements GameStateService {
     }
 
     /**
-     * Generates a set of 25 random card names based on the selected language.
+     * Generates a set of random card names based on the selected language.
      *
      * @param gameState the game state to update
      * @param language  the language for the card names
@@ -51,12 +65,12 @@ public class DefaultGameStateService implements GameStateService {
         Random random = new Random();
         Set<Integer> selectedIndexes = new HashSet<>();
 
-        // Select 25 random cards
-        while (selectedIndexes.size() < 25) {
+        // Select random cards
+        while (selectedIndexes.size() < cardsTotal) {
             selectedIndexes.add(random.nextInt(allCards.size()));
         }
 
-        String[] cards = new String[25];
+        String[] cards = new String[cardsTotal];
         int i = 0;
 
         for (Integer index : selectedIndexes) {
@@ -90,21 +104,18 @@ public class DefaultGameStateService implements GameStateService {
      *
      * @param gameState the game state to update
      */
-    // TODO: Method uses hardcoded values for number of cards, consider using constants or configuration
     public void generateRandomCardsColors(GameState gameState) {
         List<Integer> cardColorsList = new ArrayList<>();
-        int numberOfBlueCards = 6;
-        int numberOfRedCards = 6;
-        for (int i = 0; i < numberOfRedCards; i++) {
+        for (int i = 0; i < cardsRed; i++) {
             cardColorsList.add(1);
         }
 
-        for (int i = 0; i < numberOfBlueCards; i++) {
+        for (int i = 0; i < cardsBlue; i++) {
             cardColorsList.add(2);
         }
         // Adding neutral cards
         cardColorsList.add(3);
-        for (int i = 0; i < 25 - (numberOfRedCards + numberOfBlueCards); i++) {
+        for (int i = 0; i < cardsTotal - (cardsRed + cardsBlue); i++) {
             cardColorsList.add(0);
         }
 
