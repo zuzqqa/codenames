@@ -26,6 +26,11 @@ public class GameState {
     private User redTeamLeader;
 
     /**
+     * Leader with privilege to select cards
+     */
+    private User currentSelectionLeader;
+
+    /**
      * Blue team score
      */
     private Integer blueTeamScore;
@@ -56,14 +61,19 @@ public class GameState {
     private List<Integer> cardsVotes;
 
     /**
-     * Cards choosen to be revealed
+     * Cards chosen to be revealed
      */
-    private List<Integer> cardsChoosen;
+    private List<Integer> cardsChosen;
 
     /**
      * Hint
      */
     private String hint;
+
+    /**
+     * Hint number
+     */
+    private int hintNumber = 1;
 
     /**
      * Is hint turn
@@ -74,16 +84,4 @@ public class GameState {
      * Is guessing turn
      */
     private boolean isGuessingTurn = false;
-
-    /**
-     * Change turn
-     */
-    public void toggleTurn() {
-        if (!this.isHintTurn) {
-            this.teamTurn = (this.teamTurn == 0) ? 1 : 0;
-        }
-
-        this.isHintTurn = !this.isHintTurn;
-        this.isGuessingTurn = !this.isGuessingTurn;
-    }
 }

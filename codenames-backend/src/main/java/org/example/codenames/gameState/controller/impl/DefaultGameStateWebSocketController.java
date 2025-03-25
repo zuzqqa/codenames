@@ -3,6 +3,7 @@ package org.example.codenames.gameState.controller.impl;
 import lombok.AllArgsConstructor;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
+import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.gameState.controller.api.GameSateWebSocketController;
 import org.example.codenames.gameState.entity.CardsVoteRequest;
 import org.example.codenames.gameState.service.api.GameStateService;
@@ -16,6 +17,11 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/game-session")
 public class DefaultGameStateWebSocketController implements GameSateWebSocketController {
+    /**
+     * Service for game session operations.
+     */
+    private final GameSessionService gameSessionService;
+
     /**
      * Service for game state related operations.
      */
@@ -33,19 +39,22 @@ public class DefaultGameStateWebSocketController implements GameSateWebSocketCon
 
     /**
      * Submit votes for the game with the given id.
-     * @param id id of the game.
-     * @param cardsVoteRequest Request containing the selected cards.
+     *
+     * @param gameId id of the game.
+     * @param voteRequest
+     *
      * @return ResponseEntity containing the result of the operation.
      */
-    @PostMapping("/{id}/voteCards")
-    public ResponseEntity<?> submitVotes(@PathVariable UUID id, @RequestBody CardsVoteRequest cardsVoteRequest) {
-        gameStateService.updateVotes(id, cardsVoteRequest.getSelectedCards());
+    @Override
+    @PostMapping("/{gameId}/voteCards")
+    public ResponseEntity<?> submitVotes(@PathVariable UUID gameId, @RequestBody CardsVoteRequest voteRequest) {
+        gameStateService.updateVotes(gameId, voteRequest);
 
-        GameSession gameSession = gameSessionRepository.findBySessionId(id).orElseThrow(() ->
-                new IllegalArgumentException("Game with an ID of " + id + " does not exist."));
+        GameSession gameSession = gameSessionRepository.findBySessionId(gameId).orElseThrow(() ->
+                new IllegalArgumentException("Game with an ID of " + gameId + " does not exist."));
 
         // Send the game session to all clients
-        messagingTemplate.convertAndSend("/game/" + id + "/timer", gameSession);
+        messagingTemplate.convertAndSend("/game/" + gameId + "/timer", gameSession);
 
         return ResponseEntity.ok("Votes submitted successfully, sent to game");
     }

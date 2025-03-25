@@ -12,11 +12,7 @@ import org.example.codenames.user.service.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Default implementation of the {@link GameSessionService}.
@@ -218,6 +214,7 @@ public class DefaultGameSessionService implements GameSessionService {
      *
      * @param team The team to find the leader for.
      * @param teamVotes The votes for each player in the team.
+     *
      * @return The leader of the team.
      */
     @Override
@@ -245,6 +242,7 @@ public class DefaultGameSessionService implements GameSessionService {
      * @param sessionId The UUID of the game session.
      * @param userId The ID of the user to add.
      * @param teamIndex The index of the team to add the user to.
+     *
      * @return True if the player was added, otherwise false.
      */
     @Override
@@ -298,6 +296,7 @@ public class DefaultGameSessionService implements GameSessionService {
      *
      * @param sessionId The UUID of the game session.
      * @param userId The ID of the user to remove.
+     *
      * @return True if the player was removed, otherwise false.
      */
     @Override
@@ -332,19 +331,17 @@ public class DefaultGameSessionService implements GameSessionService {
     }
 
     /**
-     * Changes the turn of the game session.
+     * Reveal a card.
      *
-     * @param gameId The UUID of the game session.
+     * @param gameId id of the game
+     * @param cardIndex index of the card chosen
      */
     @Override
-    public void changeTurn(UUID gameId) {
+    public void revealCard(UUID gameId, String cardIndex) {
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
-        GameState gameState = gameSession.getGameState();
-
-        gameState.toggleTurn();
-        gameStateService.cardsChoosen(gameSession);
+        gameStateService.cardsChosen(gameSession, Integer.parseInt(cardIndex));
 
         gameSessionRepository.save(gameSession);
     }
