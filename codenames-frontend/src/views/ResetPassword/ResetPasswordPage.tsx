@@ -17,8 +17,7 @@ import logoutButton from "../../assets/icons/logout.svg";
 
 import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister.tsx";
 import {logout} from "../../shared/utils.tsx";
-import {useNavigate} from "react-router-dom";
-import {useCookies} from "react-cookie";
+import {useNavigate, useParams} from "react-router-dom";
 
 interface ResetPasswordProps {
     setVolume: (volume: number) => void;
@@ -39,6 +38,9 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const params = new URLSearchParams(location.search);
+    const serviceId = params.get('id');
+
 
     const handlePasswordRepeatChange = (e: ChangeEvent<HTMLInputElement>) => {
         setPasswordRepeat(e.target.value);
@@ -69,34 +71,18 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
                 alert("Passwords do not match!");
                 return;
             }
-
-            try {
-                const response = await fetch("http://localhost:8080/api/users/reset-password", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    credentials: "include", // Include cookies in the request
-                });
-                setLogin(await response.text());
-            } catch (error) {
-                alert("An error occurred while fetching your information. Please try again later." + error);
-            }
-
-            const userData = { login, password };
-
-            const response = await fetch("http://localhost:8080/api/users/reset-password", {
+            console.log("Resetting password for service ID: " + serviceId);
+            console.log("New password: " + password);
+            const response = await fetch("http://localhost:8080/api/users/reset-password/" + serviceId, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(userData),
-                credentials: "include", // Include cookies in the request
+                body: JSON.stringify(password)
             });
 
             if (response.ok) {
-                document.cookie = "loggedIn=true";
-                navigate("/loading");
+                navigate("/login");
             } else {
                 const error = await response.text();
                 alert("Failed to reset password: " + error);
@@ -142,7 +128,7 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
                 soundFXVolume={soundFXVolume}
                 customStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "35%", marginBottom: "-1.2%"}}
                 shadowStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "35%", marginBottom: "-1.2%"}}
-            >{ t('login-button-text') }</TitleComponent>
+            >{ t('new-password') }</TitleComponent>
             <LoginRegisterContainer>
                 <div className="login-container">
                     <form className="login-form" onSubmit={handleSubmit}>
@@ -167,7 +153,7 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
                         <FormInput
                             type="text"
                             placeholder={ t('REPEAT-PASSWORD') }
-                            value={login}
+                            value={!isPasswordVisible ? '●'.repeat(passwordRepeat.length) : passwordRepeat}
                             onChange={handlePasswordRepeatChange}
                         />
                         <Button type="submit" variant="primary" soundFXVolume={soundFXVolume}>

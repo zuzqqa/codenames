@@ -16,6 +16,8 @@
   "MESSAGE": "MESSAGE",
   "PASSWORD": "PASSWORD",
   "REPEAT-PASSWORD": "REPEAT PASSWORD",
+  "password-reset": "Password reset",
+  "new-password": "New password",
   "home-subtitle": "Your mission begins now",
   "play-button-text": "Play",
   "login-button-text": "Login",

@@ -50,4 +50,7 @@ public interface UserController {
 
     //Get id by token
     public ResponseEntity<String> getIdByToken(String token);
+
+    // Post a new password for a user identified by path variable
+    public ResponseEntity<Void> updatePassword(String uuid, String password);
 }

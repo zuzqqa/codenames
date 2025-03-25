@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.codenames.jwt.JwtService;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.controller.api.UserController;
+import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.api.UserService;
 import org.example.codenames.userDetails.AuthRequest;
 import org.springframework.http.ResponseEntity;
@@ -60,8 +61,6 @@ public class DefaultUserController implements UserController {
         return ResponseEntity.ok(response);
     }
 
-
-
     // Update a user by ID
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User updatedUser) {
@@ -96,7 +95,6 @@ public class DefaultUserController implements UserController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        System.out.println("Halo");
         Cookie cookie = new Cookie("authToken", null);
         cookie.setHttpOnly(true);
         cookie.setSecure(false); // Set true for https
@@ -143,7 +141,6 @@ public class DefaultUserController implements UserController {
         return ResponseEntity.ok().build();
     }
 
-    // TODO: Move this to a utility class
     private Cookie setAuthCookie(String token, boolean loggingIn) {
         Cookie cookie = new Cookie("authToken", token);
         // cookie.setHttpOnly(true); this bullshit unables me to read the cookie in the frontend        That was the point since we don't want to expose the token to JavaScript
@@ -156,5 +153,12 @@ public class DefaultUserController implements UserController {
             cookie.setMaxAge(0);
         }
         return cookie;
+    }
+
+    @PostMapping("/reset-password/{uuid}")
+    public ResponseEntity<Void> updatePassword(@PathVariable String uuid, @RequestBody String password) {
+        System.out.println("I am updating endpoint");
+        userService.resetPassword(uuid, password);
+        return ResponseEntity.ok().build();
     }
 }

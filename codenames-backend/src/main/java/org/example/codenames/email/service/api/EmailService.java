@@ -9,4 +9,5 @@ import java.io.IOException;
 public interface EmailService {
     void sendEmail(EmailRequest request);
     void sendConfirmationEmail(String userEmail, String language) throws MessagingException, IOException;
+    void sendResetPasswordEmail(String userEmail, String language) throws MessagingException, IOException;
 }

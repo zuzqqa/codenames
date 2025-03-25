@@ -127,23 +127,31 @@ const App: React.FC = () => {
           }
         />
         <Route
-          path="/reset-password"
+          path="/reset-password/*"
           element={
-            <ResetPasswordPage
-                setVolume={setVolume}
-                setSoundFXVolume={setSoundFX}
-                soundFXVolume={soundFXVolume}
-            />
+              isAuthenticated ? (
+                  <Navigate to="/loading" replace />
+              ) : (
+                  <ResetPasswordPage
+                      setVolume={setVolume}
+                      setSoundFXVolume={setSoundFX}
+                      soundFXVolume={soundFXVolume}
+                  />
+              )
           }
         />
         <Route
           path="/send-reset-password"
           element={
-            <ResetPasswordRequestPage
-                setVolume={setVolume}
-                setSoundFXVolume={setSoundFX}
-                soundFXVolume={soundFXVolume}
-            />
+              isAuthenticated ? (
+                  <Navigate to="/loading" replace />
+              ) : (
+                  <ResetPasswordRequestPage
+                      setVolume={setVolume}
+                      setSoundFXVolume={setSoundFX}
+                      soundFXVolume={soundFXVolume}
+                  />
+              )
           }
         />
         <Route

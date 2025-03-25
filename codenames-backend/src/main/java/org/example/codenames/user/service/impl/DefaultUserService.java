@@ -51,6 +51,27 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
+    public void updateServiceId(String email, String serviceId) {
+        userRepository.findByUsername(email)
+                .ifPresent(user -> {
+                    user.setResetId(serviceId);
+                    userRepository.save(user);
+                });
+    }
+
+    @Override
+    public void resetPassword(String uuid, String password) {
+        System.out.println("Iam in the service");
+        userRepository.findByResetId(uuid)
+                .ifPresent(user -> {
+                    user.setPassword(passwordEncoder.encode(password));
+                    userRepository.save(user);
+                    System.out.println("I found the user and updated the password");
+                    updateServiceId(user.getEmail(), null);
+                });
+    }
+
+    @Override
     public User updateUser(String id, User updatedUser) {
         return userRepository.findById(id)
                 .map(user -> {

@@ -45,6 +45,7 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
             return;
         }
         try {
+            console.log("Sending reset email to: " + email);
             const response = await fetch("http://localhost:8080/api/email/reset-password", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -99,7 +100,7 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
                 soundFXVolume={soundFXVolume}
                 customStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "35%", marginBottom: "-1.2%"}}
                 shadowStyle={{ fontSize: "4rem", textAlign: "left", marginLeft: "35%", marginBottom: "-1.2%"}}
-            >{ t('login-button-text') }</TitleComponent>
+            >{ t('password-reset') }</TitleComponent>
             <LoginRegisterContainer>
                 <div className="login-container">
                     <form className="login-form" onSubmit={handleSubmit}>

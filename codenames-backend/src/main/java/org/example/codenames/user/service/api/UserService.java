@@ -24,6 +24,12 @@ public interface UserService {
     // Update an existing user
     public User updateUser(String id, User updatedUser);
 
+    // Update user's utility user ID
+    public void updateServiceId(String email, String serviceId);
+
+    // Change password for a user specified by service ID
+    public void resetPassword(String uuid, String password);
+
     // Delete a user by ID
     public void deleteUserById(String id);
 }

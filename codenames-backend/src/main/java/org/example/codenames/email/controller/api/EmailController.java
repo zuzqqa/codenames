@@ -8,5 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.io.IOException;
 
 public interface EmailController {
+
     ResponseEntity<String> sendEmail(@RequestBody EmailRequest request, String language) throws MessagingException, IOException;
+
+    public ResponseEntity<String> sendResetPasswordEmail(@RequestBody EmailRequest request, String language) throws MessagingException, IOException;
 }
