@@ -9,6 +9,7 @@ import org.example.codenames.gameSession.entity.VoteRequest;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.gameState.entity.GameState;
+import org.example.codenames.gameState.service.api.GameStateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -40,16 +41,22 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
     private final GameSessionRepository gameSessionRepository;
 
     /**
+     * The GameStateService instance used to interact with the game state
+     */
+    private final GameStateService gameStateService;
+
+    /**
      * Constructor for the DefaultGameSessionWebSocketController class
      * @param messagingTemplate The SimpMessagingTemplate instance used to send messages to connected clients
      * @param gameSessionService The GameSessionService instance used to interact with the game session repository
      * @param gameSessionRepository The GameSessionRepository instance used to interact with the game session database
      */
     @Autowired
-    public DefaultGameSessionWebSocketController(SimpMessagingTemplate messagingTemplate, GameSessionService gameSessionService, GameSessionRepository gameSessionRepository) {
+    public DefaultGameSessionWebSocketController(SimpMessagingTemplate messagingTemplate, GameSessionService gameSessionService, GameSessionRepository gameSessionRepository, GameStateService gameStateService) {
         this.gameSessionService = gameSessionService;
         this.messagingTemplate = messagingTemplate;
         this.gameSessionRepository = gameSessionRepository;
+        this.gameStateService = gameStateService;
     }
 
     /**
@@ -223,11 +230,20 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
     @GetMapping("/{id}/change-turn")
     public ResponseEntity<?> changeTurn(@PathVariable UUID id) {
         // Change the turn
-        gameSessionService.changeTurn(id);
+        gameStateService.changeTurn(id);
 
         GameSession gameSession = gameSessionRepository.findBySessionId(id).orElseThrow(() ->
                 new IllegalArgumentException("Game with an ID of " + id + " does not exist."));
 
+        clearVotes(gameSession, gameSessionRepository);
+
+        // Send the game session to all clients
+        messagingTemplate.convertAndSend("/game/" + id + "/timer", gameSession);
+
+        return ResponseEntity.ok("Turn changed");
+    }
+
+    public static void clearVotes(GameSession gameSession, GameSessionRepository gameSessionRepository) {
         List<Integer> zeroVotes = new ArrayList<>();
         int numberOfCards = gameSession.getGameState().getCards().length;
 
@@ -239,12 +255,6 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         gameSession.getGameState().setCardsVotes(zeroVotes);
 
         gameSessionRepository.save(gameSession);
-
-        // Send the game session to all clients
-        messagingTemplate.convertAndSend("/game/" + id + "/timer", gameSession);
-
-
-        return ResponseEntity.ok("Turn changed");
     }
 
     /**

@@ -31,9 +31,5 @@ public interface GameSessionService {
 
     boolean removePlayerFromSession(UUID gameId, String userId);
 
-    void changeTurn(UUID gameId);
-
-    void chooseRandomCurrentLeader(UUID gameId);
-
     void revealCard(UUID gameId, String cardIndex);
 }

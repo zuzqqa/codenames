@@ -4,6 +4,7 @@ import org.example.codenames.gameSession.controller.api.GameSessionController;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
+import org.example.codenames.gameState.service.api.GameStateService;
 import org.example.codenames.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +22,19 @@ import java.util.UUID;
 @RequestMapping("/api/game-session")
 public class DefaultGameSessionController implements GameSessionController {
     /**
-     * The GameSessionService instance used to interact with the game session repository
+     * The GameSessionService instance used to interact with the game session
      */
     private final GameSessionService gameSessionService;
+
+    /**
+     * The GameSessionRepository instance used to interact with the game session database
+     */
     private final GameSessionRepository gameSessionRepository;
+
+    /**
+     * The GameStateService instance used to interact with the game state
+     */
+    private final GameStateService gameStateService;
 
     /**
      * Constructor for the DefaultGameSessionController class
@@ -34,9 +44,10 @@ public class DefaultGameSessionController implements GameSessionController {
      * @param messagingTemplate The SimpMessagingTemplate instance used to send messages to connected clients
      */
     @Autowired
-    public DefaultGameSessionController(GameSessionService gameSessionService, GameSessionRepository gameSessionRepository, SimpMessagingTemplate messagingTemplate) {
+    public DefaultGameSessionController(GameSessionService gameSessionService, GameSessionRepository gameSessionRepository, SimpMessagingTemplate messagingTemplate, GameStateService gameStateService) {
         this.gameSessionService = gameSessionService;
         this.gameSessionRepository = gameSessionRepository;
+        this.gameStateService = gameStateService;
     }
 
     /**
@@ -98,7 +109,7 @@ public class DefaultGameSessionController implements GameSessionController {
         // Check if game session exists
         if (gameSession.getGameState().getBlueTeamLeader() == null || gameSession.getGameState().getRedTeamLeader() == null) {
             gameSessionService.assignTeamLeaders(gameId);
-            gameSessionService.chooseRandomCurrentLeader(gameId);
+            gameStateService.chooseRandomCurrentLeader(gameId);
         } else {
             return ResponseEntity.status(208).body("Duplicate action detected, already reported.");
         }

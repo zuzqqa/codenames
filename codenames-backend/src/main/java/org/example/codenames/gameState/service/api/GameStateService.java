@@ -24,4 +24,8 @@ public interface GameStateService {
     int getTeamSize(GameSession gameSession);
 
     void toogleTurn(GameSession gameSession);
+
+    void changeTurn(UUID gameId);
+
+    void chooseRandomCurrentLeader(UUID gameId);
 }

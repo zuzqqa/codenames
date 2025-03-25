@@ -143,7 +143,6 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [hasEndRoundBeenCalled, setHasEndRoundBeenCalled] = useState(false);
   const clickAudio = new Audio(cardSound);
   const [votedCards, setVotedCards] = useState<number[]>([]);
-  const [isVoteSubmitted, setIsVoteSubmitted] = useState<boolean>(false);
   const [userId, setUserId] = useState<string | null>(
     localStorage.getItem("userId") || null
   );
@@ -186,7 +185,7 @@ const Gameplay: React.FC<GameplayProps> = ({
       setSelectedCards((prevSelectedCards) =>
         isAddingVote
           ? [...prevSelectedCards, cardIndex]
-          : prevSelectedCards.filter((cardIndex) => cardIndex !== cardIndex)
+          : prevSelectedCards.filter((c) => c !== cardIndex)
       );
     }
   };
@@ -203,13 +202,16 @@ const Gameplay: React.FC<GameplayProps> = ({
   ) => {
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
-
+    console.log(cardIndex);
     try {
       const response = await fetch(
         `http://localhost:8080/api/game-session/${storedGameId}/voteCards`,
         {
           method: "POST",
-          body: JSON.stringify({ index: cardIndex, addingVote: isAddingVote }),
+          body: JSON.stringify({
+            addingVote: isAddingVote,
+            cardIndex: cardIndex,
+          }),
           headers: {
             "Content-Type": "application/json",
           },
@@ -291,12 +293,32 @@ const Gameplay: React.FC<GameplayProps> = ({
     setIsCardVisible(true);
   };
 
+  /**
+   * Effect that loads the game session and sets the game state when the component is mounted.
+   * If there is no stored game ID, the user is redirected to the "/games" page.
+   *
+   * Fetches the game session data, user ID, and updates various states such as:
+   * - Team leaders (blue/red)
+   * - Current selection leader
+   * - Game session details (score, turn, etc.)
+   * - Players in each team
+   * - The current player's team
+   * - Cards chosen for revealing
+   *
+   * @returns {void} Updates the game session state and various other states based on fetched data.
+   */
   useEffect(() => {
     if (!storedGameId) {
       navigate("/games");
       return;
     }
 
+    /**
+     * Fetches the game session data and user ID, then sets various states related to the game session.
+     * Handles errors if fetching fails.
+     *
+     * @returns {void} Updates the component's states based on the fetched data.
+     */
     const fetchGameSession = async () => {
       try {
         const response = await fetch(
@@ -339,24 +361,44 @@ const Gameplay: React.FC<GameplayProps> = ({
       }
     };
 
-    setIsVoteSubmitted(
-      JSON.parse(localStorage.getItem("vote submitted") ?? "false")
-    );
-
     fetchGameSession();
   }, []);
 
+  /**
+   * Effect that triggers the function to reveal cards voted by the team
+   * whenever the `cardsToReveal` state changes.
+   */
   useEffect(() => {
     setCardsToReveal(gameSession?.gameState?.cardsChosen || []);
     revealCardsVotedByTeam();
   }, [gameSession?.gameState?.cardsChosen]);
 
+  /**
+   * Effect that loads the game session when the component is mounted or when the `storedGameId` changes.
+   * If there is no stored game ID, the user is redirected to the "/games" page.
+   *
+   * Fetches the game session data and user ID, then updates various states such as:
+   * - Team leaders (blue/red)
+   * - Current leader of the game
+   * - Game session details (score, turn, etc.)
+   * - Players in each team
+   * - The current player's team
+   * - Cards chosen for revealing
+   *
+   * @returns {void} Updates the game session state and various other states based on fetched data.
+   */
   useEffect(() => {
     if (!storedGameId) {
       navigate("/games");
       return;
     }
 
+    /**
+     * Fetches the game session data and user ID, then sets various states related to the game session.
+     * Handles errors if fetching fails.
+     *
+     * @returns {void} Updates the component's states based on the fetched data.
+     */
     const fetchGameSession = async () => {
       try {
         const response = await fetch(
@@ -391,7 +433,6 @@ const Gameplay: React.FC<GameplayProps> = ({
             ? "red"
             : "blue"
         );
-        // setVotedCards(data.gameState?.cardsVotes || []);
       } catch (err) {
         console.error("Failed to load game session", err);
       }
@@ -400,17 +441,27 @@ const Gameplay: React.FC<GameplayProps> = ({
     fetchGameSession();
   }, [storedGameId, navigate]);
 
+  /**
+   * Effect that checks if the turn has changed, and if so, updates the `whosTurn` state.
+   * Also resets the selected cards when the turn changes.
+   *
+   * @returns {void} Updates the current turn and resets selected cards when necessary.
+   */
   useEffect(() => {
     if (
       whosTurn !== (gameSession?.gameState?.teamTurn === 0 ? "red" : "blue")
     ) {
       setWhosTurn(gameSession?.gameState?.teamTurn === 0 ? "red" : "blue");
-      setIsVoteSubmitted(false);
-      localStorage.setItem("vote submitted", JSON.stringify(isVoteSubmitted));
       setSelectedCards([]);
     }
   }, [gameSession?.gameState?.teamTurn]);
 
+  /**
+   * Effect that updates the game session, isGuessingTime, isHintTime, cardsToReveal, redTeamScore, blueTeamScore state whenever the `gameSessionData` state changes
+   * and calls revealCardsVotedByTeam().
+   *
+   * @returns {void} Updates the `gameSession`, `isGuessingTime`, `isHintTime`, `cardsToReveal`, `redTeamScore`, `blueTeamScore` state.
+   */
   useEffect(() => {
     setGameSession(gameSessionData);
     setIsGuessingTime(gameSession?.gameState?.guessingTurn);
@@ -418,50 +469,130 @@ const Gameplay: React.FC<GameplayProps> = ({
     setCardsToReveal(gameSession?.gameState?.cardsChosen || []);
     setRedTeamScore(gameSession?.gameState?.redTeamScore || 0);
     setBlueTeamScore(gameSession?.gameState?.blueTeamScore || 0);
-    // setVotedCards(gameSession?.gameState?.cardsVotes || []);
     revealCardsVotedByTeam();
   }, [gameSessionData]);
 
+  /**
+   * Effect that updates the game session state whenever the `gameSession` state changes.
+   *
+   * @returns {void} Updates the `gameSession` state.
+   */
   useEffect(() => {
     setGameSession(gameSession);
   }, [gameSession]);
 
+  /**
+   * Effect that sets the `isGuessingTime` state based on the `guessingTurn` value from the game session state.
+   *
+   * @returns {void} Updates the `isGuessingTime` state when the guessing turn changes.
+   */
   useEffect(() => {
     setIsGuessingTime(gameSession?.gameState?.guessingTurn);
   }, [gameSession?.gameState?.guessingTurn]);
 
+  /**
+   * Effect that sets the `isHintTime` state based on the `hintTurn` value from the game session state.
+   *
+   * @returns {void} Updates the `isHintTime` state when the hint turn changes.
+   */
   useEffect(() => {
     setIsHintTime(gameSession?.gameState?.hintTurn);
   }, [gameSession?.gameState?.hintTurn]);
 
+  /**
+   * Effect that triggers the `revealCardsVotedByTeam` function when the `whosTurn`, `isHintTime`, or `isGuessingTime` states change.
+   *
+   * @returns {void} Reveals the cards voted by the team based on the updated states.
+   */
   useEffect(() => {
     revealCardsVotedByTeam();
   }, [whosTurn, isHintTime, isGuessingTime]);
 
+  /**
+   * Effect that updates the `votedCards` state whenever the `cardsVotes` from the game session state change.
+   *
+   * @returns {void} Updates the `votedCards` state with the latest votes from the game session.
+   */
   useEffect(() => {
     if (gameSession?.gameState?.cardsVotes) {
       setVotedCards(gameSession.gameState.cardsVotes);
     }
   }, [gameSession?.gameState?.cardsVotes]);
 
+  /**
+   * Effect that updates the `redTeamScore` state whenever the `redTeamScore` value from the game session state changes.
+   * If no value is available, it defaults to 0.
+   *
+   * @returns {void} Updates the `redTeamScore` state with the latest score.
+   */
   useEffect(() => {
-    if (gameSession?.gameState?.currentSelectionLeader) {
+    setRedTeamScore(gameSession?.gameState.redTeamScore || 0);
+  }, [gameSession?.gameState.redTeamScore]);
+
+  /**
+   * Effect that updates the `blueTeamScore` state whenever the `blueTeamScore` value from the game session state changes.
+   * If no value is available, it defaults to 0.
+   *
+   * @returns {void} Updates the `blueTeamScore` state with the latest score.
+   */
+  useEffect(() => {
+    setBlueTeamScore(gameSession?.gameState.blueTeamScore || 0);
+  }, [gameSession?.gameState.blueTeamScore]);
+
+  /**
+   * Effect that updates the `amICurrentLeader` state based on the `currentSelectionLeader` from the game session state.
+   * If there is no current leader, it sets the state to false.
+   *
+   * @returns {void} Updates the `amICurrentLeader` state based on the current selection leader's ID.
+   */
+  useEffect(() => {
+    if (gameSession?.gameState?.currentSelectionLeader?.id) {
       setAmICurrentLeader(
         gameSession.gameState.currentSelectionLeader.id === userId
       );
+    } else {
+      setAmICurrentLeader(false);
     }
   }, [gameSession?.gameState?.currentSelectionLeader]);
 
-  // Checking the end of game condition
+  /**
+   * Effect that logs the updated value of `amICurrentLeader` whenever it changes.
+   *
+   * @returns {void} Logs the updated state of `amICurrentLeader`.
+   */
+  useEffect(() => {
+    console.log("Updated amICurrentLeader:", amICurrentLeader);
+  }, [amICurrentLeader]);
+
+  /**
+   * Effect that checks the game scores after every update to the `redTeamScore` or `blueTeamScore`.
+   * If the red team score reaches 9 or the blue team score reaches 8, it sets the winning team,
+   * reveals the cards voted by the team, and navigates to the win/loss page after a 3-second delay.
+   *
+   * @returns {void} Cleanup function clears the timeout on component unmount.
+   */
   useEffect(() => {
     if (redTeamScore >= 9 || blueTeamScore >= 8) {
       setWinningTeam(redTeamScore >= blueTeamScore ? "red" : "blue");
-      navigate("/win-loss", {
-        state: { result: winningTeam === myTeam ? "Victory" : "Loss" },
-      });
+      revealCardsVotedByTeam();
+
+      const timeoutId = setTimeout(() => {
+        navigate("/win-loss", {
+          state: { result: winningTeam === myTeam ? "Victory" : "Loss" },
+        });
+      }, 3000);
+
+      return () => clearTimeout(timeoutId);
     }
   }, [redTeamScore, blueTeamScore]);
 
+  /**
+   * Reveals the cards voted by the team based on the `cardsToReveal` state.
+   * It updates the `flipStates` to show the flipped cards and updates the card images
+   * according to their respective colors (red, blue, black, or white).
+   *
+   * @returns {void} Updates the state variables for flipped cards and card images.
+   */
   const revealCardsVotedByTeam = () => {
     if (!gameSession?.gameState || cardsToReveal.length === 0) return;
 
@@ -525,10 +656,18 @@ const Gameplay: React.FC<GameplayProps> = ({
     };
   }, [cardText, cardNumber]);
 
+  /**
+   * Effect that triggers the function to reveal cards voted by the team
+   * whenever the `cardsToReveal` state changes.
+   */
   useEffect(() => {
     revealCardsVotedByTeam();
   }, [cardsToReveal]);
 
+  /**
+   * Sends a request to the backend to change the turn of the game.
+   * Retrieves the game ID from local storage and sends a GET request.
+   */
   const change_turn = () => {
     const storedGameId = localStorage.getItem("gameId");
 
@@ -543,6 +682,12 @@ const Gameplay: React.FC<GameplayProps> = ({
     );
   };
 
+  /**
+   * Sends a hint to the backend if the user is a team leader.
+   * Retrieves the game ID from local storage and sends a POST request with the hint data.
+   *
+   * @returns {void} If the card text is empty or the user is not a team leader, the function exits early.
+   */
   const sendHint = () => {
     if (!cardText.trim()) return;
     const storedGameId = localStorage.getItem("gameId");
@@ -702,9 +847,8 @@ const Gameplay: React.FC<GameplayProps> = ({
 
         <img className="polygon1" src={polygon1Img} />
         <img className="polygon2" src={polygon2Img} />
-        <div className="timer points-red">{redTeamScore} / 6</div>
-        <div className="timer points-blue">{blueTeamScore} / 5</div>
-        {/*<div className="banner-container"><img src={getBanner()} /></div>*/}
+        <div className="timer points-red">{redTeamScore} / 9</div>
+        <div className="timer points-blue">{blueTeamScore} / 8</div>
         <div className="banner-container">
           <img src={getBanner()} />
         </div>
@@ -761,12 +905,7 @@ const Gameplay: React.FC<GameplayProps> = ({
                       src={votingLabel}
                       alt="corner icon"
                     />
-                    <span className="corner-text">
-                      {votedCards[index]}/
-                      {whosTurn === "red"
-                        ? redTeamPlayers.length - 1
-                        : blueTeamPlayers.length - 1}
-                    </span>
+                    <span className="corner-text">{votedCards[index]}</span>
                   </div>
                 )}
 
@@ -798,6 +937,7 @@ const Gameplay: React.FC<GameplayProps> = ({
                     isHintTime &&
                     whosTurn !== myTeam) ||
                   ((amIBlueTeamLeader || amIRedTeamLeader) && isGuessingTime) ||
+                  (!amIBlueTeamLeader && !amIRedTeamLeader && isGuessingTime) ||
                   (!amIBlueTeamLeader && !amIRedTeamLeader && isHintTime) ||
                   (!amIBlueTeamLeader &&
                     !amIRedTeamLeader &&
@@ -810,22 +950,6 @@ const Gameplay: React.FC<GameplayProps> = ({
               >
                 <span className="button-text">{t("end-round")}</span>
               </Button>
-              {!isVoteSubmitted && (
-                <Button
-                  variant="room"
-                  soundFXVolume={soundFXVolume}
-                  className={
-                    amIBlueTeamLeader ||
-                    amIRedTeamLeader ||
-                    (isHintTime && whosTurn === myTeam) ||
-                    whosTurn !== myTeam
-                      ? "hidden"
-                      : ""
-                  }
-                >
-                  <span className="button-text">{t("lock-in")}</span>
-                </Button>
-              )}
               <div className="horizontal-gold-bar" />
             </div>
             <div className="item">
@@ -835,9 +959,11 @@ const Gameplay: React.FC<GameplayProps> = ({
                 onClick={toggleBlackCardVisibility}
               >
                 <span className="codename-card-text">
-                  {gameSession?.gameState.hint +
+                  {(gameSession?.gameState.hint || "HINT") +
                     " " +
-                    gameSession?.gameState.hintNumber || ""}
+                    (gameSession?.gameState.hintNumber === "0"
+                      ? ""
+                      : gameSession?.gameState.hintNumber)}
                 </span>
                 <img className="codename-card" src={cardBlackImg} />
               </div>
