@@ -102,6 +102,7 @@ public class DefaultGameStateService implements GameStateService {
         List<Integer> cardColorsList = new ArrayList<>();
         int numberOfBlueCards = 8;
         int numberOfRedCards = 9;
+
         for (int i = 0; i < numberOfRedCards; i++) {
             cardColorsList.add(1);
         }
@@ -124,7 +125,7 @@ public class DefaultGameStateService implements GameStateService {
      * Updates vote counts for selected card.
      *
      * @param gameId the game session ID
-     * @param voteRequest
+     * @param voteRequest the entity containing the cardIndex and whether the vote is an addition.
      */
     @Override
     public void updateVotes(UUID gameId, CardsVoteRequest voteRequest) {

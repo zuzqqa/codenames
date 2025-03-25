@@ -992,7 +992,7 @@ const Gameplay: React.FC<GameplayProps> = ({
               <input
                 type="range"
                 min={1}
-                max={whosTurn === "blue" ? 5 : 6}
+                max={whosTurn === "blue" ? (8 - blueTeamScore) : (9 - redTeamScore)}
                 className="codename-slider"
                 value={cardNumber}
                 onChange={(e) => setCardNumber(+e.target.value)}

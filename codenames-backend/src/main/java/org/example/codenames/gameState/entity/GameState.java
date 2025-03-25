@@ -73,7 +73,7 @@ public class GameState {
     /**
      * Hint number
      */
-    private int hintNumber;
+    private int hintNumber = 1;
 
     /**
      * Is hint turn
