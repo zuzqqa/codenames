@@ -11,6 +11,7 @@ import org.example.codenames.gameState.service.api.GameStateService;
 
 import org.example.codenames.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -31,6 +32,19 @@ public class DefaultGameStateService implements GameStateService {
     private final GameSessionRepository gameSessionRepository;
 
     /**
+     * Game parameters specified in application.properties file
+     */
+
+    @Value("${codenames.game.cards-total}")
+    private int cardsTotal;
+
+    @Value("${codenames.game.cards-red}")
+    private int cardsRed;
+
+    @Value("${codenames.game.cards-blue}")
+    private int cardsBlue;
+
+    /**
      * Constructs a new DefaultGameStateService.
      *
      * @param cardRepository the repository for cards
@@ -43,7 +57,7 @@ public class DefaultGameStateService implements GameStateService {
     }
 
     /**
-     * Generates a set of 25 random card names based on the selected language.
+     * Generates a set of random card names based on the selected language.
      *
      * @param gameState the game state to update
      * @param language  the language for the card names
@@ -55,12 +69,12 @@ public class DefaultGameStateService implements GameStateService {
         Random random = new Random();
         Set<Integer> selectedIndexes = new HashSet<>();
 
-        // Select 25 random cards
-        while (selectedIndexes.size() < 25) {
+        // Select random cards
+        while (selectedIndexes.size() < cardsTotal) {
             selectedIndexes.add(random.nextInt(allCards.size()));
         }
 
-        String[] cards = new String[25];
+        String[] cards = new String[cardsTotal];
         int i = 0;
 
         for (Integer index : selectedIndexes) {

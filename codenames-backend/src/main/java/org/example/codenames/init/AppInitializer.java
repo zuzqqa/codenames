@@ -58,8 +58,8 @@ public class AppInitializer implements InitializingBean {
      */
     private void initializeUsers() {
         createUser("1", "admin", "admin", "admin@adminish.com", "ROLE_ADMIN");
-        createUser("2", "Anna", "anna", "anna@normalna.com", "USER");
-        createUser("3", "Adam", "adam", "adam@normalny.com", "USER");
+        createUser("2", "Anna", "anna", "anna@normalna.com", "ROLE_USER");
+        createUser("3", "Adam", "adam", "adam@normalny.com", "ROLE_USER");
 
         userService.activateUser("admin");
         userService.activateUser("Anna");
@@ -83,7 +83,9 @@ public class AppInitializer implements InitializingBean {
                 .email(email)
                 .roles(roles)
                 .build();
-        userService.createUser(user);
+        if (userService.getUserByUsername(username).isEmpty()) {
+            userService.createUser(user);
+        }
     }
 
     /**

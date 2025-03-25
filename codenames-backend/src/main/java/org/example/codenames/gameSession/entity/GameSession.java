@@ -1,9 +1,6 @@
 package org.example.codenames.gameSession.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import org.example.codenames.gameState.entity.GameState;
 import org.example.codenames.user.entity.User;
@@ -21,10 +18,12 @@ import jakarta.persistence.GeneratedValue;
  */
 @Document(collection = "sessions")
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Builder
 public class GameSession {
+
     /**
      * Enum for session status.
      */

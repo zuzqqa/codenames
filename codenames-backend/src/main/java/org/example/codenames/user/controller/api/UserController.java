@@ -19,6 +19,7 @@ import java.util.Map;
  *
  */
 public interface UserController {
+  
     ResponseEntity<Map<String, String>> createUser(@RequestBody User user, HttpServletResponse response, String language) throws MessagingException, IOException;
 
     ResponseEntity<User> getUserById(String id);
