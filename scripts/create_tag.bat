@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 > nul
 setlocal enabledelayedexpansion
 
 :: Fetch the latest tags from remote
@@ -61,3 +62,56 @@ echo Selected version: %new_tag%
 :: Save the selected version to a file instead of creating a tag
 echo v%new_tag% > selected_version.txt
 echo Version saved to selected_version.txt. Please create a Pull Request.
+
+:: Prompt for release note title with a default value
+echo Enter the release title (Press Enter to use default: 🎮 Alpha Release – Early version of the game):
+set /p release_title=Title: 
+
+:: If no title is provided, use the default one
+if "%release_title%"=="" (
+    set "release_title=🎮 Alpha Release – Early version of the game"
+)
+
+:: Debug: Print the title to the console
+echo(%release_title% > release_note.txt
+
+
+
+:: Create the release note
+echo **🔧 What's included in this release?** > release_note.txt
+echo /p description=Enter the description
+echo %description% > release_note.txt
+
+:: Collect Key additions
+set key_additions=""
+:input_key_additions
+set /p user_input=Key addition (or press 'q' to quit): 
+if "%user_input%"=="q" goto input_development
+echo - %user_input% >> release_note.txt
+goto input_key_additions
+
+:: Collect What's still under development
+:input_development
+echo **🚧 What's still under development?** >> release_note.txt
+echo Type each item and press Enter to add to the list. Press 'q' and Enter when done. >> release_note.txt
+set dev_items=""
+:input_dev
+set /p user_input=Development item (or press 'q' to quit): 
+if "%user_input%"=="q" goto input_important
+echo - %user_input% >> release_note.txt
+goto input_dev
+
+:: Collect Important section
+:input_important
+echo **⚠️ Important!** >> release_note.txt
+echo (Default: "This release is primarily for team members and stakeholders to establish a foundation for project management. Some aspects of the infrastructure may evolve as the project progresses.")
+set /p important_message=Important message (or press Enter to accept default): 
+
+if "!important_message!"=="" (
+    set "important_message=This release is primarily for team members and stakeholders to establish a foundation for project management. Some aspects of the infrastructure may evolve as the project progresses."
+)
+echo !important_message! >> release_note.txt
+
+:: Final notification
+echo Release note has been saved to release_note.txt. Please review the file.
+
