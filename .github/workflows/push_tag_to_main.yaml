@@ -57,12 +57,12 @@ jobs:
           tail -n +2 scripts/release_note.md > scripts/temp_release_note.md
 
           pre_release=$(tail -n 1 scripts/temp_release_note.md)
+          pre_release_flag=false
+          
           if [ "$pre_release" == "PRE-RELEASE" ]; then
             echo "PRE-RELEASE detected"
-            pre_release_flag="true"
+            pre_release_flag=true
             sed -i '$d' scripts/temp_release_note.md
-          else
-            pre_release_flag="false"
           fi
 
           mv scripts/temp_release_note.md scripts/release_note.md
