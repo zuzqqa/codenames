@@ -72,9 +72,17 @@ jobs:
       - name: 📄 Create GitHub Release
         run: |
           echo "Creating release: ${{ env.TITLE }}"
-          curl -XPOST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -d '{"tag_name": "${{ env.SELECTED_VERSION }}", "name": "${{ env.TITLE }}", "body": "'"$(cat scripts/release_note.md)"'"', "draft": false, "prerelease": '${{ env.PRE_RELEASE_FLAG }} }' \
-          https://api.github.com/repos/${{ github.repository }}/releases
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d '{
+              "tag_name": "${{ env.SELECTED_VERSION }}",
+              "name": "${{ env.TITLE }}",
+              "body": '"$(cat scripts/release_note.md | jq -R -s @json)"',
+              "draft": false,
+              "prerelease": ${{ env.PRE_RELEASE_FLAG }}
+            }' \
+            https://api.github.com/repos/${{ github.repository }}/releases
 
       - name: 🔎 Verify that the tag was created
         run: |
