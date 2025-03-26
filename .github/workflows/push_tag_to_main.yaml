@@ -51,7 +51,7 @@ jobs:
 
       - name: 📄 Read release note and title
         run: |
-          title=$(head -n 1 release_note.md) 
+          title=$(head -n 1 release_note.md)  # First line as the title
           echo "Release Title: $title"
 
           tail -n +2 release_note.md > temp_release_note.md
