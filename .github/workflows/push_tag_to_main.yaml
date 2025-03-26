@@ -51,21 +51,21 @@ jobs:
 
       - name: 📄 Read release note and title
         run: |
-          title=$(head -n 1 release_note.md) 
+          title=$(head -n 1 scripts/release_note.md) 
           echo "Release Title: $title"
 
-          tail -n +2 release_note.md > temp_release_note.md
+          tail -n +2 scripts/release_note.md > scripts/temp_release_note.md
 
-          pre_release=$(tail -n 1 temp_release_note.md)
+          pre_release=$(tail -n 1 scripts/temp_release_note.md)
           if [ "$pre_release" == "PRE-RELEASE" ]; then
             echo "PRE-RELEASE detected"
             pre_release_flag="true"
-            sed -i '$d' temp_release_note.md
+            sed -i '$d' scripts/temp_release_note.md
           else
             pre_release_flag="false"
           fi
 
-          mv temp_release_note.md release_note.md
+          mv scripts/temp_release_note.md scripts/release_note.md
           echo "TITLE=$title" >> $GITHUB_ENV
           echo "PRE_RELEASE_FLAG=$pre_release_flag" >> $GITHUB_ENV
 
@@ -73,7 +73,7 @@ jobs:
         run: |
           echo "Creating release: ${{ env.TITLE }}"
           curl -XPOST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -d '{"tag_name":"${{ env.SELECTED_VERSION }}","name":"${{ env.TITLE }}","body":"$(cat release_note.md)","draft":false,"prerelease":"${{ env.PRE_RELEASE_FLAG }}"}' \
+          -d '{"tag_name":"${{ env.SELECTED_VERSION }}","name":"${{ env.TITLE }}","body":"$(cat scripts/release_note.md)","draft":false,"prerelease":"${{ env.PRE_RELEASE_FLAG }}"}' \
           https://api.github.com/repos/${{ github.repository }}/releases
 
       - name: 🔎 Verify that the tag was created
