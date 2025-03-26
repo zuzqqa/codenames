@@ -27,6 +27,7 @@ import Chat from "../../components/Chat/Chat.tsx";
 import { Client } from "@stomp/stompjs";
 import {useLocation, useNavigate} from "react-router-dom";
 import { useWebSocket } from "./useWebSocket";
+import AudioRoom from "../../components/AudioRoom/AudioRoom.tsx";
 
 /**
  * Represents properties for controlling gameplay-related settings, such as volume levels.
@@ -523,166 +524,166 @@ const Gameplay: React.FC<GameplayProps> = ({
    * Voice chat
    */
 
-  useEffect(() => {
-    return () => {
-      if (peerConnection) {
-        peerConnection.close();
-        setPeerConnection(null);
-        setIsConnected(false);
-      }
-    };
-  }, [peerConnection]);
+  // useEffect(() => {
+  //   return () => {
+  //     if (peerConnection) {
+  //       peerConnection.close();
+  //       setPeerConnection(null);
+  //       setIsConnected(false);
+  //     }
+  //   };
+  // }, [peerConnection]);
 
-  const joinVoiceChat = async () => {
-    if (isConnected) {
-      console.log("Already in a voice chat");
-      return;
-    }
-
-    try {
-      const pc = new RTCPeerConnection({
-        iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-      });
-
-      setPeerConnection(pc);
-
-      // Ensure WebSocket is properly opened before sending messages
-      const socket = new WebSocket("ws://localhost:3000");    //change to wss when SSL is added
-      socketRef.current = socket;
-
-      socket.onopen = () => {
-        console.log("Connected to SFU server");
-        setIsConnected(true);
-      };
-
-      socket.onerror = (error) => {
-        console.error("WebSocket error:", error);
-      };
-
-      socket.onclose = () => {
-        console.warn("WebSocket connection closed. Attempting to reconnect...");
-        setIsConnected(false);
-      };
-
-      // Request microphone access
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-      if (pc.signalingState !== "closed") {
-        stream.getTracks().forEach((track) => pc.addTrack(track, stream));
-      } else {
-        console.error("RTCPeerConnection is closed. Cannot add tracks.");
-        return;
-      }
-
-      socket.onmessage = async (message) => {
-        try {
-          const data = JSON.parse(message.data);
-
-          if (data.sdp) {
-            await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
-            const answer = await pc.createAnswer();
-            await pc.setLocalDescription(answer);
-
-            // Wait until WebSocket is open before sending
-            if (socket.readyState === WebSocket.OPEN) {
-              socket.send(JSON.stringify({ sdp: answer }));
-            } else {
-              console.warn("WebSocket not open. Answer not sent.");
-            }
-          }
-
-          if (data.candidate) {
-            await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
-          }
-        } catch (err) {
-          console.error("Error handling WebSocket message:", err);
-        }
-      };
-
-      pc.onicecandidate = (event) => {
-        if (event.candidate) {
-          if (socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({ candidate: event.candidate }));
-            console.log("ICE candidate sent.");
-          } else {
-            console.warn("WebSocket not open. ICE candidate not sent.");
-          }
-        }
-      };
-
-      pc.oniceconnectionstatechange = () => {
-        console.log("ICE Connection State:", pc.iceConnectionState);
-        if (pc.iceConnectionState === "failed") {
-          console.error("ICE connection failed. Restarting connection...");
-          pc.restartIce();
-        }
-      };
-
-      // Wait until WebSocket is open before creating an offer
-      socket.onopen = async () => {
-        console.log("Connected to SFU server");
-
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-
-        if (socket.readyState === WebSocket.OPEN) {
-          socket.send(JSON.stringify({ sdp: offer }));
-          console.log("Offer sent to SFU server.");
-        } else {
-          console.warn("WebSocket not open. Offer not sent.");
-        }
-      };
-
-    } catch (error) {
-      console.error("Error joining voice chat:", error);
-    }
-  };
-
-
-  /**
-   * Disconnect from voice chat
-   */
-
-  const disconnectFromVoiceChat = () => {
-    if (!isConnected) {
-      console.log("Not connected to a voice chat.");
-      return;
-    }
-
-    try {
-      // Access WebSocket from the ref
-      const socket = socketRef.current;
-
-      // Close WebSocket if open
-      if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.close();
-        console.log("WebSocket connection closed.");
-      }
-
-      // Stop all media tracks by iterating over the senders
-      if (peerConnection) {
-        const senders = peerConnection.getSenders();
-        senders.forEach((sender) => {
-          if (sender.track) {
-            sender.track.stop(); // Stop the media track
-            console.log(`Stopped track: ${sender.track.kind}`);
-          }
-        });
-
-        // Close the peer connection
-        peerConnection.close();
-        console.log("RTCPeerConnection closed.");
-      }
-
-      // Reset the connection state
-      setIsConnected(false);
-      setPeerConnection(null);
-      socketRef.current = null; // Reset the socket ref
-      console.log("Disconnected from voice chat.");
-    } catch (error) {
-      console.error("Error disconnecting from voice chat:", error);
-    }
-  };
+  // const joinVoiceChat = async () => {
+  //   if (isConnected) {
+  //     console.log("Already in a voice chat");
+  //     return;
+  //   }
+  //
+  //   try {
+  //     const pc = new RTCPeerConnection({
+  //       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+  //     });
+  //
+  //     setPeerConnection(pc);
+  //
+  //     // Ensure WebSocket is properly opened before sending messages
+  //     const socket = new WebSocket("ws://192.168.68.52:3000");    //change to wss when SSL is added
+  //     socketRef.current = socket;
+  //
+  //     socket.onopen = () => {
+  //       console.log("Connected to SFU server");
+  //       setIsConnected(true);
+  //     };
+  //
+  //     socket.onerror = (error) => {
+  //       console.error("WebSocket error:", error);
+  //     };
+  //
+  //     socket.onclose = () => {
+  //       console.warn("WebSocket connection closed. Attempting to reconnect...");
+  //       setIsConnected(false);
+  //     };
+  //
+  //     // Request microphone access
+  //     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  //
+  //     if (pc.signalingState !== "closed") {
+  //       stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+  //     } else {
+  //       console.error("RTCPeerConnection is closed. Cannot add tracks.");
+  //       return;
+  //     }
+  //
+  //     socket.onmessage = async (message) => {
+  //       try {
+  //         const data = JSON.parse(message.data);
+  //
+  //         if (data.sdp) {
+  //           await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+  //           const answer = await pc.createAnswer();
+  //           await pc.setLocalDescription(answer);
+  //
+  //           // Wait until WebSocket is open before sending
+  //           if (socket.readyState === WebSocket.OPEN) {
+  //             socket.send(JSON.stringify({ sdp: answer }));
+  //           } else {
+  //             console.warn("WebSocket not open. Answer not sent.");
+  //           }
+  //         }
+  //
+  //         if (data.candidate) {
+  //           await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+  //         }
+  //       } catch (err) {
+  //         console.error("Error handling WebSocket message:", err);
+  //       }
+  //     };
+  //
+  //     pc.onicecandidate = (event) => {
+  //       if (event.candidate) {
+  //         if (socket.readyState === WebSocket.OPEN) {
+  //           socket.send(JSON.stringify({ candidate: event.candidate }));
+  //           console.log("ICE candidate sent.");
+  //         } else {
+  //           console.warn("WebSocket not open. ICE candidate not sent.");
+  //         }
+  //       }
+  //     };
+  //
+  //     pc.oniceconnectionstatechange = () => {
+  //       console.log("ICE Connection State:", pc.iceConnectionState);
+  //       if (pc.iceConnectionState === "failed") {
+  //         console.error("ICE connection failed. Restarting connection...");
+  //         pc.restartIce();
+  //       }
+  //     };
+  //
+  //     // Wait until WebSocket is open before creating an offer
+  //     socket.onopen = async () => {
+  //       console.log("Connected to SFU server");
+  //
+  //       const offer = await pc.createOffer();
+  //       await pc.setLocalDescription(offer);
+  //
+  //       if (socket.readyState === WebSocket.OPEN) {
+  //         socket.send(JSON.stringify({ sdp: offer }));
+  //         console.log("Offer sent to SFU server.");
+  //       } else {
+  //         console.warn("WebSocket not open. Offer not sent.");
+  //       }
+  //     };
+  //
+  //   } catch (error) {
+  //     console.error("Error joining voice chat:", error);
+  //   }
+  // };
+  //
+  //
+  // /**
+  //  * Disconnect from voice chat
+  //  */
+  //
+  // const disconnectFromVoiceChat = () => {
+  //   if (!isConnected) {
+  //     console.log("Not connected to a voice chat.");
+  //     return;
+  //   }
+  //
+  //   try {
+  //     // Access WebSocket from the ref
+  //     const socket = socketRef.current;
+  //
+  //     // Close WebSocket if open
+  //     if (socket && socket.readyState === WebSocket.OPEN) {
+  //       socket.close();
+  //       console.log("WebSocket connection closed.");
+  //     }
+  //
+  //     // Stop all media tracks by iterating over the senders
+  //     if (peerConnection) {
+  //       const senders = peerConnection.getSenders();
+  //       senders.forEach((sender) => {
+  //         if (sender.track) {
+  //           sender.track.stop(); // Stop the media track
+  //           console.log(`Stopped track: ${sender.track.kind}`);
+  //         }
+  //       });
+  //
+  //       // Close the peer connection
+  //       peerConnection.close();
+  //       console.log("RTCPeerConnection closed.");
+  //     }
+  //
+  //     // Reset the connection state
+  //     setIsConnected(false);
+  //     setPeerConnection(null);
+  //     socketRef.current = null; // Reset the socket ref
+  //     console.log("Disconnected from voice chat.");
+  //   } catch (error) {
+  //     console.error("Error disconnecting from voice chat:", error);
+  //   }
+  // };
 
 
 
@@ -853,12 +854,7 @@ const Gameplay: React.FC<GameplayProps> = ({
               >
                 <span className="button-text">{t("end-round")}</span>
               </Button>
-              <Button onClick={joinVoiceChat} className="voice-chat-button" soundFXVolume={soundFXVolume}>
-                Join Voice Chat
-              </Button>
-              <Button onClick={disconnectFromVoiceChat} className="voice-chat-button" soundFXVolume={soundFXVolume}>
-                Disconnect
-              </Button>
+              <AudioRoom />
               {!isVoteSubmitted && (
                   <Button
                       variant="room"
