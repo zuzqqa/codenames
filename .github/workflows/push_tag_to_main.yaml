@@ -98,31 +98,12 @@ jobs:
           echo "PRE_RELEASE_FLAG=$PRE_RELEASE_FLAG" >> $GITHUB_ENV
 
       - name: 📄 Create GitHub Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PAYLOAD=$(jq -n \
-            --arg tag "${{ env.SELECTED_VERSION }}" \
-            --arg name "$(head -n 1 scripts/release_note.md)" \
-            --argjson body "${{ env.RELEASE_BODY }}" \
-            --argjson draft false \
-            --argjson prerelease "${{ env.PRE_RELEASE_FLAG }}" \
-            '{
-              "tag_name": $tag,
-              "name": $name,
-              "body": $body,
-              "draft": $draft,
-              "prerelease": $prerelease
-            }')
-          
-          echo "Payload: $PAYLOAD"
-          
-          curl -X POST \
-            -H "Authorization: token $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            -H "Content-Type: application/json" \
-            -d "$PAYLOAD" \
-            https://api.github.com/repos/${{ github.repository }}/releases
+          echo "Creating release: ${{ env.TITLE }}"
+          body=$(cat scripts/release_note.md | sed ':a;N;$!ba;s/\n/\\n/g')
+          curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -d '{"tag_name": "${{ env.SELECTED_VERSION }}", "name": "${{ env.TITLE }}", "body": "'"$body"'", "draft": false, "prerelease": '${{ env.PRE_RELEASE_FLAG }} }' \
+          https://api.github.com/repos/${{ github.repository }}/releases
 
       - name: 🔎 Verify that the tag was created
         run: |
