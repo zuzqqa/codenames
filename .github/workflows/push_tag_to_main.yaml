@@ -73,21 +73,40 @@ jobs:
           echo "PRE_RELEASE_FLAG=$pre_release_flag" >> $GITHUB_ENV
           echo "RELEASE_BODY=$BODY" >> $GITHUB_ENV
 
+      - name: 📄 Prepare Release Note
+        run: |
+          # Usuń pierwszą linię (tytuł)
+          tail -n +2 scripts/release_note.md > scripts/temp_release_note.md
+          
+          # Usuń linię PRE-RELEASE
+          sed -i '$d' scripts/temp_release_note.md
+          
+          # Przygotuj treść release notes
+          BODY=$(cat scripts/temp_release_note.md)
+          
+          # Konwersja na poprawny JSON string
+          ESCAPED_BODY=$(echo "$BODY" | jq -Rs '.')
+          
+          # Przygotuj flagę pre-release
+          PRE_RELEASE_FLAG=false
+          if grep -q "PRE-RELEASE" scripts/release_note.md; then
+            PRE_RELEASE_FLAG=true
+          fi
+          
+          # Eksportuj zmienne środowiskowe
+          echo "RELEASE_BODY=$ESCAPED_BODY" >> $GITHUB_ENV
+          echo "PRE_RELEASE_FLAG=$PRE_RELEASE_FLAG" >> $GITHUB_ENV
+
       - name: 📄 Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TITLE: ${{ env.TITLE }}
-          SELECTED_VERSION: ${{ env.SELECTED_VERSION }}
-          PRE_RELEASE_FLAG: ${{ env.PRE_RELEASE_FLAG }}
         run: |
-          BODY=$(jq -Rs '.' scripts/release_note.md)
-          
           PAYLOAD=$(jq -n \
-            --arg tag "$SELECTED_VERSION" \
-            --arg name "$TITLE" \
-            --arg body "$BODY" \
+            --arg tag "${{ env.SELECTED_VERSION }}" \
+            --arg name "$(head -n 1 scripts/release_note.md)" \
+            --argjson body "${{ env.RELEASE_BODY }}" \
             --argjson draft false \
-            --argjson prerelease "$PRE_RELEASE_FLAG" \
+            --argjson prerelease "${{ env.PRE_RELEASE_FLAG }}" \
             '{
               "tag_name": $tag,
               "name": $name,
