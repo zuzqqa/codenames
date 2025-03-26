@@ -51,11 +51,10 @@ jobs:
 
       - name: 📄 Read release note and title
         run: |
-          title=$(head -n 1 scripts/release_note.md) 
+          title=$(head -n 1 scripts/release_note.md)
           echo "Release Title: $title"
-
           tail -n +2 scripts/release_note.md > scripts/temp_release_note.md
-
+          
           pre_release=$(tail -n 1 scripts/temp_release_note.md)
           pre_release_flag=false
           
@@ -64,14 +63,18 @@ jobs:
             pre_release_flag=true
             sed -i '$d' scripts/temp_release_note.md
           fi
-
+          
           mv scripts/temp_release_note.md scripts/release_note.md
+          
+          # Escape newlines and convert to single-line JSON string
+          BODY=$(printf '%s' "$(cat scripts/release_note.md)" | sed 's/$/\\n/g' | tr -d '\n' | jq -Rs '.')
+          
           echo "TITLE=$title" >> $GITHUB_ENV
           echo "PRE_RELEASE_FLAG=$pre_release_flag" >> $GITHUB_ENV
+          echo "RELEASE_BODY=$BODY" >> $GITHUB_ENV
 
       - name: 📄 Create GitHub Release
         run: |
-          BODY=$(cat scripts/release_note.md | jq -R -s -c '@json')
           echo "Creating release: ${{ env.TITLE }}"
           curl -X POST \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
@@ -80,7 +83,7 @@ jobs:
             -d "{
               \"tag_name\": \"${{ env.SELECTED_VERSION }}\",
               \"name\": \"${{ env.TITLE }}\",
-              \"body\": $BODY,
+              \"body\": ${{ env.RELEASE_BODY }},
               \"draft\": false,
               \"prerelease\": ${{ env.PRE_RELEASE_FLAG }}
             }" \
