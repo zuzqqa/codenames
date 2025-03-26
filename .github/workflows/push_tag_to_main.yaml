@@ -86,7 +86,7 @@ jobs:
             --arg tag "$SELECTED_VERSION" \
             --arg name "$TITLE" \
             --arg body "$BODY" \
-            --arg draft "false" \
+            --argjson draft false \
             --argjson prerelease "$PRE_RELEASE_FLAG" \
             '{
               "tag_name": $tag,
