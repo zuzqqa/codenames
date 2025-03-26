@@ -27,6 +27,7 @@ import Chat from "../../components/Chat/Chat.tsx";
 import { Client } from "@stomp/stompjs";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useWebSocket } from "./useWebSocket";
+import AudioRoom from "../../components/AudioRoom/AudioRoom.tsx";
 
 /**
  * Represents properties for controlling gameplay-related settings, such as volume levels.
@@ -950,6 +951,7 @@ const Gameplay: React.FC<GameplayProps> = ({
               >
                 <span className="button-text">{t("end-round")}</span>
               </Button>
+                <AudioRoom />
               <div className="horizontal-gold-bar" />
             </div>
             <div className="item">
