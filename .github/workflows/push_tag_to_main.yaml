@@ -6,7 +6,7 @@ on:
       - main  # Trigger workflow on pushes to the main branch
 
 jobs:
-  create-tag:
+  create-release:
     runs-on: ubuntu-latest
     permissions:
       contents: write  # Allow the job to create and push tags
@@ -18,7 +18,7 @@ jobs:
       - name: 🔄 Fetch tags
         run: |
           git fetch --tags
-          echo "✅ Tagi pobrane"
+          echo "✅ Tags downloaded!"
 
       - name: 🔍 Get the latest tag on main
         run: |
@@ -49,6 +49,33 @@ jobs:
             exit 0
           fi
 
+      - name: 📄 Read release note and title
+        run: |
+          title=$(head -n 1 release_note.md) 
+          echo "Release Title: $title"
+
+          tail -n +2 release_note.md > temp_release_note.md
+
+          pre_release=$(tail -n 1 temp_release_note.md)
+          if [ "$pre_release" == "PRE-RELEASE" ]; then
+            echo "PRE-RELEASE detected"
+            pre_release_flag="true"
+            sed -i '$d' temp_release_note.md
+          else
+            pre_release_flag="false"
+          fi
+
+          mv temp_release_note.md release_note.md
+          echo "TITLE=$title" >> $GITHUB_ENV
+          echo "PRE_RELEASE_FLAG=$pre_release_flag" >> $GITHUB_ENV
+
+      - name: 📄 Create GitHub Release
+        run: |
+          echo "Creating release: ${{ env.TITLE }}"
+          curl -XPOST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -d '{"tag_name":"${{ env.SELECTED_VERSION }}","name":"${{ env.TITLE }}","body":"$(cat release_note.md)","draft":false,"prerelease":"${{ env.PRE_RELEASE_FLAG }}"}' \
+          https://api.github.com/repos/${{ github.repository }}/releases
+
       - name: 🔎 Verify that the tag was created
         run: |
           git tag
@@ -60,7 +87,7 @@ jobs:
           git push origin ${{ env.SELECTED_VERSION }}
 
   push-docker:
-    needs: create-tag  # Ensure the tagging job completes before running this job
+    needs: create-release # Ensure the tagging job completes before running this job
     runs-on: ubuntu-latest
 
     steps:
