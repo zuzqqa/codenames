@@ -3,7 +3,10 @@ name: 🚀 Codenames CI/CD Pipeline
 on:
   push:
     branches:
-      - 150-add-test-execution-to-github-actions-workflow # Trigger pipeline on pushes to the main branch
+      - '*' # Trigger pipeline on pushes 
+  pull request:
+    branches:
+      - main
 
 jobs:
   backend:

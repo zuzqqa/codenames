@@ -75,39 +75,31 @@ jobs:
 
       - name: 📄 Prepare Release Note
         run: |
-          # Usuń pierwszą linię (tytuł)
           tail -n +2 scripts/release_note.md > scripts/temp_release_note.md
           
-          # Usuń linię PRE-RELEASE
           sed -i '$d' scripts/temp_release_note.md
           
-          # Przygotuj treść release notes
           BODY=$(cat scripts/temp_release_note.md)
           
-          # Konwersja na poprawny JSON string
           ESCAPED_BODY=$(echo "$BODY" | jq -Rs '.')
           
-          # Przygotuj flagę pre-release
           PRE_RELEASE_FLAG=false
           if grep -q "PRE-RELEASE" scripts/release_note.md; then
             PRE_RELEASE_FLAG=true
           fi
           
-          # Eksportuj zmienne środowiskowe
           echo "RELEASE_BODY=$ESCAPED_BODY" >> $GITHUB_ENV
           echo "PRE_RELEASE_FLAG=$PRE_RELEASE_FLAG" >> $GITHUB_ENV
 
       - name: 📄 Create GitHub Release
         run: |
           echo "Creating release: ${{ env.TITLE }}"
-          # Wczytanie zawartości pliku i zamiana nowych linii na \\n
+
           body=$(cat scripts/release_note.md | sed ':a;N;$!ba;s/\n/\\n/g')
-          
-          # Zbudowanie ciągu JSON przy użyciu printf
+
           json=$(printf '{"tag_name": "%s", "name": "%s", "body": "%s", "draft": false, "prerelease": %s}' \
             "${{ env.SELECTED_VERSION }}" "${{ env.TITLE }}" "$body" "${{ env.PRE_RELEASE_FLAG }}")
           
-          echo "$json"  # opcjonalnie, do debugowania
           curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
                -d "$json" \
                https://api.github.com/repos/${{ github.repository }}/releases
