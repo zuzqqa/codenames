@@ -60,12 +60,13 @@ public class DefaultUserController implements UserController {
         if (errorMessage.isPresent()) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", errorMessage.get());
+
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
         String token = jwtService.generateToken(user.getUsername());
 
-        if (!user.isGuest()) {
+        if (!user.isGuest() && !Objects.equals(user.getRoles(), "ROLE_ADMIN")) {
             String activationLink = "http://localhost:8080/api/users/activate/" + token;
 
             ClassPathResource resource = new ClassPathResource("mail-templates/activate_account_templates/activate_account_" + language + ".html");
@@ -83,7 +84,7 @@ public class DefaultUserController implements UserController {
             mailSender.send(message);
         }
 
-        if (user.isGuest()) {
+        if (user.isGuest() || Objects.equals(user.getRoles(), "ROLE_ADMIN")) {
             response.addCookie(setAuthCookie(token, true));
         }
 
@@ -186,6 +187,7 @@ public class DefaultUserController implements UserController {
 
                 String token = jwtService.generateToken(authRequest.getUsername());
                 response.addCookie(setAuthCookie(token, true));
+
                 return ResponseEntity.ok().build();
             } else {
                 throw new UsernameNotFoundException("Invalid username or password");

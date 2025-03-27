@@ -61,7 +61,7 @@ public class UserServiceTest {
 
         when(passwordEncoder.encode("AlaMaKota")).thenReturn("encodedPassword");
 
-        User user = User.builder().id("123").username("testUser").password("AlaMaKota").build();
+        User user = User.builder().id("123").username("testUser").password("AlaMaKota").email("test@gmail.com").build();
         userService.createUser(user);  // Call the service method
 
         assertNotNull(user.getId());  // Assert that the user has an ID
