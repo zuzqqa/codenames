@@ -48,23 +48,30 @@ public class DefaultUserService implements UserService {
      * @return the created user
      */
     @Override
-
     public Optional<String> createUser(User user) {
         user.setStatus(User.userStatus.INACTIVE);
+
+        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+            return Optional.of("Invalid email address");
+        }
 
         if (!user.isGuest() && userRepository.existsByEmail(user.getEmail())) {
             return Optional.of("E-mail already exists.");
         }
+
         if (!user.isGuest() && userRepository.existsByUsername(user.getUsername())) {
             return Optional.of("Username already exists.");
         }
+
         if (!user.isGuest()) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             if(user.getRoles() == null) {
                 user.setRoles("ROLE_USER");
             }
         }
+
         userRepository.save(user);
+
         return Optional.empty();
     }
 

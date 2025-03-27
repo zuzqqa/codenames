@@ -4,6 +4,8 @@ import org.example.codenames.CodenamesApplication;
 import org.example.codenames.gameSession.controller.api.GameSessionController;
 
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
+import org.example.codenames.user.controller.api.UserController;
+import org.example.codenames.user.entity.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -27,14 +29,15 @@ import java.time.Duration;
 import java.util.UUID;
 
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Integration tests for the game session functionalities.
  * Primarily testing {@link GameSessionController} endpoints.
  */
-
 @Testcontainers
 @SpringBootTest(classes = CodenamesApplication.class)
 @AutoConfigureMockMvc
@@ -177,8 +180,9 @@ public class GameSessionControllerTest {
         String gameId = new ObjectMapper().readTree(result.getResponse().getContentAsString()).get("gameId").asText();
 
         mvc.perform(post("/api/game-session/" + gameId + "/connect")
-                        .param("userId", "testId")
+                        .param("userId", "1")
                         .param("teamIndex", "1"))
+                .andDo(print())
                 .andExpect(status().isOk());
     }
 

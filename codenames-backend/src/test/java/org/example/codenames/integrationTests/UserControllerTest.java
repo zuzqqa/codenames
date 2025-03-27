@@ -95,13 +95,14 @@ public class UserControllerTest {
     public void shouldAddUser() throws Exception {
         User user = User.builder()
                 .username("test")
-                .password("test")
+                .password("Test1234?")
                 .email("example@gmail.com")
                 .build();
 
         mvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Origin", "http://localhost:5173")  // Set the origin
+                        .param("language", "en")
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk());
 
@@ -116,19 +117,21 @@ public class UserControllerTest {
     public void addAlreadyExistingUser() throws Exception {
         User user = User.builder()
                 .username("test")
-                .password("test")
+                .password("Test1234?")
                 .email("example@gmail.com")
                 .build();
 
         mvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Origin", "http://localhost:5173")
+                        .param("language", "en")
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk());
 
         mvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Origin", "http://localhost:5173")
+                        .param("language", "en")
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isBadRequest());
     }
@@ -144,6 +147,7 @@ public class UserControllerTest {
         mvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Origin", "http://localhost:5173")
+                        .param("language", "en")
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isBadRequest());
     }
@@ -155,22 +159,31 @@ public class UserControllerTest {
                 .username("test")
                 .password("test")
                 .email("example@gmail.com")
+                .roles("ROLE_GUEST")
+                .isGuest(true)
                 .build();
+
         MvcResult result = mvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Origin", "http://localhost:5173")
+                        .param("language", "en")
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String token = result.getResponse().getCookie("authToken").getValue();
+        Cookie authTokenCookie = result.getResponse().getCookie("authToken");
+        assertNotNull(authTokenCookie, "authToken cookie should not be null");
+        String token = authTokenCookie.getValue();
+
         result = mvc.perform(get("/api/users/username/" + token)
                         .header("Origin", "http://localhost:5173")
                         .cookie(new Cookie("authToken", token)))
                 .andExpect(status().isOk())
                 .andReturn();
+
         String jsonResponse = result.getResponse().getContentAsString();
         String username = objectMapper.readTree(jsonResponse).get("username").asText();
+
         assertEquals("test", username);
     }
 
@@ -186,11 +199,14 @@ public class UserControllerTest {
                 .username("test")
                 .password("test")
                 .email("example@gmail.com")
+                .roles("ROLE_GUEST")
+                .isGuest(true)
                 .build();
 
         MvcResult result = mvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Origin", "http://localhost:5173")
+                        .param("language", "en")
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk()).andReturn();
 
@@ -199,6 +215,7 @@ public class UserControllerTest {
         mvc.perform(get("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Origin", "http://localhost:5173")
+                        .param("language", "en")
                         .cookie(new Cookie("authToken", token))
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isForbidden());
@@ -213,6 +230,7 @@ public class UserControllerTest {
         result = mvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Origin", "http://localhost:5173")
+                        .param("language", "en")
                         .content(objectMapper.writeValueAsString(adminUser)))
                 .andExpect(status().isOk()).andReturn();
 
@@ -221,6 +239,7 @@ public class UserControllerTest {
         mvc.perform(get("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Origin", "http://localhost:5173")
+                        .param("language", "en")
                         .cookie(new Cookie("authToken", token))
                         .content(objectMapper.writeValueAsString(adminUser)))
                 .andExpect(status().isOk());

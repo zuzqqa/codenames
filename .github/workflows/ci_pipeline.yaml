@@ -3,10 +3,10 @@ name: 🚀 Codenames CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # Trigger pipeline on pushes to the main branch
-  pull_request:
+      - '*' # Trigger pipeline on pushes 
+  pull request:
     branches:
-      - main  # Trigger pipeline on pull requests to the main branch
+      - main
 
 jobs:
   backend:
@@ -56,6 +56,16 @@ jobs:
         run: |
           cd codenames-backend
           mvn clean install -DskipTests
+      
+      - name: 🔨 Run Integration Tests with Maven
+        run: |
+          cd codenames-backend
+          mvn test -Dtest="**/integrationTests/*.java"
+      
+      - name: 🔨 Run Unit Tests with Maven
+        run: |
+          cd codenames-backend
+          mvn test -Dtest="**/unitTests/*.java"
 
   frontend: 
     name: 🎨 Build Frontend

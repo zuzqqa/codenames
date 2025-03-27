@@ -1,14 +1,13 @@
 🎮 Alpha Release – Early version of the game
 **🔧 What's included in this release?**
-This release introduces a new automated release creation script that uses a predefined template along with updated GitHub Actions workflows. The new workflow now automatically creates releases based on tags, including correct handling of pre-release flags.
+In this version, the pipeline runs both unit and integration tests.
 
 Key additions: 
-- Automated release generation via GitHub Actions.
-- Improved script logic for parsing the release note template.
-- Enhanced integration with GitHub API for creating releases.
+- Pipeline runs unit tests.
+- Pipeline runs integration tests.
 
 **🚧 What's still under development?**
-- Voice chat integration.
+- Voice chat.
 - User password reset functionality.
 - User profile enhancements.
 
