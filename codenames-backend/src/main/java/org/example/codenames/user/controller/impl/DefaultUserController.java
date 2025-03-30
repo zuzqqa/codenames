@@ -77,18 +77,22 @@ public class DefaultUserController implements UserController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<Void> authenticateAndSetCookie(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
+        System.out.println("I am in the authentication");
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
             );
             if (authentication.isAuthenticated()) {
+                System.out.println("I am authenticated");
                 String token = jwtService.generateToken(authRequest.getUsername());
                 response.addCookie(setAuthCookie(token, true));
                 return ResponseEntity.ok().build();
             } else {
+                System.out.println("I am not authenticated");
                 throw new UsernameNotFoundException("Invalid username or password");
             }
         } catch (Exception e) {
+            System.out.println("I am in the exception");
             throw new UsernameNotFoundException("Invalid username or password");
         }
     }
@@ -157,7 +161,6 @@ public class DefaultUserController implements UserController {
 
     @PostMapping("/reset-password/{uuid}")
     public ResponseEntity<Void> updatePassword(@PathVariable String uuid, @RequestBody String password) {
-        System.out.println("I am updating endpoint");
         userService.resetPassword(uuid, password);
         return ResponseEntity.ok().build();
     }

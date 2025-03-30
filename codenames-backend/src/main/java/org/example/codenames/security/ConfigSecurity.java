@@ -36,7 +36,7 @@ public class ConfigSecurity {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf().disable()
+        return http.csrf(csrf -> csrf.disable())
                 //.cors().and()     //We either have to do this or add requestMatchers for OPTIONS, leaving this for now to explore it further
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests

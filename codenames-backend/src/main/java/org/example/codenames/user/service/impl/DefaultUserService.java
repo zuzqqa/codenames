@@ -61,13 +61,16 @@ public class DefaultUserService implements UserService {
 
     @Override
     public void resetPassword(String uuid, String password) {
-        System.out.println("Iam in the service");
         userRepository.findByResetId(uuid)
                 .ifPresent(user -> {
-                    user.setPassword(passwordEncoder.encode(password));
+                    System.out.println(user.getUsername());
+                    System.out.println("New password: " + password);
+                    String encodedPassword = passwordEncoder.encode(password);
+                    System.out.println("New encoded password: " + encodedPassword);
+                    user.setPassword(encodedPassword);
+                    System.out.println("User password: " + user.getPassword());
+                    user.setResetId(null);
                     userRepository.save(user);
-                    System.out.println("I found the user and updated the password");
-                    updateServiceId(user.getEmail(), null);
                 });
     }
 
