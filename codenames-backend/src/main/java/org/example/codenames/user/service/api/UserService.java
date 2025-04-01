@@ -1,14 +1,11 @@
 package org.example.codenames.user.service.api;
 
-import com.mongodb.client.MongoIterable;
 import org.example.codenames.user.entity.User;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-
     // Create a new user
     public void createUser(User user);
 

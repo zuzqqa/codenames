@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -59,8 +58,6 @@ public class DefaultUserController implements UserController {
         response.put("username", username);
         return ResponseEntity.ok(response);
     }
-
-
 
     // Update a user by ID
     @PutMapping("/{id}")

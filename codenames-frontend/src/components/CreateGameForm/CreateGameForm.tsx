@@ -8,6 +8,8 @@ import { useState } from "react";
 import "./CreateGameForm.css";
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import React from "react";
+import lockSolid from "../../assets/icons/key.png";
+import check from "../../assets/icons/check.png";
 
 // Typ dla CreateGameFormProps
 interface CreateGameFormProps {
@@ -18,6 +20,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -189,8 +192,34 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
               placeholder="GAME NAME"
               onChange={formik.handleChange}
               value={formik.values.gameName}
-              style={{ gridColumn: "span 2" }}
+              style={{ gridColumn: "1" }}
             />
+            <Button
+              className="lockSolid-button"
+              variant="circle-back"
+              onClick={() => setIsOpen(!isOpen)}
+              soundFXVolume={soundFXVolume}
+            >
+              <img src={lockSolid} alt="Back" className="btn-arrow-back" />
+            </Button>
+
+            {isOpen && (
+              <div className="password-overlay">
+                <input
+                  type="password"
+                  placeholder="Enter password"
+                  className="input-box ib-password-overlay"
+                />
+                <Button
+                  className="check-button"
+                  variant="circle-back"
+                  // SEND TO BACKEND
+                  soundFXVolume={soundFXVolume}
+                >
+                  <img src={check} alt="Back" className="btn-arrow-back" />
+                </Button>
+              </div>
+            )}
             {formik.touched.gameName && formik.errors.gameName ? (
               <ErrorMessage name="gameName">
                 {(errorMessage) => <div className="error">{errorMessage}</div>}
