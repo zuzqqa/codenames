@@ -4,7 +4,7 @@ import Button from "../Button/Button.tsx";
 import backButton from "../../assets/icons/arrow-back.png";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./CreateGameForm.css";
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import React from "react";
@@ -20,17 +20,15 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(false);
 
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
       gameName: "",
       playerSlider: 4,
-      gameDuration: 0,
-      hintTime: "",
-      guessingTime: "",
-      deckLanguage: "en",
+      password: "",
+      deckLanguage: "en"
     },
 
     validationSchema: Yup.object({
@@ -89,8 +87,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
         const requestData = {
           gameName: values.gameName,
           maxPlayers: values.playerSlider,
-          timeForAHint: convertToDuration(values.hintTime),
-          timeForGuessing: convertToDuration(values.guessingTime),
+          password: values.password,
           language: values.deckLanguage,
         };
 
@@ -148,25 +145,6 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
     }
   };
 
-  const formatTimeInput = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    name: string
-  ) => {
-    let value = e.target.value.replace(/\D/g, "");
-
-    while (value.length < 4) {
-      value = "0" + value;
-    }
-    value = value.slice(-4);
-    const formattedValue = `${value.substring(0, 2)}:${value.substring(2, 4)}`;
-    formik.setFieldValue(name, formattedValue);
-  };
-
-  const convertToDuration = (time: string) => {
-    const [minutes, seconds] = time.split(":").map(Number);
-    return `PT${minutes}M${seconds}S`;
-  };
-
   return (
     <>
       <RoomMenu>
@@ -183,7 +161,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
           onSubmit={formik.handleSubmit}
           style={{ gridColumn: "2", gridRow: "2" }}
         >
-          <div className={"form-content"}>
+          <div className={"form-content"} style={{  gridTemplateRows: isPrivate ? "1fr 1fr 1fr 1fr 1fr" : "1fr 1fr 1fr 1fr"}}>
             <input
               id="gameName"
               className="input-box"
@@ -192,34 +170,36 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
               placeholder="GAME NAME"
               onChange={formik.handleChange}
               value={formik.values.gameName}
-              style={{ gridColumn: "1" }}
+              style={{ gridColumn: "span 2" }}
             />
-            <Button
-              className="lockSolid-button"
-              variant="circle-back"
-              onClick={() => setIsOpen(!isOpen)}
-              soundFXVolume={soundFXVolume}
+            <label
+              htmlFor="privateRoomPassword"
+              style={{
+                marginRight: "10px",
+                gridColumn: "span 1",
+              }}
+              className="label-inset"
             >
-              <img src={lockSolid} alt="Back" className="btn-arrow-back" />
-            </Button>
-
-            {isOpen && (
-              <div className="password-overlay">
-                <input
-                  type="password"
-                  placeholder="Enter password"
-                  className="input-box ib-password-overlay"
-                />
-                <Button
-                  className="check-button"
-                  variant="circle-back"
-                  // SEND TO BACKEND
-                  soundFXVolume={soundFXVolume}
-                >
-                  <img src={check} alt="Back" className="btn-arrow-back" />
-                </Button>
-              </div>
-            )}
+              Private lobby:
+            </label>
+            <label
+              className="cr-wrapper"
+              style={{ gridColumn: "span 1" }}
+            >
+              <input
+                type="checkbox"
+                checked={isPrivate}
+                onChange={() => setIsPrivate((prev) => !prev)}
+              />
+              <div className="cr-input"></div>
+            </label>
+            <input
+              type="password"
+              placeholder="ENTER PASSWORD"
+              className={`password-input ${isPrivate ? "visible" : "hiding"}`}
+              style={{ gridColumn: "span 2" }}
+              value={formik.values.password}
+            />
             {formik.touched.gameName && formik.errors.gameName ? (
               <ErrorMessage name="gameName">
                 {(errorMessage) => <div className="error">{errorMessage}</div>}
@@ -235,7 +215,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
                 gridRow: "2",
               }}
             >
-              <label htmlFor="playerSlider" style={{ marginRight: "10px" }}>
+              <label htmlFor="playerSlider" className="label-inset" style={{ marginRight: "10px" }}>
                 {t("slots")}:
               </label>
               <input
@@ -249,32 +229,11 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
                 onChange={formik.handleChange}
                 value={formik.values.playerSlider || 4}
               />
-              <span className="slider-value">
+              <span className="slider-value label-inset">
                 {formik.values.playerSlider || 4}
               </span>
             </div>
-            <label>{t("hint-duration")}</label>
-            <input
-              id="hintTime"
-              className="input-box"
-              name="hintTime"
-              type="text"
-              value={formik.values.hintTime}
-              onChange={(e) => formatTimeInput(e, "hintTime")}
-              maxLength={6}
-            />
-            <label>{t("guess-duration")}</label>
-            <input
-              id="guessingTime"
-              className="input-box"
-              name="guessingTime"
-              type="text"
-              value={formik.values.guessingTime}
-              onChange={(e) => formatTimeInput(e, "guessingTime")}
-              maxLength={6}
-            />
-
-            <label htmlFor="deckLanguage">{t("deck-language")}</label>
+            <label htmlFor="deckLanguage" className="label-inset">{t("deck-language")}:</label>
             <select
               id="deckLanguage"
               name="deckLanguage"

@@ -6,22 +6,21 @@
   top: 3%;
   justify-content: center;
   align-items: center;
-  padding: 0 3rem;
+  padding: 0 3vw;
 
   font-size: calc(0.4rem + 1vw);
   text-transform: uppercase;
 
-
   background: linear-gradient(to top, #32464D, #2c3d46, #22303b);
   border-style: outset;
-  border-width: 2px;
+  border-width: 0.5%;
   border-color: #fcdc8b80;
-  border-radius: 17px;
+  border-radius: 27px;
 
-
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  text-shadow: 0.2% 0.2% 0.4% rgba(0, 0, 0, 0.2);
+  box-shadow: inset 2.91px 2.91px 5px #404040, inset -2.91px -2.91px 5px #565555;
   z-index: 10;
-  letter-spacing: 2px;
+  letter-spacing: 0.2%;
   text-align: center;
 }
 
@@ -30,6 +29,7 @@
   background-clip: text;
   -webkit-background-clip: text;
   background-image: linear-gradient(to top, #FFD363, #FCF18B);
+  margin-top: 3px;
   width: 10vw;
   user-select: none;
   -webkit-user-select: none;

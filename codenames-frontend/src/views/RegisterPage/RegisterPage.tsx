@@ -87,7 +87,6 @@ const RegisterPage: React.FC<RegisterProps> = ({
             });
 
             if (response.ok) {
-                const result = await response.text();
                 window.location.href = "/loading";
                 document.cookie = "loggedIn=true";
             } else {
