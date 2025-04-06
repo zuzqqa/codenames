@@ -67,6 +67,10 @@ cd codenames
 
 2. Set up the .env file in the root directory to define necessary environment variables (see [Environment Variables](#-environment-variables)).
 
+3. Set up the .env.local file in the `/codenames-frontend/` directory to define necessary environment variables (see [Environment Variables](#-environment-variables)).
+
+4. Set up the .env file in the `/codenames-backend/` directory to define necessary environment variables (see [Environment Variables](#-environment-variables)). 
+
 3. Run the application using Docker Compose:
 
 ```
@@ -77,7 +81,13 @@ The backend and frontend should now be running locally. You can access the front
 
 ## 🔧 Running the tests <a name = "tests"></a>
 
-Currently, the project is in early development, and automated tests are not yet implemented. However, we plan to add testing frameworks (such as JUnit for the backend and Jest for the frontend) in the future.
+Currently, there are unit an integration tests for backend available. 
+
+To run the tests you can use this commands:
+- for unit tests:
+  - `mvn test -Dtest="**/unitTests/*.java"`
+- for integration tests:
+  - `mvn test -Dtest="**/integrationTests/*.java"`
 
 ## 🎈 Usage <a name="usage"></a>
 
@@ -101,6 +111,9 @@ The following environment variables are required to run the project:
 * SPRING_MAIL_PASSWORD: Password for the mail account.
 * MONGO_INITDB_ROOT_USERNAME: Root username for MongoDB initialization.
 * MONGO_INITDB_ROOT_PASSWORD: Root password for MongoDB initialization.
+* VITE_GOOGLE_CLIENT_ID: Google Client ID used to authorize users with Google OAuth 2.0.
+* GOOGLE_CLIENT_ID: Google Client ID used to authorize users with Google OAuth 2.0.
+* GOOGLE_CLIENT_SECRET: OAuth 2.0 key used to authorize and exchange tokens in the authorization processes using Google.
 
 Create a `.env` file in the root directory of the project and define these variables as follows:
 
@@ -112,6 +125,24 @@ MONGO_INITDB_ROOT_USERNAME=your_mongo_root_username
 MONGO_INITDB_ROOT_PASSWORD=your_mongo_root_password
 ```
 
+Create a `.env.local` file in the `/codenames-frontend/` directory and define these variables as follows:
+
+```
+VITE_GOOGLE_CLIENT_ID=your_google_clientid
+```
+
+Create a `.env` file in the `/codenames-backend/` directory and define these variables as follows:
+
+```
+SECRET=your_jwt_secret_key
+SPRING_MAIL_USERNAME=your_email_username
+SPRING_MAIL_PASSWORD=your_email_password
+MONGO_INITDB_ROOT_USERNAME=your_mongo_root_username
+MONGO_INITDB_ROOT_PASSWORD=your_mongo_root_password
+GOOGLE_CLIENT_ID=your_google_clientid
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+```
+
 Alternatively, you can set these variables directly in your system as environment variables.
 
 ## ⛏️ Built Using <a name = "built_using"></a>
@@ -121,6 +152,7 @@ Alternatively, you can set these variables directly in your system as environmen
 * [React](https://react.dev/) - Frontend Framework
 * [Docker](https://www.docker.com/) - Containerization
 * [Docker Compose](https://docs.docker.com/compose/) - Multi-container Docker applications
+* [JUnit 5](https://junit.org/junit5/) - Testing framework for Java and the JVM
 
 ## ✍️ Authors <a name = "authors"></a>
 
