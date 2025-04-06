@@ -1,0 +1,549 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DOCUMENT DEFINITION AND BASIC SETTINGS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[12pt,a4paper,colorlinks=true,linkcolor=NavyBlue,citecolor=red,urlcolor=NavyBlue]{book}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}         
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FONT AND STYLE PACKS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{mathpazo}             
+\usepackage[semibold]{sourcesanspro}
+\usepackage{sectsty}
+\allsectionsfont{\sffamily} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% COLORS AND GRAPHIC STYLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{color}
+\definecolor{Valentia}{RGB}{233,78,82}
+\definecolor{Titleblue}{RGB}{114,146,162}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LAYOUT AND FORMATTING PACKAGES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{mdframed}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage[absolute]{textpos}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{geometry}
+\usepackage{scrextend}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% HEADER AND FOOTER SETTINGS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyheadoffset{0.005\textwidth}
+\fancyhead[LE]{\thepage}
+\fancyhead[RE]{\nouppercase\leftmark}
+\fancyhead[RO]{\thepage}
+\fancyhead[LO]{\nouppercase\rightmark}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% HYPERLINKS AND CHAPTER STYLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{hyperref}
+\usepackage[Sonny]{fncychap}
+\usepackage[colorlinks=true, linkcolor=blue, citecolor=red, urlcolor=blue]{hyperref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BEGINNING OF THE DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TITLE PAGE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{titlepage}
+\newgeometry{left=2.5cm, bottom=3cm, top=2cm, right=2.5cm}
+
+\tikz[remember picture,overlay] \node[opacity=0.03,inner sep=0pt] at (73.6mm, -124.25mm){\includegraphics{characters.png}};
+
+\centering
+\color{black}
+\fontsize{24}{13}\selectfont
+\textbf{DOKUMENT PROJEKTU} \\[2mm]
+\normalsize
+\color{black}
+\bigskip
+\textbf{Wersja dokumentu: 1.1}\\[1mm]
+\bigskip
+\textbf{Data utworzenia: 19.03.2025}\\[1mm]
+\bigskip
+\textbf{Data ostatniej aktualizacji: 25.03.2025}
+
+% Title of the project
+\color{black}
+\vspace{2cm}
+{\fontsize{28}{32} \selectfont \textbf{Gra internetowa}}\\ 
+\vspace{0.3cm} 
+{\fontsize{45}{32} \selectfont \textbf{Codenames}} 
+
+% Subtitle of the project
+\vspace{2cm}
+\fontsize{15}{18}\selectfont
+\color{black}
+\textbf{Organizacja i infrastruktura projektu\\}
+\bigskip
+\vspace{5cm}
+
+% Information about authors
+\normalsize
+\bigskip
+\fontsize{12}{12}\selectfont
+\vspace{1.5mm}
+\raggedright
+\begin{tabular}{ll}
+\textbf{Redaktor:} & Zuzanna Nowak, s193165 \\[6mm]
+\textbf{Współautorzy:} & Agata Domasik, 193577 \\[2mm]
+& Jakub Walasik, s193650 \\[2mm]
+& Adam Chabraszewski, s193373 \\[6mm]
+\textbf{Liczba stron:} & 24 \\[2mm]
+\end{tabular}
+
+% Logo
+\vspace{\fill}
+\begin{center}
+    \includegraphics[scale=0.3]{logo.png} 
+\end{center}
+\vspace{-15mm}
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% GEOMETRY SETTINGS FOR THE MAIN BODY OF THE DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newgeometry{top=2cm, bottom=2.5cm, left=2cm, right=2cm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CONTENT OF THE DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TABLE OF CONTENTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapters
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Wprowadzenie - o dokumencie}
+\section{Cel dokumentu}
+Celem dokumentu jest uporządkowanie podstawowych informacji o infrastrukturze projektu, organizacji pracy zespołu, rodzajach komunikacji czy sposobie wymiany dokumentów i kodu między członkami zespołu. 
+
+\section{Odbiorcy}
+
+\begin{itemize}
+    \item Dr inż. Jakub Miler - prowadzący przedmiot \textit{Realizacja projektu informatycznego},
+    \item Dr inż. Katarzyna Łukasiewicz - prowadzący zajęcia projektowe,
+    \item Katedra Inżynierii Oprogramowania, \\[2mm] 
+Wydział Elektroniki, Telekomunikacji i Informatyki, \\[2mm]  
+Politechnika Gdańska,
+    \item Członkowie zespołu projektowego:
+    \begin{itemize}
+        \item[] Zuzanna Nowak, 193165 - kierownik projektu
+        \item[] Agata Domasik, 193577
+        \item[] Jakub Walasik, s193650
+        \item[] Adam Chabraszewski, s193373
+    \end{itemize}
+\end{itemize}
+
+\section{Terminologia}
+\begin{itemize}
+    \item \textbf{Streaming} – transmitowanie rozgrywki na żywo za pośrednictwem platform internetowych, takich jak Twitch, YouTube czy Facebook Gaming. Umożliwia interakcję z widzami i popularyzację gry.
+    \item \textbf{Turnieje online} – rywalizacja graczy w sieci w zorganizowanych zawodach, często z ustalonymi zasadami i nagrodami. Może być prowadzona na dedykowanych platformach turniejowych.
+    \item \textbf{Rozproszona aplikacja} – aplikacja, której komponenty działają na różnych urządzeniach lub serwerach, komunikując się za pomocą sieci.
+    \item \textbf{Sesja gry} – jednostka rozgrywki, w której gracze dołączają do wspólnej gry według określonych zasad.
+    \item \textbf{Kapitan drużyny} – gracz odpowiedzialny za podawanie wskazówek w grze „Tajniacy”.
+    \item \textbf{Interfejs użytkownika (UI)} – część aplikacji, z którą użytkownicy wchodzą w interakcję, np. menu gry, przyciski czy plansza gry.
+    \item \textbf{Backend} – część systemu odpowiedzialna za przetwarzanie danych i logikę aplikacji, działająca po stronie serwera.
+    \item \textbf{Frontend} – część systemu odpowiedzialna za interakcję użytkownika, działająca po stronie przeglądarki lub aplikacji klienckiej.
+    \item \textbf{WebSocket} – technologia umożliwiająca dwukierunkową komunikację w czasie rzeczywistym pomiędzy klientem a serwerem.
+    \item \textbf{Repozytorium Git} – system kontroli wersji używany do przechowywania i zarządzania kodem źródłowym projektu.
+\end{itemize}
+
+\chapter{Opis projektu}
+
+\section{Nazwa projektu}
+Rozproszona aplikacja do rozgrywek w grę imprezową `Tajniacy`.
+
+\section{Adresowany problem}
+Projekt odpowiada na potrzebę stworzenia cyfrowej wersji popularnej gry planszowej "Tajniacy", umożliwiającej rozgrywkę bez posiadania fizycznej wersji gry. Obecne na rynku implementacje nie oddają w pełni mechaniki oryginalnej gry, co utrudnia rozgrywkę i pogarsza wrażenia z gry.
+
+\section{Obszar zastosowania}
+Gra znajduje zastosowanie w obszarach:
+\begin{itemize}
+    \item Rozrywka i gry towarzyskie online, 
+    \item Trening logicznego myślenia, 
+    \item Narzędzia do integracji zespołów,
+    \item Streaming i turnieje online
+\end{itemize}
+
+\section{Rynek}
+Docelowym rynkiem dla tego produktu są różnorodne grupy odbiorców:
+\begin{itemize}
+    \item Gracze gier planszowych, 
+    \item Fani gier słownych i łamigłówek, 
+    \item Osoby poszukujące rozgrywki w formie cyfrowej, 
+    \item Zespoły pracownicze szukające narzędzi do integracji zespołu,
+    \item Edukatorzy wykorzystujący gry jako narzędzia dydaktyczne,
+    \item Rodziny, szukające rozrywki dla różnych grup wiekowych
+\end{itemize}
+
+\section{Interesariusze}
+Interesariuszami projektu są:
+\begin{itemize}
+    \item \textbf{Deweloperzy} odpowiedzialni za implementację, 
+    \item \textbf{Testerzy} weryfikujący funkcjonalności 
+    \item \textbf{Gracze}
+\end{itemize}
+
+\section{Użytkownicy i ich potrzeby}
+Użytkownikami końcowymi produktu będą:
+\begin{itemize}
+    \item gracze indywidualni - wymagają możliwości dołączania do publicznych rozgrywek, 
+    \item grupy znajomych - wymagają możliwości utworzenia rozgrywki prywatnej oraz zaproszania do niej graczy
+\end{itemize}
+Kluczowymi potrzebami wyżej wymienionych użytkowników są: prosty, intuicyjny interfejs oraz możliwość prowadzenia rozgrywki zdalnie.
+
+\section{Cel i zakres projektu}
+Celem projektu jest stworzenie rozproszonej wersji gry „Tajniacy”, umożliwiającej graczom rywalizację w czasie rzeczywistym z różnych lokalizacji. Gra będzie dostępna online, co pozwoli na granie w różnych środowiskach i na różnych urządzeniach. Rozgrywka opiera się na współpracy drużynowej oraz analizie słów. Drużyny będą próbować odgadnąć słowa powiązane z podpowiedziami kapitana, zgodnie z zasadami oryginalnej gry. System zostanie zaprojektowany tak, by rozwijać strategiczne myślenie, umiejętność kojarzenia słów oraz pracę zespołową. 
+
+\section{Ograniczenia}
+\begin{itemize}
+    \item \textbf{Czas realizacji}: Projekt ma ograniczony czas realizacji – dwa semestry. 
+    \item \textbf{Zasoby ludzkie}: Ograniczona liczba programistów.
+    \item \textbf{Budżet}: Ograniczone fundusze na hosting i narzędzia. 
+\end{itemize}
+
+\section{Inne współpracujące systemy}
+Produkt będzie współpracował z serwerami obsługującymi rozgrywkę online, bazami danych przechowującymi informacje o użytkownikach i rozgrywkach oraz systemami autoryzacji zapewniającymi bezpieczny dostęp.
+
+\section{Harmonogram}
+\subsection{Termin}
+Projekt zostanie zrealizowany do 15 czerwca 2025 roku.
+
+\subsection{Główne etapy projektu}
+Główne etapy realizacji projektu obejmują:
+\begin{itemize}
+    \item Analiza i planowanie
+    \begin{itemize}
+        \item Analiza wymagań - zbieranie wymagań funkcjonalnych i niefunkcjonalnych, opracowywanie scenariuszy użytkowników.
+        \item Planowanie techniczne - podjęcie decyzji na temat technologii i narzędzi. Projektowanie architektury aplikacji oraz przydzielenie zadań i ról w zespole.
+    \end{itemize}
+    \item Faza prototypowania
+    \begin{itemize}
+        \item Prototyp Backend - konfiguracja podstawowego serwera Spring Boot. Implementacja protokołu WebSockets do komunikacji w czasie rzeczywistym.
+        \item Prototyp Frontend - opracowanie ekranów gry, stworzenie prostego interfejsu dołączania do sesji gry.
+    \end{itemize}
+    \item Etap realizacji
+    \begin{itemize}
+        \item Podstawowa logika gry - implementacja mechaniki rozgrywki wieloosobowej, możliwości stworzenia sesji gry i logiki komunikacji między graczami.
+        \item System sesyjny - implementacja możliwości tworzenia i dołączania do sesji gry
+    \end{itemize}
+    \item Testowanie i weryfikacja
+    \begin{itemize}
+        \item Testy funkcjonalne - testy funkcjonalności oraz integracyjne
+    \end{itemize}
+    \item Opracowanie dokumentacji
+\end{itemize}
+
+\clearpage
+
+\chapter{Interesariusze i użytkownicy}
+
+\section{Interesariusze}
+Interesariuszami projektu są:
+\begin{itemize}
+    \item \textbf{Deweloperzy} - odpowiedzialni za implementację systemu,
+    \item \textbf{Testerzy} - odpowiedzialni za weryfikację funkcjonalności,
+    \item \textbf{Gracze} - użytkownicy oprogramowania
+\end{itemize}
+
+\section{Użytkownicy końcowi}
+Użytkownikami końcowymi produktu będą:
+\begin{itemize}
+    \item \textbf{Gracze indywidualni} - osoby korzystające z systemu do uczestnictwa w publicznych rozgrywkach,
+    \item \textbf{Grupy znajomych} - zespoły osób pragnących prowadzić prywatne rozgrywki w zamkniętym gronie
+\end{itemize}
+
+\section{Klasyfikacja i krótki opis interesariuszy}
+\subsection{Interesariusze wewnętrzni}
+\begin{itemize}
+    \item \textbf{Deweloperzy} - zespół programistów zaangażowanych w tworzenie systemu,
+    \item \textbf{Testerzy} - odpowiedzialni za weryfikację funkcjonalności
+\end{itemize}
+
+\subsection{Interesariusze zewnętrzni}
+\begin{itemize}
+    \item \textbf{Gracze indywidualni} - użytkownicy poszukujący możliwości uczestnictwa w publicznych rozgrywkach z innymi graczami.
+    \item \textbf{Grupy znajomych} - zespoły użytkowników pragnących organizować prywatne rozgrywki.
+    \item \textbf{Prawo UE i prawo narodowe} - zbiór regulacji prawnych, które określają zasady działania systemu i jego zgodność z przepisami.
+\end{itemize}
+
+\chapter{Zespół}
+\section{Skład zespołu}
+\begin{itemize}
+        \item Zuzanna Nowak, 193165 - kierownik projektu
+        \item Agata Domasik, 193577
+        \item Jakub Walasik, s193650
+        \item Adam Chabraszewski, s193373
+\end{itemize}
+
+\section{Kompetencje i umiejętności członków zespołu}
+\begin{itemize}
+  \item \textbf{Zuzanna Nowak}:
+    \begin{itemize}
+        \item \textit{Umiejętności techniczne:} 
+        \begin{itemize}
+            \item \textbf{Języki programowania:} Java, C++, C, C\#, JavaScript, TypeScript, PHP, Python, Bash, Język asemblera
+            \item \textbf{Frameworki:} Spring Framework, Spring Boot, React.js, AngularJS, Windows Presentation Foundation (WPF), Unity, Vue.js
+            \item \textbf{Bazy danych:} MySQL, MongoDB, Microsoft SQL Server, SQL, ELK Stack
+            \item \textbf{Front-end:} HTML5, CSS
+            \item \textbf{DevOps:} Ansible, Unix, Microsoft Azure, Git, Docker, Docker-Compose, Kubernetes
+            \item \textbf{Monitoring i serwery:} Grafana, ELK stack monitoring, Web Servers (Apache, Tomcat)
+            \item \textbf{Inne:} Algorytmy, Struktury danych
+        \end{itemize}
+        \item \textit{Umiejętności dodatkowe:} Adobe Photoshop, Adobe Premiere Pro, Figma
+        \item \textit{Języki obce:} Angielski (Certificate in Advanced English CAE)
+        \item \textit{Edukacja:} Informatyka (studia inżynierskie – w trakcie)
+        \item \textit{Doświadczenie zawodowe:} DevOps Engineer w firmie Vention
+    \end{itemize}
+    
+    \item \textbf{Agata Domasik}:
+    \begin{itemize}
+        \item \textit{Umiejętności techniczne:} 
+        \begin{itemize}
+            \item \textbf{Języki programowania:} Java, C++, C, C\#, JavaScript, TypeScript, PHP, Python, Bash, Język asemblera
+            \item \textbf{Frameworki:} Spring Framework, Spring Boot, React.js, AngularJS, Windows Presentation Foundation (WPF), Unity, Vue.js
+            \item \textbf{Bazy danych:} MySQL, MongoDB, Microsoft SQL Server, SQL
+            \item \textbf{Front-end:} HTML5, CSS
+            \item \textbf{DevOps:} Git
+            \item \textbf{Inne:} Algorytmy, Struktury danych
+        \end{itemize}
+        \item \textit{Umiejętności dodatkowe:} Figma
+        \item \textit{Języki obce:} Angielski (Certificate in Advanced English CAE), Niemiecki (poziom A1+)
+        \item \textit{Edukacja:} Informatyka (studia inżynierskie – w trakcie)
+    \end{itemize}
+    
+    \item \textbf{Jakub Walasik}:
+    \begin{itemize}
+        \item \textit{Umiejętności techniczne:} 
+        \begin{itemize}
+            \item \textbf{Języki programowania:} Java, C++, C, C\#, JavaScript, TypeScript, PHP, Python, Język asemblera
+            \item \textbf{Frameworki:} Spring Framework, Spring Boot, React.js, AngularJS
+            \item \textbf{Bazy danych:} MySQL, PostgreSQL, MongoDB, Microsoft SQL Server, SQL
+            \item \textbf{Front-end:} HTML5, CSS, SCSS
+            \item \textbf{DevOps:} Git
+            \item \textbf{Inne:} Algorytmy, Struktury danych
+        \end{itemize}
+        \item \textit{Języki obce:} Angielski (poziom C1)
+        \item \textit{Edukacja:} Informatyka (studia inżynierskie – w trakcie)
+    \end{itemize}
+    
+    \item \textbf{Adam Chabraszewski}:
+    \begin{itemize}
+        \item \textit{Umiejętności techniczne:} 
+        \begin{itemize}
+            \item \textbf{Języki programowania:} Java, C++, C, C\#, JavaScript, TypeScript, PHP, Python, Bash, Język asemblera
+            \item \textbf{Frameworki:} Spring Framework, Spring Boot, React.js, AngularJS, Unity, Vue.js
+            \item \textbf{Bazy danych:} MySQL, MongoDB, Microsoft SQL Server, SQL
+            \item \textbf{Front-end:} HTML5, CSS
+            \item \textbf{DevOps:} Git, Unix, Docker, Docker-Compose
+            \item \textbf{Inne:} Algorytmy, Struktury danych
+        \end{itemize}
+        \item \textit{Umiejętności dodatkowe:} konfiguracja CUDA
+        \item \textit{Języki obce:} Angielski (Certificate in Advanced English CAE)
+        \item \textit{Edukacja:} Informatyka (studia inżynierskie – w trakcie)
+        \item \textit{Doświadczenie zawodowe:} Software Developer w firmie Advanced Protection Systems Inc.
+    \end{itemize}
+\end{itemize}
+
+\section{Zakresy odpowiedzialności}
+\begin{center}
+\begin{tabular}{|p{4.5cm}|p{8cm}|}
+\hline
+\textbf{Imię i naziwsko} & \textbf{Zakres odpowiedzialności} \\
+\hline
+Zuzanna Nowak &  Backend, frontend, DevOps, design UI/UX, kierowanie zespołem, zarządzanie repozytorium\\
+\hline
+Agata Domasik &  Backend, frontend, design UI/UX\\
+\hline
+Jakub Walasik &  Backend, frontend, DevOps, testowanie\\
+\hline
+Adam Chabraszewski & Backend, frontend\\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Model pracy}
+Zespół pracuje w modelu zdalnym:
+\begin{itemize}
+    \item Spotkania zespołowe odbywają się przez platformę Discord na dedykowanym serwerze projektu
+    \item Regularne spotkania projektowe mają miejsce co tydzień we wtorek o godzinie 19:00
+    \item Do zarządzania zadaniami zespół wykorzystuje GitHub Projects z tablicą Kanban
+    \item Postępy prac są na bieżąco aktualizowane w systemie kontroli wersji GitHub
+    \item Członkowie zespołu wykonują swoje zadania asynchronicznie, utrzymując stały kontakt przez Discord oraz Messenger
+\end{itemize}
+
+\section{Dane kontaktowe}
+\begin{itemize}
+    \item Oficjalny e-mail kontaktowy zespołu: 
+    \href{mailto:codenames.contact@gmail.com}{codenames.contact@gmail.com}
+    \item Dane kontaktowe członków zespołu:
+    \begin{itemize}
+        \item \textbf{Zuzanna Nowak}:
+        \begin{itemize}
+            \item E-mail: \href{mailto:zuzanna.nowak.kontakt@gmail.com}{zuzanna.nowak.kontakt@gmail.com} 
+            \item LinkedIn: \url{https://www.linkedin.com/in/zuzanna-nowak-aa071125b/} 
+            \item GitHub: \url{https://github.com/zuzqqa}
+            \item Facebook: \url{https://www.facebook.com/zuzia.nowak.50951/}
+        \end{itemize}
+        \item \textbf{Agata Domasik}:
+        \begin{itemize}
+            \item E-mail: \href{mailto:agata.domasik@gmail.com}{agata.domasik@gmail.com} 
+            \item LinkedIn: \url{https://www.linkedin.com/in/agata-domasik-50277b2bb/}
+            \item GitHub: \url{https://github.com/agatadomasik}
+            \item Facebook: \url{https://www.facebook.com/agata.domasik}
+        \end{itemize}
+        \item \textbf{Jakub Walasik}:
+        \begin{itemize}
+            \item E-mail: \href{mailto:walasikjakub@gmail.com}{walasikjakub@gmail.com}  
+            \item LinkedIn: \url{https://www.linkedin.com/in/jakub-walasik-9ba6b9348/}
+            \item GitHub: \url{https://github.com/jwalasik3}
+            \item Facebook: \url{https://www.facebook.com/jakub.walasik.5}
+        \end{itemize}
+        \item \textbf{Adam Chabraszewski}:
+        \begin{itemize}
+            \item E-mail: \href{mailto:adam.chabraszewski@gmail.com}{adam.chabraszewski@gmail.com}   
+            \item LinkedIn: \url{https://www.linkedin.com/in/adam-chabraszewski-574a1530a/}
+            \item GitHub: \url{https://github.com/achabrasz}
+            \item Facebook: \url{https://www.facebook.com/adam.chabraszewski.92}
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\chapter{Komunikacja w zespole i z interesariuszami}
+\section{Harmonogram spotkań}
+Zespół spotyka się regularnie co tydzień we wtorek o godzinie 19:00 na serwerze Discord.  
+
+\section{Miejsca spotkań}
+Spotkania odbywają się na serwerze Discord.
+
+\section{Narzędzia komunikacji}
+Komunikacja zespołu odbywa się głównie za pośrednictwem:  
+\begin{itemize}
+    \item Serwera Discord – wykorzystywanego zarówno do spotkań, jak i bieżącej komunikacji tekstowej i głosowej.  
+    \item Grupy na Messengerze – używanej do szybkich ustaleń i organizacji.  
+\end{itemize}  
+
+\section{Komunikacja z interesariuszami zewnętrznymi}
+Kontakt z interesariuszami zewnętrznymi odbywa się poprzez spotkania na żywo.
+
+\section{Współpraca z opiekunem projektu}
+Spotkania z opiekunem projektu odbywają się nieregularnie, w zależności od potrzeby. Podczas tych spotkań zespół zdaje raport z postępów prac oraz uzyskuje odpowiedzi na ewentualne pytania.  
+
+\chapter{Współdzielenie dokumentów i kodu}
+\section{Metody wymiany dokumentów i kodu}
+Kod i dokumentacja projektu są współdzielone poprzez repozytorium GitHub. Każde zadanie jest rejestrowane jako \textbf{Issue}, po czym tworzona jest dla niego osobna gałąź (\textit{branch}). Po zakończeniu pracy nad zadaniem składany jest \textbf{Pull Request} do głównej gałęzi (\textit{main}).  
+\section{Repozytorium projektu}
+Projekt jest przechowywany w repozytorium na GitHubie, które zawiera zarówno kod źródłowy, jak i dokumentację.  
+
+\subsection{Administracja repozytorium}
+Administracją repozytorium zajmuje się \textbf{kierownik projektu}, który odpowiada za nadzór nad kodem, zatwierdzanie Pull Requestów oraz kontrolę dostępu. Gałąź \textit{main} jest zablokowana i nie można do niej bezpośrednio dodawać zmian – każda zmiana musi przejść proces Pull Requesta.  
+
+\section{Zarządzanie dokumentacją}
+Dokumentacja projektu jest przechowywana w repozytorium w dedykowanym folderze \texttt{docs}.  
+
+\subsection{Osoba odpowiedzialna}
+Dokumentacją zajmują się wszyscy członkowie zespołu, jednak nadzór nad jej poprawnością sprawuje kierownik projektu.  
+
+\subsection{Konwencje nazewnictwa}  
+Pliki dokumentacji są nazywane zgodnie z następującymi zasadami:  
+\begin{itemize}  
+    \item Nazwa pliku powinna odpowiadać tytułowi dokumentu, być w języku angielskim.  
+    \item Stosujemy format \texttt{snake\_case} dla nazw plików 
+    (np. \texttt{project\_organization.tex}).  
+\end{itemize}  
+
+\subsection{Szablony dokumentów}
+Szablony dokumentów znajdują się w repozytorium w katalogu \texttt{docs/templates}. 
+
+\section{System wersjonowania}
+Projekt wykorzystuje automatyczny system wersjonowania do zarządzania wersjami kodu.
+
+\subsection{Wersjonowanie kodu}
+Przed utworzeniem Pull Requesta należy uruchomić skrypt wersjonowania, który generuje nową wersję. Po zatwierdzeniu zmian, GitHub Actions automatycznie przypisuje nowy numer wersji do commita w gałęzi \textit{main}.  
+
+\subsection{Wersjonowanie dokumentacji}
+Dokumentacja jest wersjonowana ręcznie. Każda istotna zmiana powinna być odnotowana poprzez aktualizację numeru wersji dokumentu.
+
+\chapter{Narzędzia}
+
+\section{Narzędzia komunikacyjne}  
+W zespole wykorzystywane są następujące narzędzia do komunikacji:  
+\begin{itemize}  
+    \item \textbf{Discord} – główna platforma do spotkań zespołu oraz bieżącej komunikacji głosowej i tekstowej.  
+    \item \textbf{Messenger} – używany do szybkich ustaleń oraz nieformalnej komunikacji zespołowej.  
+\end{itemize}  
+
+\section{Narzędzia do zarządzania dokumentacją}  
+Dokumentacja projektu jest tworzona w formacie \LaTeX{} z wykorzystaniem następujących narzędzi:  
+\begin{itemize}  
+    \item \textbf{GitHub} – repozytorium projektu zawiera dokumentację w katalogu \texttt{docs}.  
+    \item \textbf{Overleaf} – niektórzy członkowie zespołu korzystają z niego do edycji dokumentacji w \LaTeX{}.  
+\end{itemize}  
+
+\section{Narzędzia do zarządzania projektem}  
+Zarządzanie projektem odbywa się za pomocą:  
+\begin{itemize}  
+    \item \textbf{GitHub Projects} – tablica Kanban do śledzenia postępów prac, planowania zadań i zarządzania backlogiem.  
+    \item \textbf{GitHub Issues} – wykorzystywane do zgłaszania i monitorowania zadań oraz błędów.  
+\end{itemize}
+
+\section{Narzędzia developerskie}  
+Podczas pracy nad projektem wykorzystywane są następujące narzędzia programistyczne:  
+\begin{itemize}  
+    \item \textbf{Visual Studio Code} – główny edytor dla większości języków używanych w projekcie.  
+    \item \textbf{IntelliJ IDEA} – środowisko programistyczne do pracy nad kodem w języku Java.  
+    \item \textbf{Docker Desktop} – platforma do zarządzania kontenerami Docker.  
+    \item \textbf{WSL (Windows Subsystem for Linux)} – umożliwia korzystanie z narzędzi linuksowych w systemie Windows.  
+    \item \textbf{Git} – system kontroli wersji używany do zarządzania kodem źródłowym.  
+    \item \textbf{MongoDB Compass} – narzędzie do przeglądania i zarządzania bazą danych MongoDB.  
+\end{itemize}  
+
+\section{Narzędzia testowe}  
+Testowanie aplikacji odbywa się za pomocą testów jednostkowych i integracyjnych:  
+\begin{itemize}  
+    \item \textbf{JUnit} – framework do testów jednostkowych w języku Java.  
+    \item \textbf{Testy integracyjne} – realizowane w środowisku testowym z wykorzystaniem narzędzi do symulacji warunków produkcyjnych.  
+\end{itemize}  
+
+\newpage
+\thispagestyle{empty}
+\null
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% END PAGE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\thispagestyle{empty}
+\tikz[remember picture,overlay] \node[opacity=0.03,inner sep=0pt] at (73.6mm, -124.25mm){\includegraphics{characters.png}};
+\begin{center}
+    \vspace*{\fill}
+    \includegraphics[width=0.3\textwidth]{logo.png} 
+    \vspace*{\fill}
+\end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% END OF DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}

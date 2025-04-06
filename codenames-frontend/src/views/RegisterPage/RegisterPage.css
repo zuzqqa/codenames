@@ -1,32 +1,204 @@
 .register-container {
-    margin-top: 7px;
-    grid-column: 1 / span 3; /* Stretch across all columns */
-    grid-row: 1 / span 4; /* Stretch across all rows */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%; /* Match the height of its parent */
-    width: 100%; /* Match the width of its parent */
+  margin-top: 0;
+  grid-column: 1 / span 3; /* Stretch across all columns */
+  grid-row: 1 / span 6; /* Stretch across all rows */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%; /* Match the height of its parent */
+  width: 100%; /* Match the width of its parent */
 }
 
 .register-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 70%; /* Full height of parent */
-    width: 90%; /* Full width of parent */
-    padding: 10px; /* Padding for spacing */
-    border-radius: 17px; /* Rounded corners */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60%; /* Full height of parent */
+  width: 90%; /* Full width of parent */
+  padding: 10px; /* Padding for spacing */
+  border-radius: 17px; /* Rounded corners */
+  margin-bottom: 0;
+  margin-top: 1vw;
+  padding-bottom: 0;
 }
 
 .register-form button {
-    font-size: 1.2rem;
-    border: none;
-    border-radius: 17px;
-    cursor: pointer;
-    align-self: center; /* Align the button to the right */
-    margin-top: 3%; /* Add some spacing above the button */
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 17px;
+  cursor: pointer;
+  align-self: center; /* Align the button to the right */
+  margin-top: 1%; /* Add some spacing above the button */
 }
 
+.toast-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: fixed;
+  top: 4vw;
+  right: 20px;
+  z-index: 1000;
+}
+
+.toast {
+  position: relative; 
+  border-radius: 12px;
+  background: #fff;
+  padding: 15px 15px 15px 15px;
+  box-shadow: 0 6px 20px -5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  min-width: 250px; 
+  max-width: 350px;
+  transform: translateX(100%);
+  transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.35);
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+.toast-content {
+  flex-grow: 1; 
+  display: flex;
+  align-items: center;
+}
+
+.message {
+  flex-grow: 1;
+  word-break: break-word; 
+}
+
+.toast.active {
+  transform: translateX(0%);
+}
+
+.toast .toast-content {
+  display: flex;
+  align-items: center;
+}
+
+.toast-content .check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 35px;
+  min-width: 35px;
+  background-color: #4070f4;
+  color: #fff;
+  font-size: 20px;
+  border-radius: 50%;
+}
+
+.toast-content .message {
+  display: flex;
+  flex-direction: column;
+  margin: 0 20px;
+}
+
+.message .text {
+  font-size: 0.7vw;
+  font-family: 'Wellfleet';
+  font-weight: 400;
+  color: #666666;
+}
+
+.message .text.text-1 {
+  font-weight: 600;
+  color: #333;
+}
+
+.toast .close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  padding: 5px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.toast .close:hover {
+  opacity: 1;
+}
+
+.toast .progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+}
+
+.toast .progress:before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #8d2736;
+}
+
+.progress.active:before {
+  animation: progress 8s linear forwards;
+}
+
+.toast.hide {
+  animation: slideOutRight 0.5s ease-out forwards;
+}
+
+@keyframes progress {
+  100% {
+    right: 100%;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.notification:before {
+  background-color: #1B74BB !important;
+}
+
+.or-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 15px;
+}
+
+.or-text {
+  padding-left: 2px;
+  font-size: calc(0.2vw + 1em);
+  font-weight: bold;
+  background: linear-gradient(to right, #FFD363, #FCF18B);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0 10px; 
+}
+
+.gold-line {
+  flex-grow: 1;
+  height: 2px;
+  max-width: 30%;
+  background: linear-gradient(to right, transparent, #FFD363, transparent);
+}

@@ -6,23 +6,32 @@ import '../../views/Gameplay/Gameplay.css';
 import './Chat.css';
 import { useCookies } from "react-cookie";
 
-// Define the message type
+/**
+ * Defines the message type structure.
+ */
 interface Message {
-    text: string;
-    type: 'incoming' | 'outgoing';
-    sender: string;
-    gameID: string;
+    text: string; // Message content
+    type: 'incoming' | 'outgoing'; // Message direction
+    sender: string; // Sender's name
+    gameID: string; // Associated game ID 
 }
 
+/**
+ * Chat component for handling real-time messaging within a game session.
+ * Connects to a WebSocket server, manages messages, and handles UI interactions.
+ */
 const Chat: React.FC = () => {
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [messageText, setMessageText] = useState('');
-    const messagesEndRef = useRef<HTMLDivElement>(null);
-    const clientRef = useRef<Client | null>(null);
-    const [playerName, setPlayerName] = useState<string | null>(null);
-    const [cookies] = useCookies(['authToken']);
-    const [gameId, setGameId] = useState('');
+    const [messages, setMessages] = useState<Message[]>([]); // Stores chat messages
+    const [messageText, setMessageText] = useState(''); // Stores user input text
+    const messagesEndRef = useRef<HTMLDivElement>(null); // Reference for automatic scrolling
+    const clientRef = useRef<Client | null>(null); // WebSocket client reference
+    const [playerName, setPlayerName] = useState<string | null>(null); // Stores the player's name
+    const [cookies] = useCookies(['authToken']); // Handles authentication token
+    const [gameId, setGameId] = useState(''); // Stores the game ID
 
+    /**
+     * Fetches the player's username based on the authentication token.
+     */
     useEffect(() => {
         const fetchPlayerName = async () => {
             try {
@@ -42,7 +51,9 @@ const Chat: React.FC = () => {
         fetchPlayerName();
     }, [cookies.authToken]);
 
-    // Load messages from localStorage on mount
+    /**
+     * Loads stored messages from localStorage when the component mounts.
+     */
     useEffect(() => {
         const savedMessages = localStorage.getItem('chatMessages');
         if (savedMessages) {
@@ -51,14 +62,18 @@ const Chat: React.FC = () => {
         }
     }, []);
 
-    // Save messages to localStorage whenever they change
+    /**
+     * Saves messages to localStorage whenever they change.
+     */
     useEffect(() => {
         if (messages.length > 0) {
             localStorage.setItem('chatMessages', JSON.stringify(messages));
         }
     }, [messages]);
 
-    // Connect to WebSocket
+    /**
+     * Connects to the WebSocket server and listens for incoming messages.
+     */
     useEffect(() => {
         const client = connect((msg) => {
             setMessages((prev) => [
@@ -75,15 +90,20 @@ const Chat: React.FC = () => {
         clientRef.current = client;
 
         return () => {
-            client.deactivate(); // Cleanup connection
+            client.deactivate();  // Cleanup WebSocket connection on unmount
         };
     }, [playerName]);
 
+    /**
+     * Retrieves the game ID from localStorage on mount.
+     */
     useEffect(() => {
         setGameId(localStorage.getItem('gameId') || '');
     }, []);
 
-    // Send message to WebSocket
+    /**
+     * Sends a message to the WebSocket server.
+     */
     const sendMessage = () => {
         const client = clientRef.current;
         if (!client || !messageText.trim()) return;
@@ -92,15 +112,17 @@ const Chat: React.FC = () => {
             destination: '/chat/send/' + gameId, // Matches @MessageMapping in the backend
             body: JSON.stringify(message),
         });
-        setMessageText(''); // Clear input
+        setMessageText(''); // Clears input field
     };
 
-    // Scroll to the bottom when messages change
+    /**
+     * Scrolls to the bottom when messages update.
+     */
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
-    const [isInputFocused, setIsInputFocused] = useState(false);
+    const [isInputFocused, setIsInputFocused] = useState(false); // Tracks input focus state
 
     const handleInputFocus = () => setIsInputFocused(true);
     const handleInputBlur = () => setIsInputFocused(false);

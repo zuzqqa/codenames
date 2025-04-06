@@ -1,4 +1,3 @@
-/* === Settings Overlay === */
 .settings-modal {
   position: fixed;
   top: 0;
@@ -13,7 +12,6 @@
   z-index: 1000;
 }
 
-/* Container for settings elements */
 .settings-overlay-container {
   padding-top: 3%;
   width: 65%;
@@ -21,7 +19,6 @@
   height: 60%;
 }
 
-/* Grid layout for settings rows */
 .settings-grid {
   display: grid;
   grid-template-rows: 1fr 1fr 1fr 1fr; /* Four evenly spaced rows */
@@ -29,16 +26,12 @@
   height: 100%;
 }
 
-/* === Settings Row Item === */
-
-/* Wrapper for individual setting items */
 .settings-row-item {
   display: grid;
   grid-template-columns: 1fr 1fr; /* Two columns for title and slider */
   margin: 0;
 }
 
-/* Title section of a row item */
 .settings-row-item-title {
   width: 80%;
   margin: auto;
@@ -51,20 +44,16 @@
   font-size: calc(0.5rem + 1.7vw);
   text-transform: uppercase; /* Uppercase text */
   user-select: none;
-  -webkit-user-select: none; 
-  -moz-user-select: none; 
-  -ms-user-select: none; 
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
-/* === Gradient Text and Shadows === */
-
-/* Main title text */
 .settings-modal-p {
   position: absolute; /* Overlaps shadow */
   z-index: 2; /* Above the shadow */
 }
 
-/* Gradient text style */
 .settings-row-item-title p {
   margin-left: auto;
   margin-right: auto;
@@ -76,12 +65,11 @@
   -webkit-background-clip: text;
   color: transparent;
   user-select: none;
-  -webkit-user-select: none; 
-  -moz-user-select: none; 
-  -ms-user-select: none; 
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
-/* Shadow for title text */
 .settings-modal-p-shadow {
   position: absolute;
   z-index: 1; /* Below the main text */
@@ -207,9 +195,9 @@ input[type="range"]:focus::-ms-fill-upper {
   color: transparent;
   padding: 0.23em;
   user-select: none;
-  -webkit-user-select: none; 
-  -moz-user-select: none; 
-  -ms-user-select: none; 
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .confirmation-modal-container {
@@ -223,7 +211,7 @@ input[type="range"]:focus::-ms-fill-upper {
   z-index: 1001;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); 
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .confirmation-modal-background-img {
@@ -235,14 +223,14 @@ input[type="range"]:focus::-ms-fill-upper {
   position: absolute;
   width: 15rem;
   border-radius: 17px;
-  display: flex; 
+  display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; 
+  justify-content: center;
   margin-bottom: 0.5em;
 }
 
-.confirmation-modal-content p{
+.confirmation-modal-content p {
   margin: 0.3em;
   margin-bottom: 0.4em;
   font-size: calc(1em + 0.3vw);
@@ -259,7 +247,7 @@ input[type="range"]:focus::-ms-fill-upper {
   -webkit-background-clip: text;
   color: transparent;
   user-select: none;
-  -webkit-user-select: none; 
-  -moz-user-select: none; 
-  -ms-user-select: none; 
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }

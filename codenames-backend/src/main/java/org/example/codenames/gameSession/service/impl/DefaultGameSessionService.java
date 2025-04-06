@@ -1,6 +1,5 @@
 package org.example.codenames.gameSession.service.impl;
 
-import org.example.codenames.card.service.api.CardService;
 import org.example.codenames.gameSession.entity.CreateGameRequest;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
@@ -9,18 +8,40 @@ import org.example.codenames.gameState.entity.GameState;
 import org.example.codenames.gameState.service.api.GameStateService;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.service.api.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+/**
+ * Default implementation of the {@link GameSessionService}.
+ * Handles operations related to game sessions, such as creation, retrieval, and player management.
+ */
 @Service
 public class DefaultGameSessionService implements GameSessionService {
-
+    /**
+     * Game session repository.
+     */
     private final GameSessionRepository gameSessionRepository;
+
+    /**
+     * User service.
+     */
     private final UserService userService;
+
+    /**
+     * Game state service.
+     */
     private final GameStateService gameStateService;
 
+    /**
+     * Creates a new instance of the {@link DefaultGameSessionService}.
+     *
+     * @param gameSessionRepository Game session repository.
+     * @param userService           User service.
+     * @param gameStateService      Game state service.
+     */
     @Autowired
     public DefaultGameSessionService(GameSessionRepository gameSessionRepository, UserService userService, GameStateService gameStateService) {
         this.gameSessionRepository = gameSessionRepository;
@@ -28,6 +49,12 @@ public class DefaultGameSessionService implements GameSessionService {
         this.gameStateService = gameStateService;
     }
 
+    /**
+     * Creates a new game session.
+     *
+     * @param request The request containing game session details.
+     * @return The unique identifier of the created game session.
+     */
     @Override
     public String createGameSession(CreateGameRequest request) {
         GameState gameState = new GameState();
@@ -48,11 +75,11 @@ public class DefaultGameSessionService implements GameSessionService {
                 request.getMaxPlayers(),
                 request.getTimeForAHint(),
                 request.getTimeForGuessing(),
-                new ArrayList<List<User>>() {{
+                new ArrayList<>() {{
                     add(new ArrayList<>());
                     add(new ArrayList<>());
                 }},
-                new ArrayList<List<Integer>>() {{
+                new ArrayList<>() {{
                     add(new ArrayList<>());
                     add(new ArrayList<>());
                 }},
@@ -64,14 +91,12 @@ public class DefaultGameSessionService implements GameSessionService {
         return newGame.getSessionId().toString();
     }
 
-    @Override
-    public void updateVotingStartTime(UUID sessionId) {
-        GameSession session = gameSessionRepository.findBySessionId(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException("Session not found"));
-        session.setVotingStartTime(System.currentTimeMillis());
-        gameSessionRepository.save(session);
-    }
-
+    /**
+     * Retrieves a game session by its unique identifier.
+     *
+     * @param gameId The UUID of the game session.
+     * @return The {@link GameSession} if found, otherwise null.
+     */
     @Override
     public GameSession getGameSessionById(UUID gameId) {
         if(gameSessionRepository.findBySessionId(gameId).isPresent()) {
@@ -81,6 +106,14 @@ public class DefaultGameSessionService implements GameSessionService {
         return null;
     }
 
+    /**
+     * Retrieves the cards for a given game session.
+     *
+     * @param sessionId The UUID of the game session.
+     * @return An array of card names.
+     * @throws IllegalArgumentException If the session is not found.
+     * @throws IllegalStateException If the game state is null.
+     */
     @Override
     public String[] getCardsBySessionId(UUID sessionId) {
         return gameSessionRepository.findBySessionId(sessionId)
@@ -93,6 +126,12 @@ public class DefaultGameSessionService implements GameSessionService {
                 .orElseThrow(() -> new IllegalArgumentException("GameSession not found with ID: " + sessionId));
     }
 
+    /**
+     * Retrieves the card colors for a given game session.
+     *
+     * @param sessionId The UUID of the game session.
+     * @return An array of card colors.
+     */
     @Override
     public Integer[] getCardsColorsBySessionId(UUID sessionId) {
         return gameSessionRepository.findBySessionId(sessionId)
@@ -105,14 +144,14 @@ public class DefaultGameSessionService implements GameSessionService {
                 .orElseThrow(() -> new IllegalArgumentException("GameSession not found with ID: " + sessionId));
     }
 
-    @Override
-    public void updateStatus(UUID sessionId, GameSession.sessionStatus newStatus) {
-        GameSession session = gameSessionRepository.findBySessionId(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException("Session not found"));
-        session.setStatus(newStatus);
-        gameSessionRepository.save(session);
-    }
-
+    /**
+     * Submits a vote for a user in a given session.
+     *
+     * @param sessionId The UUID of the game session.
+     * @param userId The ID of the user submitting the vote.
+     * @param votedUserId The ID of the user being voted for.
+     * @throws RuntimeException If the session or voted user is not found.
+     */
     @Override
     public void submitVote(UUID sessionId, String userId, String votedUserId) {
         GameSession session = gameSessionRepository.findBySessionId(sessionId)
@@ -141,14 +180,11 @@ public class DefaultGameSessionService implements GameSessionService {
         }
     }
 
-    @Override
-    public List<List<Integer>> getVotes(UUID sessionId) {
-        GameSession session = gameSessionRepository.findBySessionId(sessionId)
-                .orElseThrow(() -> new RuntimeException("Session not found"));
-
-        return session.getVotes();
-    }
-
+    /**
+     * Assigns team leaders based on the votes.
+     *
+     * @param sessionId The UUID of the game session.
+     */
     @Override
     public void assignTeamLeaders(UUID sessionId) {
         GameSession session = gameSessionRepository.findBySessionId(sessionId)
@@ -173,6 +209,14 @@ public class DefaultGameSessionService implements GameSessionService {
         gameSessionRepository.save(session);
     }
 
+    /**
+     * Finds the leader of a team based on the votes.
+     *
+     * @param team The team to find the leader for.
+     * @param teamVotes The votes for each player in the team.
+     *
+     * @return The leader of the team.
+     */
     @Override
     public User findLeader(List<User> team, List<Integer> teamVotes) {
         int maxVotes = -1;
@@ -192,6 +236,15 @@ public class DefaultGameSessionService implements GameSessionService {
         return leader;
     }
 
+    /**
+     * Adds a player to a game session.
+     *
+     * @param sessionId The UUID of the game session.
+     * @param userId The ID of the user to add.
+     * @param teamIndex The index of the team to add the user to.
+     *
+     * @return True if the player was added, otherwise false.
+     */
     @Override
     public boolean addPlayerToSession(UUID sessionId, String userId, int teamIndex) {
         GameSession gameSession = getGameSessionById(sessionId);
@@ -206,12 +259,6 @@ public class DefaultGameSessionService implements GameSessionService {
 
         List<List<User>> connectedUsers = gameSession.getConnectedUsers();
         List<List<Integer>> votes = gameSession.getVotes();
-        if (connectedUsers == null) {
-            connectedUsers = List.of(new ArrayList<>(), new ArrayList<>());
-            votes = List.of(new ArrayList<>(), new ArrayList<>());
-            gameSession.setConnectedUsers(connectedUsers);
-            gameSession.setVotes(votes);
-        }
 
         if (teamIndex < 0 || teamIndex >= connectedUsers.size()) {
             return false;
@@ -224,8 +271,8 @@ public class DefaultGameSessionService implements GameSessionService {
         }
 
         Optional<User> user = userService.getUserById(userId);
-
         User actualUser = user.orElseThrow(() -> new IllegalArgumentException("User not found for ID: " + userId));
+
         connectedUsers.get(teamIndex).add(actualUser);
         votes.get(teamIndex).add(0);
 
@@ -234,11 +281,24 @@ public class DefaultGameSessionService implements GameSessionService {
         return true;
     }
 
+    /**
+     * Retrieves all game sessions.
+     *
+     * @return A list of all game sessions.
+     */
     @Override
     public List<GameSession> getAllGameSessions() {
         return gameSessionRepository.findAll();
     }
 
+    /**
+     * Removes a player from a game session.
+     *
+     * @param sessionId The UUID of the game session.
+     * @param userId The ID of the user to remove.
+     *
+     * @return True if the player was removed, otherwise false.
+     */
     @Override
     public boolean removePlayerFromSession(UUID sessionId, String userId) {
         GameSession gameSession = getGameSessionById(sessionId);
@@ -255,6 +315,7 @@ public class DefaultGameSessionService implements GameSessionService {
 
         boolean removed = false;
 
+        // Remove the user from the first team that contains them
         for (List<User> team : connectedUsers) {
             if (team.removeIf(user -> user.getId().equals(userId))) {
                 removed = true;
@@ -269,14 +330,19 @@ public class DefaultGameSessionService implements GameSessionService {
         return removed;
     }
 
-
-    public void changeTurn(UUID gameId) {
+    /**
+     * Reveal a card.
+     *
+     * @param gameId id of the game
+     * @param cardIndex index of the card chosen
+     */
+    @Override
+    public void revealCard(UUID gameId, String cardIndex) {
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
-        GameState gameState = gameSession.getGameState();
-        gameState.toggleTurn();
-        gameStateService.cardsChoosen(gameSession);
+        gameStateService.cardsChosen(gameSession, Integer.parseInt(cardIndex));
+
         gameSessionRepository.save(gameSession);
     }
 }

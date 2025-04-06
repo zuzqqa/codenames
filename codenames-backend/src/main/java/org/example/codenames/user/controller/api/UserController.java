@@ -1,10 +1,13 @@
 package org.example.codenames.user.controller.api;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.userDetails.AuthRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -16,33 +19,23 @@ import java.util.Map;
  *
  */
 public interface UserController {
-    // Create a new user
-    public ResponseEntity<Void> createUser(User user, HttpServletResponse response);
+    ResponseEntity<Map<String, String>> createUser(@RequestBody User user, HttpServletResponse response, String language) throws MessagingException, IOException;
 
-    // Get a user by ID
-    public ResponseEntity<User> getUserById(String id);
+    ResponseEntity<User> getUserById(String id);
 
-    // Get all users
-    public List<User> getAllUsers();
+    List<User> getAllUsers();
 
-    // Get a user by token
-    public ResponseEntity<Map<String, String>> getUserByToken(String token);
+    ResponseEntity<Map<String, String>> getUserByToken(String token);
 
-    // Update a user by ID
-    public ResponseEntity<User> updateUser(String id, User updatedUser);
+    ResponseEntity<User> updateUser(String id, User updatedUser);
 
-    // Delete a user by ID
-    public ResponseEntity<Void> deleteUserById(String id);
+    ResponseEntity<Void> deleteUserById(String id);
 
-    // Authenticate a user and get a JWT token in response body
-    public ResponseEntity<Void> authenticateAndSetCookie(AuthRequest authRequest, HttpServletResponse response);
+    ResponseEntity<String> authenticateAndSetCookie(AuthRequest authRequest, HttpServletResponse response);
 
-    //Logout
-    public ResponseEntity<Void> logout(HttpServletResponse response);
+    ResponseEntity<Void> logout(HttpServletResponse response);
 
-    //Get Username by token
-    public ResponseEntity<String> getUsernameByToken(String token);
+    ResponseEntity<String> getUsernameByToken(String token);
 
-    //Get id by token
-    public ResponseEntity<String> getIdByToken(String token);
+    ResponseEntity<String> getIdByToken(String token);
 }

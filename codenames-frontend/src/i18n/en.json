@@ -41,6 +41,18 @@
   "team-guessing": "Your team is guessing",
   "leader-choosing-hint": "Leader is choosing a hint",
   "opposing-team-hint": "Hint from opposing team",
-  "guessing": "You are guessing",
-  "opposing-team-guessing": "Opposing team is guessing"
+  "voting-time": "Vote for cards that are the best match.",
+  "select-cards": "Choose one card to be revealed.",
+  "opposing-team-guessing": "Opposing team is guessing",
+  "email-error-message": "Invalid email. Use format: example@domain.com.",
+  "username-error-message": "Username can only contain letters and numbers.",
+  "password-error-message": "Password must be 8+ chars, with upper, lower, number & special char.",
+  "e-mail-exists-error": "User with this e-mail already exists.",
+  "username-exists-error": "User with this username already exists.",
+  "activation-link-sent": "Activation link was sent to your e-mail address.",
+  "account-not-activated-error": "Link expired, register again.",
+  "account-activated-notification": "Your account was activated, log in.",
+  "account-not-activated": "Your account was not activated.",
+  "or": "or",
+  "hint-one-word": "Hint must be one word."
 }

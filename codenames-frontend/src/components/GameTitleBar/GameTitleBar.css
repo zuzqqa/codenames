@@ -1,5 +1,5 @@
 .footer-bar {
-  height: 5vh;
+  height: 4vh;
 
   display: flex;
   position: absolute;
@@ -11,7 +11,7 @@
   font-size: calc(0.4rem + 1vw);
   text-transform: uppercase;
 
-  background: linear-gradient(to top, #32464D, #2c3d46, #22303b);
+  background: linear-gradient(to top, #32464d, #2c3d46, #22303b);
   border-style: outset;
   border-width: 0.5%;
   border-color: #fcdc8b80;

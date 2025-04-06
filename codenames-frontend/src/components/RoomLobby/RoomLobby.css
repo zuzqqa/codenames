@@ -29,7 +29,7 @@
 }
 
 .game-name {
-  font-family: 'Wellfleet', sans-serif;
+  font-family: "Wellfleet", sans-serif;
   font-size: calc(0.8rem + 0.8vw);
   color: #000000;
   grid-row: 1;
@@ -67,17 +67,17 @@
   padding: 5vh 1vw;
   padding-bottom: 0;
   border-radius: 10px;
-  gap: 1vh; 
+  gap: 1vh;
   position: relative;
 }
 
 .players-container {
   display: flex;
-  flex-wrap: wrap; 
-  justify-content: space-between; 
+  flex-wrap: wrap;
+  justify-content: space-between;
   overflow-y: auto;
   height: 18vh;
-  margin: auto; 
+  margin: auto;
   width: 100%;
 }
 
@@ -99,8 +99,8 @@
   color: #fcf18b;
   text-transform: uppercase;
   padding-right: 1rem;
-  white-space: nowrap; 
-  overflow: hidden; 
+  white-space: nowrap;
+  overflow: hidden;
   text-overflow: ellipsis;
 }
 
@@ -111,7 +111,7 @@
   width: 100%;
 }
 
-.player-icon {  
+.player-icon {
   height: 100%;
   align-self: center;
 }
@@ -133,7 +133,7 @@
   bottom: -15px;
   right: -15px;
   background-color: rgba(22, 81, 190, 0.8);
-  width: 6rem;  
+  width: 6rem;
   height: 6rem;
   color: white;
   border-radius: 50%;
@@ -145,9 +145,9 @@
   position: absolute;
   top: -15px;
   left: -15px;
-  width: 6rem;  
+  width: 6rem;
   height: 6rem;
-  background-color: rgba(220, 20, 60, 0.8); 
+  background-color: rgba(220, 20, 60, 0.8);
   color: white;
   border-radius: 50%;
   filter: blur(20px);
@@ -157,7 +157,7 @@
   position: absolute;
   width: 100%;
   height: 100%;
-  overflow: hidden; 
+  overflow: hidden;
   top: 0;
   left: 0;
   border-radius: 10px;

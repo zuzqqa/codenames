@@ -3,6 +3,15 @@ import react from '@vitejs/plugin-react';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 export default defineConfig({
+  server: {
+    watch: {
+      usePolling: true, 
+      interval: 300,     
+    },
+    host: "0.0.0.0",     
+    port: 5173,          
+    strictPort: true,
+  },
   plugins: [
     react(),
     nodePolyfills({
@@ -11,7 +20,12 @@ export default defineConfig({
         global: true,
         process: true,
       },
-      exclude: ['fs'], // Exclude unnecessary modules
+      exclude: ['fs'],
     }),
   ],
+  resolve: {
+    alias: {
+      "@": "/src",
+    },
+  }  
 });

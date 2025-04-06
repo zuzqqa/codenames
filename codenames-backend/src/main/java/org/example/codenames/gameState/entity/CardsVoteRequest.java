@@ -2,9 +2,11 @@ package org.example.codenames.gameState.entity;
 
 import lombok.Data;
 
-import java.util.List;
-
+/**
+ * Request to vote for card
+ */
 @Data
 public class CardsVoteRequest {
-    private List<Integer> selectedCards;
+    private int cardIndex;
+    private boolean addingVote;
 }
