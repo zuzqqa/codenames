@@ -37,6 +37,13 @@
   margin: auto;
 }
 
+.private-lobby-password {
+  grid-row: 1;
+  grid-column: 2;
+  margin: auto;
+  width: 1rem;
+}
+
 .div-slots {
   grid-row: 1;
   grid-column: 2;

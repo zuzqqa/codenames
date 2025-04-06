@@ -71,6 +71,36 @@ form {
   padding: 0.8rem;
 }
 
+.lockSolid-button {
+  margin: auto;
+}
+
+.lockSolid-button img {
+  width: 22px;
+  height: 22px;
+}
+
+.password-overlay {
+  position: absolute;
+  margin-top: -30%;
+  margin-left: 30%;
+}
+
+.check-button {
+  margin: auto;
+  margin-left: 20px;
+}
+
+.check-button img{
+  width: 27px;
+}
+
+.ib-password-overlay {
+  width: 50%;
+}
+
+.password-overlay 
+
 .back-button {
   margin-left: -10px;
   margin-top: -10px;

@@ -16,6 +16,7 @@
     "@types/react-router-dom": "^5.3.3",
     "codenames-frontend": "file:",
     "formik": "^2.4.6",
+    "framer-motion": "^12.6.2",
     "i18next": "^24.2.1",
     "i18next-http-backend": "^3.0.1",
     "js-cookie": "^3.0.5",
