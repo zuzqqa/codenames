@@ -73,8 +73,7 @@ public class DefaultGameSessionService implements GameSessionService {
                 UUID.randomUUID(),
                 request.getGameName(),
                 request.getMaxPlayers(),
-                request.getTimeForAHint(),
-                request.getTimeForGuessing(),
+                request.getPassword(),
                 new ArrayList<>() {{
                     add(new ArrayList<>());
                     add(new ArrayList<>());
