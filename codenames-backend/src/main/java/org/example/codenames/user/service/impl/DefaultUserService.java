@@ -26,7 +26,8 @@ public class DefaultUserService implements UserService {
     private final UserRepository userRepository;
 
     /**
-     * The password encoder.
+     * Encoder used to securely hash and verify game session passwords,
+     * preventing storage of plain-text passwords.
      */
     private final PasswordEncoder passwordEncoder;
 

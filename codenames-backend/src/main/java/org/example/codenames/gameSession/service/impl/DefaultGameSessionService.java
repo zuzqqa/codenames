@@ -37,7 +37,8 @@ public class DefaultGameSessionService implements GameSessionService {
     private final GameStateService gameStateService;
 
     /**
-     * The password encoder.
+     * Encoder used to securely hash and verify game session passwords,
+     * preventing storage of plain-text passwords.
      */
     private final PasswordEncoder passwordEncoder;
 
