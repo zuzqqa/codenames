@@ -160,6 +160,7 @@ public class DefaultGameSessionController implements GameSessionController {
      *
      * @param gameId   the id of the game session
      * @param enteredPassword password given by user
+     *
      * @return True if password is correct, false otherwise
      */
     @PostMapping("/{gameId}/authenticate-password/{enteredPassword}")

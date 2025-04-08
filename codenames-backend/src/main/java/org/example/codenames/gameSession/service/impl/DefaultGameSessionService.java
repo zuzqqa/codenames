@@ -10,6 +10,7 @@ import org.example.codenames.user.entity.User;
 import org.example.codenames.user.service.api.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -36,6 +37,11 @@ public class DefaultGameSessionService implements GameSessionService {
     private final GameStateService gameStateService;
 
     /**
+     * The password encoder.
+     */
+    private final PasswordEncoder passwordEncoder;
+
+    /**
      * Creates a new instance of the {@link DefaultGameSessionService}.
      *
      * @param gameSessionRepository Game session repository.
@@ -43,10 +49,11 @@ public class DefaultGameSessionService implements GameSessionService {
      * @param gameStateService      Game state service.
      */
     @Autowired
-    public DefaultGameSessionService(GameSessionRepository gameSessionRepository, UserService userService, GameStateService gameStateService) {
+    public DefaultGameSessionService(GameSessionRepository gameSessionRepository, UserService userService, GameStateService gameStateService, PasswordEncoder passwordEncoder) {
         this.gameSessionRepository = gameSessionRepository;
         this.userService = userService;
         this.gameStateService = gameStateService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -73,7 +80,7 @@ public class DefaultGameSessionService implements GameSessionService {
                 UUID.randomUUID(),
                 request.getGameName(),
                 request.getMaxPlayers(),
-                request.getPassword(),
+                request.getPassword().isEmpty() ? "" :passwordEncoder.encode(request.getPassword()),
                 new ArrayList<>() {{
                     add(new ArrayList<>());
                     add(new ArrayList<>());
@@ -295,11 +302,8 @@ public class DefaultGameSessionService implements GameSessionService {
         if (gameSession == null) {
             throw new IllegalArgumentException("Game session not found for ID: " + sessionId);
         }
-        System.out.println(gameSession.getPassword());
-        System.out.println(enteredPassword);
-        System.out.println(gameSession.getPassword().equals(enteredPassword));
 
-        return gameSession.getPassword().equals(enteredPassword);
+        return passwordEncoder.matches(enteredPassword, gameSession.getPassword());
     }
 
     /**

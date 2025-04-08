@@ -1,17 +1,19 @@
-import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
+
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useState, useEffect } from "react";
+
+import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import Button from "../Button/Button.tsx";
-import searchBar from "../../assets/images/search_bar_background.png";
+
+import searchBarIcon from "../../assets/images/search_bar_background.png";
 import searchIcon from "../../assets/icons/search-icon.png";
 import lockIcon from "../../assets/icons/lock-solid.png";
-
-import "./GameList.css";
-
+import closeIcon from "../../assets/icons/close.png";
 import backButtonIcon from "../../assets/icons/arrow-back.png";
 import searchButtonIcon from "../../assets/images/search-button.png";
 
-import { useState, useEffect } from "react";
+import "./GameList.css";
 
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -193,8 +195,13 @@ const GameList: React.FC<GameListProps> = ({
     }
   };
 
+  /**
+   * Handles password submission
+   * @async
+   */
   const handleSubmit = async () => {
     if (!selectedSessionId) return;
+
     const newErrors: { id: string; message: string }[] = [];
     setErrors(newErrors);
 
@@ -209,6 +216,7 @@ const GameList: React.FC<GameListProps> = ({
     const result = await response.json();
 
     if (result) {
+      localStorage.setItem("gameId", selectedSessionId);
       navigate("/game-lobby");
     } else {
       newErrors.push({
@@ -220,6 +228,11 @@ const GameList: React.FC<GameListProps> = ({
     }
   };
 
+  /**
+   * Closes currently shown modal.
+   */
+  const onClose = () => setIsPasswordOverlayOpen(!isPasswordOverlayOpen);
+
   return (
     <>
       {isSearchVisible && (
@@ -227,7 +240,7 @@ const GameList: React.FC<GameListProps> = ({
           className={`search-bar ${isAnimating ? "search-bar-animating" : ""}`}
         >
           <img
-            src={searchBar}
+            src={searchBarIcon}
             alt="searchbar"
             className="search-bar-background"
           />
@@ -327,9 +340,13 @@ const GameList: React.FC<GameListProps> = ({
               variant="primary-1"
               soundFXVolume={soundFXVolume}
               onClick={handleSubmit}
+              className="sbmit"
             >
               <span>{t("submit-button")}</span>
             </Button>
+            <Button variant="circle" soundFXVolume={soundFXVolume}>
+            <img src={closeIcon} onClick={onClose} alt="Close" />
+          </Button>
           </div>
         </div>
       )}

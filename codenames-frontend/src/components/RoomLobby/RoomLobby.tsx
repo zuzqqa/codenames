@@ -8,7 +8,6 @@ import Button from "../Button/Button.tsx";
 import backButton from "../../assets/icons/arrow-back.png";
 import playerIcon from "../../assets/images/player-icon.png";
 import "./RoomLobby.css";
-import { convertDurationToMMSS } from "../../shared/utils.tsx";
 
 /**
  * Properties for the RoomLobby component.
