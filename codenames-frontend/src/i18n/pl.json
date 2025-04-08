@@ -59,5 +59,6 @@
   "game-name": "NAZWA GRY",
   "private-lobby": "Prywatna rozgrywka",
   "private-lobby-password-error": "Podczas tworzenia publicznej rozgrywki, hasło nie może być puste.",
-  "pass-overlay-label": "Podaj hasło: "
+  "pass-overlay-label": "Podaj hasło: ",
+  "incorrect-password": "Złe hasło. Spróbuj ponownie."
 }

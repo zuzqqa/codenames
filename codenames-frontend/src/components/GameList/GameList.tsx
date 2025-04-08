@@ -11,7 +11,7 @@ import "./GameList.css";
 import backButtonIcon from "../../assets/icons/arrow-back.png";
 import searchButtonIcon from "../../assets/images/search-button.png";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -85,6 +85,47 @@ const GameList: React.FC<GameListProps> = ({
   const navigate = useNavigate();
 
   /**
+   * useEffect hook for handling the automatic removal of error messages after a delay.
+   *
+   * - Adds a fade-out effect to the toast error before removal.
+   * - Removes errors from the state after a timeout.
+   *
+   * @param {Array<{ id: string; message: string }>} errors - Array of error messages with unique IDs.
+   */
+  useEffect(() => {
+    if (errors.length === 0) return;
+
+    const timers: number[] = errors.map((error) => {
+      const toastElement = document.getElementById(error.id);
+
+      if (toastElement) {
+        // Fade out the toast after 8 seconds
+        const fadeOutTimer = setTimeout(() => {
+          toastElement.classList.add("hide");
+        }, 8000);
+
+        // Remove the error from state after 8.5 seconds
+        const removeTimer = setTimeout(() => {
+          setErrors((prevErrors) =>
+            prevErrors.filter((e) => e.id !== error.id)
+          );
+        }, 8500);
+
+        return removeTimer;
+      } else {
+        // Remove error if toast element is not found
+        return setTimeout(() => {
+          setErrors((prevErrors) =>
+            prevErrors.filter((e) => e.id !== error.id)
+          );
+        }, 8000);
+      }
+    });
+
+    return () => timers.forEach(clearTimeout);
+  }, [errors]);
+
+  /**
    * Toggles the visibility of the search bar.
    */
   const toggleSearch = () => {
@@ -113,25 +154,25 @@ const GameList: React.FC<GameListProps> = ({
     setFilteredSessions(filtered);
   };
 
-    /**
+  /**
    * Handles manual closing of a toast error.
    *
    * - Fades out the toast visually before removing it from the state.
    *
    * @param {string} id - The unique identifier of the error toast to be closed.
    */
-    const handleCloseErrorToast = (id: string) => {
-      const toastElement = document.getElementById(id);
-      if (toastElement) {
-        toastElement.classList.add("hide");
-  
-        setTimeout(() => {
-          setErrors((prevErrors) =>
-            prevErrors.filter((error) => error.id !== id)
-          );
-        }, 500);
-      }
-    };
+  const handleCloseErrorToast = (id: string) => {
+    const toastElement = document.getElementById(id);
+    if (toastElement) {
+      toastElement.classList.add("hide");
+
+      setTimeout(() => {
+        setErrors((prevErrors) =>
+          prevErrors.filter((error) => error.id !== id)
+        );
+      }, 500);
+    }
+  };
 
   /**
    * Joins a specific game session and navigates to the game lobby.
@@ -172,7 +213,7 @@ const GameList: React.FC<GameListProps> = ({
     } else {
       newErrors.push({
         id: generateId(),
-        message: t("account-not-activated"),
+        message: t("incorrect-password"),
       });
 
       setErrors([...newErrors]);
@@ -265,30 +306,6 @@ const GameList: React.FC<GameListProps> = ({
             ))}
           </ul>
         </div>
-        {errors.length > 0 && (
-          <div className="toast-container">
-            {errors.map((error) => (
-              <div id={error.id} key={error.id} className="toast active">
-                <div className="toast-content">
-                  <i
-                    className="fa fa-exclamation-circle fa-3x"
-                    style={{ color: "#561723" }}
-                    aria-hidden="true"
-                  ></i>
-                  <div className="message">
-                    <span className="text text-1">Error</span>
-                    <span className="text text-2">{error.message}</span>
-                  </div>
-                </div>
-                <i
-                  className="fa-solid fa-xmark close"
-                  onClick={() => handleCloseErrorToast(error.id)}
-                ></i>
-                <div className="progress active"></div>
-              </div>
-            ))}
-          </div>
-        )}
       </RoomMenu>
       {isPasswordOverlayOpen && (
         <div className="overlay-backdrop">
@@ -304,7 +321,7 @@ const GameList: React.FC<GameListProps> = ({
                 className="input-box password-overlay"
                 value={enteredPassword}
                 onChange={(e) => setEnteredPassword(e.target.value)}
-                />
+              />
             </div>
             <Button
               variant="primary-1"
@@ -314,6 +331,30 @@ const GameList: React.FC<GameListProps> = ({
               <span>{t("submit-button")}</span>
             </Button>
           </div>
+        </div>
+      )}
+      {errors.length > 0 && (
+        <div className="toast-container">
+          {errors.map((error) => (
+            <div id={error.id} key={error.id} className="toast active">
+              <div className="toast-content">
+                <i
+                  className="fa fa-exclamation-circle fa-3x"
+                  style={{ color: "#561723" }}
+                  aria-hidden="true"
+                ></i>
+                <div className="message">
+                  <span className="text text-1">Error</span>
+                  <span className="text text-2">{error.message}</span>
+                </div>
+              </div>
+              <i
+                className="fa-solid fa-xmark close"
+                onClick={() => handleCloseErrorToast(error.id)}
+              ></i>
+              <div className="progress active"></div>
+            </div>
+          ))}
         </div>
       )}
     </>

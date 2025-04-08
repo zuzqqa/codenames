@@ -58,5 +58,6 @@
   "game-name": "GAME NAME",
   "private-lobby": "Private lobby",
   "private-lobby-password-error": "If you create private lobby, password cannot be null.",
-  "pass-overlay-label": "Type password:"
+  "pass-overlay-label": "Type password:",
+  "incorrect-password": " Incorrect password. Try again."
 }
