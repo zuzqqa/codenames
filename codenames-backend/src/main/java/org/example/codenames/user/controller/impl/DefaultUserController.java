@@ -182,7 +182,7 @@ public class DefaultUserController implements UserController {
             );
             if (authentication.isAuthenticated()) {
                 if(!userService.isAccountActivated(authRequest.getUsername())){
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Konto nie jest aktywne. Sprawdź e-mail i aktywuj swoje konto.");
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("The account is not active. Check your email and activate your account.");
                 }
 
                 String token = jwtService.generateToken(authRequest.getUsername());
@@ -267,10 +267,14 @@ public class DefaultUserController implements UserController {
 
         userService.createUser(guest);
 
-        System.out.println(username);
-
         String token = jwtService.generateToken(guest.getUsername());
+        Cookie loggedInCookie = new Cookie("loggedIn", "true");
+        loggedInCookie.setSecure(false);
+        loggedInCookie.setPath("/");
+        loggedInCookie.setMaxAge(36000);
+
         response.addCookie(setAuthCookie(token, true));
+        response.addCookie(loggedInCookie);
 
         return ResponseEntity.ok().build();
     }

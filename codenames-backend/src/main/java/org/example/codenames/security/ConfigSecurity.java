@@ -144,7 +144,6 @@ public class ConfigSecurity {
         return (request, response, authentication) -> {
             OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
             String email = oauth2User.getAttribute("email");
-            String username = email.split("@")[0];
 
             Optional<User> existingUser = userRepository.findByEmail(email);
 
