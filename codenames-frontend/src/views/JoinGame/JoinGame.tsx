@@ -45,6 +45,7 @@ interface GameSession {
   sessionId: string;
   gameName: string;
   maxPlayers: number;
+  password: string;
   durationOfTheRound: string;
   timeForGuessing: string;
   timeForAHint: string;
