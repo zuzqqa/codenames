@@ -1,12 +1,14 @@
 🎮 Alpha Release – Early version of the game
 **🔧 What's included in this release?**
-In this release, `README.md` file was refactored.
+This version introduces a brand new way to play more securely and selectively with friends!
 
 Key additions: 
-- New environment variables required to run the project.
+- Ability to create private lobbies with a password – new option available when setting up a game.
+- Players can join private games by entering the correct password.
+- All passwords are securely hashed using bcrypt under the hood.
 
 **🚧 What's still under development?**
-- Voice chat.
+- Voice chat integration.
 - User password reset functionality.
 - User profile enhancements.
 - Private lobbies.

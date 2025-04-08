@@ -95,9 +95,9 @@ public class DefaultGameSessionController implements GameSessionController {
     /**
      * Get the votes for leaders
      *
-     * @param gameId the id of the game session
+     * @param gameId The id of the game session
      *
-     * @return the votes for leaders
+     * @return The votes for leaders
      */
     @GetMapping("/{gameId}/assign-leaders")
     public ResponseEntity<String> getVotes(@PathVariable UUID gameId) {
@@ -120,10 +120,10 @@ public class DefaultGameSessionController implements GameSessionController {
     /**
      * Get users assigned to a team
      *
-     * @param gameId the id of the game session
-     * @param teamIndex the index of the team
+     * @param gameId The id of the game session
+     * @param teamIndex The index of the team
      *
-     * @return the votes for leaders
+     * @return The votes for leaders
      */
     @GetMapping("/{gameId}/team")
     public ResponseEntity<?> getUsersByTeam(@PathVariable String gameId, @RequestParam String teamIndex) {
@@ -153,5 +153,18 @@ public class DefaultGameSessionController implements GameSessionController {
         List<User> teamUsers = connectedUsers.get(teamIndexInt);
 
         return ResponseEntity.ok(teamUsers);
+    }
+
+    /**
+     * Authenticates password for a session.
+     *
+     * @param gameId   the id of the game session
+     * @param enteredPassword password given by user
+     *
+     * @return True if password is correct, false otherwise
+     */
+    @PostMapping("/{gameId}/authenticate-password/{enteredPassword}")
+    public ResponseEntity<?> authenticatePassword(@PathVariable String gameId, @PathVariable String enteredPassword) {
+        return ResponseEntity.ok(gameSessionService.authenticatePassword(UUID.fromString(gameId), enteredPassword));
     }
 }

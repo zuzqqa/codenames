@@ -26,7 +26,8 @@ public class DefaultUserService implements UserService {
     private final UserRepository userRepository;
 
     /**
-     * The password encoder.
+     * Encoder used to securely hash and verify game session passwords,
+     * preventing storage of plain-text passwords.
      */
     private final PasswordEncoder passwordEncoder;
 
@@ -51,7 +52,7 @@ public class DefaultUserService implements UserService {
     public Optional<String> createUser(User user) {
         user.setStatus(User.userStatus.INACTIVE);
 
-        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+        if (!user.isGuest() && (user.getEmail() == null || user.getEmail().isEmpty())) {
             return Optional.of("Invalid email address");
         }
 

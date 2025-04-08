@@ -43,6 +43,10 @@ form {
   border-radius: 27px;
 }
 
+.slider-value {
+  color: #5b544e !important;
+}
+
 .error-message {
   color: red;
   font-size: 0.9rem;

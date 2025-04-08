@@ -8,8 +8,9 @@ import { useState, useEffect } from "react";
 import "./CreateGameForm.css";
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import React from "react";
-import lockSolid from "../../assets/icons/key.png";
-import check from "../../assets/icons/check.png";
+
+const generateId = () =>
+  Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 
 /**
  * Props for CreateGameForm component.
@@ -32,6 +33,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [isPrivate, setIsPrivate] = useState(false);
+  const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
 
   /**
    * Formik configuration for managing form state and validation.
@@ -42,47 +44,26 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
       gameName: "",
       playerSlider: 4,
       password: "",
-      deckLanguage: "en"
+      deckLanguage: "en",
     },
-
-    validationSchema: Yup.object({
-      hintTime: Yup.string()
-        .matches(
-          /^([0-9]{2}):([0-9]{2})$/,
-          "Invalid time format. Please use MM:SS"
-        )
-        .test(
-          "is-greater-than-zero",
-          "Time must be greater than 00:00",
-          (value) => {
-            if (!value) return false;
-            const [minutes, seconds] = value.split(":").map(Number);
-            return minutes > 0 || seconds > 0;
-          }
-        )
-        .required("Required"),
-      guessingTime: Yup.string()
-        .matches(
-          /^([0-9]{2}):([0-9]{2})$/,
-          "Invalid time format. Please use MM:SS"
-        )
-        .test(
-          "is-greater-than-zero",
-          "Time must be greater than 00:00",
-          (value) => {
-            if (!value) return false;
-            const [minutes, seconds] = value.split(":").map(Number);
-            return minutes > 0 || seconds > 0;
-          }
-        )
-        .required("Required"),
-    }),
 
     /**
      * Handles form submission and creates a new game session.
      * @param {Object} values - Form values.
      */
     onSubmit: async (values) => {
+      const newErrors: { id: string; message: string }[] = [];
+      setErrors(newErrors);
+      
+      if(isPrivate && formik.values.password === '') {
+        newErrors.push({
+          id: generateId(),
+          message: t("private-lobby-password-error"),
+        });
+
+        setErrors([...newErrors]);
+        return;
+      }
       try {
         const getIdResponse = await fetch(
           "http://localhost:8080/api/users/getId",
@@ -99,8 +80,6 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
           setError("Failed to fetch ID");
           return;
         }
-
-        const getIdData = await getIdResponse.text();
 
         const requestData = {
           gameName: values.gameName,
@@ -132,6 +111,47 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
       }
     },
   });
+
+  /**
+   * useEffect hook for handling the automatic removal of error messages after a delay.
+   *
+   * - Adds a fade-out effect to the toast error before removal.
+   * - Removes errors from the state after a timeout.
+   *
+   * @param {Array<{ id: string; message: string }>} errors - Array of error messages with unique IDs.
+   */
+  useEffect(() => {
+    if (errors.length === 0) return;
+
+    const timers: number[] = errors.map((error) => {
+      const toastElement = document.getElementById(error.id);
+
+      if (toastElement) {
+        // Fade out the toast after 8 seconds
+        const fadeOutTimer = setTimeout(() => {
+          toastElement.classList.add("hide");
+        }, 8000);
+
+        // Remove the error from state after 8.5 seconds
+        const removeTimer = setTimeout(() => {
+          setErrors((prevErrors) =>
+            prevErrors.filter((e) => e.id !== error.id)
+          );
+        }, 8500);
+
+        return removeTimer;
+      } else {
+        // Remove error if toast element is not found
+        return setTimeout(() => {
+          setErrors((prevErrors) =>
+            prevErrors.filter((e) => e.id !== error.id)
+          );
+        }, 8000);
+      }
+    });
+
+    return () => timers.forEach(clearTimeout);
+  }, [errors]);
 
   /**
    * Handles navigation back and optionally aborts a game session.
@@ -166,6 +186,26 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
     }
   };
 
+  /**
+   * Handles manual closing of a toast error.
+   *
+   * - Fades out the toast visually before removing it from the state.
+   *
+   * @param {string} id - The unique identifier of the error toast to be closed.
+   */
+  const handleCloseErrorToast = (id: string) => {
+    const toastElement = document.getElementById(id);
+    if (toastElement) {
+      toastElement.classList.add("hide");
+
+      setTimeout(() => {
+        setErrors((prevErrors) =>
+          prevErrors.filter((error) => error.id !== id)
+        );
+      }, 500);
+    }
+  };
+
   return (
     <>
       <RoomMenu>
@@ -182,13 +222,20 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
           onSubmit={formik.handleSubmit}
           style={{ gridColumn: "2", gridRow: "2" }}
         >
-          <div className={"form-content"} style={{  gridTemplateRows: isPrivate ? "1fr 1fr 1fr 1fr 1fr" : "1fr 1fr 1fr 1fr"}}>
+          <div
+            className={"form-content"}
+            style={{
+              gridTemplateRows: isPrivate
+                ? "1fr 1fr 1fr 1fr 1fr"
+                : "1fr 1fr 1fr 1fr",
+            }}
+          >
             <input
               id="gameName"
               className="input-box"
               name="gameName"
               type="text"
-              placeholder="GAME NAME"
+              placeholder={t("game-name")}
               onChange={formik.handleChange}
               value={formik.values.gameName}
               style={{ gridColumn: "span 2" }}
@@ -201,12 +248,9 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
               }}
               className="label-inset"
             >
-              Private lobby:
+              {t("private-lobby")}:
             </label>
-            <label
-              className="cr-wrapper"
-              style={{ gridColumn: "span 1" }}
-            >
+            <label className="cr-wrapper" style={{ gridColumn: "span 1" }}>
               <input
                 type="checkbox"
                 checked={isPrivate}
@@ -216,10 +260,12 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
             </label>
             <input
               type="password"
-              placeholder="ENTER PASSWORD"
+              placeholder={t("PASSWORD")}
               className={`password-input ${isPrivate ? "visible" : "hiding"}`}
               style={{ gridColumn: "span 2" }}
               value={formik.values.password}
+              name="password"
+              onChange={formik.handleChange}
             />
             {formik.touched.gameName && formik.errors.gameName ? (
               <ErrorMessage name="gameName">
@@ -236,7 +282,11 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
                 gridRow: "2",
               }}
             >
-              <label htmlFor="playerSlider" className="label-inset" style={{ marginRight: "10px" }}>
+              <label
+                htmlFor="playerSlider"
+                className="label-inset"
+                style={{ marginRight: "10px" }}
+              >
                 {t("slots")}:
               </label>
               <input
@@ -254,7 +304,9 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
                 {formik.values.playerSlider || 4}
               </span>
             </div>
-            <label htmlFor="deckLanguage" className="label-inset">{t("deck-language")}:</label>
+            <label htmlFor="deckLanguage" className="label-inset">
+              {t("deck-language")}:
+            </label>
             <select
               id="deckLanguage"
               name="deckLanguage"
@@ -271,6 +323,30 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
             <span className="button-text">{t("create-game-button")}</span>
           </Button>
         </form>
+        {errors.length > 0 && (
+          <div className="toast-container">
+            {errors.map((error) => (
+              <div id={error.id} key={error.id} className="toast active">
+                <div className="toast-content">
+                  <i
+                    className="fa fa-exclamation-circle fa-3x"
+                    style={{ color: "#561723" }}
+                    aria-hidden="true"
+                  ></i>
+                  <div className="message">
+                    <span className="text text-1">Error</span>
+                    <span className="text text-2">{error.message}</span>
+                  </div>
+                </div>
+                <i
+                  className="fa-solid fa-xmark close"
+                  onClick={() => handleCloseErrorToast(error.id)}
+                ></i>
+                <div className="progress active"></div>
+              </div>
+            ))}
+          </div>
+        )}
       </RoomMenu>
     </>
   );

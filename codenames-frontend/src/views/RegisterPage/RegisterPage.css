@@ -40,7 +40,7 @@
   position: fixed;
   top: 4vw;
   right: 20px;
-  z-index: 1000;
+  z-index: 2000;
 }
 
 .toast {

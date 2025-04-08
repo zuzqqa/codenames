@@ -8,7 +8,6 @@ import Button from "../Button/Button.tsx";
 import backButton from "../../assets/icons/arrow-back.png";
 import playerIcon from "../../assets/images/player-icon.png";
 import "./RoomLobby.css";
-import { convertDurationToMMSS } from "../../shared/utils.tsx";
 
 /**
  * Properties for the RoomLobby component.
@@ -85,15 +84,8 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       fetch(`http://localhost:8080/api/game-session/${storedGameId}`)
         .then((response) => response.json())
         .then((data: GameSession) => {
-          const hintTimeInSeconds = convertDurationToMMSS(data.timeForAHint);
-          const guessingTimeInSeconds = convertDurationToMMSS(
-            data.timeForGuessing
-          );
-
           setGameSession({
             ...data,
-            timeForAHint: hintTimeInSeconds.toString(),
-            timeForGuessing: guessingTimeInSeconds.toString(),
           });
 
           if (data.connectedUsers) {
@@ -267,10 +259,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                   : 0}
                 /{gameSession.maxPlayers}
               </div>
-              <div>{t("hint-duration")}</div>
-              <div>{gameSession.timeForAHint}</div>
-              <div>{t("guess-duration")}</div>
-              <div>{gameSession.timeForGuessing}</div>
               <div className="lobby-players">
                 <Button
                   variant={"room"}

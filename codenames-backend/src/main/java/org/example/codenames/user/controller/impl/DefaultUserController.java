@@ -267,6 +267,8 @@ public class DefaultUserController implements UserController {
 
         userService.createUser(guest);
 
+        System.out.println(username);
+
         String token = jwtService.generateToken(guest.getUsername());
         response.addCookie(setAuthCookie(token, true));
 

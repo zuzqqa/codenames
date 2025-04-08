@@ -57,14 +57,9 @@ public class GameSession {
     private Integer maxPlayers;
 
     /**
-     * Time for a hint.
+     * Password for private session.
      */
-    private Duration timeForAHint;
-
-    /**
-     * Time for guessing.
-     */
-    private Duration timeForGuessing;
+    private String password;
 
     /**
      * List of connected users.

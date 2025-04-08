@@ -10,6 +10,7 @@ import org.example.codenames.user.entity.User;
 import org.example.codenames.user.service.api.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -36,6 +37,12 @@ public class DefaultGameSessionService implements GameSessionService {
     private final GameStateService gameStateService;
 
     /**
+     * Encoder used to securely hash and verify game session passwords,
+     * preventing storage of plain-text passwords.
+     */
+    private final PasswordEncoder passwordEncoder;
+
+    /**
      * Creates a new instance of the {@link DefaultGameSessionService}.
      *
      * @param gameSessionRepository Game session repository.
@@ -43,10 +50,11 @@ public class DefaultGameSessionService implements GameSessionService {
      * @param gameStateService      Game state service.
      */
     @Autowired
-    public DefaultGameSessionService(GameSessionRepository gameSessionRepository, UserService userService, GameStateService gameStateService) {
+    public DefaultGameSessionService(GameSessionRepository gameSessionRepository, UserService userService, GameStateService gameStateService, PasswordEncoder passwordEncoder) {
         this.gameSessionRepository = gameSessionRepository;
         this.userService = userService;
         this.gameStateService = gameStateService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -73,8 +81,7 @@ public class DefaultGameSessionService implements GameSessionService {
                 UUID.randomUUID(),
                 request.getGameName(),
                 request.getMaxPlayers(),
-                request.getTimeForAHint(),
-                request.getTimeForGuessing(),
+                request.getPassword().isEmpty() ? "" :passwordEncoder.encode(request.getPassword()),
                 new ArrayList<>() {{
                     add(new ArrayList<>());
                     add(new ArrayList<>());
@@ -279,6 +286,25 @@ public class DefaultGameSessionService implements GameSessionService {
         gameSessionRepository.save(gameSession);
 
         return true;
+    }
+
+    /**
+     * Authenticates password for session.
+     *
+     * @param sessionId The UUID of the game session.
+     * @param enteredPassword The password given by user.
+     *
+     * @return True if password is correct, otherwise false.
+     */
+    @Override
+    public boolean authenticatePassword(UUID sessionId, String enteredPassword) {
+        GameSession gameSession = getGameSessionById(sessionId);
+
+        if (gameSession == null) {
+            throw new IllegalArgumentException("Game session not found for ID: " + sessionId);
+        }
+
+        return passwordEncoder.matches(enteredPassword, gameSession.getPassword());
     }
 
     /**

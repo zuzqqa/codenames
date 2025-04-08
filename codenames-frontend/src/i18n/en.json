@@ -54,5 +54,10 @@
   "account-activated-notification": "Your account was activated, log in.",
   "account-not-activated": "Your account was not activated.",
   "or": "or",
-  "hint-one-word": "Hint must be one word."
+  "hint-one-word": "Hint must be one word.",
+  "game-name": "GAME NAME",
+  "private-lobby": "Private lobby",
+  "private-lobby-password-error": "If you create private lobby, password cannot be null.",
+  "pass-overlay-label": "Type password:",
+  "incorrect-password": " Incorrect password. Try again."
 }
