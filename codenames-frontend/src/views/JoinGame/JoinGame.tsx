@@ -132,12 +132,10 @@ const JoinGame: React.FC<JoinGameProps> = ({
   return (
     <>
       <BackgroundContainer>
-        {/* Settings button */}
         <Button variant="circle" soundFXVolume={soundFXVolume}>
           <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
         </Button>
 
-        {/* Settings modal */}
         <SettingsModal
           isOpen={isSettingsOpen}
           onClose={toggleSettings}

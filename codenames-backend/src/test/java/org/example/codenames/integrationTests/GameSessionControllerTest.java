@@ -2,23 +2,29 @@ package org.example.codenames.integrationTests;
 
 import org.example.codenames.CodenamesApplication;
 import org.example.codenames.gameSession.controller.api.GameSessionController;
-
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
-import org.example.codenames.user.controller.api.UserController;
-import org.example.codenames.user.entity.User;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+
 import org.springframework.http.MediaType;
+
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -27,12 +33,6 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
 import java.util.UUID;
-
-
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Integration tests for the game session functionalities.
@@ -84,8 +84,7 @@ public class GameSessionControllerTest {
                 {
                     "gameName": "game1",
                     "maxPlayers": 4,
-                    "timeForAHint": "PT1M",
-                    "timeForGuessing": "PT1M",
+                    "password": "",
                     "language": "en"
                 }
                 """;
@@ -109,8 +108,7 @@ public class GameSessionControllerTest {
                 {
                     "gameName": "exampleGame",
                     "maxPlayers": 8,
-                    "timeForAHint": "PT1M30S",
-                    "timeForGuessing": "PT1M30S",
+                    "password": "",
                     "language": "en"
                 }
                 """;
@@ -132,8 +130,7 @@ public class GameSessionControllerTest {
             {
                 "gameName": "voteGame",
                 "maxPlayers": 4,
-                "timeForAHint": "PT1M",
-                "timeForGuessing": "PT1M",
+                "password": "",
                 "language": "en"
             }
             """;
@@ -165,8 +162,7 @@ public class GameSessionControllerTest {
             {
                 "gameName": "connectGame",
                 "maxPlayers": 4,
-                "timeForAHint": "PT1M",
-                "timeForGuessing": "PT1M",
+                "password": "",
                 "language": "en"
             }
             """;
@@ -192,8 +188,7 @@ public class GameSessionControllerTest {
             {
                 "gameName": "disconnectGame",
                 "maxPlayers": 4,
-                "timeForAHint": "PT1M",
-                "timeForGuessing": "PT1M",
+                "password": "",
                 "language": "en"
             }
             """;
