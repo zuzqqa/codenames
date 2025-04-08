@@ -281,6 +281,28 @@ public class DefaultGameSessionService implements GameSessionService {
     }
 
     /**
+     * Authenticates password for session.
+     *
+     * @param sessionId The UUID of the game session.
+     * @param enteredPassword The password given by user.
+     *
+     * @return True if password is correct, otherwise false.
+     */
+    @Override
+    public boolean authenticatePassword(UUID sessionId, String enteredPassword) {
+        GameSession gameSession = getGameSessionById(sessionId);
+
+        if (gameSession == null) {
+            throw new IllegalArgumentException("Game session not found for ID: " + sessionId);
+        }
+        System.out.println(gameSession.getPassword());
+        System.out.println(enteredPassword);
+        System.out.println(gameSession.getPassword().equals(enteredPassword));
+
+        return gameSession.getPassword().equals(enteredPassword);
+    }
+
+    /**
      * Retrieves all game sessions.
      *
      * @return A list of all game sessions.

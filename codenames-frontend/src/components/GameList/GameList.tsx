@@ -4,13 +4,17 @@ import { useTranslation } from "react-i18next";
 import Button from "../Button/Button.tsx";
 import searchBar from "../../assets/images/search_bar_background.png";
 import searchIcon from "../../assets/icons/search-icon.png";
+import lockIcon from "../../assets/icons/lock-solid.png";
 
 import "./GameList.css";
 
-import backButton from "../../assets/icons/arrow-back.png";
-import searchButton from "../../assets/images/search-button.png";
+import backButtonIcon from "../../assets/icons/arrow-back.png";
+import searchButtonIcon from "../../assets/images/search-button.png";
 
 import { useState } from "react";
+
+const generateId = () =>
+  Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 
 /**
  * Props interface for GameList component.
@@ -47,6 +51,7 @@ interface GameSession {
   sessionId: string; // Unique session identifier
   gameName: string; // Name of the game session
   maxPlayers: number; // Maximum number of players
+  password: string;
   durationOfTheRound: string; // Duration of each round
   timeForGuessing: string; // Time allocated for guessing
   timeForAHint: string; // Time allocated for hints
@@ -71,6 +76,10 @@ const GameList: React.FC<GameListProps> = ({
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isPasswordOverlayOpen, setIsPasswordOverlayOpen] = useState(false);
+  const [enteredPassword, setEnteredPassword] = useState("");
+  const [selectedSessionId, setSelectedSessionId] = useState<string>();
+  const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
 
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -80,8 +89,8 @@ const GameList: React.FC<GameListProps> = ({
    */
   const toggleSearch = () => {
     if (!isSearchVisible) {
-      setIsSearchVisible(true); 
-      setTimeout(() => setIsAnimating(true), 10); 
+      setIsSearchVisible(true);
+      setTimeout(() => setIsAnimating(true), 10);
     } else {
       setTimeout(() => setIsAnimating(false), 500);
       setIsSearchVisible(false);
@@ -104,14 +113,70 @@ const GameList: React.FC<GameListProps> = ({
     setFilteredSessions(filtered);
   };
 
+    /**
+   * Handles manual closing of a toast error.
+   *
+   * - Fades out the toast visually before removing it from the state.
+   *
+   * @param {string} id - The unique identifier of the error toast to be closed.
+   */
+    const handleCloseErrorToast = (id: string) => {
+      const toastElement = document.getElementById(id);
+      if (toastElement) {
+        toastElement.classList.add("hide");
+  
+        setTimeout(() => {
+          setErrors((prevErrors) =>
+            prevErrors.filter((error) => error.id !== id)
+          );
+        }, 500);
+      }
+    };
+
   /**
    * Joins a specific game session and navigates to the game lobby.
    *
    * @param {string} sessionId - The session ID of the game to join
    */
-  const join_specific_game = (sessionId: string) => {
-    localStorage.setItem("gameId", sessionId);
-    navigate("/game-lobby");
+  const joinSpecificGame = (sessionId: string) => {
+    const selectedGame = filteredSessions.find(
+      (session) => session.sessionId === sessionId
+    );
+
+    if (selectedGame?.password) {
+      setSelectedSessionId(sessionId);
+      setIsPasswordOverlayOpen(true);
+    } else {
+      localStorage.setItem("gameId", sessionId);
+      navigate("/game-lobby");
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedSessionId) return;
+    const newErrors: { id: string; message: string }[] = [];
+    setErrors(newErrors);
+
+    const response = await fetch(
+      `http://localhost:8080/api/game-session/${selectedSessionId}/authenticate-password/${enteredPassword}`,
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
+
+    const result = await response.json();
+
+    if (result) {
+      navigate("/game-lobby");
+    } else {
+      newErrors.push({
+        id: generateId(),
+        message: t("account-not-activated"),
+      });
+
+      setErrors([...newErrors]);
+    }
   };
 
   return (
@@ -158,7 +223,7 @@ const GameList: React.FC<GameListProps> = ({
           onClick={() => navigate("/games")}
           soundFXVolume={soundFXVolume}
         >
-          <img src={backButton} alt="Back" className="btn-arrow-back" />
+          <img src={backButtonIcon} alt="Back" className="btn-arrow-back" />
         </Button>
 
         <Button
@@ -167,7 +232,7 @@ const GameList: React.FC<GameListProps> = ({
           onClick={toggleSearch}
           soundFXVolume={soundFXVolume}
         >
-          <img src={searchButton} alt="Search" />
+          <img src={searchButtonIcon} alt="Search" />
         </Button>
         <span className="room-form-label">{t("join-room-button")}</span>
 
@@ -179,10 +244,16 @@ const GameList: React.FC<GameListProps> = ({
             {filteredSessions.map((gameSession) => (
               <li
                 key={gameSession.sessionId}
-                onClick={() => join_specific_game(gameSession.sessionId)}
+                onClick={() => joinSpecificGame(gameSession.sessionId)}
               >
                 <div className="room-info">
                   <div className="room-name">{gameSession.gameName}</div>
+                  {gameSession.password !== "" && (
+                    <img
+                      src={lockIcon}
+                      className="password-overlay lock-icon"
+                    ></img>
+                  )}
                   <div className="room-players">
                     Slots:{" "}
                     {gameSession.connectedUsers[0].length +
@@ -194,7 +265,57 @@ const GameList: React.FC<GameListProps> = ({
             ))}
           </ul>
         </div>
+        {errors.length > 0 && (
+          <div className="toast-container">
+            {errors.map((error) => (
+              <div id={error.id} key={error.id} className="toast active">
+                <div className="toast-content">
+                  <i
+                    className="fa fa-exclamation-circle fa-3x"
+                    style={{ color: "#561723" }}
+                    aria-hidden="true"
+                  ></i>
+                  <div className="message">
+                    <span className="text text-1">Error</span>
+                    <span className="text text-2">{error.message}</span>
+                  </div>
+                </div>
+                <i
+                  className="fa-solid fa-xmark close"
+                  onClick={() => handleCloseErrorToast(error.id)}
+                ></i>
+                <div className="progress active"></div>
+              </div>
+            ))}
+          </div>
+        )}
       </RoomMenu>
+      {isPasswordOverlayOpen && (
+        <div className="overlay-backdrop">
+          <div className="pass-overlay">
+            <span className="room-form-label pass-overlay-label">
+              {t("pass-overlay-label")}
+            </span>
+            <div className="password-input-overlay">
+              <input
+                type="password"
+                placeholder={t("PASSWORD")}
+                name="password"
+                className="input-box password-overlay"
+                value={enteredPassword}
+                onChange={(e) => setEnteredPassword(e.target.value)}
+                />
+            </div>
+            <Button
+              variant="primary-1"
+              soundFXVolume={soundFXVolume}
+              onClick={handleSubmit}
+            >
+              <span>{t("submit-button")}</span>
+            </Button>
+          </div>
+        </div>
+      )}
     </>
   );
 };

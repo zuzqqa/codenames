@@ -27,6 +27,8 @@ public interface GameSessionService {
 
     boolean addPlayerToSession(UUID sessionId, String userId, int teamIndex);
 
+    boolean authenticatePassword(UUID sessionId, String password);
+
     List<GameSession> getAllGameSessions();
 
     boolean removePlayerFromSession(UUID gameId, String userId);

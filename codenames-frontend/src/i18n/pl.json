@@ -58,5 +58,6 @@
   "hint-one-word": "Podpowiedź musi składać się z jednego słowa.",
   "game-name": "NAZWA GRY",
   "private-lobby": "Prywatna rozgrywka",
-  "private-lobby-password-error": "Podczas tworzenia publicznej rozgrywki, hasło nie może być puste."
+  "private-lobby-password-error": "Podczas tworzenia publicznej rozgrywki, hasło nie może być puste.",
+  "pass-overlay-label": "Podaj hasło: "
 }

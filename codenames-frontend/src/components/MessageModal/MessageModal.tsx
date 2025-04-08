@@ -118,7 +118,6 @@ const MessageModal: React.FC<MessageModalProps> = ({
               </p>
               {isLoading ? (
                 <div className="loading-spinner">
-                  {/* Wyświetlenie SVG jako obraz */}
                   <img
                     src={spinner}
                     alt="Loading..."
