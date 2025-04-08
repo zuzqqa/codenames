@@ -165,8 +165,6 @@ public class DefaultGameSessionController implements GameSessionController {
      */
     @PostMapping("/{gameId}/authenticate-password/{enteredPassword}")
     public ResponseEntity<?> authenticatePassword(@PathVariable String gameId, @PathVariable String enteredPassword) {
-        System.out.println(enteredPassword);
-
         return ResponseEntity.ok(gameSessionService.authenticatePassword(UUID.fromString(gameId), enteredPassword));
     }
 }
