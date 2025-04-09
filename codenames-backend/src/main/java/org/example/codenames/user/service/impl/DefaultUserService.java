@@ -1,18 +1,17 @@
 package org.example.codenames.user.service.impl;
 
 import com.github.javafaker.Faker;
+
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.api.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -33,6 +32,7 @@ public class DefaultUserService implements UserService {
 
     /**
      * Constructs a new DefaultUserService with the given user repository and password encoder.
+     *
      * @param userRepository the user repository
      * @param passwordEncoder the password encoder
      */
@@ -78,6 +78,7 @@ public class DefaultUserService implements UserService {
 
     /**
      * Retrieves a user by their ID.
+     *
      * @param id the ID of the user
      * @return the user, if found
      */
@@ -88,6 +89,7 @@ public class DefaultUserService implements UserService {
 
     /**
      * Retrieves a user by their username.
+     *
      * @param username the username of the user
      * @return the user, if found
      */
@@ -98,6 +100,7 @@ public class DefaultUserService implements UserService {
 
     /**
      * Retrieves all users.
+     *
      * @return a list of all users
      */
     @Override
@@ -107,9 +110,11 @@ public class DefaultUserService implements UserService {
 
     /**
      * Updates a user by their ID.
+     *
      * @param id the ID of the user
      * @param updatedUser the updated user
      * @return the updated user, if found
+     * @throws IllegalArgumentException if the user was not found in the repository
      */
     @Override
     public Optional<User> updateUser(String id, User updatedUser) {
@@ -123,6 +128,7 @@ public class DefaultUserService implements UserService {
 
     /**
      * Deletes a user by their ID.
+     *
      * @param id the ID of the user
      */
     @Override
@@ -140,6 +146,13 @@ public class DefaultUserService implements UserService {
         .orElse(null);
     }
 
+    /**
+     * Checks whether the account with the given username is activated.
+     *
+     * @param username the username of the account to check
+     * @return {@code true} if the account is activated; {@code false} otherwise
+     * @throws UsernameNotFoundException if no user is found with the given username
+     */
     @Override
     public boolean isAccountActivated(String username) {
         User user = userRepository.findByUsername(username)
@@ -148,6 +161,11 @@ public class DefaultUserService implements UserService {
         return user.getStatus() == User.userStatus.ACTIVE;
     }
 
+    /**
+     * Generates a unique username consisting of an adjective and a noun.
+     *
+     * @return a unique username combining an adjective and a noun, without whitespaces.
+     */
     @Override
     public String generateUniqueUsername() {
         Faker faker = new Faker();

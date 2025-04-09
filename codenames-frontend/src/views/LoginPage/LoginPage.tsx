@@ -268,12 +268,11 @@ const LoginPage: React.FC<LoginProps> = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify(userData),
-          credentials: "include", // Include cookies in the request
+          credentials: "include", 
         }
       );
 
       if (response.ok) {
-        document.cookie = "loggedIn=true";
         window.location.href = "/loading";
       } else if (response.status === 401) {
         newErrors.push({

@@ -2,7 +2,6 @@ package org.example.codenames.user.controller.impl;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 
-import com.github.javafaker.Faker;
+import static org.example.codenames.util.CookieUtils.createAuthCookie;
+import static org.example.codenames.util.CookieUtils.createLoggedInCookie;
 
 /**
  * Default implementation of the {@link UserController} interface.
@@ -85,7 +85,7 @@ public class DefaultUserController implements UserController {
         }
 
         if (user.isGuest() || Objects.equals(user.getRoles(), "ROLE_ADMIN")) {
-            response.addCookie(setAuthCookie(token, true));
+            response.addCookie(createAuthCookie(token, true));
         }
 
         return ResponseEntity.ok().build();
@@ -186,7 +186,9 @@ public class DefaultUserController implements UserController {
                 }
 
                 String token = jwtService.generateToken(authRequest.getUsername());
-                response.addCookie(setAuthCookie(token, true));
+
+                response.addCookie(createAuthCookie(token, true));
+                response.addCookie(createLoggedInCookie(true));
 
                 return ResponseEntity.ok().build();
             } else {
@@ -205,15 +207,8 @@ public class DefaultUserController implements UserController {
      */
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("authToken", null);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false); // Set true for https
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-
-        Cookie authCookie = setAuthCookie(null, false);
-
-        response.addCookie(authCookie);
+        response.addCookie(createAuthCookie(null, false));
+        response.addCookie(createLoggedInCookie(false));
 
         return ResponseEntity.ok().build();
     }
@@ -229,6 +224,7 @@ public class DefaultUserController implements UserController {
         if (token == null) {
             return ResponseEntity.ok("null");
         }
+
         return ResponseEntity.ok(jwtService.getUsernameFromToken(token));
     }
 
@@ -245,6 +241,7 @@ public class DefaultUserController implements UserController {
         }
         String username = jwtService.getUsernameFromToken(token);
         Optional<User> user = userService.getUserByUsername(username);
+
         return user.map(User::getId).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
@@ -268,29 +265,10 @@ public class DefaultUserController implements UserController {
         userService.createUser(guest);
 
         String token = jwtService.generateToken(guest.getUsername());
-        Cookie loggedInCookie = new Cookie("loggedIn", "true");
-        loggedInCookie.setSecure(false);
-        loggedInCookie.setPath("/");
-        loggedInCookie.setMaxAge(36000);
 
-        response.addCookie(setAuthCookie(token, true));
-        response.addCookie(loggedInCookie);
+        response.addCookie(createAuthCookie(token, true));
+        response.addCookie(createLoggedInCookie(true));
 
         return ResponseEntity.ok().build();
-    }
-
-    // TODO: Move this to a utility class
-    private Cookie setAuthCookie(String token, boolean loggingIn) {
-        Cookie cookie = new Cookie("authToken", token);
-        // cookie.setHttpOnly(true); this bullshit unables me to read the cookie in the frontend        That was the point since we don't want to expose the token to JavaScript
-        cookie.setSecure(false); // Set to true for https
-        cookie.setPath("/");
-        if (loggingIn) {
-            cookie.setMaxAge(36000);
-        }
-        else {
-            cookie.setMaxAge(0);
-        }
-        return cookie;
     }
 }

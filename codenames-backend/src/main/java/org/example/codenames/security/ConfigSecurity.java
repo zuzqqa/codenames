@@ -1,12 +1,11 @@
 package org.example.codenames.security;
 
-import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
+
 import org.example.codenames.jwt.JwtAuthFilter;
 import org.example.codenames.jwt.JwtService;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
-import org.example.codenames.user.service.api.UserService;
 import org.example.codenames.userDetails.UserEntityDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +30,9 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.Optional;
+
+import static org.example.codenames.util.CookieUtils.createAuthCookie;
+import static org.example.codenames.util.CookieUtils.createLoggedInCookie;
 
 /**
  * Security configuration class that defines authentication and authorization settings for the application.
@@ -66,7 +68,7 @@ public class ConfigSecurity {
         return http.csrf(csrf -> csrf.disable())
                 //.cors().and()     // Opcjonalnie: dodanie obsługi CORS
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Preflight requests
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/api/users", "/api/users/authenticate", "/api/users/getId",
                                 "/api/users/getUsername", "/api/users/createGuest", "/api/users/username/**",
@@ -83,7 +85,7 @@ public class ConfigSecurity {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService())) // Obsługa Google OAuth
+                        .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService()))
                         .successHandler(authenticationSuccessHandler())
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
@@ -149,18 +151,9 @@ public class ConfigSecurity {
 
             String token = jwtService.generateToken(existingUser.get().getUsername());
 
-            Cookie authCookie = new Cookie("authToken", token);
-            authCookie.setSecure(false);
-            authCookie.setPath("/");
-            authCookie.setMaxAge(36000);
+            response.addCookie(createAuthCookie(token, true));
+            response.addCookie(createLoggedInCookie(true));
 
-            Cookie loggedInCookie = new Cookie("loggedIn", "true");
-            loggedInCookie.setSecure(false);
-            loggedInCookie.setPath("/");
-            loggedInCookie.setMaxAge(36000);
-
-            response.addCookie(authCookie);
-            response.addCookie(loggedInCookie);
             response.sendRedirect("http://localhost:5173/games");
         };
     }
@@ -185,6 +178,7 @@ public class ConfigSecurity {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userEntityDetailsService());
         provider.setPasswordEncoder(passwordEncoder());
+
         return provider;
     }
 

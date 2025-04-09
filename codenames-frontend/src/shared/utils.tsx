@@ -1,5 +1,3 @@
-import Cookies from "js-cookie";
-
 /**
  * Logs out the user by sending a request to the server and clearing session cookies.
  * If successful, the user is redirected to the loading screen.
@@ -19,7 +17,7 @@ export const logout = async () => {
     if (response.ok) {
       localStorage.removeItem("userId");
       localStorage.removeItem("gameId");
-      Cookies.remove("loggedIn", { path: '/', domain: 'localhost'});
+
       window.location.href = "/loading";
     } else {
       const error = await response.text();
