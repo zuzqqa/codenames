@@ -3,22 +3,22 @@ name: 🚀 Push Tag to Main & Deploy to Docker Hub
 on:
   push:
     branches:
-      - main
+      - main  # Trigger workflow on pushes to the main branch
 
 jobs:
-  create-tag:
+  create-release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write  # Allow the job to create and push tags
       
     steps:
       - name: 📥 Checkout the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4  # Fetch repository code
 
       - name: 🔄 Fetch tags
         run: |
           git fetch --tags
-          echo "✅ Tagi pobrane"
+          echo "✅ Tags downloaded!"
 
       - name: 🔍 Get the latest tag on main
         run: |
@@ -49,6 +49,62 @@ jobs:
             exit 0
           fi
 
+      - name: 📄 Read release note and title
+        run: |
+          title=$(head -n 1 scripts/release_note.md)
+          echo "Release Title: $title"
+          tail -n +2 scripts/release_note.md > scripts/temp_release_note.md
+          
+          pre_release=$(tail -n 1 scripts/temp_release_note.md)
+          pre_release_flag=false
+          
+          if [ "$pre_release" == "PRE-RELEASE" ]; then
+            echo "PRE-RELEASE detected"
+            pre_release_flag=true
+            sed -i '$d' scripts/temp_release_note.md
+          fi
+          
+          mv scripts/temp_release_note.md scripts/release_note.md
+          
+          # Escape newlines and convert to single-line JSON string
+          BODY=$(printf '%s' "$(cat scripts/release_note.md)" | sed 's/$/\\n/g' | tr -d '\n' | jq -Rs '.')
+          
+          echo "TITLE=$title" >> $GITHUB_ENV
+          echo "PRE_RELEASE_FLAG=$pre_release_flag" >> $GITHUB_ENV
+          echo "RELEASE_BODY=$BODY" >> $GITHUB_ENV
+
+      - name: 📄 Prepare Release Note
+        run: |
+          tail -n +2 scripts/release_note.md > scripts/temp_release_note.md
+          
+          sed -i '$d' scripts/temp_release_note.md
+          
+          BODY=$(cat scripts/temp_release_note.md)
+          
+          ESCAPED_BODY=$(echo "$BODY" | jq -Rs '.')
+          
+          PRE_RELEASE_FLAG=false
+          if grep -q "PRE-RELEASE" scripts/release_note.md; then
+            PRE_RELEASE_FLAG=true
+          fi
+          
+          echo "RELEASE_BODY=$ESCAPED_BODY" >> $GITHUB_ENV
+          echo "PRE_RELEASE_FLAG=$PRE_RELEASE_FLAG" >> $GITHUB_ENV
+
+      - name: 📄 Create GitHub Release
+        run: |
+          echo "Creating release: ${{ env.TITLE }}"
+
+          body=$(cat scripts/release_note.md | sed ':a;N;$!ba;s/\n/\\n/g')
+
+          json=$(printf '{"tag_name": "%s", "name": "%s", "body": "%s", "draft": false, "prerelease": %s}' \
+            "${{ env.SELECTED_VERSION }}" "${{ env.TITLE }}" "$body" "${{ env.PRE_RELEASE_FLAG }}")
+          
+          curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+               -d "$json" \
+               https://api.github.com/repos/${{ github.repository }}/releases
+
+
       - name: 🔎 Verify that the tag was created
         run: |
           git tag
@@ -60,14 +116,14 @@ jobs:
           git push origin ${{ env.SELECTED_VERSION }}
 
   push-docker:
-    needs: create-tag
+    needs: create-release # Ensure the tagging job completes before running this job
     runs-on: ubuntu-latest
 
     steps:
       - name: 📥 Checkout repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  
+          fetch-depth: 0  # Fetch full history to include tags  
 
       - name: 🔍 Fetch and list tags
         run: |
@@ -82,21 +138,21 @@ jobs:
       - name: 🔑 Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
+          username: ${{ secrets.DOCKER_USERNAME }}  # Use secret credentials for authentication
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: 🐳 Build and push backend Docker image
         uses: docker/build-push-action@v5
         with:
-          push: true
-          tags: codenames/codenames-backend:${{ env.VERSION }}
-          context: ./codenames-backend  
-          file: ./codenames-backend/Dockerfile  
+          push: true  # Push image to Docker Hub
+          tags: codenames/codenames-backend:${{ env.VERSION }}  # Tag image with the retrieved version
+          context: ./codenames-backend  # Set the build context
+          file: ./codenames-backend/Dockerfile  # Use the backend Dockerfile
 
       - name: 🐳 Build and push frontend Docker image
         uses: docker/build-push-action@v5
         with:
-          push: true
-          tags: codenames/codenames-frontend:${{ env.VERSION }}
-          context: ./codenames-frontend 
-          file: ./codenames-frontend/Dockerfile  
+          push: true  # Push image to Docker Hub
+          tags: codenames/codenames-frontend:${{ env.VERSION }}  # Tag image with the retrieved version
+          context: ./codenames-frontend  # Set the build context
+          file: ./codenames-frontend/Dockerfile  # Use the frontend Dockerfile

@@ -6,7 +6,7 @@ import {
 } from "react-router-dom"; // Importing React Router components
 import React, { useEffect, useState } from "react"; // Importing React hooks
 import Cookies from "js-cookie"; // Importing cookie management library
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 import soundFile from "./assets/sounds/background-music.mp3"; // Importing background music file
 
@@ -20,24 +20,24 @@ import Gameplay from "./views/Gameplay/Gameplay";
 import ChooseLeader from "./views/ChooseLeader/ChooseLeader";
 import LoginPage from "./views/LoginPage/LoginPage";
 import RegisterPage from "./views/RegisterPage/RegisterPage";
-import PrivateRoute from "./utils/PrivateRoute"; 
+import PrivateRoute from "./utils/PrivateRoute";
 import WinLossView from "./views/WinLossView/WinLossView";
 import LoadingPage from "./views/Loading/LoadingPage";
 import ResetPasswordPage from "./views/ResetPassword/ResetPasswordPage.tsx";
 import ResetPasswordRequestPage from "./views/ResetPassword/ResetPasswordRequestPage.tsx";
 
 const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); 
-  const [soundFXVolume, setSoundFXVolume] = useState(50); 
-  const [audio] = useState(new Audio(soundFile)); 
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [soundFXVolume, setSoundFXVolume] = useState(50);
+  const [audio] = useState(new Audio(soundFile));
   const [isPlaying, setIsPlaying] = useState(false);
   const { i18n } = useTranslation();
 
   const playAudio = () => {
     if (!isPlaying) {
-      audio.loop = true; 
-      audio.play().then(); 
-      setIsPlaying(true); 
+      audio.loop = true;
+      audio.play().then();
+      setIsPlaying(true);
     }
   };
 
@@ -69,7 +69,7 @@ const App: React.FC = () => {
     audio.volume = initialMusicVolume / 100; // Set initial volume from localStorage
 
     i18n.changeLanguage(localStorage.getItem("i18nextLng") || "en");
-    
+
     // Function to check if the user is authenticated by checking cookies
     const checkAuthentication = () => {
       const loggedIn = Cookies.get("loggedIn");
@@ -100,7 +100,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/win-loss" element={<WinLossView/>} />
+        <Route path="/win-loss" element={<WinLossView />} />
         {/* Public routes */}
         <Route
           path="/"

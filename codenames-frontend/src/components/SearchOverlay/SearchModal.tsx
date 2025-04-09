@@ -2,35 +2,40 @@ import Modal from "../Modal/Modal";
 import searchBar from "../../assets/images/search-bar.png";
 import searchIcon from "../../assets/icons/search-icon.png";
 
-
 import "./SearchModal.css";
 
-// Define the type for the SettingsModal component's props
+/**
+ * Props interface for the SearchModal component.
+ */
 interface SearchModalProps {
   isOpen: boolean; // Determines if the modal is visible
   onClose: () => void; // Callback to close the modal
   soundFXVolume: number; // Current sound effects volume level
 }
 
-// Main component definition
+/**
+ * SearchModal Component
+ *
+ * A modal containing a search input field and a close button.
+ *
+ * @component
+ * @param {SearchModalProps} props - Component properties
+ * @returns {JSX.Element | null} - Rendered component or null if modal is closed
+ */
 const SearchModal: React.FC<SearchModalProps> = ({
   isOpen,
   onClose
 }) => {
-
   // If the modal is not open, return null to render nothing
   if (!isOpen) return null;
 
-
-  // Close the modal when the close button is clicked
+  /**
+   * Handles closing the modal when triggered.
+   */
   const toggleModal = () => {
     onClose();
   };
 
-  // Open the Message Modal
-
-
-  // Component rendering logic
   return (
         <Modal isOpen={isOpen} onClose={toggleModal}>
         {/* Modal header with title */}

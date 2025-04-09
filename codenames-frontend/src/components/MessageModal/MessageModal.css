@@ -1,4 +1,3 @@
-  /* === Messages Overlay === */
 .message-modal {
   position: fixed;
   top: 0;
@@ -13,7 +12,6 @@
   z-index: 1000;
 }
 
-/* Container for settings elements */
 .message-overlay-container {
   padding-top: calc(0.4rem + 0.7vw);
   width: 90%;
@@ -21,7 +19,6 @@
   height: 80%;
 }
 
-/* Grid layout for settings rows */
 .message-grid {
   display: grid;
   grid-template-rows: 0.5fr 0.7fr 1fr 1fr; /* Four evenly spaced rows */
@@ -30,13 +27,11 @@
   width: auto;
 }
 
-/* === Settings Row Item === */
 .message-row-item {
   width: 100%;
   height: auto;
 }
 
-/* Styling for message text in each row */
 .message-row-item-message {
   width: 100%;
   margin: auto;
@@ -53,16 +48,15 @@
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
-  -webkit-font-smoothing: antialiased; 
+  -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   user-select: none;
-  -webkit-user-select: none; 
-  -moz-user-select: none; 
-  -ms-user-select: none; 
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
-/* Styling for email input field */
 .message-email-input {
   width: 55%;
   height: calc(0.7rem + 1.5vw);
@@ -71,7 +65,7 @@
   padding-left: 0;
   background: linear-gradient(to bottom, #f0e0b5, #eed8b0);
   text-indent: 15px;
-  font-family: 'Wellfleet', serif;
+  font-family: "Wellfleet", serif;
   font-style: normal;
   /* Text styles */
   font-size: calc(0.6rem + 0.4vw);
@@ -81,11 +75,10 @@
   box-shadow: 0 0 1rem rgba(0, 0, 0, 1); /* Soft shadow */
   outline: none;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale; 
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
-/* Styling for the message textarea */
 .message-row-item-textarea {
   width: 97%;
   height: 80%;
@@ -93,7 +86,7 @@
   padding: 2% 12px;
   padding-left: 15px;
   background: linear-gradient(to bottom, #f0e0b5, #eed8b0);
-  font-family: 'Wellfleet', serif;
+  font-family: "Wellfleet", serif;
   font-style: normal;
   /* Text styles */
   font-size: calc(0.6rem + 0.4vw);
@@ -102,54 +95,49 @@
 
   box-shadow: 0 0 1rem rgba(0, 0, 0, 1); /* Soft shadow */
 
-  resize: none; 
-  overflow-y: auto; 
+  resize: none;
+  overflow-y: auto;
   outline: none;
-  -webkit-font-smoothing: antialiased; 
+  -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  scrollbar-color: #8D2736 #eed8b0; 
+  scrollbar-color: #8d2736 #eed8b0;
 }
 
 .message-row-item-textarea::-webkit-scrollbar {
   width: 8px;
-  background: #8D2736;
+  background: #8d2736;
 }
 
 .message-row-item-textarea::-webkit-scrollbar-track {
-  background: #eed8b0; 
-  border: 2px solid #f0e0b5; 
+  background: #eed8b0;
+  border: 2px solid #f0e0b5;
 }
 
 .message-row-item-textarea::-webkit-scrollbar-thumb {
   background: linear-gradient(to bottom, #ffd363, #b8a98e);
 }
 
-/* Placeholder text color for input and textarea */
 .message-email-input::placeholder,
 .message-row-item-textarea::placeholder {
   color: #b8a98e;
 }
 
-/* Grid layout for the row containing message text and submit button */
 .message-row-item-grid {
   display: grid;
   grid-template-columns: 1fr 0.1fr; /* Two evenly spaced columns */
 }
 
-/* Padding for the last row of the modal */
 .message-row-item:nth-child(4) {
   margin-top: auto;
   margin-bottom: calc(0rem + 1vw);
 }
 
-/* Focus styles for textarea */
 .message-row-item-textarea:focus {
   border-color: #ffd363; /* Gold border on focus */
   box-shadow: 0 6px 10px rgba(255, 211, 99, 0.5); /* Gold shadow on focus */
 }
 
-/* Focus styles for email input */
 .message-email-input:focus {
   border-color: #ffd363; /* Gold border on focus */
   box-shadow: 0 6px 10px rgba(255, 211, 99, 0.5); /* Gold shadow on focus */

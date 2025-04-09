@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
+/**
+ * CardController interface
+ */
 public interface CardController {
     ResponseEntity<Card> getCardById(@PathVariable String id);
 

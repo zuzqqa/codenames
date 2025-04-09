@@ -11,29 +11,41 @@ import settingsIcon from "../../assets/icons/settings.png";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
-// Define the type for props passed to the JoinGame component
+/**
+ * Props type definition for the JoinGame component.
+ */
 interface JoinGameProps {
   setVolume: (volume: number) => void; // Function to set global volume
   soundFXVolume: number; // Current sound effects volume level
   setSoundFXVolume: (volume: number) => void; // Function to set sound effects volume
 }
 
+/**
+ * Represents a user in a game session.
+ */
 interface User {
   userId: string;
   username: string;
 }
 
+/**
+ * Enumeration of possible game session statuses.
+ */
 enum SessionStatus {
   CREATED = "CREATED",
   IN_PROGRESS = "IN_PROGRESS",
   FINISHED = "FINISHED",
 }
 
+/**
+ * Represents a game session.
+ */
 interface GameSession {
   status: SessionStatus;
   sessionId: string;
   gameName: string;
   maxPlayers: number;
+  password: string;
   durationOfTheRound: string;
   timeForGuessing: string;
   timeForAHint: string;
@@ -41,6 +53,12 @@ interface GameSession {
   connectedUsers: User[][]; 
 }
 
+/**
+ * JoinGame component that allows users to browse and join active game sessions.
+ *
+ * @param {JoinGameProps} props - Component props.
+ * @returns {JSX.Element} The rendered JoinGame component.
+ */
 const JoinGame: React.FC<JoinGameProps> = ({
   setVolume,
   soundFXVolume,
@@ -51,6 +69,10 @@ const JoinGame: React.FC<JoinGameProps> = ({
   const [gameSessions, setGameSessions] = useState<GameSession[]>([]);
   const [filteredGames, setFilteredGames] = useState<GameSession[]>([]);
 
+  /**
+   * Fetches the list of available game sessions on component mount.
+   * Also establishes a WebSocket connection for real-time updates.
+   */
   useEffect(() => {
     getGames();
 
@@ -81,6 +103,10 @@ const JoinGame: React.FC<JoinGameProps> = ({
     };
   }, []);
 
+  /**
+   * Fetches all available game sessions from the backend.
+   * Only sessions in the "CREATED" state are stored.
+   */
   const getGames = () => {
     fetch("http://localhost:8080/api/game-session/all")
       .then((response) => response.json())
@@ -96,6 +122,9 @@ const JoinGame: React.FC<JoinGameProps> = ({
       });
   };
 
+  /**
+   * Toggles the visibility of the settings modal.
+   */
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
@@ -103,12 +132,10 @@ const JoinGame: React.FC<JoinGameProps> = ({
   return (
     <>
       <BackgroundContainer>
-        {/* Settings button */}
         <Button variant="circle" soundFXVolume={soundFXVolume}>
           <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
         </Button>
 
-        {/* Settings modal */}
         <SettingsModal
           isOpen={isSettingsOpen}
           onClose={toggleSettings}

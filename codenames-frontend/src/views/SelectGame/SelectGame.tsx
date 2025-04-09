@@ -19,14 +19,25 @@ import {logout} from "../../shared/utils.tsx";
 import Cookies from 'js-cookie';
 import logoutButton from "../../assets/icons/logout.svg";
 
-// Defining the props interface for the SelectGame component
+/**
+ * Props for the SelectGame component.
+ * @typedef {Object} SelectGameProps
+ * @property {function(number): void} setVolume - Function to set the global volume.
+ * @property {number} soundFXVolume - Current sound effect volume level.
+ * @property {function(number): void} setSoundFXVolume - Function to set the sound effect volume.
+ */
 interface SelectGameProps {
-  setVolume: (volume: number) => void; // Function to set the global volume
-  soundFXVolume: number; // Current sound effect volume level
-  setSoundFXVolume: (volume: number) => void; // Function to set the sound effect volume
+  setVolume: (volume: number) => void;
+  soundFXVolume: number;
+  setSoundFXVolume: (volume: number) => void;
 }
 
-// Main SelectGame component definition
+/**
+ * SelectGame component allows users to create or join a game.
+ *
+ * @param {SelectGameProps} props - Component properties.
+ * @returns {JSX.Element} The rendered SelectGame component.
+ */
 const SelectGame: React.FC<SelectGameProps> = ({
   setVolume,
   soundFXVolume,
@@ -38,11 +49,18 @@ const SelectGame: React.FC<SelectGameProps> = ({
 
   const navigate = useNavigate(); // Hook for navigation
 
-  // Toggles the settings modal visibility
+  /**
+   * Toggles the settings modal visibility.
+   */
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
 
+  /**
+   * Updates the music volume both locally and globally.
+   *
+   * @param {number} volume - The new music volume level.
+   */
   const updateMusicVolume = (volume: number) => {
     setMusicVolume(volume);
     setVolume(volume); // Update global volume

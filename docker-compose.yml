@@ -12,6 +12,8 @@ services:
         - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
         - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
         - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+        - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+        - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
 
       volumes:
         - ./codenames-backend:/opt/codenames-backend
@@ -26,7 +28,7 @@ services:
       - "5173:5173"
     volumes:
       - ./codenames-frontend:/app
-      - /app/node_modules 
+      - /app/node_modules
     command: ["npm", "run", "dev", "--", "--host"]
     depends_on:
       - backend

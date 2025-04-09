@@ -12,6 +12,9 @@ import BackgroundImg from "../../assets/images/main-page-container.png";
 
 import "./SettingsModal.css";
 
+/**
+ * Props interface for the SettingsModal component.
+ */
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -21,6 +24,15 @@ interface SettingsModalProps {
   setSoundFXVolume: (volume: number) => void;
 }
 
+/**
+ * SettingsModal Component
+ *
+ * A modal that allows users to adjust settings such as music volume,
+ * sound effects volume, language preferences, and help messages.
+ *
+ * @param {SettingsModalProps} props - The properties that define the SettingsModal component.
+ * @returns {JSX.Element | null} The rendered settings modal or null if not open.
+ */
 const SettingsModal: React.FC<SettingsModalProps> = ({
   isOpen,
   onClose,
@@ -33,22 +45,28 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false); // Manage visibility of MessageModal
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false); // Manage visibility of ConfirmationModal
 
-  // Handle closing all modals, ensuring state consistency
-  const handleCloseAllModals = () => {
+   /**
+   * Closes all modals, including the settings, message, and confirmation modals.
+   */
+    const handleCloseAllModals = () => {
     setIsMessageModalOpen(false); 
     setIsConfirmationModalOpen(false);
-    onClose(); // Close settings modal
+    onClose(); 
   };
 
-  // Open Message Modal
+  /**
+   * Opens the message modal.
+   */
   const openMessageModal = () => {
     setIsMessageModalOpen(true);
   };
 
-  // Close Confirmation Modal and also close Message Modal
+  /**
+   * Closes the confirmation modal and ensures the message modal is also closed.
+   */
   const closeConfirmationModal = () => {
     setIsConfirmationModalOpen(false);
-    setIsMessageModalOpen(false); // Ensure MessageModal is closed when ConfirmationModal is closed
+    setIsMessageModalOpen(false); 
   };
 
   if (!isOpen) return null;

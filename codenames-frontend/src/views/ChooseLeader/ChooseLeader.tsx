@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {data, useNavigate} from "react-router-dom"; // Hook for programmatic navigation
+import { data, useNavigate } from "react-router-dom"; // Hook for programmatic navigation
 import { useTranslation } from "react-i18next"; // Hook for translations
 
 import BackgroundContainer from "../../containers/Background/Background";
@@ -16,24 +16,53 @@ import SockJS from "sockjs-client";
 import { formatTime } from "../../shared/utils";
 import "./ChooseLeader.css";
 
-// Define the type for props passed to the Gameplay component
+/**
+ * Props for the ChooseLeader component.
+ * @typedef {Object} ChooseLeaderProps
+ * @property {function(number): void} setVolume - Function to set global volume.
+ * @property {number} soundFXVolume - Current sound effects volume level.
+ * @property {function(number): void} setSoundFXVolume - Function to set sound effects volume.
+ */
 interface ChooseLeaderProps {
   setVolume: (volume: number) => void; // Function to set global volume
   soundFXVolume: number; // Current sound effects volume level
   setSoundFXVolume: (volume: number) => void; // Function to set sound effects volume
 }
 
+/**
+ * User object structure.
+ * @typedef {Object} User
+ * @property {string} id - Unique identifier of the user.
+ * @property {string} username - Username of the user.
+ */
 interface User {
   id: string;
   username: string;
 }
 
+/**
+ * Enum for session statuses.
+ * @enum {string}
+ */
 enum SessionStatus {
   CREATED = "CREATED",
   IN_PROGRESS = "IN_PROGRESS",
   FINISHED = "FINISHED",
 }
 
+/**
+ * Game session object structure.
+ * @typedef {Object} GameSession
+ * @property {SessionStatus} status - Current status of the game session.
+ * @property {string} sessionId - Unique identifier of the game session.
+ * @property {string} gameName - Name of the game session.
+ * @property {number} maxPlayers - Maximum number of players allowed.
+ * @property {string} durationOfTheRound - Duration of a round in the game.
+ * @property {string} timeForAHint - Time allocated for giving hints.
+ * @property {string} timeForGuessing - Time allocated for guessing.
+ * @property {User[][]} connectedUsers - Array of users in different teams.
+ * @property {number} votingStartTime - Timestamp when voting started.
+ */
 interface GameSession {
   status: SessionStatus;
   sessionId: string;
@@ -46,7 +75,16 @@ interface GameSession {
   votingStartTime: number;
 }
 
-// Main component definition
+/**
+ * ChooseLeader Component
+ *
+ * This component allows users to vote for a team leader during a game session.
+ * It includes a countdown timer, WebSocket communication for real-time updates,
+ * and an interactive UI for selecting and voting for a leader.
+ *
+ * @param {ChooseLeaderProps} props - The component props.
+ * @returns {JSX.Element} The ChooseLeader component.
+ */
 const ChooseLeader: React.FC<ChooseLeaderProps> = ({
   setVolume,
   soundFXVolume,
@@ -55,7 +93,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [selectedPlayer, setSelectedPlayer] = useState<User | null>(null);
-  const timeForVoting = 10 // Time for voting in seconds
+  const timeForVoting = 10; // Time for voting in seconds
   const [votingStartTime, setVotingStartTime] = useState<number>(Date.now()); // Voting start time
   const [timeLeft, setTimeLeft] = useState(timeForVoting); // Timer state (2 minutes = 120 seconds)
   const navigate = useNavigate(); // Hook for navigation
@@ -110,7 +148,9 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
 
     const timer = setInterval(() => {
       const currentTime = new Date().getTime();
-      setTimeLeft(timeForVoting - Math.round((currentTime - votingStartTime)/1000))
+      setTimeLeft(
+        timeForVoting - Math.round((currentTime - votingStartTime) / 1000)
+      );
     }, 1000);
 
     // WebSocket connection using SockJS and STOMP
@@ -140,12 +180,18 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     };
   }, [timeLeft, navigate]);
 
+  /**
+   * Ends the voting phase and assigns leaders.
+   * @async
+   */
   const endPool = async () => {
     const storedGameId = localStorage.getItem("gameId");
 
     if (storedGameId) {
       await fetch(
-        `http://localhost:8080/api/game-session/${storedGameId}/assign-leaders?language=${localStorage.getItem('i18nextLng') || 'en'}`, 
+        `http://localhost:8080/api/game-session/${storedGameId}/assign-leaders?language=${
+          localStorage.getItem("i18nextLng") || "en"
+        }`,
         {
           method: "GET",
           credentials: "include",
@@ -158,10 +204,17 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     navigate("/gameplay");
   };
 
+  /**
+   * Toggles the settings modal visibility.
+   */
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
 
+  /**
+   * Handles the player selection for voting.
+   * @param {User} player - The selected player.
+   */
   const handlePlayerClick = (player: User) => {
     if (myTeam === "red" && redTeamPlayers.includes(player))
       setSelectedPlayer(player);
@@ -170,6 +223,10 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     return;
   };
 
+  /**
+   * Sends the vote for a selected player.
+   * @async
+   */
   const send_vote = async () => {
     const storedGameId = localStorage.getItem("gameId");
 

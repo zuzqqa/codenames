@@ -2,6 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
+/**
+ * Custom React hook for handling WebSocket connections using STOMP.
+ * 
+ * @param {string | null} gameId - The unique identifier for the game session.
+ * @returns {any} - The latest message received from the WebSocket connection.
+ */
 export const useWebSocket = (gameId: string | null) => {
   const [messages, setMessages] = useState<any>(null);
   const stompClientRef = useRef<Client | null>(null);

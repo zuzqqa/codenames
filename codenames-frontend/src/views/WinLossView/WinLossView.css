@@ -18,11 +18,7 @@
   position: absolute;
   width: 50%;
   height: 2px;
-  background-image: linear-gradient(
-    to right,
-    #fcf18b,
-    #ffd363
-  ); 
+  background-image: linear-gradient(to right, #fcf18b, #ffd363);
   border: 0;
   margin-top: 10px;
   margin-bottom: 10px;
@@ -46,7 +42,7 @@
 }
 
 .blurred-rectangle.defeat {
-  background: #000F23;
+  background: #000f23;
 }
 
 .character-image-start img {
