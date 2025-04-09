@@ -19,8 +19,6 @@ public interface UserService {
 
     Optional<User> updateUser(String id, User updatedUser);
 
-    void deleteUserById(String id);
-
     void activateUser(String username);
 
     boolean isAccountActivated(String username);
