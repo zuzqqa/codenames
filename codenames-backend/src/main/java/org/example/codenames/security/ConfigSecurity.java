@@ -74,7 +74,7 @@ public class ConfigSecurity {
                                 "/api/users/getUsername", "/api/users/createGuest", "/api/users/username/**",
                                 "/api/email/send-report", "/api/game-session/create", "/api/game-session/**",
                                 "/api/game-state/**", "/api/cards/**",
-                                "/api/users/activate/**", "/api/email/reset-password", "/api/email/reset-password/**",
+                                "/api/users/activate/**", "/api/email/reset-password", "/api/email/reset-password/**"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/email/send-report",
