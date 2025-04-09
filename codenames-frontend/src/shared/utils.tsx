@@ -15,7 +15,9 @@ export const logout = async () => {
     });
 
     if (response.ok) {
-      document.cookie = `loggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+      localStorage.removeItem("userId");
+      localStorage.removeItem("gameId");
+
       window.location.href = "/loading";
     } else {
       const error = await response.text();
@@ -34,6 +36,7 @@ export const logout = async () => {
 export function formatTime(seconds: number) {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
+  
   return `${String(minutes).padStart(2, "0")}:${String(
     remainingSeconds
   ).padStart(2, "0")}`;

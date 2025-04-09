@@ -11,5 +11,8 @@ import java.io.IOException;
  * Email controller interface.
  */
 public interface EmailController {
+
     ResponseEntity<String> sendEmail(@RequestBody EmailRequest request, String language) throws MessagingException, IOException;
+
+    public ResponseEntity<String> sendResetPasswordEmail(@RequestBody EmailRequest request, String language) throws MessagingException, IOException;
 }

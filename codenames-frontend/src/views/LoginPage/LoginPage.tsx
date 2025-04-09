@@ -268,12 +268,11 @@ const LoginPage: React.FC<LoginProps> = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify(userData),
-          credentials: "include", // Include cookies in the request
+          credentials: "include", 
         }
       );
 
       if (response.ok) {
-        document.cookie = "loggedIn=true";
         window.location.href = "/loading";
       } else if (response.status === 401) {
         newErrors.push({
@@ -381,6 +380,9 @@ const LoginPage: React.FC<LoginProps> = ({
               <span className="button-text">{t("submit-button")}</span>
             </Button>
           </form>
+         <Button type="button" variant="small" onClick={() => navigate("/send-reset-password")} soundFXVolume={soundFXVolume}>
+               <span>{ t('forgot-password-text') }</span>
+                    </Button>
           <div className="or-container">
             <div className="gold-line"></div>
             <span className="or-text">{t("or")}</span>

@@ -2,7 +2,6 @@ package org.example.codenames.user.controller.impl;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -10,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.codenames.jwt.JwtService;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.controller.api.UserController;
+import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.api.UserService;
 import org.example.codenames.userDetails.AuthRequest;
 
@@ -31,7 +31,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 
-import com.github.javafaker.Faker;
+import static org.example.codenames.util.CookieUtils.createAuthCookie;
+import static org.example.codenames.util.CookieUtils.createLoggedInCookie;
 
 /**
  * Default implementation of the {@link UserController} interface.
@@ -85,7 +86,7 @@ public class DefaultUserController implements UserController {
         }
 
         if (user.isGuest() || Objects.equals(user.getRoles(), "ROLE_ADMIN")) {
-            response.addCookie(setAuthCookie(token, true));
+            response.addCookie(createAuthCookie(token, true));
         }
 
         return ResponseEntity.ok().build();
@@ -181,18 +182,23 @@ public class DefaultUserController implements UserController {
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
             );
             if (authentication.isAuthenticated()) {
-                if(!userService.isAccountActivated(authRequest.getUsername())){
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Konto nie jest aktywne. Sprawdź e-mail i aktywuj swoje konto.");
-                }
 
+                if(!userService.isAccountActivated(authRequest.getUsername())){
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("The account is not active. Check your email and activate your account.");
+                }
+              
                 String token = jwtService.generateToken(authRequest.getUsername());
-                response.addCookie(setAuthCookie(token, true));
+
+                response.addCookie(createAuthCookie(token, true));
+                response.addCookie(createLoggedInCookie(true));
 
                 return ResponseEntity.ok().build();
             } else {
+                System.out.println("I am not authenticated");
                 throw new UsernameNotFoundException("Invalid username or password");
             }
         } catch (Exception e) {
+            System.out.println("I am in the exception");
             throw new UsernameNotFoundException("Invalid username or password");
         }
     }
@@ -205,15 +211,8 @@ public class DefaultUserController implements UserController {
      */
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("authToken", null);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false); // Set true for https
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-
-        Cookie authCookie = setAuthCookie(null, false);
-
-        response.addCookie(authCookie);
+        response.addCookie(createAuthCookie(null, false));
+        response.addCookie(createLoggedInCookie(false));
 
         return ResponseEntity.ok().build();
     }
@@ -229,6 +228,7 @@ public class DefaultUserController implements UserController {
         if (token == null) {
             return ResponseEntity.ok("null");
         }
+
         return ResponseEntity.ok(jwtService.getUsernameFromToken(token));
     }
 
@@ -245,6 +245,7 @@ public class DefaultUserController implements UserController {
         }
         String username = jwtService.getUsernameFromToken(token);
         Optional<User> user = userService.getUserByUsername(username);
+
         return user.map(User::getId).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
@@ -267,26 +268,17 @@ public class DefaultUserController implements UserController {
 
         userService.createUser(guest);
 
-        System.out.println(username);
-
         String token = jwtService.generateToken(guest.getUsername());
-        response.addCookie(setAuthCookie(token, true));
+
+        response.addCookie(createAuthCookie(token, true));
+        response.addCookie(createLoggedInCookie(true));
 
         return ResponseEntity.ok().build();
     }
 
-    // TODO: Move this to a utility class
-    private Cookie setAuthCookie(String token, boolean loggingIn) {
-        Cookie cookie = new Cookie("authToken", token);
-        // cookie.setHttpOnly(true); this bullshit unables me to read the cookie in the frontend        That was the point since we don't want to expose the token to JavaScript
-        cookie.setSecure(false); // Set to true for https
-        cookie.setPath("/");
-        if (loggingIn) {
-            cookie.setMaxAge(36000);
-        }
-        else {
-            cookie.setMaxAge(0);
-        }
-        return cookie;
+    @PostMapping("/reset-password/{uuid}")
+    public ResponseEntity<Void> updatePassword(@PathVariable String uuid, @RequestBody String password) {
+        userService.resetPassword(uuid, password);
+        return ResponseEntity.ok().build();
     }
 }

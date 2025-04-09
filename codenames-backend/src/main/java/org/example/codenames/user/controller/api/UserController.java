@@ -38,4 +38,6 @@ public interface UserController {
     ResponseEntity<String> getUsernameByToken(String token);
 
     ResponseEntity<String> getIdByToken(String token);
+
+    ResponseEntity<Void> updatePassword(String uuid, String password);
 }

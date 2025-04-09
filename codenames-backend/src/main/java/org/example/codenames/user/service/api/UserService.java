@@ -19,11 +19,15 @@ public interface UserService {
 
     Optional<User> updateUser(String id, User updatedUser);
 
-    void deleteUserById(String id);
-
     void activateUser(String username);
 
     boolean isAccountActivated(String username);
 
     String generateUniqueUsername();
+
+    void updateServiceId(String email, String serviceId);
+
+    void resetPassword(String uuid, String password);
+
+    void deleteUserById(String id);
 }

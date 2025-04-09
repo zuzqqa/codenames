@@ -140,10 +140,8 @@ const Home: React.FC<HomeProps> = ({
                   </Button>
                 </div>
               </div>
-              {/* Decorative gold bar */}
               <div className="gold-bar"></div>
               <div className="second-column">
-                {/* Option to play as a guest */}
                 <Button
                   variant="primary"
                   onClick={async () => {
@@ -157,7 +155,6 @@ const Home: React.FC<HomeProps> = ({
                       );
 
                       if (response.ok) {
-                        Cookies.set("loggedIn", "true", { path: "/" });
                         window.location.href = "/loading";
                       } else {
                         console.error("Failed to create guest account");
