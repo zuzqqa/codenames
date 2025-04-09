@@ -39,8 +39,7 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
     const { t } = useTranslation();
     const navigate = useNavigate();
     const params = new URLSearchParams(location.search);
-    const serviceId = params.get('id');
-
+    const token = params.get('token');
 
     const handlePasswordRepeatChange = (e: ChangeEvent<HTMLInputElement>) => {
         setPasswordRepeat(e.target.value);
@@ -71,14 +70,13 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
                 alert("Passwords do not match!");
                 return;
             }
-            console.log("Resetting password for service ID: " + serviceId);
-            console.log("New password: " + password);
-            const response = await fetch("http://localhost:8080/api/users/reset-password/" + serviceId, {
+
+            const response = await fetch("http://localhost:8080/api/users/reset-password/" + token, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(password)
+                body: JSON.stringify({password: password})
             });
 
             if (response.ok) {

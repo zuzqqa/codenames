@@ -7,9 +7,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 import org.example.codenames.jwt.JwtService;
+import org.example.codenames.user.entity.PasswordResetRequest;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.controller.api.UserController;
-import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.api.UserService;
 import org.example.codenames.userDetails.AuthRequest;
 
@@ -177,6 +177,7 @@ public class DefaultUserController implements UserController {
      */
     @PostMapping("/authenticate")
     public ResponseEntity<String> authenticateAndSetCookie(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
+        System.out.println(authRequest.getPassword());
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
@@ -198,7 +199,7 @@ public class DefaultUserController implements UserController {
                 throw new UsernameNotFoundException("Invalid username or password");
             }
         } catch (Exception e) {
-            System.out.println("I am in the exception");
+            System.out.println(e.getMessage());
             throw new UsernameNotFoundException("Invalid username or password");
         }
     }
@@ -276,9 +277,10 @@ public class DefaultUserController implements UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/reset-password/{uuid}")
-    public ResponseEntity<Void> updatePassword(@PathVariable String uuid, @RequestBody String password) {
-        userService.resetPassword(uuid, password);
+    @PostMapping("/reset-password/{token}")
+    public ResponseEntity<Void> updatePassword(@PathVariable String token, @RequestBody PasswordResetRequest passwordResetRequest) {
+        userService.resetPassword(token, passwordResetRequest.getPassword());
+
         return ResponseEntity.ok().build();
     }
 }

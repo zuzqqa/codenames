@@ -2,6 +2,7 @@ package org.example.codenames.user.controller.api;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.codenames.user.entity.PasswordResetRequest;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.userDetails.AuthRequest;
 import org.springframework.http.ResponseEntity;
@@ -39,5 +40,5 @@ public interface UserController {
 
     ResponseEntity<String> getIdByToken(String token);
 
-    ResponseEntity<Void> updatePassword(String uuid, String password);
+    ResponseEntity<Void> updatePassword(String uuid, PasswordResetRequest passwordResetRequest);
 }

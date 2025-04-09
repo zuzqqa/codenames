@@ -268,7 +268,7 @@ const LoginPage: React.FC<LoginProps> = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify(userData),
-          credentials: "include", 
+          credentials: "include",
         }
       );
 
@@ -372,6 +372,16 @@ const LoginPage: React.FC<LoginProps> = ({
                 </Button>
               }
             />
+            <div
+              className="reset-password"
+            >
+              <a
+                className="reset-password-link"
+                onClick={() => navigate("/send-reset-password")}
+              >
+                {t("forgot-password-text")}
+              </a>
+            </div>
             <Button
               type="submit"
               variant="primary"
@@ -380,9 +390,6 @@ const LoginPage: React.FC<LoginProps> = ({
               <span className="button-text">{t("submit-button")}</span>
             </Button>
           </form>
-         <Button type="button" variant="small" onClick={() => navigate("/send-reset-password")} soundFXVolume={soundFXVolume}>
-               <span>{ t('forgot-password-text') }</span>
-                    </Button>
           <div className="or-container">
             <div className="gold-line"></div>
             <span className="or-text">{t("or")}</span>

@@ -5,18 +5,23 @@ import jakarta.mail.internet.MimeMessage;
 import org.example.codenames.email.entity.EmailRequest;
 import org.example.codenames.email.service.api.EmailService;
 
+import org.example.codenames.jwt.JwtService;
+import org.example.codenames.user.entity.User;
+import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -27,16 +32,22 @@ import java.util.UUID;
 public class DefaultEmailService implements EmailService {
     private final JavaMailSender mailSender;
     private final UserService userService;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
 
     /**
      * Constructs a DefaultEmailService with the specified JavaMailSender.
      *
      * @param mailSender the JavaMailSender instance for sending emails
+     * @param
+     * @param
      */
     @Autowired
-    public DefaultEmailService(JavaMailSender mailSender, UserService userService) {
+    public DefaultEmailService(JavaMailSender mailSender, UserService userService, UserRepository userRepository, JwtService jwtService) {
         this.mailSender = mailSender;
         this.userService = userService;
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
     }
 
     /**
@@ -88,7 +99,6 @@ public class DefaultEmailService implements EmailService {
     }
 
     public void sendResetPasswordEmail(String userEmail, String language) throws MessagingException, IOException {
-
         ClassPathResource resource;
 
         if (userEmail == null) {
@@ -106,17 +116,21 @@ public class DefaultEmailService implements EmailService {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
 
+        Optional<User> userOptional = userRepository.findByEmail(userEmail);
 
-        UUID uuid = UUID.randomUUID();
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            String token = jwtService.generateToken(user.getUsername());
 
-        userService.updateServiceId(userEmail, uuid.toString());
+            String resetLink = "http://localhost:5173/reset-password?token=" + token;
 
-        String resetLink = "http://localhost:5173/reset-password?id=" + uuid;
-
-        htmlContent = htmlContent.replace("{{reset_link}}", resetLink);
-        helper.setTo(userEmail);
-        helper.setSubject("Password Reset Request");
-        helper.setText(htmlContent, true);
-        mailSender.send(mimeMessage);
+            htmlContent = htmlContent.replace("{{reset_link}}", resetLink);
+            helper.setTo(userEmail);
+            helper.setSubject("Password Reset Request");
+            helper.setText(htmlContent, true);
+            mailSender.send(mimeMessage);
+        } else {
+            throw new UsernameNotFoundException("User not found with email: " + userEmail);
+        }
     }
 }

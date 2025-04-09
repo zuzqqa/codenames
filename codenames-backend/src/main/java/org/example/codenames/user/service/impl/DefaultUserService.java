@@ -2,6 +2,7 @@ package org.example.codenames.user.service.impl;
 
 import com.github.javafaker.Faker;
 
+import org.example.codenames.jwt.JwtService;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.api.UserService;
@@ -29,6 +30,7 @@ public class DefaultUserService implements UserService {
      * preventing storage of plain-text passwords.
      */
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     /**
      * Constructs a new DefaultUserService with the given user repository and password encoder.
@@ -37,9 +39,10 @@ public class DefaultUserService implements UserService {
      * @param passwordEncoder the password encoder
      */
     @Autowired
-    public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     /**
@@ -135,16 +138,14 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
-    public void resetPassword(String uuid, String password) {
-        userRepository.findByResetId(uuid)
+    public void resetPassword(String token, String password) {
+        String username = jwtService.getUsernameFromToken(token);
+        userRepository.findByUsername(username)
                 .ifPresent(user -> {
-                    System.out.println(user.getUsername());
-                    System.out.println("New password: " + password);
+                    System.out.println("Received raw password: " + password);
+                    System.out.println("Password length: " + password.length());
                     String encodedPassword = passwordEncoder.encode(password);
-                    System.out.println("New encoded password: " + encodedPassword);
                     user.setPassword(encodedPassword);
-                    System.out.println("User password: " + user.getPassword());
-                    user.setResetId(null);
                     userRepository.save(user);
                 });
     }

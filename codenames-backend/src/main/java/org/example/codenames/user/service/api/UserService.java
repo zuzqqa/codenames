@@ -25,8 +25,6 @@ public interface UserService {
 
     String generateUniqueUsername();
 
-    void updateServiceId(String email, String serviceId);
-
     void resetPassword(String uuid, String password);
 
     void deleteUserById(String id);
