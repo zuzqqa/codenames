@@ -119,11 +119,34 @@ public class DefaultUserService implements UserService {
     @Override
     public Optional<User> updateUser(String id, User updatedUser) {
         return Optional.ofNullable(userRepository.findById(id)
-                .map(user -> {
+                                   .map(user -> {
                     user.setUsername(updatedUser.getUsername());
                     user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
                     return userRepository.save(user);
                 }).orElseThrow(() -> new IllegalArgumentException("User not found")));
+    }
+
+    public void updateServiceId(String email, String serviceId) {
+        userRepository.findByUsername(email)
+                .ifPresent(user -> {
+                    user.setResetId(serviceId);
+                    userRepository.save(user);
+                });
+    }
+
+    @Override
+    public void resetPassword(String uuid, String password) {
+        userRepository.findByResetId(uuid)
+                .ifPresent(user -> {
+                    System.out.println(user.getUsername());
+                    System.out.println("New password: " + password);
+                    String encodedPassword = passwordEncoder.encode(password);
+                    System.out.println("New encoded password: " + encodedPassword);
+                    user.setPassword(encodedPassword);
+                    System.out.println("User password: " + user.getPassword());
+                    user.setResetId(null);
+                    userRepository.save(user);
+                });
     }
 
     /**

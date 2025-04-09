@@ -50,7 +50,9 @@ public class User {
      */
     private String email;
 
-    /**
+    private String resetId;
+
+     /**
      * The roles for the user.
      */
     private String roles;

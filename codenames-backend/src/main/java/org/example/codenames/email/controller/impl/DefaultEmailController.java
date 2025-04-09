@@ -50,4 +50,10 @@ public class DefaultEmailController implements EmailController {
         emailService.sendConfirmationEmail(request.getEmail(), language);
         return ResponseEntity.ok("");
     }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> sendResetPasswordEmail(@RequestBody EmailRequest request, String language) throws MessagingException, IOException {
+        emailService.sendResetPasswordEmail(request.getEmail(), language);
+        return ResponseEntity.ok("");
+    }
 }

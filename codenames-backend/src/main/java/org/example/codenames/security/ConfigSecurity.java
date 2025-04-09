@@ -70,9 +70,11 @@ public class ConfigSecurity {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
-                                "/api/users", "/api/users/authenticate", "/api/users/getId",
+                                "/api/users", "/api/users/authenticate", "/api/users/getId", "/api/users/reset-password/**",
                                 "/api/users/getUsername", "/api/users/createGuest", "/api/users/username/**",
-                                "/api/users/activate/**"
+                                "/api/email/send-report", "/api/game-session/create", "/api/game-session/**",
+                                "/api/game-state/**", "/api/cards/**",
+                                "/api/users/activate/**", "/api/email/reset-password", "/api/email/reset-password/**",
                         ).permitAll()
                         .requestMatchers(
                                 "/api/email/send-report",
@@ -83,6 +85,7 @@ public class ConfigSecurity {
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .authenticationProvider(authenticationProvider())
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService()))

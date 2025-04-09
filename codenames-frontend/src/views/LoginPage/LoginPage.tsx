@@ -380,6 +380,9 @@ const LoginPage: React.FC<LoginProps> = ({
               <span className="button-text">{t("submit-button")}</span>
             </Button>
           </form>
+         <Button type="button" variant="small" onClick={() => navigate("/send-reset-password")} soundFXVolume={soundFXVolume}>
+               <span>{ t('forgot-password-text') }</span>
+                    </Button>
           <div className="or-container">
             <div className="gold-line"></div>
             <span className="or-text">{t("or")}</span>

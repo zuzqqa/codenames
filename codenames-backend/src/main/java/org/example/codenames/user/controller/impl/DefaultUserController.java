@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.codenames.jwt.JwtService;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.controller.api.UserController;
+import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.api.UserService;
 import org.example.codenames.userDetails.AuthRequest;
 
@@ -181,10 +182,11 @@ public class DefaultUserController implements UserController {
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
             );
             if (authentication.isAuthenticated()) {
+
                 if(!userService.isAccountActivated(authRequest.getUsername())){
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("The account is not active. Check your email and activate your account.");
                 }
-
+              
                 String token = jwtService.generateToken(authRequest.getUsername());
 
                 response.addCookie(createAuthCookie(token, true));
@@ -192,9 +194,11 @@ public class DefaultUserController implements UserController {
 
                 return ResponseEntity.ok().build();
             } else {
+                System.out.println("I am not authenticated");
                 throw new UsernameNotFoundException("Invalid username or password");
             }
         } catch (Exception e) {
+            System.out.println("I am in the exception");
             throw new UsernameNotFoundException("Invalid username or password");
         }
     }
@@ -269,6 +273,12 @@ public class DefaultUserController implements UserController {
         response.addCookie(createAuthCookie(token, true));
         response.addCookie(createLoggedInCookie(true));
 
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/reset-password/{uuid}")
+    public ResponseEntity<Void> updatePassword(@PathVariable String uuid, @RequestBody String password) {
+        userService.resetPassword(uuid, password);
         return ResponseEntity.ok().build();
     }
 }

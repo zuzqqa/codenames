@@ -29,4 +29,5 @@ public interface EmailService {
      * @throws IOException If an error occurs while reading the email template.
      */
     void sendConfirmationEmail(String userEmail, String language) throws MessagingException, IOException;
+    void sendResetPasswordEmail(String userEmail, String language) throws MessagingException, IOException;
 }
