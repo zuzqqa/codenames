@@ -2,12 +2,12 @@ package org.example.codenames.email.service.api;
 
 import jakarta.mail.MessagingException;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.example.codenames.email.entity.EmailRequest;
 
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.UUID;
 
 /**
  * Service interface for handling email-related operations.
@@ -18,5 +18,5 @@ public interface EmailService {
 
     void sendConfirmationEmail(String userEmail, String language) throws MessagingException, IOException;
 
-    void sendResetPasswordEmail(String userId, String language) throws MessagingException, IOException;
+    void sendResetPasswordEmail(String userEmail, HttpServletRequest request, String language) throws MessagingException, IOException;
 }

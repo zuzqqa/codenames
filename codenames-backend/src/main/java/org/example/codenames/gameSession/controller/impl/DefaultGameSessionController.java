@@ -41,10 +41,10 @@ public class DefaultGameSessionController implements GameSessionController {
      *
      * @param gameSessionService The GameSessionService instance used to interact with the game session repository
      * @param gameSessionRepository The GameSessionRepository instance used to interact with the game session database
-     * @param messagingTemplate The SimpMessagingTemplate instance used to send messages to connected clients
+     * @param gameStateService The GameStateService instance used to interact with the game session repository
      */
     @Autowired
-    public DefaultGameSessionController(GameSessionService gameSessionService, GameSessionRepository gameSessionRepository, SimpMessagingTemplate messagingTemplate, GameStateService gameStateService) {
+    public DefaultGameSessionController(GameSessionService gameSessionService, GameSessionRepository gameSessionRepository, GameStateService gameStateService) {
         this.gameSessionService = gameSessionService;
         this.gameSessionRepository = gameSessionRepository;
         this.gameStateService = gameStateService;

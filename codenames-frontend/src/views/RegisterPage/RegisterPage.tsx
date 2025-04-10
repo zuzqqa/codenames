@@ -1,24 +1,27 @@
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate, useLocation } from "react-router-dom";
+import Cookies from "js-cookie";
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 
-import "../../styles/App.css";
-import "./RegisterPage.css";
-
-import BackgroundContainer from "../../containers/Background/Background";
-import Button from "../../components/Button/Button";
-import FormInput from "../../components/FormInput/FormInput";
-import TitleComponent from "../../components/Title/Title";
+import BackgroundContainer from "../../containers/Background/Background.tsx";
+import Button from "../../components/Button/Button.tsx";
+import FormInput from "../../components/FormInput/FormInput.tsx";
+import TitleComponent from "../../components/Title/Title.tsx";
 import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister.tsx";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar.tsx";
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
+
 import settingsIcon from "../../assets/icons/settings.png";
 import eyeIcon from "../../assets/icons/eye.svg";
 import eyeSlashIcon from "../../assets/icons/eye-slash.svg";
 import logoutButton from "../../assets/icons/logout.svg";
+
 import { logout } from "../../shared/utils.tsx";
-import { useNavigate, useLocation } from "react-router-dom";
-import Cookies from "js-cookie";
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import { validateEmail, validateUsername, validatePassword } from "../../utils/validation.tsx";
+
+import "../../styles/App.css";
+import "./RegisterPage.css";
 
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -246,42 +249,6 @@ const RegisterPage: React.FC<RegisterProps> = ({
       }, 500);
     }
   };
-
-  /**
-   * Validates the email format.
-   *
-   * @param {string} email - The email string to validate.
-   * @returns {boolean} True if the email is valid, otherwise false.
-   */
-  const validateEmail = (email: string): boolean =>
-    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i.test(email);
-
-  /**
-   * Validates the username format.
-   *
-   * - Only allows alphanumeric characters.
-   * - Ensures the username is not empty.
-   *
-   * @param {string} username - The username string to validate.
-   * @returns {boolean} True if the username is valid, otherwise false.
-   */
-  const validateUsername = (username: string): boolean =>
-    /^[a-zA-Z0-9]+$/.test(username) && username.length > 0;
-
-  /**
-   * Validates the password format.
-   *
-   * - Must contain at least one uppercase letter.
-   * - Must contain at least one lowercase letter.
-   * - Must contain at least one number.
-   * - Must contain at least one special character.
-   * - Must be at least 8 characters long.
-   *
-   * @param {string} password - The password string to validate.
-   * @returns {boolean} True if the password meets the criteria, otherwise false.
-   */
-  const validatePassword = (password: string): boolean =>
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
 
   /**
    * Handles form submission for user registration.

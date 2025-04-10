@@ -2,27 +2,22 @@ package org.example.codenames.email.service.impl;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.example.codenames.email.entity.EmailRequest;
 import org.example.codenames.email.service.api.EmailService;
 
-import org.example.codenames.jwt.JwtService;
-import org.example.codenames.user.entity.User;
-import org.example.codenames.user.repository.api.UserRepository;
-import org.example.codenames.user.service.api.UserService;
+import org.example.codenames.passwordResetToken.service.api.PasswordResetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Default implementation of the EmailService interface.
@@ -30,30 +25,30 @@ import java.util.UUID;
  */
 @Service
 public class DefaultEmailService implements EmailService {
+    /**
+     * Service for sending emails through JavaMail.
+     */
     private final JavaMailSender mailSender;
-    private final UserService userService;
-    private final UserRepository userRepository;
-    private final JwtService jwtService;
+
+
+    private final PasswordResetService passwordResetService;
 
     /**
-     * Constructs a DefaultEmailService with the specified JavaMailSender.
+     * Constructs a DefaultEmailService with the specified JavaMailSender and passwordResetService.
      *
      * @param mailSender the JavaMailSender instance for sending emails
-     * @param
-     * @param
+     * @param passwordResetService the PasswordResetService instance for managing password reset
      */
     @Autowired
-    public DefaultEmailService(JavaMailSender mailSender, UserService userService, UserRepository userRepository, JwtService jwtService) {
+    public DefaultEmailService(JavaMailSender mailSender, PasswordResetService passwordResetService) {
         this.mailSender = mailSender;
-        this.userService = userService;
-        this.userRepository = userRepository;
-        this.jwtService = jwtService;
+        this.passwordResetService = passwordResetService;
     }
 
     /**
-     * Sends a standard email containing data from an EmailRequest.
+     * Sends a standard e-mail containing data from an EmailRequest.
      *
-     * @param request the email request containing recipient details and message content
+     * @param request the e-mail request containing recipient details and message content
      */
     public void sendEmail(EmailRequest request) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
@@ -64,13 +59,13 @@ public class DefaultEmailService implements EmailService {
     }
 
     /**
-     * Sends a confirmation email to the specified user in the appropriate language.
-     * The email template is selected based on the provided language parameter.
+     * Sends a confirmation e-mail to the specified user in the appropriate language.
+     * The e-mail template is selected based on the provided language parameter.
      *
-     * @param userEmail the recipient's email address
+     * @param userEmail the recipient's e-mail address
      * @param language  the language preference ("pl" for Polish, defaults to English)
-     * @throws MessagingException if an error occurs while creating or sending the email
-     * @throws IOException if an error occurs while reading the email template file
+     * @throws MessagingException if an error occurs while creating or sending the e-mail
+     * @throws IOException if an error occurs while reading the e-mail template file
      */
     public void sendConfirmationEmail(String userEmail, String language) throws MessagingException, IOException {
         ClassPathResource resource;
@@ -98,7 +93,17 @@ public class DefaultEmailService implements EmailService {
         mailSender.send(mimeMessage);
     }
 
-    public void sendResetPasswordEmail(String userEmail, String language) throws MessagingException, IOException {
+    /**
+     * Sends a password reset email to the specified user in the appropriate language.
+     * The e-mail template is selected based on the provided language parameter.
+     *
+     * @param userEmail the recipient's email address
+     * @param request the HTTP request containing additional context (such as IP address) for the password reset operation
+     * @param language the language preference ("pl" for Polish, defaults to English)
+     * @throws MessagingException if an error occurs while creating or sending the email
+     * @throws IOException if an error occurs while reading the email template file
+     */
+    public void sendResetPasswordEmail(String userEmail, HttpServletRequest request, String language) throws MessagingException, IOException {
         ClassPathResource resource;
 
         if (userEmail == null) {
@@ -116,21 +121,14 @@ public class DefaultEmailService implements EmailService {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
 
-        Optional<User> userOptional = userRepository.findByEmail(userEmail);
+        String token = passwordResetService.createResetToken(userEmail, request);
 
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            String token = jwtService.generateToken(user.getUsername());
+        String resetLink = "http://localhost:5173/reset-password?token=" + token;
 
-            String resetLink = "http://localhost:5173/reset-password?token=" + token;
-
-            htmlContent = htmlContent.replace("{{reset_link}}", resetLink);
-            helper.setTo(userEmail);
-            helper.setSubject("Password Reset Request");
-            helper.setText(htmlContent, true);
-            mailSender.send(mimeMessage);
-        } else {
-            throw new UsernameNotFoundException("User not found with email: " + userEmail);
-        }
+        htmlContent = htmlContent.replace("{{reset_link}}", resetLink);
+        helper.setTo(userEmail);
+        helper.setSubject("Password Reset Request");
+        helper.setText(htmlContent, true);
+        mailSender.send(mimeMessage);
     }
 }

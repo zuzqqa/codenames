@@ -1,11 +1,13 @@
 package org.example.codenames.user.controller.api;
 
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.codenames.user.entity.PasswordResetRequest;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.userDetails.AuthRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
@@ -40,5 +42,5 @@ public interface UserController {
 
     ResponseEntity<String> getIdByToken(String token);
 
-    ResponseEntity<Void> updatePassword(String uuid, PasswordResetRequest passwordResetRequest);
+    ResponseEntity<String> updatePassword(@PathVariable String token, HttpServletRequest request, @RequestBody PasswordResetRequest passwordResetRequest);
 }

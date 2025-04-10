@@ -1,5 +1,6 @@
 package org.example.codenames.user.service.api;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.example.codenames.user.entity.User;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public interface UserService {
 
     String generateUniqueUsername();
 
-    void resetPassword(String uuid, String password);
+    boolean resetPassword(String uuid, HttpServletRequest request, String password);
 
     void deleteUserById(String id);
 }

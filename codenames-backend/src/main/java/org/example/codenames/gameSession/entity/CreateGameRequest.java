@@ -1,19 +1,11 @@
 package org.example.codenames.gameSession.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * CreateGameRequest is a class that represents the request body for creating a new game.
  */
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@Builder
+@Data
 public class CreateGameRequest {
     /**
      * The name of the game.
