@@ -64,5 +64,9 @@
   "private-lobby": "Prywatna rozgrywka",
   "private-lobby-password-error": "Podczas tworzenia publicznej rozgrywki, hasło nie może być puste.",
   "pass-overlay-label": "Podaj hasło: ",
-  "incorrect-password": "Złe hasło. Spróbuj ponownie."
+  "incorrect-password": "Złe hasło. Spróbuj ponownie.",
+  "invalid-or-expired-token": "Nieprawidłowy lub wygasły token.",
+  "passwords-dont-match": "Hasła się nie zgadzają.",
+  "e-mail-not-found": "Brak konta z podanym adresem e-mail.",
+  "e-mail-reset-sent": "Link do zmiany hasła został wysłany na podany adres e-mail."
 }

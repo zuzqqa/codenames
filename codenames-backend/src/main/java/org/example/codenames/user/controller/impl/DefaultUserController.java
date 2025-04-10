@@ -2,16 +2,19 @@ package org.example.codenames.user.controller.impl;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import lombok.RequiredArgsConstructor;
 
 import org.example.codenames.jwt.JwtService;
+import org.example.codenames.user.entity.PasswordResetRequest;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.controller.api.UserController;
-import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.api.UserService;
 import org.example.codenames.userDetails.AuthRequest;
+import static org.example.codenames.util.CookieUtils.createAuthCookie;
+import static org.example.codenames.util.CookieUtils.createLoggedInCookie;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
@@ -27,12 +30,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
+
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.*;
 
-import static org.example.codenames.util.CookieUtils.createAuthCookie;
-import static org.example.codenames.util.CookieUtils.createLoggedInCookie;
+import java.util.*;
 
 /**
  * Default implementation of the {@link UserController} interface.
@@ -41,10 +43,24 @@ import static org.example.codenames.util.CookieUtils.createLoggedInCookie;
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class DefaultUserController implements UserController {
-
+    /**
+     * Service for managing actions on user's account.
+     */
     private final UserService userService;
+
+    /**
+     * Authentication manager used for handling user authentication and verifying credentials.
+     */
     private final AuthenticationManager authenticationManager;
+
+    /**
+     * Service responsible for handling JWT operations such as token generation, validation, and extraction of claims.
+     */
     private final JwtService jwtService;
+
+    /**
+     * Service for sending emails through JavaMail.
+     */
     private final JavaMailSender mailSender;
 
     /**
@@ -92,6 +108,12 @@ public class DefaultUserController implements UserController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Activates a user account based on the provided authentication token.
+     *
+     * @param token the authentication token that is used to retrieve the username and activate the corresponding user account
+     * @return a {@link RedirectView} that redirects the user to the appropriate page
+     */
     @GetMapping("/activate/{token}")
     public RedirectView activateAccount(@PathVariable String token) {
         try {
@@ -194,11 +216,9 @@ public class DefaultUserController implements UserController {
 
                 return ResponseEntity.ok().build();
             } else {
-                System.out.println("I am not authenticated");
                 throw new UsernameNotFoundException("Invalid username or password");
             }
         } catch (Exception e) {
-            System.out.println("I am in the exception");
             throw new UsernameNotFoundException("Invalid username or password");
         }
     }
@@ -276,9 +296,21 @@ public class DefaultUserController implements UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/reset-password/{uuid}")
-    public ResponseEntity<Void> updatePassword(@PathVariable String uuid, @RequestBody String password) {
-        userService.resetPassword(uuid, password);
-        return ResponseEntity.ok().build();
+    /**
+     * Resets user password based on the token and new password provided.
+     *
+     * @param token the reset token provided by the user.
+     * @param request the HTTP request containing additional context (such as IP address) for the password reset operation.
+     * @param passwordResetRequest the entity containing new password.
+     * @return ResponseEntity with status 200 OK if password change was successful or 400 BAD REQUEST otherwise
+     */
+    @PostMapping("/reset-password/{token}")
+    public ResponseEntity<String> updatePassword(@PathVariable String token, HttpServletRequest request, @RequestBody PasswordResetRequest passwordResetRequest) {
+        boolean success = userService.resetPassword(token, request, passwordResetRequest.getPassword());
+        if (success) {
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.badRequest().body("Invalid or expired token.");
     }
 }

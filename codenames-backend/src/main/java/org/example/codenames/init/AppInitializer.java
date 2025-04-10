@@ -57,18 +57,17 @@ public class AppInitializer implements InitializingBean {
      * Initializes users.
      */
     private void initializeUsers() {
-        createUser("1", "admin", "admin", "admin@adminish.com", "ROLE_ADMIN", "9ea9137e-1f73-4757-89dd-ed6bef039de2");
-        createUser("2", "Anna", "anna", "anna@normalna.com", "USER", null);
-        createUser("3", "Adam", "adam", "adam@normalny.com", "USER", null);
+        createUser("1", "admin", "admin", "admin@adminish.com", "ROLE_ADMIN");
+        createUser("2", "Anna", "anna", "anna@normalna.com", "USER");
+        createUser("3", "Adam", "adam", "adam@normalny.com", "USER");
     }
 
-    private void createUser(String id, String username, String password, String email, String roles, String resetId) {
+    private void createUser(String id, String username, String password, String email, String roles) {
         User user = User.builder()
                 .id(id)
                 .username(username)
                 .password(password)
                 .email(email)
-                .resetId(resetId)
                 .roles(roles)
                 .build();
         if (userService.getUserByUsername(username).isEmpty()) {

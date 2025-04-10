@@ -63,5 +63,10 @@
   "private-lobby": "Private lobby",
   "private-lobby-password-error": "If you create private lobby, password cannot be null.",
   "pass-overlay-label": "Type password:",
-  "incorrect-password": " Incorrect password. Try again."
+  "incorrect-password": " Incorrect password. Try again.",
+  "invalid-or-expired-token": "Invalid or expired token.",
+  "passwords-dont-match": "Passwords do not match!",
+  "e-mail-not-found": "There is no account with the given e-mail address.",
+  "e-mail-reset-sent": "Link to change your password was sent to the given e-mail address."
+
 }

@@ -6,7 +6,7 @@ import Modal from "../Modal/Modal";
 import TitleModal from "../TitleModal/TitleModal";
 
 import closeIcon from "../../assets/icons/close.png";
-import spinner from "../../assets/icons/spinner.svg";
+import spinnerIcon from "../../assets/icons/spinner.svg";
 
 import "./MessageModal.css";
 
@@ -119,7 +119,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
               {isLoading ? (
                 <div className="loading-spinner">
                   <img
-                    src={spinner}
+                    src={spinnerIcon}
                     alt="Loading..."
                     className="spinner-image"
                   />

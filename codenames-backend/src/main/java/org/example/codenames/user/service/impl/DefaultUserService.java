@@ -2,6 +2,11 @@ package org.example.codenames.user.service.impl;
 
 import com.github.javafaker.Faker;
 
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.example.codenames.passwordResetToken.entity.PasswordResetToken;
+import org.example.codenames.passwordResetToken.repository.api.PasswordResetTokenRepository;
+import org.example.codenames.passwordResetToken.service.api.PasswordResetService;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.api.UserService;
@@ -31,15 +36,29 @@ public class DefaultUserService implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     /**
-     * Constructs a new DefaultUserService with the given user repository and password encoder.
+     * Repository for managing password reset tokens in the database.
+     */
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
+
+    /**
+     * Service responsible for handling password reset process.
+     */
+    private final PasswordResetService passwordResetService;
+
+    /**
+     * Constructs a new DefaultUserService with the given user repository, password encoder, passwordResetTokenRepository and passwordResetService.
      *
      * @param userRepository the user repository
      * @param passwordEncoder the password encoder
+     * @param passwordResetTokenRepository the password reset tokens repository
+     * @param passwordResetService the password reset service
      */
     @Autowired
-    public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PasswordResetTokenRepository passwordResetTokenRepository, PasswordResetService passwordResetService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
+        this.passwordResetService = passwordResetService;
     }
 
     /**
@@ -126,27 +145,34 @@ public class DefaultUserService implements UserService {
                 }).orElseThrow(() -> new IllegalArgumentException("User not found")));
     }
 
-    public void updateServiceId(String email, String serviceId) {
-        userRepository.findByUsername(email)
-                .ifPresent(user -> {
-                    user.setResetId(serviceId);
-                    userRepository.save(user);
-                });
-    }
-
+    /**
+     * Resets the user's password based on the provided token.
+     *
+     * @param token the reset token provided by the user
+     * @param request the HTTP request containing additional context (such as IP address) for the password reset operation
+     * @param password the new password provided by the user
+     * @return {@code true} if password reset was successful, {@code false} otherwise
+     */
     @Override
-    public void resetPassword(String uuid, String password) {
-        userRepository.findByResetId(uuid)
-                .ifPresent(user -> {
-                    System.out.println(user.getUsername());
-                    System.out.println("New password: " + password);
-                    String encodedPassword = passwordEncoder.encode(password);
-                    System.out.println("New encoded password: " + encodedPassword);
-                    user.setPassword(encodedPassword);
-                    System.out.println("User password: " + user.getPassword());
-                    user.setResetId(null);
-                    userRepository.save(user);
-                });
+    public boolean resetPassword(String token, HttpServletRequest request, String password) {
+        Optional<PasswordResetToken> optionalPasswordResetToken = passwordResetTokenRepository.findByToken(token);
+
+        if (optionalPasswordResetToken.isPresent()) {
+            PasswordResetToken passwordResetToken = optionalPasswordResetToken.get();
+
+            if (passwordResetService.isValidToken(token, request)) {
+                userRepository.findByEmail(passwordResetToken.getUserEmail())
+                        .ifPresent(user -> {
+                            String encodedPassword = passwordEncoder.encode(password);
+                            user.setPassword(encodedPassword);
+                            userRepository.save(user);
+                        });
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -159,6 +185,11 @@ public class DefaultUserService implements UserService {
         userRepository.deleteById(id);
     }
 
+    /**
+     * Performs user account activation.
+     *
+     * @param username the username
+     */
     @Override
     public void activateUser(String username) {
         userRepository.findByUsername(username).map(user -> {
@@ -187,7 +218,7 @@ public class DefaultUserService implements UserService {
     /**
      * Generates a unique username consisting of an adjective and a noun.
      *
-     * @return a unique username combining an adjective and a noun, without whitespaces.
+     * @return a unique username combining an adjective and a noun, without whitespaces
      */
     @Override
     public String generateUniqueUsername() {

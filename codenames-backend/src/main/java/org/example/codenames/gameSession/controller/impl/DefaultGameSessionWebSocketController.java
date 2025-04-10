@@ -110,7 +110,6 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
                 return ResponseEntity.status(409).build();
             }
         } catch(Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(500).build();
         }
     }

@@ -1,12 +1,12 @@
 .login-container {
-  grid-column: 1 / span 3; /* Stretch across all columns */
-  grid-row: 1 / span 6; /* Stretch across all rows */
+  grid-column: 1 / span 3; 
+  grid-row: 1 / span 6; 
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 96%; /* Match the height of its parent */
-  width: 100%; /* Match the width of its parent */
+  justify-content: space-evenly;
+  height: 96%;
+  width: 100%;
 }
 
 .login-form {
@@ -14,21 +14,24 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 60%; /* Full height of parent */
-  width: 90%; /* Full width of parent */
-  padding: 10px; /* Padding for spacing */
-  border-radius: 17px; /* Rounded corners */
-  margin-top: 1.4vw;
+  height: 60%; 
+  width: 90%; 
+  padding: 10px; 
+  border-radius: 17px; 
+  margin-top: 1.2vw;
+  padding-bottom: 0;
+  margin-bottom: 0;
 }
 
 .login-form button {
   font-size: 1.2rem;
   padding: 10px;
+  margin-bottom: 0;
   border: none;
   border-radius: 17px;
   cursor: pointer;
-  align-self: center; /* Align the button to the right */
-  margin-top: 1%; /* Add some spacing above the button */
+  align-self: center; 
+  margin-top: 1%; 
 }
 
 .notification:before {
@@ -60,4 +63,23 @@
   height: 2px;
   max-width: 30%;
   background: linear-gradient(to right, transparent, #FFD363, transparent);
+}
+
+.reset-password {
+  width: 75%;
+}
+
+.reset-password-link {
+  float: right;
+  font-size: 0.7em;
+  background: linear-gradient(to right, #FFD363, #FCF18B);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  cursor: pointer;
+  text-decoration: none; 
+  transition: border-bottom 0.1s ease; 
+}
+
+.reset-password-link:hover {
+  border-bottom: 0.5px solid #FFD363; 
 }
