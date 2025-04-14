@@ -22,9 +22,7 @@ import { validateEmail, validateUsername, validatePassword } from "../../utils/v
 
 import "../../styles/App.css";
 import "./RegisterPage.css";
-
-const generateId = () =>
-  Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+import { useToast } from "../../components/Toast/ToastContext.tsx";
 
 /**
  *
@@ -59,10 +57,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate(); // Hook for navigation
-  const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
-  const [notifications, setNotifications] = useState<
-    { id: string; message: string }[]
-  >([]);
+  const { addToast } = useToast();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const isActivated = searchParams.get("activated") === "false";
@@ -102,155 +97,6 @@ const RegisterPage: React.FC<RegisterProps> = ({
   };
 
   /**
-   * useEffect hook for handling the automatic removal of error messages after a delay.
-   *
-   * - Adds a fade-out effect to the toast notification before removal.
-   * - Removes errors from the state after a timeout.
-   *
-   * @param {Array<{ id: string; message: string }>} errors - Array of error messages with unique IDs.
-   */
-  useEffect(() => {
-    if (errors.length === 0) return;
-
-    const timers: number[] = errors.map((error) => {
-      const toastElement = document.getElementById(error.id);
-
-      if (toastElement) {
-        // Fade out the toast after 8 seconds
-        const fadeOutTimer = setTimeout(() => {
-          toastElement.classList.add("hide");
-        }, 8000);
-
-        // Remove the error from state after 8.5 seconds
-        const removeTimer = setTimeout(() => {
-          setErrors((prevErrors) =>
-            prevErrors.filter((e) => e.id !== error.id)
-          );
-        }, 8500);
-
-        return removeTimer;
-      } else {
-        // Remove error if toast element is not found
-        return setTimeout(() => {
-          setErrors((prevErrors) =>
-            prevErrors.filter((e) => e.id !== error.id)
-          );
-        }, 8000);
-      }
-    });
-
-    return () => timers.forEach(clearTimeout);
-  }, [errors]);
-
-  /**
-   * useEffect hook for handling the automatic removal of notification messages after a delay.
-   *
-   * - Adds a fade-out effect to the toast notification before removal.
-   * - Removes notifications from the state after a timeout.
-   *
-   * @param {Array<{ id: string; message: string }>} errors - Array of notification messages with unique IDs.
-   */
-  useEffect(() => {
-    if (notifications.length === 0) return;
-
-    const timers: number[] = notifications.map((notification) => {
-      const toastElement = document.getElementById(notification.id);
-
-      if (toastElement) {
-        // Fade out the toast after 8 seconds
-        const fadeOutTimer = setTimeout(() => {
-          toastElement.classList.add("hide");
-        }, 8000);
-
-        // Remove the message from state after 8.5 seconds
-        const removeTimer = setTimeout(() => {
-          setNotifications((prevNotifications) =>
-            prevNotifications.filter((n) => n.id !== notification.id)
-          );
-        }, 8500);
-
-        return removeTimer;
-      } else {
-        // Remove message if toast element is not found
-        return setTimeout(() => {
-          setNotifications((prevNotifications) =>
-            prevNotifications.filter((n) => n.id !== notification.id)
-          );
-        }, 8000);
-      }
-    });
-
-    return () => timers.forEach(clearTimeout);
-  }, [notifications]);
-
-  /**
-   * useEffect hook for handling the automatic removal of error messages after a delay.
-   *
-   * - Adds a fade-out effect to the toast error before removal.
-   * - Removes errors from the state after a timeout.
-   *
-   * @param {Array<{ id: string; message: string }>} errors - Array of error messages with unique IDs.
-   */
-  useEffect(() => {
-    if (isActivated) {
-      setErrors((prevErrors) => {
-        const errorExists = prevErrors.some(
-          (e) => e.message === t("account-not-activated-error")
-        );
-
-        if (!errorExists) {
-          return [
-            ...prevErrors,
-            { id: generateId(), message: t("account-not-activated-error") },
-          ];
-        }
-
-        return prevErrors;
-      });
-    }
-  }, [isActivated]);
-
-  /**
-   * Handles manual closing of a toast error.
-   *
-   * - Fades out the toast visually before removing it from the state.
-   *
-   * @param {string} id - The unique identifier of the error toast to be closed.
-   */
-  const handleCloseErrorToast = (id: string) => {
-    const toastElement = document.getElementById(id);
-    if (toastElement) {
-      toastElement.classList.add("hide");
-
-      setTimeout(() => {
-        setErrors((prevErrors) =>
-          prevErrors.filter((error) => error.id !== id)
-        );
-      }, 500);
-    }
-  };
-
-  /**
-   * Handles manual closing of a toast notification.
-   *
-   * - Fades out the toast visually before removing it from the state.
-   *
-   * @param {string} id - The unique identifier of the notification toast to be closed.
-   */
-  const handleCloseNotificationToast = (id: string) => {
-    const toastElement = document.getElementById(id);
-    if (toastElement) {
-      toastElement.classList.add("hide");
-
-      setTimeout(() => {
-        setNotifications((prevNotifications) =>
-          prevNotifications.filter((notification) => notification.id !== id)
-        );
-      }, 500);
-    }
-  };
-
-  /**
    * Handles form submission for user registration.
    *
    * - Validates input fields.
@@ -261,30 +107,20 @@ const RegisterPage: React.FC<RegisterProps> = ({
    * @param {FormEvent<HTMLFormElement>} e - The form event triggered on submit.
    */
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+
     e.preventDefault();
-    const newErrors: { id: string; message: string }[] = [];
-    const newNotifications: { id: string; message: string }[] = [];
-
-    if (!validateEmail(email))
-      newErrors.push({
-        id: generateId(),
-        message: t("email-error-message"),
-      });
-
-    if (!validateUsername(login))
-      newErrors.push({
-        id: generateId(),
-        message: t("username-error-message"),
-      });
-
-    if (!validatePassword(password))
-      newErrors.push({
-        id: generateId(),
-        message: t("password-error-message"),
-      });
-
-    setErrors(newErrors);
-    if (newErrors.length > 0) return;
+    if(!email || !login || !password) {
+      if (!email) {
+        addToast("Email is required", "error");
+      }
+      if (!login) {
+        addToast("Login is required", "error");
+      }
+      if (!password) {
+        addToast("Password is required", "error");
+      }
+      return;
+    }
 
     const userData = { email, username: login, password, roles: "USER" };
     try {
@@ -301,30 +137,18 @@ const RegisterPage: React.FC<RegisterProps> = ({
       );
 
       if (response.ok) {
-        newNotifications.push({
-          id: generateId(),
-          message: t("activation-link-sent"),
-        });
-        setNotifications([...newNotifications]);
+        addToast(t("activation-link-sent"), "notification");
       } else {
         const errorData = await response.json();
 
         if (errorData.error === "Username already exists.") {
-          newErrors.push({
-            id: generateId(),
-            message: t("username-exists-error"),
-          });
+          addToast(t("username-exists-error"), "error");
         } else if (errorData.error === "E-mail already exists.") {
-          newErrors.push({
-            id: generateId(),
-            message: t("e-mail-exists-error"),
-          });
+          addToast(t("e-mail-exists-error"), "error");
         }
-        setErrors([...newErrors]);
       }
     } catch (error) {
-      newErrors.push({ id: generateId(), message: t("network-error") });
-      setErrors([...newErrors]);
+      addToast(t("network-error"), "error");
     }
   };
 
@@ -396,41 +220,41 @@ const RegisterPage: React.FC<RegisterProps> = ({
         <div className="register-container">
           <form className="register-form" onSubmit={handleSubmit}>
             <FormInput
-              type="text"
-              placeholder="E-MAIL"
-              value={email}
-              onChange={handleEmailChange}
+                type="text"
+                placeholder="E-MAIL"
+                value={email}
+                onChange={handleEmailChange}
             />
             <FormInput
-              type="text"
-              placeholder="LOGIN"
-              value={login}
-              onChange={handleLoginChange}
+                type="text"
+                placeholder="LOGIN"
+                value={login}
+                onChange={handleLoginChange}
             />
             <FormInput
-              type="text"
-              placeholder={t("PASSWORD")}
-              value={
-                !isPasswordVisible ? "●".repeat(password.length) : password
-              }
-              onChange={handlePasswordChange}
-              button={
-                <Button
-                  variant="eye2"
-                  soundFXVolume={soundFXVolume}
-                  onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                >
-                  <img
-                    src={isPasswordVisible ? eyeSlashIcon : eyeIcon}
-                    alt={isPasswordVisible ? "Hide password" : "Show password"}
-                  />
-                </Button>
-              }
+                type="text"
+                placeholder={t("PASSWORD")}
+                value={
+                  !isPasswordVisible ? "●".repeat(password.length) : password
+                }
+                onChange={handlePasswordChange}
+                button={
+                  <Button
+                      variant="eye2"
+                      soundFXVolume={soundFXVolume}
+                      onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                  >
+                    <img
+                        src={isPasswordVisible ? eyeSlashIcon : eyeIcon}
+                        alt={isPasswordVisible ? "Hide password" : "Show password"}
+                    />
+                  </Button>
+                }
             />
             <Button
-              type="submit"
-              variant="primary"
-              soundFXVolume={soundFXVolume}
+                type="submit"
+                variant="primary"
+                soundFXVolume={soundFXVolume}
             >
               <span className="button-text">{t("submit-button")}</span>
             </Button>
@@ -442,69 +266,17 @@ const RegisterPage: React.FC<RegisterProps> = ({
           </div>
           <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
             <GoogleLogin
-              text="signup_with"
-              onSuccess={() => {
-                window.location.href =
-                  "http://localhost:8080/oauth2/authorization/google";
-              }}
-              onError={() => {
-                console.log("Google login failed");
-              }}
+                text="signup_with"
+                onSuccess={() => {
+                  window.location.href =
+                      "http://localhost:8080/oauth2/authorization/google";
+                }}
+                onError={() => {
+                  console.log("Google login failed");
+                }}
             />
           </GoogleOAuthProvider>
         </div>
-        {errors.length > 0 && (
-          <div className="toast-container">
-            {errors.map((error) => (
-              <div id={error.id} key={error.id} className="toast active">
-                <div className="toast-content">
-                  <i
-                    className="fa fa-exclamation-circle fa-3x"
-                    style={{ color: "#561723" }}
-                    aria-hidden="true"
-                  ></i>
-                  <div className="message">
-                    <span className="text text-1">Error</span>
-                    <span className="text text-2">{error.message}</span>
-                  </div>
-                </div>
-                <i
-                  className="fa-solid fa-xmark close"
-                  onClick={() => handleCloseErrorToast(error.id)}
-                ></i>
-                <div className="progress active"></div>
-              </div>
-            ))}
-          </div>
-        )}
-        {notifications.length > 0 && (
-          <div className="toast-container">
-            {notifications.map((notification) => (
-              <div
-                id={notification.id}
-                key={notification.id}
-                className="toast active"
-              >
-                <div className="toast-content">
-                  <i
-                    className="fa fa-info-circle fa-3x"
-                    style={{ color: "#1B74BB" }}
-                    aria-hidden="true"
-                  ></i>
-                  <div className="message">
-                    <span className="text text-1">Notification</span>
-                    <span className="text text-2">{notification.message}</span>
-                  </div>
-                </div>
-                <i
-                  className="fa-solid fa-xmark close"
-                  onClick={() => handleCloseNotificationToast(notification.id)}
-                ></i>
-                <div className="progress active notification"></div>
-              </div>
-            ))}
-          </div>
-        )}
       </LoginRegisterContainer>
     </BackgroundContainer>
   );
