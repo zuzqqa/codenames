@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import Peer, {MediaConnection} from "peerjs";
+import Button from "../Button/Button.tsx";
+import Mic from "codenames-frontend/src/assets/icons/mic.png";
+import MicOff from "codenames-frontend/src/assets/icons/micOff.svg";
+import "./AudioRoom.css";
 
 const getUserIdFromLocalStorage = () => {
     const userId = localStorage.getItem("userId");
@@ -25,13 +29,18 @@ const getGameIDFromLocalStorage = () => {
 const socket = io("http://localhost:3000");
 const ROOM_ID = getGameIDFromLocalStorage();
 
-const AudioRoom: React.FC = () => {
+interface AudioRoomProps {
+    soundFXVolume: number;
+}
+
+const AudioRoom: React.FC<AudioRoomProps> = ({soundFXVolume}) => {
     const audioGridRef = useRef<HTMLDivElement>(null);
     const userId = useRef<string>(getUserIdFromLocalStorage());
     const myPeer = useRef(new Peer(userId.current, { host: "localhost", port: 3001 }));
     const myAudioRef = useRef(new Audio());
     const peers = useRef<{ [key: string]: MediaConnection }>({});
     const [stream, setStream] = useState<MediaStream | null>(null);
+    const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
         myAudioRef.current.muted = true;
@@ -84,10 +93,31 @@ const AudioRoom: React.FC = () => {
     }
 
     return (
-        <div>
+        <div id="audio-component">
             <div ref={audioGridRef} id="audio-grid"></div>
-            <button onClick={() => socket.emit("join-room", ROOM_ID, myPeer.current.id)}>Connect</button>
-            <button onClick={leaveRoom}>Disconnect</button>
+            {!isConnected ? (
+                <Button
+                    variant="circle"
+                    soundFXVolume={soundFXVolume}
+                    onClick={() => {
+                        socket.emit("join-room", ROOM_ID, myPeer.current.id)
+                        setIsConnected(true);
+                    }}
+                >
+                    <img src={Mic} alt="Mic" style={{width: "25px", height: "25px"}}/>
+                </Button>
+            ) : (
+                <Button
+                    variant="circle"
+                    soundFXVolume={soundFXVolume}
+                    onClick={() => {
+                        leaveRoom()
+                        setIsConnected(false);
+                    }}
+                >
+                    <img src={MicOff} alt="MicOff" style={{width: "25px", height: "25px"}}/>
+                </Button>
+            )}
         </div>
     );
 };

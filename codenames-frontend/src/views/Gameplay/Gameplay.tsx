@@ -792,32 +792,32 @@ const Gameplay: React.FC<GameplayProps> = ({
         <span className={`below timer ${myTeam === "blue" ? "blue" : "red"}`}>
           {(() => {
             if (
-              (amIBlueTeamLeader || amIRedTeamLeader) &&
-              isHintTime &&
-              whosTurn === myTeam
+                (amIBlueTeamLeader || amIRedTeamLeader) &&
+                isHintTime &&
+                whosTurn === myTeam
             ) {
               return t("give-hint");
             } else if (
-              (amIBlueTeamLeader || amIRedTeamLeader) &&
-              isGuessingTime &&
-              whosTurn === myTeam
+                (amIBlueTeamLeader || amIRedTeamLeader) &&
+                isGuessingTime &&
+                whosTurn === myTeam
             ) {
               return t("team-guessing");
             } else if (
-              !amIBlueTeamLeader &&
-              !amIRedTeamLeader &&
-              isHintTime &&
-              whosTurn === myTeam
+                !amIBlueTeamLeader &&
+                !amIRedTeamLeader &&
+                isHintTime &&
+                whosTurn === myTeam
             ) {
               return t("leader-choosing-hint");
             } else if (isHintTime && whosTurn !== myTeam) {
               return t("opposing-team-hint");
             } else if (
-              !amIBlueTeamLeader &&
-              !amIRedTeamLeader &&
-              !amICurrentLeader &&
-              isGuessingTime &&
-              whosTurn === myTeam
+                !amIBlueTeamLeader &&
+                !amIRedTeamLeader &&
+                !amICurrentLeader &&
+                isGuessingTime &&
+                whosTurn === myTeam
             ) {
               return t("voting-time");
             } else if (amICurrentLeader && isGuessingTime) {
@@ -830,30 +830,33 @@ const Gameplay: React.FC<GameplayProps> = ({
 
         {/* Settings button */}
         <Button variant="circle" soundFXVolume={soundFXVolume}>
-          <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
+          <img src={settingsIcon} onClick={toggleSettings} alt="Settings"/>
         </Button>
 
         {/* Settings modal */}
         <SettingsModal
-          isOpen={isSettingsOpen}
-          onClose={toggleSettings}
-          musicVolume={musicVolume}
-          soundFXVolume={soundFXVolume}
-          setMusicVolume={(volume) => {
-            setMusicVolume(volume); // Update local music volume
-            setVolume(volume / 100); // Update global volume
-          }}
-          setSoundFXVolume={setSoundFXVolume}
+            isOpen={isSettingsOpen}
+            onClose={toggleSettings}
+            musicVolume={musicVolume}
+            soundFXVolume={soundFXVolume}
+            setMusicVolume={(volume) => {
+              setMusicVolume(volume); // Update local music volume
+              setVolume(volume / 100); // Update global volume
+            }}
+            setSoundFXVolume={setSoundFXVolume}
         />
 
-        <img className="polygon1" src={polygon1Img} />
-        <img className="polygon2" src={polygon2Img} />
+        <img className="polygon1" src={polygon1Img}/>
+        <img className="polygon2" src={polygon2Img}/>
         <div className="timer points-red">{redTeamScore} / 9</div>
         <div className="timer points-blue">{blueTeamScore} / 8</div>
         <div className="banner-container">
-          <img src={getBanner()} />
+          <img src={getBanner()}/>
         </div>
-        <Chat />
+        <Chat/>
+        <div id="audio-room">
+          <AudioRoom soundFXVolume={soundFXVolume}/>
+        </div>
         <div className="content-container">
           <div className="timer-container">
             {/* <div className="horizontal-gold-bar"></div>
@@ -862,174 +865,173 @@ const Gameplay: React.FC<GameplayProps> = ({
           </div>
           <div className="cards-section">
             {cards.map((cardImage, index) => (
-              <div
-                key={index}
-                className={`card-container ${
-                  selectedCards.includes(index) ? "selected-card" : ""
-                } ${
-                  amIRedTeamLeader || amIBlueTeamLeader || whosTurn != myTeam
-                    ? "disabled"
-                    : ""
-                }`}
-                onClick={() => handleCardSelection(index)}
-              >
-                <img
-                  className={`card ${
-                    flipStates[index] || (amIRedTeamLeader && amIBlueTeamLeader)
-                      ? "flip"
-                      : ""
-                  }`}
-                  src={
-                    amIRedTeamLeader || amIBlueTeamLeader
-                      ? (() => {
-                          const cardColor =
-                            gameSession?.gameState.cardsColors[index];
-                          switch (cardColor) {
-                            case 1:
-                              return cardRedImg;
-                            case 2:
-                              return cardBlueImg;
-                            case 3:
-                              return cardBlackImg;
-                            default:
-                              return cardWhiteImg;
-                          }
-                        })()
-                      : cardImage
-                  }
-                  alt={`card-${index}`}
-                />
-                {votedCards[index] > 0 && (
-                  <div className="corner-icon-container">
-                    <img
-                      className="corner-icon"
-                      src={votingLabel}
-                      alt="corner icon"
-                    />
-                    <span className="corner-text">{votedCards[index]}</span>
-                  </div>
-                )}
-
-                {!flipStates[index] && (
-                  <span
-                    className={`card-text ${
-                      gameSession?.gameState.cardsColors[index] != 0 &&
-                      (amIRedTeamLeader || amIBlueTeamLeader)
-                        ? "gold-text"
-                        : ""
+                <div
+                    key={index}
+                    className={`card-container ${
+                        selectedCards.includes(index) ? "selected-card" : ""
+                    } ${
+                        amIRedTeamLeader || amIBlueTeamLeader || whosTurn != myTeam
+                            ? "disabled"
+                            : ""
                     }`}
-                  >
+                    onClick={() => handleCardSelection(index)}
+                >
+                  <img
+                      className={`card ${
+                          flipStates[index] || (amIRedTeamLeader && amIBlueTeamLeader)
+                              ? "flip"
+                              : ""
+                      }`}
+                      src={
+                        amIRedTeamLeader || amIBlueTeamLeader
+                            ? (() => {
+                              const cardColor =
+                                  gameSession?.gameState.cardsColors[index];
+                              switch (cardColor) {
+                                case 1:
+                                  return cardRedImg;
+                                case 2:
+                                  return cardBlueImg;
+                                case 3:
+                                  return cardBlackImg;
+                                default:
+                                  return cardWhiteImg;
+                              }
+                            })()
+                            : cardImage
+                      }
+                      alt={`card-${index}`}
+                  />
+                  {votedCards[index] > 0 && (
+                      <div className="corner-icon-container">
+                        <img
+                            className="corner-icon"
+                            src={votingLabel}
+                            alt="corner icon"
+                        />
+                        <span className="corner-text">{votedCards[index]}</span>
+                      </div>
+                  )}
+
+                  {!flipStates[index] && (
+                      <span
+                          className={`card-text ${
+                              gameSession?.gameState.cardsColors[index] != 0 &&
+                              (amIRedTeamLeader || amIBlueTeamLeader)
+                                  ? "gold-text"
+                                  : ""
+                          }`}
+                      >
                     {gameSession?.gameState.cards[index]}
                   </span>
-                )}
-              </div>
+                  )}
+                </div>
             ))}
           </div>
           <div className="bottom-section">
             <div className="item">
-              <img className="shelf" src={shelfImg} />
+              <img className="shelf" src={shelfImg}/>
             </div>
             <div className="item">
               <Button
-                variant="room"
-                soundFXVolume={soundFXVolume}
-                className={
-                  ((amIBlueTeamLeader || amIRedTeamLeader) &&
-                    isHintTime &&
-                    whosTurn !== myTeam) ||
-                  ((amIBlueTeamLeader || amIRedTeamLeader) && isGuessingTime) ||
-                  (!amIBlueTeamLeader && !amIRedTeamLeader && isGuessingTime) ||
-                  (!amIBlueTeamLeader && !amIRedTeamLeader && isHintTime) ||
-                  (!amIBlueTeamLeader &&
-                    !amIRedTeamLeader &&
-                    isGuessingTime &&
-                    whosTurn !== myTeam)
-                    ? "hidden"
-                    : ""
-                }
-                onClick={change_turn}
+                  variant="room"
+                  soundFXVolume={soundFXVolume}
+                  className={
+                    ((amIBlueTeamLeader || amIRedTeamLeader) &&
+                        isHintTime &&
+                        whosTurn !== myTeam) ||
+                    ((amIBlueTeamLeader || amIRedTeamLeader) && isGuessingTime) ||
+                    (!amIBlueTeamLeader && !amIRedTeamLeader && isGuessingTime) ||
+                    (!amIBlueTeamLeader && !amIRedTeamLeader && isHintTime) ||
+                    (!amIBlueTeamLeader &&
+                        !amIRedTeamLeader &&
+                        isGuessingTime &&
+                        whosTurn !== myTeam)
+                        ? "hidden"
+                        : ""
+                  }
+                  onClick={change_turn}
               >
                 <span className="button-text">{t("end-round")}</span>
               </Button>
-                <AudioRoom />
-              <div className="horizontal-gold-bar" />
+              <div className="horizontal-gold-bar"/>
             </div>
             <div className="item">
-              <img className="card-stack" src={cardsStackImg} />
+              <img className="card-stack" src={cardsStackImg}/>
               <div
-                className="codename-card-container"
-                onClick={toggleBlackCardVisibility}
+                  className="codename-card-container"
+                  onClick={toggleBlackCardVisibility}
               >
                 <span className="codename-card-text">
                   {(gameSession?.gameState.hint || "HINT") +
-                    " " +
-                    (gameSession?.gameState.hintNumber === "0"
-                      ? ""
-                      : gameSession?.gameState.hintNumber)}
+                      " " +
+                      (gameSession?.gameState.hintNumber === "0"
+                          ? ""
+                          : gameSession?.gameState.hintNumber)}
                 </span>
-                <img className="codename-card" src={cardBlackImg} />
+                <img className="codename-card" src={cardBlackImg}/>
               </div>
             </div>
           </div>
         </div>
         {isCardVisible && (
-          <div className="card-black-overlay">
-            <img
-              className="card-black-img"
-              src={cardBlackImg}
-              alt="Black Card"
-            />
-            <div className="codename-input-container">
-              <input
-                type="text"
-                placeholder={t("enter-the-codename")}
-                className="codename-input"
-                value={cardText}
-                onChange={(e) => setCardText(e.target.value)}
-                disabled={
-                  (!amIRedTeamLeader && !amIBlueTeamLeader) ||
-                  whosTurn !== myTeam
-                }
+            <div className="card-black-overlay">
+              <img
+                  className="card-black-img"
+                  src={cardBlackImg}
+                  alt="Black Card"
               />
-              <input
-                type="range"
-                min={1}
-                max={whosTurn === "blue" ? (8 - blueTeamScore) : (9 - redTeamScore)}
-                className="codename-slider"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(+e.target.value)}
-                disabled={
-                  (!amIRedTeamLeader && !amIBlueTeamLeader) ||
-                  whosTurn !== myTeam
-                }
-              />
-              <span className="slider-value">{cardNumber}</span>
+              <div className="codename-input-container">
+                <input
+                    type="text"
+                    placeholder={t("enter-the-codename")}
+                    className="codename-input"
+                    value={cardText}
+                    onChange={(e) => setCardText(e.target.value)}
+                    disabled={
+                        (!amIRedTeamLeader && !amIBlueTeamLeader) ||
+                        whosTurn !== myTeam
+                    }
+                />
+                <input
+                    type="range"
+                    min={1}
+                    max={whosTurn === "blue" ? (8 - blueTeamScore) : (9 - redTeamScore)}
+                    className="codename-slider"
+                    value={cardNumber}
+                    onChange={(e) => setCardNumber(+e.target.value)}
+                    disabled={
+                        (!amIRedTeamLeader && !amIBlueTeamLeader) ||
+                        whosTurn !== myTeam
+                    }
+                />
+                <span className="slider-value">{cardNumber}</span>
+              </div>
             </div>
-          </div>
         )}
         {errors.length > 0 && (
-          <div className="toast-container">
-            {errors.map((error) => (
-              <div id={error.id} key={error.id} className="toast active">
-                <div className="toast-content">
-                  <i
-                    className="fa fa-exclamation-circle fa-3x"
-                    style={{ color: "#561723" }}
-                    aria-hidden="true"
-                  ></i>
-                  <div className="message">
-                    <span className="text text-1">Error</span>
-                    <span className="text text-2">{error.message}</span>
+            <div className="toast-container">
+              {errors.map((error) => (
+                  <div id={error.id} key={error.id} className="toast active">
+                    <div className="toast-content">
+                      <i
+                          className="fa fa-exclamation-circle fa-3x"
+                          style={{color: "#561723"}}
+                          aria-hidden="true"
+                      ></i>
+                      <div className="message">
+                        <span className="text text-1">Error</span>
+                        <span className="text text-2">{error.message}</span>
+                      </div>
+                    </div>
+                    <i
+                        className="fa-solid fa-xmark close"
+                        onClick={() => handleCloseErrorToast(error.id)}
+                    ></i>
+                    <div className="progress active"></div>
                   </div>
-                </div>
-                <i
-                  className="fa-solid fa-xmark close"
-                  onClick={() => handleCloseErrorToast(error.id)}
-                ></i>
-                <div className="progress active"></div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
         )}
       </BackgroundContainer>
     </>
