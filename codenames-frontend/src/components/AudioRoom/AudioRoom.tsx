@@ -2,12 +2,33 @@ import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import Peer, {MediaConnection} from "peerjs";
 
+const getUserIdFromLocalStorage = () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+        const newUserId = Math.random().toString(36).substring(2, 15);
+        localStorage.setItem("userId", newUserId);
+        return newUserId;
+    }
+    return userId;
+}
+
+const getGameIDFromLocalStorage = () => {
+    const gameId = localStorage.getItem("gameId");
+    if (!gameId) {
+        const newGameId = Math.random().toString(36).substring(2, 15);
+        localStorage.setItem("gameId", newGameId);
+        return newGameId;
+    }
+    return gameId;
+}
+
 const socket = io("http://localhost:3000");
-const ROOM_ID = "room1"; // Adjust as needed
+const ROOM_ID = getGameIDFromLocalStorage();
 
 const AudioRoom: React.FC = () => {
     const audioGridRef = useRef<HTMLDivElement>(null);
-    const myPeer = useRef(new Peer({ host: "localhost", port: 3001 }));
+    const userId = useRef<string>(getUserIdFromLocalStorage());
+    const myPeer = useRef(new Peer(userId.current, { host: "localhost", port: 3001 }));
     const myAudioRef = useRef(new Audio());
     const peers = useRef<{ [key: string]: MediaConnection }>({});
     const [stream, setStream] = useState<MediaStream | null>(null);
