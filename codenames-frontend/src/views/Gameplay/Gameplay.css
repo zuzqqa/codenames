@@ -416,10 +416,8 @@ button {
 }
 .audio-room {
     position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 52%;
+    left: 17%;
     display: flex;
     justify-content: center;
     align-items: center;

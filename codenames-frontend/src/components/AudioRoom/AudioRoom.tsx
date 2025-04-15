@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import Peer, {MediaConnection} from "peerjs";
 import Button from "../Button/Button.tsx";
-import Mic from "codenames-frontend/src/assets/icons/mic.png";
-import MicOff from "codenames-frontend/src/assets/icons/micOff.svg";
+import Mic from "../../assets/icons/mic.png";
+import MicOff from "../../assets/icons/micOff.svg";
 import "./AudioRoom.css";
 
 const getUserIdFromLocalStorage = () => {

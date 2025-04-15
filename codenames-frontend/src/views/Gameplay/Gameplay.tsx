@@ -92,7 +92,7 @@ interface GameState {
 }
 
 const generateId = () =>
-  Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+    Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 /**
  * React functional component responsible for handling gameplay-related settings,
  * such as volume adjustments.
@@ -104,10 +104,10 @@ const generateId = () =>
  *  * @returns {JSX.Element} The rendered GameLobby component
  */
 const Gameplay: React.FC<GameplayProps> = ({
-  setVolume,
-  soundFXVolume,
-  setSoundFXVolume,
-}) => {
+                                             setVolume,
+                                             soundFXVolume,
+                                             setSoundFXVolume,
+                                           }) => {
   const [musicVolume, setMusicVolume] = useState(50);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { t } = useTranslation();
@@ -123,10 +123,10 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [client, setClient] = useState<Client | null>(null);
   const [myTeam, setMyTeam] = useState<string | null>(null);
   const [cards, setCards] = useState<string[]>(
-    new Array(25).fill(cardWhiteImg)
+      new Array(25).fill(cardWhiteImg)
   );
   const [flipStates, setFlipStates] = useState<boolean[]>(
-    new Array(25).fill(false)
+      new Array(25).fill(false)
   );
   const [amIRedTeamLeader, setAmIRedTeamLeader] = useState(false);
   const [amIBlueTeamLeader, setAmIBlueTeamLeader] = useState(false);
@@ -145,7 +145,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   const clickAudio = new Audio(cardSound);
   const [votedCards, setVotedCards] = useState<number[]>([]);
   const [userId, setUserId] = useState<string | null>(
-    localStorage.getItem("userId") || null
+      localStorage.getItem("userId") || null
   );
 
   const toggleSettings = () => {
@@ -184,9 +184,9 @@ const Gameplay: React.FC<GameplayProps> = ({
       sendCardSelection(cardIndex, isAddingVote);
 
       setSelectedCards((prevSelectedCards) =>
-        isAddingVote
-          ? [...prevSelectedCards, cardIndex]
-          : prevSelectedCards.filter((c) => c !== cardIndex)
+          isAddingVote
+              ? [...prevSelectedCards, cardIndex]
+              : prevSelectedCards.filter((c) => c !== cardIndex)
       );
     }
   };
@@ -198,25 +198,25 @@ const Gameplay: React.FC<GameplayProps> = ({
    * @param {boolean} isAddingVote - Whether the player is adding or removing their vote.
    */
   const sendCardSelection = async (
-    cardIndex: number,
-    isAddingVote: boolean
+      cardIndex: number,
+      isAddingVote: boolean
   ) => {
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
     console.log(cardIndex);
     try {
       const response = await fetch(
-        `http://localhost:8080/api/game-session/${storedGameId}/voteCards`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            addingVote: isAddingVote,
-            cardIndex: cardIndex,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+          `http://localhost:8080/api/game-session/${storedGameId}/voteCards`,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              addingVote: isAddingVote,
+              cardIndex: cardIndex,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
       );
 
       const text = await response.text();
@@ -240,14 +240,14 @@ const Gameplay: React.FC<GameplayProps> = ({
 
     try {
       const response = fetch(
-        `http://localhost:8080/api/game-session/${storedGameId}/reveal-card`,
-        {
-          method: "POST",
-          body: String(cardIndex),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+          `http://localhost:8080/api/game-session/${storedGameId}/reveal-card`,
+          {
+            method: "POST",
+            body: String(cardIndex),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
       );
     } catch (error) {
       console.error("Error submitting vote:", error);
@@ -323,17 +323,17 @@ const Gameplay: React.FC<GameplayProps> = ({
     const fetchGameSession = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/game-session/${storedGameId}`
+            `http://localhost:8080/api/game-session/${storedGameId}`
         );
         if (!response.ok) throw new Error("Failed to fetch game session");
         const data = await response.json();
 
         const getIdResponse = await fetch(
-          "http://localhost:8080/api/users/getId",
-          {
-            method: "GET",
-            credentials: "include",
-          }
+            "http://localhost:8080/api/users/getId",
+            {
+              method: "GET",
+              credentials: "include",
+            }
         );
         if (!getIdResponse.ok) throw new Error("Failed to fetch user ID");
 
@@ -342,7 +342,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
         setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
         setAmICurrentLeader(
-          data.gameState.currentSelectionLeader.id === userId
+            data.gameState.currentSelectionLeader.id === userId
         );
         setGameSession(data);
         setRedTeamPlayers(data.connectedUsers[0] || []);
@@ -352,9 +352,9 @@ const Gameplay: React.FC<GameplayProps> = ({
         setIsGuessingTime(data.gameState?.guessingTurn);
         setCardsToReveal(data.gameState?.cardsChosen || []);
         setMyTeam(
-          data.connectedUsers[0].find((user: User) => user.id === userId)
-            ? "red"
-            : "blue"
+            data.connectedUsers[0].find((user: User) => user.id === userId)
+                ? "red"
+                : "blue"
         );
         setVotedCards(data.gameState?.cardsVotes || []);
       } catch (err) {
@@ -403,17 +403,17 @@ const Gameplay: React.FC<GameplayProps> = ({
     const fetchGameSession = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/game-session/${storedGameId}`
+            `http://localhost:8080/api/game-session/${storedGameId}`
         );
         if (!response.ok) throw new Error("Failed to fetch game session");
         const data = await response.json();
 
         const getIdResponse = await fetch(
-          "http://localhost:8080/api/users/getId",
-          {
-            method: "GET",
-            credentials: "include",
-          }
+            "http://localhost:8080/api/users/getId",
+            {
+              method: "GET",
+              credentials: "include",
+            }
         );
         if (!getIdResponse.ok) throw new Error("Failed to fetch user ID");
 
@@ -430,9 +430,9 @@ const Gameplay: React.FC<GameplayProps> = ({
         setIsGuessingTime(data.gameState?.guessingTurn);
         setCardsToReveal(data.gameState?.cardsChosen || []);
         setMyTeam(
-          data.connectedUsers[0].find((user: User) => user.id === userId)
-            ? "red"
-            : "blue"
+            data.connectedUsers[0].find((user: User) => user.id === userId)
+                ? "red"
+                : "blue"
         );
       } catch (err) {
         console.error("Failed to load game session", err);
@@ -450,7 +450,7 @@ const Gameplay: React.FC<GameplayProps> = ({
    */
   useEffect(() => {
     if (
-      whosTurn !== (gameSession?.gameState?.teamTurn === 0 ? "red" : "blue")
+        whosTurn !== (gameSession?.gameState?.teamTurn === 0 ? "red" : "blue")
     ) {
       setWhosTurn(gameSession?.gameState?.teamTurn === 0 ? "red" : "blue");
       setSelectedCards([]);
@@ -549,7 +549,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   useEffect(() => {
     if (gameSession?.gameState?.currentSelectionLeader?.id) {
       setAmICurrentLeader(
-        gameSession.gameState.currentSelectionLeader.id === userId
+          gameSession.gameState.currentSelectionLeader.id === userId
       );
     } else {
       setAmICurrentLeader(false);
@@ -673,13 +673,13 @@ const Gameplay: React.FC<GameplayProps> = ({
     const storedGameId = localStorage.getItem("gameId");
 
     fetch(
-      `http://localhost:8080/api/game-session/${storedGameId}/change-turn`,
-      {
-        method: "GET",
-        headers: {
-          credentials: "include",
-        },
-      }
+        `http://localhost:8080/api/game-session/${storedGameId}/change-turn`,
+        {
+          method: "GET",
+          headers: {
+            credentials: "include",
+          },
+        }
     );
   };
 
@@ -730,7 +730,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         // Remove the error from state after 8.5 seconds
         const removeTimer = setTimeout(() => {
           setErrors((prevErrors) =>
-            prevErrors.filter((e) => e.id !== error.id)
+              prevErrors.filter((e) => e.id !== error.id)
           );
         }, 8500);
 
@@ -739,7 +739,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         // Remove error if toast element is not found
         return setTimeout(() => {
           setErrors((prevErrors) =>
-            prevErrors.filter((e) => e.id !== error.id)
+              prevErrors.filter((e) => e.id !== error.id)
           );
         }, 8000);
       }
@@ -762,7 +762,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
       setTimeout(() => {
         setErrors((prevErrors) =>
-          prevErrors.filter((error) => error.id !== id)
+            prevErrors.filter((error) => error.id !== id)
         );
       }, 500);
     }
@@ -787,8 +787,8 @@ const Gameplay: React.FC<GameplayProps> = ({
   };
 
   return (
-    <>
-      <BackgroundContainer>
+      <>
+        <BackgroundContainer>
         <span className={`below timer ${myTeam === "blue" ? "blue" : "red"}`}>
           {(() => {
             if (
@@ -828,140 +828,140 @@ const Gameplay: React.FC<GameplayProps> = ({
           })()}
         </span>
 
-        {/* Settings button */}
-        <Button variant="circle" soundFXVolume={soundFXVolume}>
-          <img src={settingsIcon} onClick={toggleSettings} alt="Settings"/>
-        </Button>
+          {/* Settings button */}
+          <Button variant="circle" soundFXVolume={soundFXVolume}>
+            <img src={settingsIcon} onClick={toggleSettings} alt="Settings"/>
+          </Button>
 
-        {/* Settings modal */}
-        <SettingsModal
-            isOpen={isSettingsOpen}
-            onClose={toggleSettings}
-            musicVolume={musicVolume}
-            soundFXVolume={soundFXVolume}
-            setMusicVolume={(volume) => {
-              setMusicVolume(volume); // Update local music volume
-              setVolume(volume / 100); // Update global volume
-            }}
-            setSoundFXVolume={setSoundFXVolume}
-        />
+          {/* Settings modal */}
+          <SettingsModal
+              isOpen={isSettingsOpen}
+              onClose={toggleSettings}
+              musicVolume={musicVolume}
+              soundFXVolume={soundFXVolume}
+              setMusicVolume={(volume) => {
+                setMusicVolume(volume); // Update local music volume
+                setVolume(volume / 100); // Update global volume
+              }}
+              setSoundFXVolume={setSoundFXVolume}
+          />
 
-        <img className="polygon1" src={polygon1Img}/>
-        <img className="polygon2" src={polygon2Img}/>
-        <div className="timer points-red">{redTeamScore} / 9</div>
-        <div className="timer points-blue">{blueTeamScore} / 8</div>
-        <div className="banner-container">
-          <img src={getBanner()}/>
-        </div>
-        <Chat/>
-        <div id="audio-room">
-          <AudioRoom soundFXVolume={soundFXVolume}/>
-        </div>
-        <div className="content-container">
-          <div className="timer-container">
-            {/* <div className="horizontal-gold-bar"></div>
+          <img className="polygon1" src={polygon1Img}/>
+          <img className="polygon2" src={polygon2Img}/>
+          <div className="timer points-red">{redTeamScore} / 9</div>
+          <div className="timer points-blue">{blueTeamScore} / 8</div>
+          <div className="banner-container">
+            <img src={getBanner()}/>
+          </div>
+          <Chat/>
+          <div className="audio-room">
+            <AudioRoom soundFXVolume={soundFXVolume}/>
+          </div>
+          <div className="content-container">
+            <div className="timer-container">
+              {/* <div className="horizontal-gold-bar"></div>
             <span className="timer">
             </span> */}
-          </div>
-          <div className="cards-section">
-            {cards.map((cardImage, index) => (
-                <div
-                    key={index}
-                    className={`card-container ${
-                        selectedCards.includes(index) ? "selected-card" : ""
-                    } ${
-                        amIRedTeamLeader || amIBlueTeamLeader || whosTurn != myTeam
-                            ? "disabled"
-                            : ""
-                    }`}
-                    onClick={() => handleCardSelection(index)}
-                >
-                  <img
-                      className={`card ${
-                          flipStates[index] || (amIRedTeamLeader && amIBlueTeamLeader)
-                              ? "flip"
+            </div>
+            <div className="cards-section">
+              {cards.map((cardImage, index) => (
+                  <div
+                      key={index}
+                      className={`card-container ${
+                          selectedCards.includes(index) ? "selected-card" : ""
+                      } ${
+                          amIRedTeamLeader || amIBlueTeamLeader || whosTurn != myTeam
+                              ? "disabled"
                               : ""
                       }`}
-                      src={
-                        amIRedTeamLeader || amIBlueTeamLeader
-                            ? (() => {
-                              const cardColor =
-                                  gameSession?.gameState.cardsColors[index];
-                              switch (cardColor) {
-                                case 1:
-                                  return cardRedImg;
-                                case 2:
-                                  return cardBlueImg;
-                                case 3:
-                                  return cardBlackImg;
-                                default:
-                                  return cardWhiteImg;
-                              }
-                            })()
-                            : cardImage
-                      }
-                      alt={`card-${index}`}
-                  />
-                  {votedCards[index] > 0 && (
-                      <div className="corner-icon-container">
-                        <img
-                            className="corner-icon"
-                            src={votingLabel}
-                            alt="corner icon"
-                        />
-                        <span className="corner-text">{votedCards[index]}</span>
-                      </div>
-                  )}
+                      onClick={() => handleCardSelection(index)}
+                  >
+                    <img
+                        className={`card ${
+                            flipStates[index] || (amIRedTeamLeader && amIBlueTeamLeader)
+                                ? "flip"
+                                : ""
+                        }`}
+                        src={
+                          amIRedTeamLeader || amIBlueTeamLeader
+                              ? (() => {
+                                const cardColor =
+                                    gameSession?.gameState.cardsColors[index];
+                                switch (cardColor) {
+                                  case 1:
+                                    return cardRedImg;
+                                  case 2:
+                                    return cardBlueImg;
+                                  case 3:
+                                    return cardBlackImg;
+                                  default:
+                                    return cardWhiteImg;
+                                }
+                              })()
+                              : cardImage
+                        }
+                        alt={`card-${index}`}
+                    />
+                    {votedCards[index] > 0 && (
+                        <div className="corner-icon-container">
+                          <img
+                              className="corner-icon"
+                              src={votingLabel}
+                              alt="corner icon"
+                          />
+                          <span className="corner-text">{votedCards[index]}</span>
+                        </div>
+                    )}
 
-                  {!flipStates[index] && (
-                      <span
-                          className={`card-text ${
-                              gameSession?.gameState.cardsColors[index] != 0 &&
-                              (amIRedTeamLeader || amIBlueTeamLeader)
-                                  ? "gold-text"
-                                  : ""
-                          }`}
-                      >
+                    {!flipStates[index] && (
+                        <span
+                            className={`card-text ${
+                                gameSession?.gameState.cardsColors[index] != 0 &&
+                                (amIRedTeamLeader || amIBlueTeamLeader)
+                                    ? "gold-text"
+                                    : ""
+                            }`}
+                        >
                     {gameSession?.gameState.cards[index]}
                   </span>
-                  )}
-                </div>
-            ))}
-          </div>
-          <div className="bottom-section">
-            <div className="item">
-              <img className="shelf" src={shelfImg}/>
+                    )}
+                  </div>
+              ))}
             </div>
-            <div className="item">
-              <Button
-                  variant="room"
-                  soundFXVolume={soundFXVolume}
-                  className={
-                    ((amIBlueTeamLeader || amIRedTeamLeader) &&
-                        isHintTime &&
-                        whosTurn !== myTeam) ||
-                    ((amIBlueTeamLeader || amIRedTeamLeader) && isGuessingTime) ||
-                    (!amIBlueTeamLeader && !amIRedTeamLeader && isGuessingTime) ||
-                    (!amIBlueTeamLeader && !amIRedTeamLeader && isHintTime) ||
-                    (!amIBlueTeamLeader &&
-                        !amIRedTeamLeader &&
-                        isGuessingTime &&
-                        whosTurn !== myTeam)
-                        ? "hidden"
-                        : ""
-                  }
-                  onClick={change_turn}
-              >
-                <span className="button-text">{t("end-round")}</span>
-              </Button>
-              <div className="horizontal-gold-bar"/>
-            </div>
-            <div className="item">
-              <img className="card-stack" src={cardsStackImg}/>
-              <div
-                  className="codename-card-container"
-                  onClick={toggleBlackCardVisibility}
-              >
+            <div className="bottom-section">
+              <div className="item">
+                <img className="shelf" src={shelfImg}/>
+              </div>
+              <div className="item">
+                <Button
+                    variant="room"
+                    soundFXVolume={soundFXVolume}
+                    className={
+                      ((amIBlueTeamLeader || amIRedTeamLeader) &&
+                          isHintTime &&
+                          whosTurn !== myTeam) ||
+                      ((amIBlueTeamLeader || amIRedTeamLeader) && isGuessingTime) ||
+                      (!amIBlueTeamLeader && !amIRedTeamLeader && isGuessingTime) ||
+                      (!amIBlueTeamLeader && !amIRedTeamLeader && isHintTime) ||
+                      (!amIBlueTeamLeader &&
+                          !amIRedTeamLeader &&
+                          isGuessingTime &&
+                          whosTurn !== myTeam)
+                          ? "hidden"
+                          : ""
+                    }
+                    onClick={change_turn}
+                >
+                  <span className="button-text">{t("end-round")}</span>
+                </Button>
+                <div className="horizontal-gold-bar"/>
+              </div>
+              <div className="item">
+                <img className="card-stack" src={cardsStackImg}/>
+                <div
+                    className="codename-card-container"
+                    onClick={toggleBlackCardVisibility}
+                >
                 <span className="codename-card-text">
                   {(gameSession?.gameState.hint || "HINT") +
                       " " +
@@ -969,72 +969,72 @@ const Gameplay: React.FC<GameplayProps> = ({
                           ? ""
                           : gameSession?.gameState.hintNumber)}
                 </span>
-                <img className="codename-card" src={cardBlackImg}/>
+                  <img className="codename-card" src={cardBlackImg}/>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        {isCardVisible && (
-            <div className="card-black-overlay">
-              <img
-                  className="card-black-img"
-                  src={cardBlackImg}
-                  alt="Black Card"
-              />
-              <div className="codename-input-container">
-                <input
-                    type="text"
-                    placeholder={t("enter-the-codename")}
-                    className="codename-input"
-                    value={cardText}
-                    onChange={(e) => setCardText(e.target.value)}
-                    disabled={
-                        (!amIRedTeamLeader && !amIBlueTeamLeader) ||
-                        whosTurn !== myTeam
-                    }
+          {isCardVisible && (
+              <div className="card-black-overlay">
+                <img
+                    className="card-black-img"
+                    src={cardBlackImg}
+                    alt="Black Card"
                 />
-                <input
-                    type="range"
-                    min={1}
-                    max={whosTurn === "blue" ? (8 - blueTeamScore) : (9 - redTeamScore)}
-                    className="codename-slider"
-                    value={cardNumber}
-                    onChange={(e) => setCardNumber(+e.target.value)}
-                    disabled={
-                        (!amIRedTeamLeader && !amIBlueTeamLeader) ||
-                        whosTurn !== myTeam
-                    }
-                />
-                <span className="slider-value">{cardNumber}</span>
+                <div className="codename-input-container">
+                  <input
+                      type="text"
+                      placeholder={t("enter-the-codename")}
+                      className="codename-input"
+                      value={cardText}
+                      onChange={(e) => setCardText(e.target.value)}
+                      disabled={
+                          (!amIRedTeamLeader && !amIBlueTeamLeader) ||
+                          whosTurn !== myTeam
+                      }
+                  />
+                  <input
+                      type="range"
+                      min={1}
+                      max={whosTurn === "blue" ? (8 - blueTeamScore) : (9 - redTeamScore)}
+                      className="codename-slider"
+                      value={cardNumber}
+                      onChange={(e) => setCardNumber(+e.target.value)}
+                      disabled={
+                          (!amIRedTeamLeader && !amIBlueTeamLeader) ||
+                          whosTurn !== myTeam
+                      }
+                  />
+                  <span className="slider-value">{cardNumber}</span>
+                </div>
               </div>
-            </div>
-        )}
-        {errors.length > 0 && (
-            <div className="toast-container">
-              {errors.map((error) => (
-                  <div id={error.id} key={error.id} className="toast active">
-                    <div className="toast-content">
-                      <i
-                          className="fa fa-exclamation-circle fa-3x"
-                          style={{color: "#561723"}}
-                          aria-hidden="true"
-                      ></i>
-                      <div className="message">
-                        <span className="text text-1">Error</span>
-                        <span className="text text-2">{error.message}</span>
+          )}
+          {errors.length > 0 && (
+              <div className="toast-container">
+                {errors.map((error) => (
+                    <div id={error.id} key={error.id} className="toast active">
+                      <div className="toast-content">
+                        <i
+                            className="fa fa-exclamation-circle fa-3x"
+                            style={{color: "#561723"}}
+                            aria-hidden="true"
+                        ></i>
+                        <div className="message">
+                          <span className="text text-1">Error</span>
+                          <span className="text text-2">{error.message}</span>
+                        </div>
                       </div>
+                      <i
+                          className="fa-solid fa-xmark close"
+                          onClick={() => handleCloseErrorToast(error.id)}
+                      ></i>
+                      <div className="progress active"></div>
                     </div>
-                    <i
-                        className="fa-solid fa-xmark close"
-                        onClick={() => handleCloseErrorToast(error.id)}
-                    ></i>
-                    <div className="progress active"></div>
-                  </div>
-              ))}
-            </div>
-        )}
-      </BackgroundContainer>
-    </>
+                ))}
+              </div>
+          )}
+        </BackgroundContainer>
+      </>
   );
 };
 
