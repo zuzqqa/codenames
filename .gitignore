@@ -69,3 +69,5 @@ Thumbs.db
 .properties
 **/.env
 **/*.env
+/node_modules/
+/codenames-frontend/node_modules
