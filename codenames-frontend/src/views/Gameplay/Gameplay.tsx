@@ -119,7 +119,6 @@ const Gameplay: React.FC<GameplayProps> = ({
 
   const [redTeamPlayers, setRedTeamPlayers] = useState<User[]>([]);
   const [blueTeamPlayers, setBlueTeamPlayers] = useState<User[]>([]);
-  const [client, setClient] = useState<Client | null>(null);
   const [myTeam, setMyTeam] = useState<string | null>(null);
   const [cards, setCards] = useState<string[]>(
     new Array(25).fill(cardWhiteImg)
@@ -140,12 +139,9 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
   const [cardsToReveal, setCardsToReveal] = useState<number[]>([]);
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
-  const [hasEndRoundBeenCalled, setHasEndRoundBeenCalled] = useState(false);
   const clickAudio = new Audio(cardSound);
   const [votedCards, setVotedCards] = useState<number[]>([]);
-  const [userId, setUserId] = useState<string | null>(
-    localStorage.getItem("userId") || null
-  );
+  const [userId, setUserId] = useState<string | null>();
 
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
@@ -170,22 +166,24 @@ const Gameplay: React.FC<GameplayProps> = ({
    * Prevents leaders from selecting cards.
    * Sends selection to the server and updates the local selection state.
    *
-   * @param {number} cardIndex - The index of the card being selected.
+   * @param {number} index - The index of the card being selected.
    */
-  const handleCardSelection = (cardIndex: number) => {
+  const handleCardSelection = (index: number) => {
+    if (flipStates[index]) return;
+
     if (amIRedTeamLeader || amIBlueTeamLeader) return;
 
     if (amICurrentLeader) {
-      revealCard(cardIndex);
+      revealCard(index);
     } else {
-      const isAddingVote = selectedCards.includes(cardIndex) ? false : true;
+      const isAddingVote = selectedCards.includes(index) ? false : true;
 
-      sendCardSelection(cardIndex, isAddingVote);
+      sendCardSelection(index, isAddingVote);
 
       setSelectedCards((prevSelectedCards) =>
         isAddingVote
-          ? [...prevSelectedCards, cardIndex]
-          : prevSelectedCards.filter((c) => c !== cardIndex)
+          ? [...prevSelectedCards, index]
+          : prevSelectedCards.filter((c) => c !== index)
       );
     }
   };
@@ -202,7 +200,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   ) => {
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
-    console.log(cardIndex);
+
     try {
       const response = await fetch(
         `http://localhost:8080/api/game-session/${storedGameId}/voteCards`,
@@ -254,34 +252,32 @@ const Gameplay: React.FC<GameplayProps> = ({
   };
 
   /**
-   * Fetches the user ID from localStorage or from the server if not stored.
-   * Saves the fetched user ID in both localStorage and state.
+   * Effect that triggers the function to fetch user by user id.
+   *  when the component is mounted.
    */
   useEffect(() => {
-    const fetchUserId = async () => {
-      try {
-        const storedId = localStorage.getItem("userId");
-        if (storedId) {
-          setUserId(storedId);
-          return;
-        }
-
-        const response = await fetch("http://localhost:8080/api/users/getId", {
-          method: "GET",
-          credentials: "include",
-        });
-        if (!response.ok) throw new Error("Failed to fetch user ID");
-
-        const id = await response.text();
-        localStorage.setItem("userId", id);
-        setUserId(id);
-      } catch (error) {
-        console.error("Error fetching user ID", error);
-      }
-    };
-
     fetchUserId();
   }, []);
+
+  /**
+   * Fetches the user ID from the server.
+   * Saves the fetched user ID in localStorage.
+   */
+  const fetchUserId = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/users/getId", {
+        method: "GET",
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch user ID");
+
+      const id = await response.text();
+      localStorage.setItem("userId", id);
+      setUserId(id);
+    } catch (error) {
+      console.error("Error fetching user ID", error);
+    }
+  };
 
   /**
    * Toggles the visibility of the black card.
@@ -314,7 +310,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     }
 
     /**
-     * Fetches the game session data and user ID, then sets various states related to the game session.
+     * Fetches the game session data, then sets various states related to the game session.
      * Handles errors if fetching fails.
      *
      * @returns {void} Updates the component's states based on the fetched data.
@@ -326,18 +322,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         );
         if (!response.ok) throw new Error("Failed to fetch game session");
         const data = await response.json();
-
-        const getIdResponse = await fetch(
-          "http://localhost:8080/api/users/getId",
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-        if (!getIdResponse.ok) throw new Error("Failed to fetch user ID");
-
-        const userId = await getIdResponse.text();
-
+        
         setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
         setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
         setAmICurrentLeader(
@@ -406,17 +391,6 @@ const Gameplay: React.FC<GameplayProps> = ({
         );
         if (!response.ok) throw new Error("Failed to fetch game session");
         const data = await response.json();
-
-        const getIdResponse = await fetch(
-          "http://localhost:8080/api/users/getId",
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-        if (!getIdResponse.ok) throw new Error("Failed to fetch user ID");
-
-        const userId = await getIdResponse.text();
 
         setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
         setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
@@ -669,6 +643,19 @@ const Gameplay: React.FC<GameplayProps> = ({
    * Retrieves the game ID from local storage and sends a GET request.
    */
   const change_turn = () => {
+    if (isHintTime && cardNumber === 0) {
+      console.log(cardNumber);
+      const newErrors: { id: string; message: string }[] = [];
+
+      newErrors.push({
+        id: generateId(),
+        message: t("hint-zero"),
+      });
+  
+      setErrors(newErrors);
+      return;
+    }
+
     const storedGameId = localStorage.getItem("gameId");
 
     fetch(
@@ -690,6 +677,7 @@ const Gameplay: React.FC<GameplayProps> = ({
    */
   const sendHint = () => {
     if (!cardText.trim()) return;
+
     const storedGameId = localStorage.getItem("gameId");
 
     if (!amIRedTeamLeader && !amIBlueTeamLeader) return;
@@ -773,9 +761,11 @@ const Gameplay: React.FC<GameplayProps> = ({
    */
   const validateCardText = (text: string) => {
     const newErrors: { id: string; message: string }[] = [];
+
     if (text.split(" ").length == 1) {
       return true;
     }
+    
     newErrors.push({
       id: generateId(),
       message: t("hint-one-word"),
@@ -937,7 +927,7 @@ const Gameplay: React.FC<GameplayProps> = ({
                     isHintTime &&
                     whosTurn !== myTeam) ||
                   ((amIBlueTeamLeader || amIRedTeamLeader) && isGuessingTime) ||
-                  (!amIBlueTeamLeader && !amIRedTeamLeader && isGuessingTime) ||
+                  (!amIBlueTeamLeader && !amIRedTeamLeader && !amICurrentLeader && isGuessingTime) ||
                   (!amIBlueTeamLeader && !amIRedTeamLeader && isHintTime) ||
                   (!amIBlueTeamLeader &&
                     !amIRedTeamLeader &&
@@ -948,7 +938,7 @@ const Gameplay: React.FC<GameplayProps> = ({
                 }
                 onClick={change_turn}
               >
-                <span className="button-text">{t("end-round")}</span>
+                <span className="button-text">{amICurrentLeader ? t("pass-round") : t("end-round")}</span>
               </Button>
               <div className="horizontal-gold-bar" />
             </div>
