@@ -241,8 +241,8 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
       const userId = await getIdResponse.text();
 
       const voteRequest = {
-        userId: selectedPlayer.id,
-        votedUserId: userId,
+        userId: userId,
+        votedUserId: selectedPlayer.id,
       };
 
       const response = await fetch(
