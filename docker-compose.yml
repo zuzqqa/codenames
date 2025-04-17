@@ -19,6 +19,8 @@ services:
         - ./codenames-backend:/opt/codenames-backend
       depends_on:
         - mongodb
+      networks:
+        - codenames-network
 
   frontend:
     build:
@@ -32,6 +34,8 @@ services:
     command: ["npm", "run", "dev", "--", "--host"]
     depends_on:
       - backend
+    networks:
+        - codenames-network
 
   mongodb:
     image: mongo
@@ -44,6 +48,32 @@ services:
     volumes:
       - mongo_data:/data/db
       - ./codenames-backend/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - codenames-network
+
+  audioServer:
+    build:
+      context: ./codenames-audioserver
+    image: audioserver
+    container_name: codenames-audioserver
+    ports:
+      - "3000:3000"
+    networks:
+        - codenames-network
+
+  peerserver:
+    build:
+      context: ./codenames-peerserver
+    image: peerserver
+    container_name: codenames-peerserver
+    ports:
+      - "3001:3001"
+    networks:
+        - codenames-network
       
 volumes:
   mongo_data:
+
+networks:
+    codenames-network:
+        driver: bridge
