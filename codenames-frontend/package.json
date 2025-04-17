@@ -21,11 +21,13 @@
     "i18next": "^24.2.1",
     "i18next-http-backend": "^3.0.1",
     "js-cookie": "^3.0.5",
+    "peerjs": "^1.5.4",
     "react": "^18.3.1",
     "react-cookie": "^7.2.2",
     "react-dom": "^18.3.1",
     "react-i18next": "^15.4.0",
     "react-router-dom": "^7.1.3",
+    "socket.io-client": "^4.8.1",
     "sockjs-client": "^1.6.1",
     "yup": "^1.6.1"
   },

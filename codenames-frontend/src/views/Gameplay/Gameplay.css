@@ -415,6 +415,15 @@ button {
   transform: rotate(1deg);
 }
 
+.audio-room {
+  position: absolute;
+  top: 52%;
+  left: 17%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 @keyframes hit {
   0% { transform: rotate(30deg) scale(1); }
   20% { transform: rotate(28deg) scale(1.1); }

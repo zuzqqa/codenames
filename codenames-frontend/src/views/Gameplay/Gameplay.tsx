@@ -27,6 +27,7 @@ import Chat from "../../components/Chat/Chat.tsx";
 import { Client } from "@stomp/stompjs";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useWebSocket } from "./useWebSocket";
+import AudioRoom from "../../components/AudioRoom/AudioRoom.tsx";
 
 /**
  * Represents properties for controlling gameplay-related settings, such as volume levels.
@@ -851,6 +852,9 @@ const Gameplay: React.FC<GameplayProps> = ({
         <div className="timer points-blue">{blueTeamScore} / 8</div>
         <div className="banner-container">
           <img src={getBanner()} />
+        </div>
+        <div className="audio-room">
+          <AudioRoom soundFXVolume={soundFXVolume} />
         </div>
         <Chat />
         <div className="content-container">
