@@ -3,12 +3,11 @@
   box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.3);
   padding: 1.5vh 2.5vw;
   max-height: 75%;
-  max-width: 80%;
+  width: 80%;
   border-radius: 10px;
   font-size: calc(0.4rem + 0.6vw);
   color: #5b544e;
-  margin-top: 10%;
-  margin-left: 2%;
+  margin: 10% auto 0 auto;
 }
 
 .content {
@@ -29,12 +28,11 @@
 }
 
 .game-name {
-  font-family: "Wellfleet", sans-serif;
-  font-size: calc(0.8rem + 1vw);
-  color: #000000;
+  font-family: "Wellfleet", serif;
+  font-size: calc(0.8rem + 1.2vw);
+  color: #393633;
   grid-row: 1;
   grid-column: 1;
-  margin: auto;
 }
 
 .private-lobby-password {
@@ -47,7 +45,7 @@
 .div-slots {
   grid-row: 1;
   grid-column: 2;
-  font-size: calc(0.4rem + 0.4vw);
+  font-size: calc(0.6rem + 0.4vw);
 }
 
 .room-btn {
@@ -86,8 +84,6 @@
 }
 
 .player-container {
-  background: linear-gradient(360deg, #131d25 0%, #2c3d46 88.89%),
-    linear-gradient(360deg, #561723 0%, #8d2736 88.89%);
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 17px;
   height: 3rem;
@@ -104,6 +100,14 @@
   text-overflow: ellipsis;
 }
 
+.player-container-blue{
+  background: linear-gradient(360deg, #062f51 0%, #195778 88.89%);
+  }
+
+.player-container-red{
+  background: linear-gradient(360deg, #561723 0%, #8d2736 88.89%);
+}
+
 .join-button {
   font-size: calc(0.6rem + 0.8vw);
   color: #5b544e;
@@ -112,7 +116,8 @@
 }
 
 .player-icon {
-  height: 100%;
+  height: 80%;
+  padding: 5px;
   align-self: center;
 }
 

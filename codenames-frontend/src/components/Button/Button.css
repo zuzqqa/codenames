@@ -48,6 +48,24 @@
   border-color: #fcf18b;
   background-image: linear-gradient(to top, #22303b, #0b1319);
 }
+.btn-circle-profile {
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.7rem;
+  position: absolute;
+  top: 2%;
+  right: 5.5%;
+
+  border-width: 0.125rem;
+  border-color: #fcf18b;
+  background-image: linear-gradient(to top, #22303b, #0b1319);
+}
+
+.btn-circle-profile img{
+  height: 40px;
+  margin-top: 3px;
+  margin-left: 15px;
+}
 
 .btn-circle-back {
   border-radius: 50%;
@@ -182,4 +200,27 @@
   -webkit-background-clip: text;
 
   background-image: linear-gradient(to right, #fff7ab, #dab274);
+}
+
+.btn-edit{
+  border-radius: 50%;
+  width: 2.2rem;
+  height: 2.6rem;
+  background-image: linear-gradient(to top, #22303b, #0b1319);
+  border-width: 0.125rem;
+}
+
+.btn-edit img{
+  width: 1.3rem;
+}
+
+.btn-navy-blue {
+  background-image: linear-gradient(to top, #364a58, #1a242c);
+  min-width: 7rem;
+}
+
+.btn-transparent{
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }

@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 import org.example.codenames.jwt.JwtService;
+import org.example.codenames.user.entity.FriendRequestsDTO;
 import org.example.codenames.user.entity.PasswordResetRequest;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.controller.api.UserController;
@@ -297,6 +298,93 @@ public class DefaultUserController implements UserController {
     }
 
     /**
+     * Searches for users with usernames that match the provided string.
+     *
+     * @param username the username to search for
+     * @return ResponseEntity containing the list of matched users
+     */
+    @GetMapping("/search")
+    public ResponseEntity<List<User>> searchUsers(@RequestParam String username) {
+        List<User> users = userService.searchActiveUsersByUsername(username);
+        return ResponseEntity.ok(users);
+    }
+
+    /**
+     * Sends a friend request from one user to another.
+     *
+     * @param receiverUsername the username of the user receiving the request
+     * @param senderUsername the username of the user sending the request
+     * @return ResponseEntity with status 200 OK
+     */
+    @PostMapping("/sendRequest/{receiverUsername}")
+    public ResponseEntity<Void> sendFriendRequest(@PathVariable String receiverUsername, @RequestParam String senderUsername) {
+        userService.sendFriendRequest(senderUsername, receiverUsername);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Declines a friend request sent by another user.
+     *
+     * @param senderUsername the username of the user who sent the request
+     * @param receiverUsername the username of the user declining the request
+     * @return ResponseEntity with status 200 OK
+     */
+    @PostMapping("/declineRequest/{senderUsername}")
+    public ResponseEntity<Void> declineFriendRequest(@PathVariable String senderUsername, @RequestParam String receiverUsername) {
+        userService.declineFriendRequest(receiverUsername, senderUsername);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Accepts a friend request sent by another user.
+     *
+     * @param senderUsername the username of the user who sent the request
+     * @param receiverUsername the username of the user accepting the request
+     * @return ResponseEntity with status 200 OK
+     */
+    @PostMapping("/acceptRequest/{senderUsername}")
+    public ResponseEntity<Void> acceptFriendRequest(@PathVariable String senderUsername, @RequestParam String receiverUsername) {
+        userService.acceptFriendRequest(receiverUsername, senderUsername);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Removes a friend from the user's friend list.
+     *
+     * @param friendUsername the username of the friend to remove
+     * @param userUsername the username of the user initiating the removal
+     * @return ResponseEntity with status 200 OK
+     */
+    @DeleteMapping("/removeFriend/{friendUsername}")
+    public ResponseEntity<Void> removeFriend(@PathVariable String friendUsername, @RequestParam String userUsername) {
+        userService.removeFriend(userUsername, friendUsername);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Retrieves all friend-related lists (friends, sent requests, received requests) for a given user.
+     *
+     * @param username the username of the user
+     * @return ResponseEntity containing a {@link FriendRequestsDTO} or 404 if user not found
+     */
+    @GetMapping("/{username}/friendRequests")
+    public ResponseEntity<FriendRequestsDTO> getFriendRequests(@PathVariable String username) {
+        System.out.println("entering getFriendRequests function");
+        Optional<User> user = userService.getUserByUsername(username);
+        if (user.isPresent()) {
+            User u = user.get();
+            FriendRequestsDTO dto = new FriendRequestsDTO(
+                    u.getFriends(),
+                    u.getSentRequests(),
+                    u.getReceivedRequests()
+            );
+            return ResponseEntity.ok(dto);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
      * Resets user password based on the token and new password provided.
      *
      * @param token the reset token provided by the user.
@@ -313,4 +401,23 @@ public class DefaultUserController implements UserController {
 
         return ResponseEntity.badRequest().body("Invalid or expired token.");
     }
+
+    /**
+     * Checks if the currently authenticated user is a guest.
+     *
+     * @param token the authentication token from the cookie
+     * @return ResponseEntity containing true if the user is a guest or not authenticated, false otherwise
+     */
+    @GetMapping("/isGuest")
+    public ResponseEntity<Boolean> isGuest(@CookieValue(value = "authToken", required = false) String token) {
+        if (token == null) {
+            return ResponseEntity.ok(true);
+        }
+
+        String username = jwtService.getUsernameFromToken(token);
+        Optional<User> user = userService.getUserByUsername(username);
+
+        return ResponseEntity.ok(user.map(User::isGuest).orElse(true));
+    }
+
 }

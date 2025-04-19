@@ -7,6 +7,7 @@ import {ReactNode} from "react";
  */
 interface TitleModalProps {
   children: ReactNode; // Accepts valid React child elements like string, JSX, etc.
+  variant?: "default" | "small";
 }
 
 /**
@@ -17,11 +18,11 @@ interface TitleModalProps {
  * @param {TitleModalProps} props - The properties that define the TitleModal component.
  * @returns {JSX.Element} The rendered title modal.
  */
-const TitleModal: React.FC<TitleModalProps> = ({ children }) => {
+const TitleModal: React.FC<TitleModalProps> = ({ children, variant = "default" }) => {
     return (
         <div className="title-container-modal">
-            <h1 className="title-modal">{children}</h1>
-            <h1 className="title-shadow-modal">{children}</h1>
+            <h1 className={`title-modal title-modal-${variant}`}>{children}</h1>
+            <h1 className={`title-shadow-modal title-shadow-modal-${variant}`}>{children}</h1>
         </div>
     );
 };
