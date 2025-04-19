@@ -1,13 +1,10 @@
-🎮 Alpha Release – Early version of the game
+Profile modal created.
 **🔧 What's included in this release?**
-Choose Leader feature hotfix.
+Profile modal created, toggle added to JoinGame, CreateGame, SelectGame, Lobby layout improved.
 
 Key additions: 
-- Proper leader voting in the game session.
 
 **🚧 What's still under development?**
-- Voice chat integration.
-- User profile enhancements.
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 
