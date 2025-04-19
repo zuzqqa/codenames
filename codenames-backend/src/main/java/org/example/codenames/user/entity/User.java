@@ -9,6 +9,8 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -50,6 +52,16 @@ public class User {
      */
     private String email;
 
+    /**
+     * The description for the user.
+     */
+    private String description;
+
+    /**
+     * The number of profile picture for the user.
+     */
+    private int profilePic;
+
      /**
      * The roles for the user.
      */
@@ -64,6 +76,21 @@ public class User {
      * User status.
      */
     private userStatus status;
+
+    /**
+     * List of usernames of user's friends
+     */
+    private List<String> friends = new ArrayList<>();
+
+    /**
+     * List of usernames of users to whom the user has sent a friend request
+     */
+    private List<String> sentRequests = new ArrayList<>();
+
+    /**
+     * List of usernames from which the user received a friend request
+     */
+    private List<String> receivedRequests = new ArrayList<>();
 
     /**
      * Override the equals method to compare two User objects.

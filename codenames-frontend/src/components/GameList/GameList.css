@@ -70,7 +70,7 @@ button.variant-session:hover {
 .room-name {
   font-size: 1.3rem;
   font-weight: bold;
-  font-family: "Wellfleet", sans-serif;
+  font-family: "Wellfleet", serif;
   color: #4a4a4a;
   grid-row: 1;
 }

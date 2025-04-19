@@ -60,7 +60,7 @@ form {
 .input-box {
   padding: 8px 15px;
   font-size: calc(0.1rem + 1vw);
-  font-family: "Wellfleet", sans-serif;
+  font-family: "Wellfleet", serif;
   color: #5b544e;
   background-color: #f0e0b5;
   border: none;
@@ -193,7 +193,7 @@ form {
   display: block;
   font-size: calc(0.2rem + 1vw);
   padding: 0.8rem;
-  font-family: "Wellfleet", sans-serif;
+  font-family: "Wellfleet", serif;
   color: #5b544e;
   background-color: #f0e0b5;
   border: none;
