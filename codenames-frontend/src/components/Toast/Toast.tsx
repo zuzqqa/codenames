@@ -8,6 +8,10 @@ interface ToastProps {
     variant: "error" | "notification";
 }
 
+/**
+ * Toast component displays a brief message to the user.
+ * It automatically fades out and removes itself after a delay.
+ */
 const Toast: React.FC<ToastProps> = ({ id, message, variant }) => {
     const { removeToast } = useToast();
 
@@ -28,25 +32,27 @@ const Toast: React.FC<ToastProps> = ({ id, message, variant }) => {
     }, [id, removeToast]);
 
     return (
-                <div className={`toast active`} id={id}>
-                    <div className={`toast-content`}>
-                        <i
-                            className="fa fa-exclamation-circle fa-3x"
-                            style={{color: "#561723"}}
-                            aria-hidden="true"
-                        ></i>
-                        <div className="message">
-                            <span className="text text-1">{variant}</span>
-                            <span className="text text-2">{message}</span>
-                        </div>
-                        <i
-                            className="fa-solid fa-xmark close"
-                            onClick={() => removeToast(id)}
-                        ></i>
-                        <div className="progress active"></div>
-                    </div>
+        <div className="toast active" id={id}>
+            <div className="toast-content">
+                <i
+                    className="fa fa-exclamation-circle fa-3x"
+                    style={{ color: "#561723" }}
+                    aria-hidden="true"
+                ></i>
+                <div className="message">
+                    <span className="text text-1">
+                        {variant.charAt(0).toUpperCase() + variant.slice(1)}
+                    </span>
+                    <span className="text text-2">{message}</span>
                 </div>
-            );
+                <i
+                    className="fa-solid fa-xmark close"
+                    onClick={() => removeToast(id)}
+                ></i>
+                <div className="progress active"></div>
+            </div>
+        </div>
+    );
 };
 
 export default Toast;
