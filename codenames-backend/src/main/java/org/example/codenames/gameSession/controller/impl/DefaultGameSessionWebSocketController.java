@@ -123,6 +123,11 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
     @DeleteMapping("/{gameId}/disconnect")
     public ResponseEntity<Void> disconnectPlayer(@PathVariable UUID gameId, @RequestParam String userId) {
         try {
+            // Check if the player is in the game session
+            if (!gameSessionService.isPlayerInSession(gameId, userId)) {
+                return ResponseEntity.status(200).build();
+            }
+
             // Remove the player from the game session
             boolean removed = gameSessionService.removePlayerFromSession(gameId, userId);
 

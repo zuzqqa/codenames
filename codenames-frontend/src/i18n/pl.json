@@ -70,5 +70,6 @@
   "e-mail-not-found": "Brak konta z podanym adresem e-mail.",
   "e-mail-reset-sent": "Link do zmiany hasła został wysłany na podany adres e-mail.",
   "pass-round": "Spasuj",
-  "hint-zero": "Liczba w podpowiedzi nie moze być zerem."
+  "hint-zero": "Liczba w podpowiedzi nie moze być zerem.",
+  "leave": "Opuść drużynę"
 }

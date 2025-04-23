@@ -34,4 +34,6 @@ public interface GameSessionService {
     boolean removePlayerFromSession(UUID gameId, String userId);
 
     void revealCard(UUID gameId, String cardIndex);
+
+    boolean isPlayerInSession(UUID gameId, String userId);
 }
