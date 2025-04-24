@@ -1,0 +1,19 @@
+.audio-component {
+    position: relative; /* Allows positioning of child elements */
+    display: flex; /* Optional: Adjusts layout of child elements */
+    justify-content: center; /* Centers child elements horizontally */
+    align-items: center; /* Centers child elements vertically */
+    height: 100%; /* Adjust as needed */
+    width: 100%; /* Adjust as needed */
+}
+
+.audio-component .audio-button {
+    position: absolute; /* Allows positioning within the parent */
+    top: 50%; /* Centers vertically */
+    left: 50%; /* Centers horizontally */
+    transform: translate(-50%, -50%); /* Adjusts for element's own size */
+    background-color: transparent; /* Transparent background */
+    border: none; /* No border */
+    cursor: pointer; /* Pointer cursor on hover */
+    z-index: 1; /* Ensures button is above other elements */
+}
