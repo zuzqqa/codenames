@@ -4,10 +4,10 @@ This update focuses on improving core gameplay mechanics and addressing key logi
 
 Key additions: 
 - Fixed issue with user ID persistence – user IDs are now properly removed from localStorage.
-- Added "Pass" button to allow players to skip their turn.
+- Added Pass button to allow players to skip their turn.
 - Updated hint selection logic:
     - Players can now select hint number + 1 cards.
-    - Hints with value 0 are now blocked, and "End Round" is disabled in such cases.
+    - Hints with value 0 are now blocked, and End Round is disabled in such cases.
 - Improved card interaction rules:
     - Clicking already revealed cards is now disabled.
     - Selecting a neutral card correctly ends the turn immediately.
