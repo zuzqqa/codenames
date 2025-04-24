@@ -1,0 +1,339 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DOCUMENT DEFINITION AND BASIC SETTINGS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[12pt,a4paper,colorlinks=true,linkcolor=NavyBlue,citecolor=red,urlcolor=NavyBlue]{book}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}         
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FONT AND STYLE PACKS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{mathpazo}             
+\usepackage[semibold]{sourcesanspro}
+\usepackage{sectsty}
+\allsectionsfont{\sffamily} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% COLORS AND GRAPHIC STYLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{color}
+\definecolor{Valentia}{RGB}{233,78,82}
+\definecolor{Titleblue}{RGB}{114,146,162}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LAYOUT AND FORMATTING PACKAGES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{mdframed}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage[absolute]{textpos}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{geometry}
+\usepackage{scrextend}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% HEADER AND FOOTER SETTINGS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyheadoffset{0.005\textwidth}
+\fancyhead[LE]{\thepage}
+\fancyhead[RE]{\nouppercase\leftmark}
+\fancyhead[RO]{\thepage}
+\fancyhead[LO]{\nouppercase\rightmark}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% HYPERLINKS AND CHAPTER STYLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[Sonny]{fncychap}
+\usepackage[colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black]{hyperref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BEGINNING OF THE DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TITLE PAGE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{titlepage}
+\newgeometry{left=2.5cm, bottom=3cm, top=2cm, right=2.5cm}
+
+\tikz[remember picture,overlay] \node[opacity=0.03,inner sep=0pt] at (73.6mm, -124.25mm){\includegraphics{characters.png}};
+
+\centering
+\color{black}
+\fontsize{24}{13}\selectfont
+\textbf{DOKUMENT PROJEKTU} \\[2mm]
+\normalsize
+\color{black}
+\bigskip
+\textbf{Wersja dokumentu: 1.1}\\[1mm]
+\bigskip
+\textbf{Data utworzenia: 2.04.2025}\\[1mm]
+\bigskip
+\textbf{Data ostatniej aktualizacji: 2.04.2025}
+
+% Title of the project
+\color{black}
+\vspace{2cm}
+{\fontsize{28}{32} \selectfont \textbf{Gra internetowa}}\\ 
+\vspace{0.3cm} 
+{\fontsize{45}{32} \selectfont \textbf{Codenames}} 
+
+% Subtitle of the project
+\vspace{2cm}
+\fontsize{15}{18}\selectfont
+\color{black}
+\textbf{Scrum: Backlog produktu\\}
+\bigskip
+\vspace{5cm}
+
+% Information about authors
+\normalsize
+\bigskip
+\fontsize{12}{12}\selectfont
+\vspace{1.5mm}
+\raggedright
+\begin{tabular}{ll}
+\textbf{Redaktor:} & Agata Domasik \\[6mm]
+\textbf{Współautorzy:} & Zuzanna Nowak \\[2mm]
+& Adam Chabraszewski \\[2mm]
+& Jakub Walasik \\[6mm]
+\textbf{Liczba stron:} & 12 \\[2mm]
+\end{tabular}
+
+% Logo
+\vspace{\fill}
+\begin{center}
+    \includegraphics[scale=0.3]{logo.png} 
+\end{center}
+\vspace{-15mm}
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% GEOMETRY SETTINGS FOR THE MAIN BODY OF THE DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newgeometry{top=2cm, bottom=2.5cm, left=2cm, right=2cm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CONTENT OF THE DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TABLE OF CONTENTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tableofcontents
+
+\chapter{Wprowadzenie - o dokumencie}
+\section{Cel dokumentu}
+Celem zadania jest opisanie produktu wytwarzanego w ramach projektu. Produkt
+przybliżany jest poprzez biznesowy scenariusz jego użycia,
+z którego następnie wywodzone są cechy produktu
+dokumentowane w backlogu produktu z priorytetami. 
+\section{Odbiorcy}
+
+\begin{itemize}
+    \item Dr inż. Jakub Miler - prowadzący przedmiot \textit{Realizacja projektu informatycznego},
+    \item Dr inż. Katarzyna Łukasiewicz - prowadzący zajęcia projektowe,
+    \item Katedra Inżynierii Oprogramowania, \\[2mm] 
+Wydział Elektroniki, Telekomunikacji i Informatyki, \\[2mm]  
+Politechnika Gdańska,
+    \item Członkowie zespołu projektowego:
+    \begin{itemize}
+        \item[] Zuzanna Nowak, 193165 - kierownik projektu
+        \item[] Agata Domasik, 193577
+        \item[] Jakub Walasik, s193650
+        \item[] Adam Chabraszewski, s193373
+    \end{itemize}
+\end{itemize}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapters
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Backlog produktu}
+\section{O projekcie i produkcie}
+Gra Codenames to cyfrowa adaptacja popularnej gry towarzyskiej, w której gracze podzieleni na dwie drużyny próbują odgadnąć słowa na planszy na podstawie podpowiedzi od swojego kapitana. Wersja komputerowa umożliwia rozgrywkę online z innymi graczami oraz wprowadza nowe funkcje, takie jak lobby i komunikacja głosowa.
+\vspace{1cm}
+
+\section{Persony użytkowników}
+\begin{enumerate}
+    \item Kasia, 28 lat, fanka gier planszowych
+    \begin{itemize}
+        \item[•] Wiek: 28 lat
+        \item[•] Zawód: Pracuje jako grafik w agencji reklamowej w Krakowie
+        \item[•]Styl życia: Towarzyska, lubi spotkania ze znajomymi, szczególnie przy planszówkach i winie.
+        \item Problemy:
+        \begin{itemize}
+            \item[•] Coraz trudniej zorganizować spotkania na żywo ze względu na pracę i obowiązki znajomych.
+            \item[•] Brakuje jej wygodnej platformy do grania w planszówki online z bliskimi.
+            \item[•] Frustrują ją skomplikowane interfejsy aplikacji
+        \end{itemize}
+        \item Potrzeby i oczekiwania:
+        \begin{itemize}
+            \item[•] Intuicyjna, estetyczna i łatwa w obsłudze platforma.
+            \item[•] Możliwość tworzenia prywatnych gier z hasłem, tylko dla zaproszonych znajomych.
+            \item[•] Wbudowany czat głosowy, by można było swobodnie rozmawiać podczas gry – jak przy stole.
+        \end{itemize}
+    \end{itemize}
+    \item Piotr
+    \begin{itemize}
+        \item[•] Wiek: 19 lat
+        \item[•] Zawód: Student informatyki na Politechnice Wrocławskiej
+        \item[•]Styl życia: Spędza dużo czasu przy komputerze – zarówno ucząc się, jak i grając. Lubi techniczne nowinki, streamuje gry od czasu do czasu.
+        \item Problemy:
+        \begin{itemize}
+            \item[•] Trudno mu znaleźć godnych przeciwników w planszówki online.
+            \item[•] Brakuje mu motywacji do grania, gdy nie ma systemu postępu.
+        \end{itemize}
+        \item Potrzeby i oczekiwania:
+        \begin{itemize}
+            \item[•] Szybkie i sprawne publiczne lobby, gdzie łatwo znajdzie grę bez czekania.
+            \item[•] System rankingowy i statystyki, by móc śledzić progres i porównywać się z innymi.
+            \item[•] Wbudowany czat tekstowy – przydatny do komunikacji z innymi graczami, zwłaszcza przy grach drużynowych lub z losowymi przeciwnikami.
+        \end{itemize}
+    \end{itemize}
+\end{enumerate}
+
+
+
+\section{Scenariusz użycia produktu}
+\begin{enumerate}
+    \item \textbf{Kasia organizuje grę ze znajomymi w prywatnym lobby}  \\[2mm] 
+    Kasia chce spędzić wieczór z przyjaciółmi, ale nie mogą się spotkać osobiście. Postanawia zorganizować rozgrywkę online w Codenames.
+    \begin{itemize}
+        \item[•] Loguje się do gry, wybierając logowanie przez e-mail.
+        \item[•] Tworzy prywatne lobby, nadając mu nazwę i ustawiając hasło dostępu.
+        \item[•] Znajomi wyszukują lobby i dołączają do gry, wpisując hasło.
+        \item[•] Wszyscy uczestnicy włączają czat głosowy, aby móc swobodnie się komunikować.
+        \item[•] Drużyny decydują, kto zostanie kapitanem.
+        \item[•] Gra rozpoczyna się, a drużyny na zmianę próbują odgadnąć hasła na planszy.
+        \item[•] Po zakończonej rozgrywce pokazują statystyki – ilość słów odgadnętych przez drużyny.
+    \end{itemize}
+    \item \textbf{Piotr dołącza do publicznego lobby i rywalizuje z nieznajomymi}   \\[2mm] 
+    Piotr ma wolny wieczór i chce zagrać w Codenames, ale nie ma grupy do wspólnej gry. Decyduje się dołączyć do publicznego lobby.
+    \begin{itemize}
+        \item[•] Loguje się do gry, korzystając z konta Google.
+        \item[•] Wybiera publiczne lobby, do którego chce dołączyć
+        \item[•] System automatycznie przypisuje go do drużyny 
+        \item[•] Gra rozpoczyna się, a Piotr zostaje kapitanem swojej drużyny.
+        \item[•] Wpisuje podpowiedź składającą się z jednego słowa i liczby, a jego drużyna próbuje odgadnąć słowa.
+        \item[•] W trakcie rozgrywki Piotr korzysta z czatu tekstowego, aby komunikować się z drużyną.
+        \item[•] Po zakończonej grze otrzymuje punkty rankingowe i sprawdza swoje miejsce w tabeli liderów.
+    \end{itemize}
+\end{enumerate}
+
+\vspace{1cm}
+\section{Backlog Produktu}
+\begin{figure}[h!]
+    \centering
+    \vspace{0.5cm}
+    \includegraphics[width=1\textwidth]{Backlog.png} 
+    \caption{Lista elementów backlogu}
+    \label{fig:backlog}
+\end{figure}
+
+\vspace{1cm}
+{\large Lista elementów backlogu jest posortowana według priorytetów:}
+\begin{itemize}
+    \item \textbf{Bardzo wysoki} – kluczowe dla podstawowego działania gry.
+    \item \textbf{Wysoki} - ważne, ale nie blokujące działania gry.
+    \item \textbf{Średni} – dość ważne dla pewnych grup użytkowników
+    \item \textbf{Niski} – funkcjonalności dodatkowe, możliwe do dodania później.
+\end{itemize}
+
+
+
+\newpage
+\section{Kryteria akceptacji}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\textwidth]{kryteria3.png} 
+    \caption{Kryteria akceptacji dla funkcjonalności \textit{wysyłanie podpowiedzi}}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \vspace{1cm}
+    \includegraphics[width=1\textwidth]{kryteria1.png}
+    \caption{Kryteria akceptacji dla funkcjonalności \textit{lobby prywatne}}
+    \vspace{1cm}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \vspace{1cm}
+    \includegraphics[width=1\textwidth]{kryteria2.png}
+    \caption{Kryteria akceptacji dla funkcjonalności \textit{czat tekstowy}}
+    \vspace{1cm}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \vspace{1cm}
+    \includegraphics[width=1\textwidth]{kryteria4.png}
+    \caption{Kryteria akceptacji dla funkcjonalności \textit{autentykacja Google}}
+    \vspace{0.5cm}
+\end{figure}
+
+
+\vspace{1cm}
+{\large Ogólne kryteria akceptacyjne:}
+\begin{itemize}
+\item \textbf Stabilność i działanie podstawowych funkcji - gra działa bezawaryjnie, wszystkie podstawowe funkcje gry działają zgodnie z założeniami
+
+\item \textbf{Interfejs użytkownika (UI/UX)} - Interfejs jest zgodny z projektem i intuicyjny.
+Wszystkie komunikaty, etykiety i opcje są w pełni przetłumaczone i poprawne językowo.
+
+\item \textbf{Bezpieczeństwo} - wszystkie dane użytkowników (np. loginy, hasła, dane osobowe) są odpowiednio zabezpieczone, zaimplementowane są odpowiednie środki ochrony przed atakami typu SQL injection, XSS, CSRF itp.
+
+\item \textbf{Wydajność} - gra działa płynnie, nawet w przypadku dużej liczby graczy, czas ładowania gry jest akceptowalny (poniżej 3 sekund).
+
+\item \textbf{Testy} - produkt przeszedł wszystkie testy (testy jednostkowe, integracyjne, funkcjonalne, UX), testy manualne zostały przeprowadzone z udziałem użytkowników docelowych
+
+\item \textbf{Zgodność z wymaganiami biznesowymi} - wszystkie user stories zostały zrealizowane i zaakceptowane przez interesariuszy.
+
+\item \textbf{Dokumentacja} - cała dokumentacja (techniczna, użytkowa) jest dostępna i aktualna.
+\end{itemize}
+\vspace{0.5cm}
+
+\newpage
+\section{Definicja ukończenia}
+
+\begin{enumerate}
+    \item Wykonanie wszystkich wymaganych zadań - wszystkie funkcje opisane w user story zostały zaimplementowane zgodnie z wymaganiami
+    \item Przeprowadzenie testów - testy jednostkowe, integracyjne, funkcjonalne, UI/UX, wydajnościowe
+    \item Przegląd kodu - Kod przeszedł proces przeglądu kodu przez co najmniej jednego członka zespołu (code review).
+    \item Zatwierdzenie przez interesariuszy: zatwierdzono, że funkcjonalność działa zgodnie z wymaganiami.
+    \item Utworzenie dokumentacji
+    \item Gotowość do wdrożenia
+\end{enumerate}
+
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% END PAGE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\thispagestyle{empty}
+\tikz[remember picture,overlay] \node[opacity=0.03,inner sep=0pt] at (73.6mm, -124.25mm){\includegraphics{characters.png}};
+\begin{center}
+    \vspace*{\fill}
+    \includegraphics[width=0.3\textwidth]{logo.png} 
+    \vspace*{\fill}
+\end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% END OF DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
