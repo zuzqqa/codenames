@@ -68,5 +68,7 @@
   "invalid-or-expired-token": "Nieprawidłowy lub wygasły token.",
   "passwords-dont-match": "Hasła się nie zgadzają.",
   "e-mail-not-found": "Brak konta z podanym adresem e-mail.",
-  "e-mail-reset-sent": "Link do zmiany hasła został wysłany na podany adres e-mail."
+  "e-mail-reset-sent": "Link do zmiany hasła został wysłany na podany adres e-mail.",
+  "pass-round": "Spasuj",
+  "hint-zero": "Liczba w podpowiedzi nie moze być zerem."
 }
