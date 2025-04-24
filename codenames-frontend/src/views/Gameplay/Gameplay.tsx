@@ -258,6 +258,7 @@ const Gameplay: React.FC<GameplayProps> = ({
    */
   useEffect(() => {
     fetchUserId();
+    console.log(userId);
   }, []);
 
   /**
@@ -275,6 +276,8 @@ const Gameplay: React.FC<GameplayProps> = ({
       const id = await response.text();
       localStorage.setItem("userId", id);
       setUserId(id);
+      console.log(id);
+
     } catch (error) {
       console.error("Error fetching user ID", error);
     }
@@ -289,6 +292,31 @@ const Gameplay: React.FC<GameplayProps> = ({
     clickAudio.play();
     setIsCardVisible(true);
   };
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/users/getId", {
+          method: "GET",
+          credentials: "include",
+        });
+        if (!response.ok) throw new Error("Failed to fetch user ID");
+
+        const id = await response.text();
+        localStorage.setItem("userId", id);
+        setUserId(id);
+        console.log("User ID:", id); // Debugging line
+      } catch (error) {
+        console.error("Error fetching user ID", error);
+      }
+    };
+
+    if (!localStorage.getItem("userId")) {
+      fetchUserId();
+    } else {
+      setUserId(localStorage.getItem("userId"));
+    }
+  }, []);
 
   /**
    * Effect that loads the game session and sets the game state when the component is mounted.
@@ -305,25 +333,16 @@ const Gameplay: React.FC<GameplayProps> = ({
    * @returns {void} Updates the game session state and various other states based on fetched data.
    */
   useEffect(() => {
-    if (!storedGameId) {
-      navigate("/games");
-      return;
-    }
-
-    /**
-     * Fetches the game session data, then sets various states related to the game session.
-     * Handles errors if fetching fails.
-     *
-     * @returns {void} Updates the component's states based on the fetched data.
-     */
     const fetchGameSession = async () => {
+      if (!userId) return; 
+
       try {
         const response = await fetch(
           `http://localhost:8080/api/game-session/${storedGameId}`
         );
         if (!response.ok) throw new Error("Failed to fetch game session");
+
         const data = await response.json();
-        
         setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
         setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
         setAmICurrentLeader(
@@ -337,7 +356,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         setIsGuessingTime(data.gameState?.guessingTurn);
         setCardsToReveal(data.gameState?.cardsChosen || []);
         setMyTeam(
-          data.connectedUsers[0].find((user: User) => user.id === userId)
+          data.connectedUsers[0].find((user) => user.id === userId)
             ? "red"
             : "blue"
         );
@@ -348,7 +367,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     };
 
     fetchGameSession();
-  }, []);
+  }, [userId]);
 
   /**
    * Effect that triggers the function to reveal cards voted by the team
