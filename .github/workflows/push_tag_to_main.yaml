@@ -83,13 +83,7 @@ jobs:
           
           ESCAPED_BODY=$(echo "$BODY" | jq -Rs '.')
           
-          PRE_RELEASE_FLAG=false
-          if grep -q "PRE-RELEASE" scripts/release_note.md; then
-            PRE_RELEASE_FLAG=true
-          fi
-          
           echo "RELEASE_BODY=$ESCAPED_BODY" >> $GITHUB_ENV
-          echo "PRE_RELEASE_FLAG=$PRE_RELEASE_FLAG" >> $GITHUB_ENV
 
       - name: 📄 Create GitHub Release
         run: |
