@@ -4,6 +4,7 @@ import org.example.codenames.user.entity.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -18,4 +19,6 @@ public interface UserRepository extends MongoRepository<User, String> {
     boolean existsByUsername(String username);
 
     Optional<User> findByEmail(String email);
+
+    List<User> findByUsernameContainingAndStatus(String username, String status);
 }

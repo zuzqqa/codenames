@@ -6,10 +6,13 @@ import Button from "../../components/Button/Button";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar";
 import GameList from "../../components/GameList/GameList";
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
-
+import ProfileModal from "../../components/UserProfileOverlay/ProfileModal";
+import profileIcon from "../../assets/icons/profile.png";
 import settingsIcon from "../../assets/icons/settings.png";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
+import {logout} from "../../shared/utils.tsx";
+import logoutButton from "../../assets/icons/logout.svg";
 
 /**
  * Props type definition for the JoinGame component.
@@ -66,8 +69,10 @@ const JoinGame: React.FC<JoinGameProps> = ({
 }) => {
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
+  const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
   const [gameSessions, setGameSessions] = useState<GameSession[]>([]);
   const [filteredGames, setFilteredGames] = useState<GameSession[]>([]);
+  const [isGuest, setIsGuest] = useState<boolean | null>(null);
 
   /**
    * Fetches the list of available game sessions on component mount.
@@ -103,6 +108,28 @@ const JoinGame: React.FC<JoinGameProps> = ({
     };
   }, []);
 
+  useEffect(() => {
+    const fetchGuestStatus = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/users/isGuest", {
+          method: "GET",
+          credentials: "include",
+        });
+  
+        if (response.ok) {
+          const guestStatus = await response.json();
+          setIsGuest(guestStatus);
+        } else {
+          console.error("Nie udało się pobrać statusu gościa");
+        }
+      } catch (error) {
+        console.error("Błąd podczas pobierania statusu gościa", error);
+      }
+    };
+  
+    fetchGuestStatus();
+  }, []);
+
   /**
    * Fetches all available game sessions from the backend.
    * Only sessions in the "CREATED" state are stored.
@@ -129,6 +156,9 @@ const JoinGame: React.FC<JoinGameProps> = ({
     setIsSettingsOpen(!isSettingsOpen);
   };
 
+  const toggleProfile = () => {
+    setIsProfileOpen(!isProfileOpen);
+  };
   return (
     <>
       <BackgroundContainer>
@@ -147,6 +177,29 @@ const JoinGame: React.FC<JoinGameProps> = ({
           }}
           setSoundFXVolume={setSoundFXVolume}
         />
+        {/* Profile button */}
+        {isGuest === false && (
+          <Button variant="circle-profile" soundFXVolume={soundFXVolume}>
+            <img src={profileIcon} onClick={toggleProfile} alt="Profile" />
+          </Button>
+        )}
+
+        {/* Profie modal */}
+        <ProfileModal
+          isOpen={isProfileOpen}
+          onClose={toggleProfile}
+          soundFXVolume={soundFXVolume}
+        />
+        {document.cookie.split('; ').find(cookie => cookie.startsWith('loggedIn=')) && (
+          <Button variant="logout" soundFXVolume={soundFXVolume}>
+            <img
+              src={logoutButton}
+              onClick={logout}
+              alt="Logout"
+            />
+          </Button>
+        )}
+
         <>
           <GameTitleBar></GameTitleBar>
           <GameList
