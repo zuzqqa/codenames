@@ -151,6 +151,7 @@ public class DefaultUserService implements UserService {
                     user.setGuest(false);
                     user.setDescription(updatedUser.getDescription());
                     user.setProfilePic(updatedUser.getProfilePic());
+                    user.setPassword(passwordEncoder.encode(updatedUser.getPassword())); // <--- DODANE
                     return userRepository.save(user);
                 })
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + id)));
@@ -306,11 +307,11 @@ public class DefaultUserService implements UserService {
     @Override
     public void activateUser(String username) {
         userRepository.findByUsername(username).map(user -> {
-            user.setStatus(User.userStatus.ACTIVE);
+                    user.setStatus(User.userStatus.ACTIVE);
 
-            return userRepository.save(user);
-        })
-        .orElse(null);
+                    return userRepository.save(user);
+                })
+                .orElse(null);
     }
 
     /**
