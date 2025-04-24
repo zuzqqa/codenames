@@ -124,8 +124,20 @@ const Chat: React.FC = () => {
 
     const [isInputFocused, setIsInputFocused] = useState(false); // Tracks input focus state
 
-    const handleInputFocus = () => setIsInputFocused(true);
-    const handleInputBlur = () => setIsInputFocused(false);
+    const handleInputFocus = () => {
+        setIsInputFocused(true);
+        const audioRoom = document.getElementsByClassName("audio-room");
+        if (audioRoom.length > 0) {
+            audioRoom[0].setAttribute("style", "top: 32%; transition: top 0.4s;");
+        }
+    }
+    const handleInputBlur = () => {
+        setIsInputFocused(false);
+        const audioRoom = document.getElementsByClassName("audio-room");
+        if (audioRoom.length > 0) {
+            audioRoom[0].setAttribute("style", "top: 52%; transition: top 0.4s;");
+        }
+    }
 
     return (
         <div className={`chat-container ${isInputFocused ? "focused" : ""}`}>

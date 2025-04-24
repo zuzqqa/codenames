@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { data, useNavigate } from "react-router-dom"; // Hook for programmatic navigation
+import { useNavigate } from "react-router-dom"; // Hook for programmatic navigation
 import { useTranslation } from "react-i18next"; // Hook for translations
 
 import BackgroundContainer from "../../containers/Background/Background";
@@ -98,12 +98,11 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
   const [timeLeft, setTimeLeft] = useState(timeForVoting); // Timer state (2 minutes = 120 seconds)
   const navigate = useNavigate(); // Hook for navigation
   const { t } = useTranslation(); // Hook for translations
-  const [gameSession, setGameSession] = useState<GameSession | null>(null);
   const [redTeamPlayers, setRedTeamPlayers] = useState<User[]>([]);
   const [blueTeamPlayers, setBlueTeamPlayers] = useState<User[]>([]);
-  const [client, setClient] = useState<Client | null>(null);
   const [myTeam, setMyTeam] = useState<string | null>(null);
   const [isVoteCasted, setIsVoteCasted] = useState<boolean>(false);
+  const [userId, setUserId] = useState<string | null>();
 
   useEffect(() => {
     const storedGameId = localStorage.getItem("gameId");
@@ -120,15 +119,6 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
             setRedTeamPlayers(data.connectedUsers[0] || []);
             setBlueTeamPlayers(data.connectedUsers[1] || []);
           }
-
-          const getIdResponse = await fetch(
-            "http://localhost:8080/api/users/getId",
-            {
-              method: "GET",
-              credentials: "include",
-            }
-          );
-          const userId = await getIdResponse.text();
 
           if (data.connectedUsers[0]?.some((user) => user.id === userId)) {
             setMyTeam("red");
@@ -181,6 +171,34 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
   }, [timeLeft, navigate]);
 
   /**
+   * Effect that triggers the function to fetch user by user id.
+   * when the component is mounted.
+   */
+  useEffect(() => {
+    fetchUserId();
+  }, []);
+
+  /**
+   * Fetches the user ID from the server.
+   * Saves the fetched user ID in localStorage.
+   */
+  const fetchUserId = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/users/getId", {
+        method: "GET",
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch user ID");
+
+      const id = await response.text();
+      localStorage.setItem("userId", id);
+      setUserId(id);
+    } catch (error) {
+      console.error("Error fetching user ID", error);
+    }
+  };
+
+  /**
    * Ends the voting phase and assigns leaders.
    * @async
    */
@@ -231,15 +249,6 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     const storedGameId = localStorage.getItem("gameId");
 
     if (storedGameId && selectedPlayer) {
-      const getIdResponse = await fetch(
-        "http://localhost:8080/api/users/getId",
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
-      const userId = await getIdResponse.text();
-
       const voteRequest = {
         userId: userId,
         votedUserId: selectedPlayer.id,

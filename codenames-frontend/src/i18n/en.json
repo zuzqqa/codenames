@@ -67,6 +67,7 @@
   "invalid-or-expired-token": "Invalid or expired token.",
   "passwords-dont-match": "Passwords do not match!",
   "e-mail-not-found": "There is no account with the given e-mail address.",
-  "e-mail-reset-sent": "Link to change your password was sent to the given e-mail address."
-
+  "e-mail-reset-sent": "Link to change your password was sent to the given e-mail address.",
+  "pass-round": "Pass",
+  "hint-zero": "Hint number cannot be zero."
 }
