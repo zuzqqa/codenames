@@ -394,7 +394,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
         setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
         setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
-        setAmICurrentLeader(data.gameState.currentLeader.id === userId);
+        setAmICurrentLeader(data.gameState.currentSelectionLeader.id === userId);
         setGameSession(data);
         setRedTeamPlayers(data.connectedUsers[0] || []);
         setBlueTeamPlayers(data.connectedUsers[1] || []);
@@ -642,9 +642,8 @@ const Gameplay: React.FC<GameplayProps> = ({
    * Sends a request to the backend to change the turn of the game.
    * Retrieves the game ID from local storage and sends a GET request.
    */
-  const change_turn = () => {
-    if (isHintTime && cardNumber === 0) {
-      console.log(cardNumber);
+  const changeTurn = () => {
+    if (isHintTime && gameSession?.gameState?.hintNumber == "0") {
       const newErrors: { id: string; message: string }[] = [];
 
       newErrors.push({
@@ -936,7 +935,7 @@ const Gameplay: React.FC<GameplayProps> = ({
                     ? "hidden"
                     : ""
                 }
-                onClick={change_turn}
+                onClick={changeTurn}
               >
                 <span className="button-text">{amICurrentLeader ? t("pass-round") : t("end-round")}</span>
               </Button>
