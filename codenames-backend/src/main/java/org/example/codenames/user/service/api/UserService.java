@@ -26,6 +26,16 @@ public interface UserService {
 
     String generateUniqueUsername();
 
+    List<User> searchActiveUsersByUsername(String username);
+
+    void sendFriendRequest(String senderUsername, String receiverUsername);
+
+    void acceptFriendRequest(String receiverUsername, String senderUsername);
+
+    void declineFriendRequest(String receiverUsername, String senderUsername);
+
+    void removeFriend(String user1Username, String user2Username);
+
     boolean resetPassword(String uuid, HttpServletRequest request, String password);
 
     void deleteUserById(String id);

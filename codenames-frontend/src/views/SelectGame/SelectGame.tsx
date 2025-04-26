@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"; // Importing the navigate hook from React Router
-import { useState } from "react"; // Importing useState hook for managing component state
 import { useTranslation } from "react-i18next"; // Importing the useTranslation hook from react-i18next
+import React, { useState, useEffect } from "react"; // Hook for managing component state
 
 import BackgroundContainer from "../../containers/Background/Background";
 import MenuContainer from "../../containers/Menu/Menu";
@@ -12,11 +12,12 @@ import Button from "../../components/Button/Button";
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 
 import settingsIcon from "../../assets/icons/settings.png";
+import ProfileModal from "../../components/UserProfileOverlay/ProfileModal";
+import profileIcon from "../../assets/icons/profile.png";
 
 import "../../styles/App.css";
 import "./SelectGame.css";
 import {logout} from "../../shared/utils.tsx";
-import Cookies from 'js-cookie';
 import logoutButton from "../../assets/icons/logout.svg";
 
 /**
@@ -45,6 +46,9 @@ const SelectGame: React.FC<SelectGameProps> = ({
 }) => {
   const [musicVolume, setMusicVolume] = useState(50); // State to manage music volume
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // State to track if settings modal is open
+  const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
+  const [isGuest, setIsGuest] = useState<boolean | null>(null);
+
   const { t } = useTranslation(); // Hook for translations
 
   const navigate = useNavigate(); // Hook for navigation
@@ -54,6 +58,10 @@ const SelectGame: React.FC<SelectGameProps> = ({
    */
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
+  };
+  
+  const toggleProfile = () => {
+    setIsProfileOpen(!isProfileOpen);
   };
 
   /**
@@ -65,7 +73,29 @@ const SelectGame: React.FC<SelectGameProps> = ({
     setMusicVolume(volume);
     setVolume(volume); // Update global volume
   };
+
+  useEffect(() => {
+    const fetchGuestStatus = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/users/isGuest", {
+          method: "GET",
+          credentials: "include",
+        });
   
+        if (response.ok) {
+          const guestStatus = await response.json();
+          setIsGuest(guestStatus);
+        } else {
+          console.error("Nie udało się pobrać statusu gościa");
+        }
+      } catch (error) {
+        console.error("Błąd podczas pobierania statusu gościa", error);
+      }
+    };
+  
+    fetchGuestStatus();
+  }, []);
+
   return (
     <>
       <BackgroundContainer>
@@ -73,6 +103,12 @@ const SelectGame: React.FC<SelectGameProps> = ({
         <Button variant="circle" soundFXVolume={soundFXVolume}>
           <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
         </Button>
+        {/* Profile button */}
+        {isGuest === false && (
+          <Button variant="circle-profile" soundFXVolume={soundFXVolume}>
+            <img src={profileIcon} onClick={toggleProfile} alt="Profile" />
+          </Button>
+        )}
     
         {/* Logout button */}
         {document.cookie.split('; ').find(cookie => cookie.startsWith('loggedIn=')) && (
@@ -94,6 +130,13 @@ const SelectGame: React.FC<SelectGameProps> = ({
           setMusicVolume={updateMusicVolume}
           setSoundFXVolume={setSoundFXVolume}
         />
+        {/* Profie modal */}
+        <ProfileModal
+          isOpen={isProfileOpen}
+          onClose={toggleProfile}
+          soundFXVolume={soundFXVolume}
+        />
+        
 
         {/* Main content of the SelectGame page */}
         <TitleComponent soundFXVolume={soundFXVolume}>

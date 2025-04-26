@@ -88,6 +88,8 @@ public class DefaultUserService implements UserService {
             if(user.getRoles() == null) {
                 user.setRoles("ROLE_USER");
             }
+            user.setProfilePic(0);
+            user.setDescription("");
         }
 
         userRepository.save(user);
@@ -135,14 +137,126 @@ public class DefaultUserService implements UserService {
      * @return the updated user, if found
      * @throws IllegalArgumentException if the user was not found in the repository
      */
-    @Override
+    /**
+     * Updates a user by their ID.
+     * @param id the ID of the user
+     * @param updatedUser the updated user
+     * @return the updated user, if found
+     */
     public Optional<User> updateUser(String id, User updatedUser) {
         return Optional.ofNullable(userRepository.findById(id)
-                                   .map(user -> {
+                .map(user -> {
                     user.setUsername(updatedUser.getUsername());
-                    user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+                    user.setEmail(updatedUser.getEmail());
+                    user.setGuest(false);
+                    user.setDescription(updatedUser.getDescription());
+                    user.setProfilePic(updatedUser.getProfilePic());
+                    user.setPassword(passwordEncoder.encode(updatedUser.getPassword())); // <--- DODANE
                     return userRepository.save(user);
-                }).orElseThrow(() -> new IllegalArgumentException("User not found")));
+                })
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + id)));
+    }
+
+    /**
+     * Searches for users with an active status and usernames containing the specified substring.
+     *
+     * @param username the substring to search in usernames
+     * @return list of users with matching usernames and ACTIVE status
+     */
+    @Override
+    public List<User> searchActiveUsersByUsername(String username) {
+        return userRepository.findByUsernameContainingAndStatus(username, "ACTIVE");
+    }
+
+    /**
+     * Sends a friend request from one user to another.
+     *
+     * @param senderUsername the username of the sender
+     * @param receiverUsername the username of the receiver
+     */
+    @Override
+    public void sendFriendRequest(String senderUsername, String receiverUsername) {
+        if (senderUsername.equals(receiverUsername)) {
+            throw new RuntimeException("You cannot send a friend request to yourself");
+        }
+
+        User sender = userRepository.findByUsername(senderUsername)
+                .orElseThrow(() -> new RuntimeException("Sender not found"));
+        User receiver = userRepository.findByUsername(receiverUsername)
+                .orElseThrow(() -> new RuntimeException("Receiver not found"));
+
+        if (!sender.getSentRequests().contains(receiverUsername) && !sender.getFriends().contains(receiverUsername)) {
+            sender.getSentRequests().add(receiverUsername);
+            receiver.getReceivedRequests().add(senderUsername);
+
+            userRepository.save(sender);
+            userRepository.save(receiver);
+        }
+    }
+
+    /**
+     * Accepts a friend request.
+     *
+     * @param receiverUsername the username of the user accepting the request
+     * @param senderUsername the username of the user who sent the request
+     */
+    @Override
+    public void acceptFriendRequest(String receiverUsername, String senderUsername) {
+        User sender = userRepository.findByUsername(senderUsername)
+                .orElseThrow(() -> new RuntimeException("Sender not found"));
+        User receiver = userRepository.findByUsername(receiverUsername)
+                .orElseThrow(() -> new RuntimeException("Receiver not found"));
+
+        if (receiver.getReceivedRequests().contains(senderUsername)) {
+            receiver.getReceivedRequests().remove(senderUsername);
+            sender.getSentRequests().remove(receiverUsername);
+
+            receiver.getFriends().add(senderUsername);
+            sender.getFriends().add(receiverUsername);
+
+            userRepository.save(receiver);
+            userRepository.save(sender);
+        }
+    }
+
+    /**
+     * Declines a friend request.
+     *
+     * @param receiverUsername the username of the user declining the request
+     * @param senderUsername the username of the user who sent the request
+     */
+    @Override
+    public void declineFriendRequest(String receiverUsername, String senderUsername) {
+        User sender = userRepository.findByUsername(senderUsername)
+                .orElseThrow(() -> new RuntimeException("Sender not found"));
+        User receiver = userRepository.findByUsername(receiverUsername)
+                .orElseThrow(() -> new RuntimeException("Receiver not found"));
+
+        receiver.getReceivedRequests().remove(senderUsername);
+        sender.getSentRequests().remove(receiverUsername);
+
+        userRepository.save(receiver);
+        userRepository.save(sender);
+    }
+
+    /**
+     * Removes a friend relationship between two users.
+     *
+     * @param user1Username the username of the first user
+     * @param user2Username the username of the second user
+     */
+    @Override
+    public void removeFriend(String user1Username, String user2Username) {
+        User user1 = userRepository.findByUsername(user1Username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user2 = userRepository.findByUsername(user2Username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user1.getFriends().remove(user2Username);
+        user2.getFriends().remove(user1Username);
+
+        userRepository.save(user1);
+        userRepository.save(user2);
     }
 
     /**
@@ -193,11 +307,11 @@ public class DefaultUserService implements UserService {
     @Override
     public void activateUser(String username) {
         userRepository.findByUsername(username).map(user -> {
-            user.setStatus(User.userStatus.ACTIVE);
+                    user.setStatus(User.userStatus.ACTIVE);
 
-            return userRepository.save(user);
-        })
-        .orElse(null);
+                    return userRepository.save(user);
+                })
+                .orElse(null);
     }
 
     /**

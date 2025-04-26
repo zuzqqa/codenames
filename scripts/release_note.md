@@ -1,4 +1,4 @@
-🎮 Alpha Release – Early version of the game
+Created Profile Modal
 **🔧 What's included in this release?**
 Global Toast context for easy implementation of app notifications.
 

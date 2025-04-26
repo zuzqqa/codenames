@@ -175,19 +175,23 @@ public class DefaultGameStateService implements GameStateService {
         }
 
         gameState.getCardsChosen().add(cardIndex);
-        gameState.setHintNumber(Math.max(0, gameState.getHintNumber() - 1));
+        gameState.setHintNumber(Math.max(-1, gameState.getHintNumber() - 1));
 
         if(gameState.getCardsColors()[cardIndex] == 1){
             gameState.setRedTeamScore(gameState.getRedTeamScore() + 1);
 
             if (gameState.getTeamTurn() != 0) {
                 this.toogleTurn(gameSession);
+                gameSessionRepository.save(gameSession);
+                return;
             }
         } else if(gameState.getCardsColors()[cardIndex] == 2){
             gameState.setBlueTeamScore(gameState.getBlueTeamScore() + 1);
 
             if (gameState.getTeamTurn() != 1) {
                 this.toogleTurn(gameSession);
+                gameSessionRepository.save(gameSession);
+                return;
             }
         } else if(gameState.getCardsColors()[cardIndex] == 3){
             if (gameState.getTeamTurn() == 1) {
@@ -197,7 +201,8 @@ public class DefaultGameStateService implements GameStateService {
             }
         }
 
-        if (gameState.getHintNumber() == 0) {
+        if (gameState.getHintNumber() == -1 || (gameState.getCardsColors()[cardIndex] == 0)) {
+            gameState.setHintNumber(0);
             this.toogleTurn(gameSession);
         }
 

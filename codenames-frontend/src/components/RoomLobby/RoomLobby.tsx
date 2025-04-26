@@ -27,6 +27,7 @@ interface RoomLobbyProps {
 interface User {
   userId: string;
   username: string;
+  profilePic: number;
 }
 
 /**
@@ -76,6 +77,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
   const [redTeamPlayers, setRedTeamPlayers] = useState<User[]>([]);
   const [blueTeamPlayers, setBlueTeamPlayers] = useState<User[]>([]);
   const [client, setClient] = useState<Client | null>(null);
+
 
   useEffect(() => {
     const storedGameId = localStorage.getItem("gameId");
@@ -269,10 +271,10 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                   <span className="button-text">Start</span>
                 </Button>
                 <div className="players-container">
-                  <div className="cloud-container">
+                  {/* <div className="cloud-container">
                     <div className="cloud blue-cloud" />
                     <div className="cloud red-cloud" />
-                  </div>
+                  </div> */}
                   <div className="team">
                     <Button
                       className="join-button"
@@ -283,9 +285,9 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                       +
                     </Button>
                     {redTeamPlayers.map((player, index) => (
-                      <div key={index} className="player-container">
+                      <div key={index} className="player-container player-container-red">
                         <img
-                          src={playerIcon}
+                          src={`/images/profile-pic-${player.profilePic}.png`}
                           alt="Player"
                           className="player-icon"
                         />
@@ -303,9 +305,9 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                       +
                     </Button>
                     {blueTeamPlayers.map((player, index) => (
-                      <div key={index} className="player-container">
+                      <div key={index} className="player-container player-container-blue">
                         <img
-                          src={playerIcon}
+                          src={`/images/profile-pic-${player.profilePic}.png`}
                           alt="Player"
                           className="player-icon"
                         />

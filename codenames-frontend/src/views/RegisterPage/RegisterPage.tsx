@@ -283,3 +283,4 @@ const RegisterPage: React.FC<RegisterProps> = ({
 };
 
 export default RegisterPage;
+
