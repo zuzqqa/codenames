@@ -3,6 +3,7 @@ package org.example.codenames.gameSession.repository.api;
 import org.example.codenames.gameSession.entity.GameSession;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
@@ -14,7 +15,7 @@ import java.util.UUID;
  * Repository for GameSession entity
  */
 @Repository
-public interface GameSessionRepository extends MongoRepository<GameSession, String> {
+public interface GameSessionRepository extends CrudRepository<GameSession, String> {
     @NonNull
     Optional<GameSession> findBySessionId(UUID sessionId);
 

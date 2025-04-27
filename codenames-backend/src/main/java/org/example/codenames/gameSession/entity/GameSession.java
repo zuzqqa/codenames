@@ -12,11 +12,12 @@ import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 import jakarta.persistence.GeneratedValue;
+import org.springframework.data.redis.core.RedisHash;
 
 /**
  * GameSession entity class.
  */
-@Document(collection = "sessions")
+@RedisHash(value = "gameSession", timeToLive = 3600) // gameSession will expire after 60 minutes
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
