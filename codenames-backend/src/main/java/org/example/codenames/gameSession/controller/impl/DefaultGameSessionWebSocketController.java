@@ -305,3 +305,4 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         return ResponseEntity.ok(voteRequest.getVotedUserId());
     }
 }
+

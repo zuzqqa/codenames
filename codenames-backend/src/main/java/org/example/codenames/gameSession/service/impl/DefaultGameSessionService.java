@@ -387,4 +387,3 @@ public class DefaultGameSessionService implements GameSessionService {
     }
 }
 
-

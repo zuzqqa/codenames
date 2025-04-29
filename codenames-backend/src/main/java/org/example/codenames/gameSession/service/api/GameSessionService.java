@@ -37,3 +37,4 @@ public interface GameSessionService {
 
     boolean isPlayerInSession(UUID gameId, String userId);
 }
+
