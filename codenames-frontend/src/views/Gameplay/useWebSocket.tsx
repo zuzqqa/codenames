@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
+import { apiUrl } from "../../config/api.tsx";
 
 /**
  * Custom React hook for handling WebSocket connections using STOMP.
