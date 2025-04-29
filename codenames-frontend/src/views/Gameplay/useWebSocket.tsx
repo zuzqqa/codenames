@@ -15,7 +15,7 @@ export const useWebSocket = (gameId: string | null) => {
   useEffect(() => {
     if (!gameId) return;
 
-    const socket = new SockJS("http://localhost:8080/ws");
+    const socket = new SockJS(`${apiUrl}/ws`);
     const stompClient = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {

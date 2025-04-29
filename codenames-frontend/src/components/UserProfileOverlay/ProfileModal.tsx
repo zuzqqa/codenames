@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-import Modal from "../Modal/Modal";
-import TitleModal from "../TitleModal/TitleModal";
+import { useTranslation } from "react-i18next";
+
 import closeIcon from "../../assets/icons/close.png";
 import checkmarkIcon from "../../assets/icons/check.png";
-import Button from "../Button/Button";
-import { useTranslation } from "react-i18next";
 import arrow from "../../assets/icons/arrow.svg";
 import editIcon from "../../assets/icons/edit.svg";
 import friendsIcon from "../../assets/icons/friends.png";
@@ -16,9 +14,17 @@ import searchIcon from "../../assets/icons/search-icon.png";
 import searchIconPicked from "../../assets/icons/search-picked.png";
 import moreIcon from "../../assets/icons/more-icon.png";
 import trashIcon from "../../assets/icons/trash.png";
+
+import Modal from "../Modal/Modal";
+import TitleModal from "../TitleModal/TitleModal";
+
+import Button from "../Button/Button";
+
 import useFriendRequestsWebSocket from "./useFriendRequestsWebSocket.tsx"
+
 import "./ProfileModal.css";
 
+import { apiUrl } from "../../config/api.tsx";
 interface ProfileModalProps {
   soundFXVolume: number;
   isOpen: boolean;
@@ -61,13 +67,13 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ soundFXVolume, isOpen, onCl
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
-        const getIdResponse = await fetch("http://localhost:8080/api/users/getId", {
+        const getIdResponse = await fetch(`${apiUrl}/api/users/getId`, {
           method: "GET",
           credentials: "include",
         });
         const id = await getIdResponse.text();
 
-        const userResponse = await fetch(`http://localhost:8080/api/users/${id}`, {
+        const userResponse = await fetch(`${apiUrl}/api/users/${id}`, {
           method: "GET",
           credentials: "include",
         });
@@ -112,7 +118,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ soundFXVolume, isOpen, onCl
     const selectedProfilePic = availableProfilePics[profilePicIndex];
 
     try {
-      const response = await fetch(`http://localhost:8080/api/users/${currentUser.id}`, {
+      const response = await fetch(`${apiUrl}/api/users/${currentUser.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -151,7 +157,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ soundFXVolume, isOpen, onCl
 
   const handleSearch = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/users/search?username=${searchQuery}`, {
+      const response = await fetch(`${apiUrl}/api/users/search?username=${searchQuery}`, {
         method: "GET",
         credentials: "include",
       });

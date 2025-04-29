@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -39,14 +40,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Integration tests for the client controller/service functionalities.
  * Primarily testing {@link UserController} endpoints.
  */
-
 @Testcontainers
 @SpringBootTest(classes = CodenamesApplication.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @TestPropertySource(locations="classpath:application-test.properties")
 public class UserControllerTest {
-
+    @Value("${frontend.url:http://localhost:5173}")
+    private String frontendUrl;
+    
     @Autowired
     private UserRepository userRepository;
 
@@ -85,7 +87,7 @@ public class UserControllerTest {
     @Test
     public void shouldAllowPreflight() throws Exception {
         mvc.perform(options("/api/users")
-                        .header("Origin", "http://localhost:5173")
+                        .header("Origin", frontendUrl)
                         .header("Access-Control-Request-Method", "POST"))
                 .andExpect(status().isOk());
     }
@@ -101,7 +103,7 @@ public class UserControllerTest {
 
         mvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Origin", "http://localhost:5173")  // Set the origin
+                        .header("Origin", frontendUrl)  // Set the origin
                         .param("language", "en")
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk());
@@ -123,14 +125,14 @@ public class UserControllerTest {
 
         mvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Origin", "http://localhost:5173")
+                        .header("Origin", frontendUrl)
                         .param("language", "en")
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk());
 
         mvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Origin", "http://localhost:5173")
+                        .header("Origin", frontendUrl)
                         .param("language", "en")
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isBadRequest());
@@ -146,7 +148,7 @@ public class UserControllerTest {
 
         mvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Origin", "http://localhost:5173")
+                        .header("Origin", frontendUrl)
                         .param("language", "en")
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isBadRequest());
@@ -165,7 +167,7 @@ public class UserControllerTest {
 
         MvcResult result = mvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Origin", "http://localhost:5173")
+                        .header("Origin", frontendUrl)
                         .param("language", "en")
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk())
@@ -176,7 +178,7 @@ public class UserControllerTest {
         String token = authTokenCookie.getValue();
 
         result = mvc.perform(get("/api/users/username/" + token)
-                        .header("Origin", "http://localhost:5173")
+                        .header("Origin", frontendUrl)
                         .cookie(new Cookie("authToken", token)))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -205,7 +207,7 @@ public class UserControllerTest {
 
         MvcResult result = mvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Origin", "http://localhost:5173")
+                        .header("Origin", frontendUrl)
                         .param("language", "en")
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk()).andReturn();
@@ -214,7 +216,7 @@ public class UserControllerTest {
 
         mvc.perform(get("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Origin", "http://localhost:5173")
+                        .header("Origin", frontendUrl)
                         .param("language", "en")
                         .cookie(new Cookie("authToken", token))
                         .content(objectMapper.writeValueAsString(user)))
@@ -229,7 +231,7 @@ public class UserControllerTest {
 
         result = mvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Origin", "http://localhost:5173")
+                        .header("Origin", frontendUrl)
                         .param("language", "en")
                         .content(objectMapper.writeValueAsString(adminUser)))
                 .andExpect(status().isOk()).andReturn();
@@ -238,7 +240,7 @@ public class UserControllerTest {
 
         mvc.perform(get("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Origin", "http://localhost:5173")
+                        .header("Origin", frontendUrl)
                         .param("language", "en")
                         .cookie(new Cookie("authToken", token))
                         .content(objectMapper.writeValueAsString(adminUser)))

@@ -17,6 +17,7 @@ import org.example.codenames.userDetails.AuthRequest;
 import static org.example.codenames.util.CookieUtils.createAuthCookie;
 import static org.example.codenames.util.CookieUtils.createLoggedInCookie;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +45,11 @@ import java.util.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class DefaultUserController implements UserController {
+    @Value("${frontend.url:http://localhost:5173}")
+    private String frontendUrl;
+
+    @Value("${backend.url:http://localhost:8080}")
+    private String backendUrl;
     /**
      * Service for managing actions on user's account.
      */
@@ -85,7 +91,7 @@ public class DefaultUserController implements UserController {
         String token = jwtService.generateToken(user.getUsername());
 
         if (!user.isGuest() && !Objects.equals(user.getRoles(), "ROLE_ADMIN")) {
-            String activationLink = "http://localhost:8080/api/users/activate/" + token;
+            String activationLink = backendUrl + "/api/users/activate/" + token;
 
             ClassPathResource resource = new ClassPathResource("mail-templates/activate_account_templates/activate_account_" + language + ".html");
             String htmlContent = new String(Files.readAllBytes(resource.getFile().toPath()), StandardCharsets.UTF_8);
@@ -121,9 +127,9 @@ public class DefaultUserController implements UserController {
             String username = jwtService.getUsernameFromToken(token);
             userService.activateUser(username);
 
-            return new RedirectView("http://localhost:5173/login?activated=true&username=" + username);
+            return new RedirectView(frontendUrl + "/login?activated=true&username=" + username);
         } catch (Exception e) {
-            return new RedirectView("http://localhost:5173/register?activated=false");
+            return new RedirectView(frontendUrl + "/register?activated=false");
         }
     }
 

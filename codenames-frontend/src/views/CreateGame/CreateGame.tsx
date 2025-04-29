@@ -10,12 +10,14 @@ import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 import ProfileModal from "../../components/UserProfileOverlay/ProfileModal";
 import profileIcon from "../../assets/icons/profile.png";
 import settingsIcon from "../../assets/icons/settings.png";
+import logoutButton from "../../assets/icons/logout.svg";
 
 import "../../styles/App.css";
 import "../SelectGame/SelectGame.css";
 import "./CreateGame.css";
+
 import {logout} from "../../shared/utils.tsx";
-import logoutButton from "../../assets/icons/logout.svg";
+import { apiUrl } from "../../config/api.tsx";
 
 /**
  * Props interface for CreateGame component.
@@ -52,7 +54,7 @@ const CreateGame: React.FC<CreateGameProps> = ({
     useEffect(() => {
       const fetchGuestStatus = async () => {
         try {
-          const response = await fetch("http://localhost:8080/api/users/isGuest", {
+          const response = await fetch(`${apiUrl}/api/users/isGuest`, {
             method: "GET",
             credentials: "include",
           });

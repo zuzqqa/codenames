@@ -22,6 +22,7 @@ import { validateEmail, validateUsername, validatePassword } from "../../utils/v
 
 import "../../styles/App.css";
 import "./RegisterPage.css";
+import { apiUrl } from "../../config/api.tsx";
 
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -289,7 +290,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
     const userData = { email, username: login, password, roles: "USER" };
     try {
       const response = await fetch(
-        `http://localhost:8080/api/users?language=${
+        `${apiUrl}/api/users?language=${
           localStorage.getItem("i18nextLng") || "en"
         }`,
         {
@@ -445,7 +446,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
               text="signup_with"
               onSuccess={() => {
                 window.location.href =
-                  "http://localhost:8080/oauth2/authorization/google";
+                  `${apiUrl}/oauth2/authorization/google`;
               }}
               onError={() => {
                 console.log("Google login failed");

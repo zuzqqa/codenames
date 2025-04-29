@@ -3,11 +3,15 @@ import SockJS from "sockjs-client";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import Button from "../Button/Button.tsx";
+
 import backButton from "../../assets/icons/arrow-back.png";
-import playerIcon from "../../assets/images/player-icon.png";
+
 import "./RoomLobby.css";
+
+import { apiUrl } from "../../config/api.tsx";
 
 /**
  * Properties for the RoomLobby component.
@@ -83,7 +87,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     const storedGameId = localStorage.getItem("gameId");
 
     if (storedGameId) {
-      fetch(`http://localhost:8080/api/game-session/${storedGameId}`)
+      fetch(`${apiUrl}/api/game-session/${storedGameId}`)
         .then((response) => response.json())
         .then((data: GameSession) => {
           setGameSession({
@@ -100,7 +104,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       navigate("/join-game");
     }
 
-    const socket = new SockJS("http://localhost:8080/ws");
+    const socket = new SockJS(`${apiUrl}/ws`);
     const stompClient = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
@@ -138,14 +142,14 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
 
-    const getIdResponse = await fetch("http://localhost:8080/api/users/getId", {
+    const getIdResponse = await fetch(`${apiUrl}/api/users/getId`, {
       method: "GET",
       credentials: "include",
     });
     const userId = await getIdResponse.text();
 
     const response = await fetch(
-      `http://localhost:8080/api/game-session/${storedGameId}/connect?userId=${userId}&teamIndex=0`,
+      `${apiUrl}/api/game-session/${storedGameId}/connect?userId=${userId}&teamIndex=0`,
       {
         method: "POST",
         credentials: "include",
@@ -166,14 +170,14 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
 
-    const getIdResponse = await fetch("http://localhost:8080/api/users/getId", {
+    const getIdResponse = await fetch(`${apiUrl}/api/users/getId`, {
       method: "GET",
       credentials: "include",
     });
     const userId = await getIdResponse.text();
 
     const response = await fetch(
-      `http://localhost:8080/api/game-session/${storedGameId}/connect?userId=${userId}&teamIndex=1`,
+      `${apiUrl}/api/game-session/${storedGameId}/connect?userId=${userId}&teamIndex=1`,
       {
         method: "POST",
         credentials: "include",
@@ -193,7 +197,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
 
-    const getIdResponse = await fetch("http://localhost:8080/api/users/getId", {
+    const getIdResponse = await fetch(`${apiUrl}/api/users/getId`, {
       method: "GET",
       credentials: "include",
     });
@@ -201,7 +205,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/game-session/${storedGameId}/disconnect?userId=${userId}`,
+        `${apiUrl}/api/game-session/${storedGameId}/disconnect?userId=${userId}`,
         { method: "DELETE", credentials: "include" }
       );
 
@@ -225,7 +229,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/game-session/${storedGameId}/start`,
+        `${apiUrl}/api/game-session/${storedGameId}/start`,
         { method: "POST" }
       );
       if (response.ok) {

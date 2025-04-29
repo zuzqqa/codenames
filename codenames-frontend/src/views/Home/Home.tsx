@@ -16,6 +16,7 @@ import characters from "../../assets/images/characters.png";
 import "../../styles/App.css";
 import "./Home.css";
 import Cookies from "js-cookie"; // Import js-cookie for cookie handling
+import { apiUrl } from "../../config/api.tsx";
 
 
 /**
@@ -145,9 +146,10 @@ const Home: React.FC<HomeProps> = ({
                 <Button
                   variant="primary"
                   onClick={async () => {
+                    console.log(apiUrl);
                     try {
                       const response = await fetch(
-                        "http://localhost:8080/api/users/createGuest",
+                        `${apiUrl}/api/users/createGuest`,
                         {
                           method: "POST",
                           credentials: "include",

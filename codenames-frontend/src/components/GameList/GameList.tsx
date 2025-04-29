@@ -15,6 +15,8 @@ import searchButtonIcon from "../../assets/images/search-button.png";
 
 import "./GameList.css";
 
+import { apiUrl } from "../../config/api.tsx";
+
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 
@@ -206,7 +208,7 @@ const GameList: React.FC<GameListProps> = ({
     setErrors(newErrors);
 
     const response = await fetch(
-      `http://localhost:8080/api/game-session/${selectedSessionId}/authenticate-password/${enteredPassword}`,
+      `${apiUrl}/api/game-session/${selectedSessionId}/authenticate-password/${enteredPassword}`,
       {
         method: "POST",
         credentials: "include",

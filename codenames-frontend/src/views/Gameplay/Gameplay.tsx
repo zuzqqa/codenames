@@ -28,6 +28,7 @@ import { Client } from "@stomp/stompjs";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useWebSocket } from "./useWebSocket";
 import AudioRoom from "../../components/AudioRoom/AudioRoom.tsx";
+import { apiUrl } from "../../config/api.tsx";
 
 /**
  * Represents properties for controlling gameplay-related settings, such as volume levels.
@@ -204,7 +205,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/game-session/${storedGameId}/voteCards`,
+        `${apiUrl}/api/game-session/${storedGameId}/voteCards`,
         {
           method: "POST",
           body: JSON.stringify({
@@ -238,7 +239,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
     try {
       const response = fetch(
-        `http://localhost:8080/api/game-session/${storedGameId}/reveal-card`,
+        `${apiUrl}/api/game-session/${storedGameId}/reveal-card`,
         {
           method: "POST",
           body: String(cardIndex),
@@ -266,7 +267,7 @@ const Gameplay: React.FC<GameplayProps> = ({
    */
   const fetchUserId = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/users/getId", {
+      const response = await fetch(`${apiUrl}/api/users/getId`, {
         method: "GET",
         credentials: "include",
       });
@@ -319,7 +320,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     const fetchGameSession = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/game-session/${storedGameId}`
+          `${apiUrl}/api/game-session/${storedGameId}`
         );
         if (!response.ok) throw new Error("Failed to fetch game session");
         const data = await response.json();
@@ -388,7 +389,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     const fetchGameSession = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/game-session/${storedGameId}`
+          `${apiUrl}/api/game-session/${storedGameId}`
         );
         if (!response.ok) throw new Error("Failed to fetch game session");
         const data = await response.json();
@@ -659,7 +660,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     const storedGameId = localStorage.getItem("gameId");
 
     fetch(
-      `http://localhost:8080/api/game-session/${storedGameId}/change-turn`,
+      `${apiUrl}/api/game-session/${storedGameId}/change-turn`,
       {
         method: "GET",
         headers: {
@@ -682,7 +683,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
     if (!amIRedTeamLeader && !amIBlueTeamLeader) return;
 
-    fetch(`http://localhost:8080/api/game-session/${storedGameId}/send-hint`, {
+    fetch(`${apiUrl}/api/game-session/${storedGameId}/send-hint`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

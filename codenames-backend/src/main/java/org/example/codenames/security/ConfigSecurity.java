@@ -7,6 +7,7 @@ import org.example.codenames.jwt.JwtService;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.userDetails.UserEntityDetailsService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -42,6 +43,9 @@ import static org.example.codenames.util.CookieUtils.createLoggedInCookie;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class ConfigSecurity {
+    @Value("${frontend.url:http://localhost:5173}")
+    private String frontendUrl;
+
     private final UserRepository userRepository;
     private final JwtAuthFilter jwtAuthFilter;
     private final JwtService jwtService;
@@ -159,7 +163,7 @@ public class ConfigSecurity {
             response.addCookie(createAuthCookie(token, true));
             response.addCookie(createLoggedInCookie(true));
 
-            response.sendRedirect("http://localhost:5173/games");
+            response.sendRedirect(frontendUrl + "/games");
         };
     }
 
