@@ -371,5 +371,19 @@ public class DefaultGameSessionService implements GameSessionService {
 
         gameSessionRepository.save(gameSession);
     }
+
+    @Override
+    public boolean isPlayerInSession(UUID gameId, String userId) {
+        GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        for (List<User> team : gameSession.getConnectedUsers()) {
+            if (team.stream().anyMatch(user -> user.getId().equals(userId))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
 

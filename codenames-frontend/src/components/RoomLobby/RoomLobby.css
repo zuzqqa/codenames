@@ -57,6 +57,16 @@
   z-index: 15;
 }
 
+.leave-btn {
+  position: absolute;
+  top: -30%;
+  left: 51.5%;
+  transform: translate(-50%, -50%);
+  margin: auto;
+  z-index: 15;
+  scale: 106%;
+}
+
 .lobby-players {
   width: 122.5%;
   max-height: 80%;
@@ -167,3 +177,4 @@
   left: 0;
   border-radius: 10px;
 }
+
