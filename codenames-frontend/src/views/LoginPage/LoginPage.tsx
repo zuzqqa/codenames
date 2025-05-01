@@ -286,7 +286,11 @@ const LoginPage: React.FC<LoginProps> = ({
         alert("Failed to log in: " + error);
       }
     } catch (error) {
-      alert("An error occurred during login. Please try again later." + error);
+      newErrors.push({
+        id: generateId(),
+        message: t("invalid-login-or-password"), // albo bez tłumaczenia: "Nieprawidłowy login lub hasło"
+      });
+      setErrors([...newErrors]);
     }
   };
 
