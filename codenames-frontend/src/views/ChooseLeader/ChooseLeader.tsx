@@ -18,6 +18,7 @@ import "./ChooseLeader.css";
 
 import { formatTime } from "../../shared/utils";
 import { apiUrl } from "../../config/api.tsx";
+import { getUserId } from "../../shared/utils.tsx";
 
 /**
  * Props for the ChooseLeader component.
@@ -187,13 +188,12 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
    */
   const fetchUserId = async () => {
     try {
-      const response = await fetch(`${apiUrl}/api/users/getId`, {
-        method: "GET",
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to fetch user ID");
+      const id = await getUserId();
 
-      const id = await response.text();
+      if (id === null) {
+        return;
+      }
+
       localStorage.setItem("userId", id);
       setUserId(id);
     } catch (error) {

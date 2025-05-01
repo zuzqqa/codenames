@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { Client } from "@stomp/stompjs";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useWebSocket } from "./useWebSocket";
 
 import BackgroundContainer from "../../containers/Background/Background";
 
@@ -24,11 +27,11 @@ import votingLabel from "../../assets/images/medieval-label.png";
 
 import "./Gameplay.css";
 import Chat from "../../components/Chat/Chat.tsx";
-import { Client } from "@stomp/stompjs";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useWebSocket } from "./useWebSocket";
+
 import AudioRoom from "../../components/AudioRoom/AudioRoom.tsx";
+
 import { apiUrl } from "../../config/api.tsx";
+import { getUserId } from "../../shared/utils.tsx";
 
 /**
  * Represents properties for controlling gameplay-related settings, such as volume levels.
@@ -267,13 +270,12 @@ const Gameplay: React.FC<GameplayProps> = ({
    */
   const fetchUserId = async () => {
     try {
-      const response = await fetch(`${apiUrl}/api/users/getId`, {
-        method: "GET",
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to fetch user ID");
+      const id = await getUserId();
 
-      const id = await response.text();
+      if (id === null) {
+        return;
+      }
+
       localStorage.setItem("userId", id);
       setUserId(id);
     } catch (error) {
@@ -324,7 +326,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         );
         if (!response.ok) throw new Error("Failed to fetch game session");
         const data = await response.json();
-        
+
         setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
         setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
         setAmICurrentLeader(
@@ -396,7 +398,9 @@ const Gameplay: React.FC<GameplayProps> = ({
 
         setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
         setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
-        setAmICurrentLeader(data.gameState.currentSelectionLeader.id === userId);
+        setAmICurrentLeader(
+          data.gameState.currentSelectionLeader.id === userId
+        );
         setGameSession(data);
         setRedTeamPlayers(data.connectedUsers[0] || []);
         setBlueTeamPlayers(data.connectedUsers[1] || []);
@@ -652,22 +656,19 @@ const Gameplay: React.FC<GameplayProps> = ({
         id: generateId(),
         message: t("hint-zero"),
       });
-  
+
       setErrors(newErrors);
       return;
     }
 
     const storedGameId = localStorage.getItem("gameId");
 
-    fetch(
-      `${apiUrl}/api/game-session/${storedGameId}/change-turn`,
-      {
-        method: "GET",
-        headers: {
-          credentials: "include",
-        },
-      }
-    );
+    fetch(`${apiUrl}/api/game-session/${storedGameId}/change-turn`, {
+      method: "GET",
+      headers: {
+        credentials: "include",
+      },
+    });
   };
 
   /**
@@ -766,7 +767,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     if (text.split(" ").length == 1) {
       return true;
     }
-    
+
     newErrors.push({
       id: generateId(),
       message: t("hint-one-word"),
@@ -931,7 +932,10 @@ const Gameplay: React.FC<GameplayProps> = ({
                     isHintTime &&
                     whosTurn !== myTeam) ||
                   ((amIBlueTeamLeader || amIRedTeamLeader) && isGuessingTime) ||
-                  (!amIBlueTeamLeader && !amIRedTeamLeader && !amICurrentLeader && isGuessingTime) ||
+                  (!amIBlueTeamLeader &&
+                    !amIRedTeamLeader &&
+                    !amICurrentLeader &&
+                    isGuessingTime) ||
                   (!amIBlueTeamLeader && !amIRedTeamLeader && isHintTime) ||
                   (!amIBlueTeamLeader &&
                     !amIRedTeamLeader &&
@@ -942,7 +946,9 @@ const Gameplay: React.FC<GameplayProps> = ({
                 }
                 onClick={changeTurn}
               >
-                <span className="button-text">{amICurrentLeader ? t("pass-round") : t("end-round")}</span>
+                <span className="button-text">
+                  {amICurrentLeader ? t("pass-round") : t("end-round")}
+                </span>
               </Button>
               <div className="horizontal-gold-bar" />
             </div>
@@ -986,7 +992,7 @@ const Gameplay: React.FC<GameplayProps> = ({
               <input
                 type="range"
                 min={1}
-                max={whosTurn === "blue" ? (8 - blueTeamScore) : (9 - redTeamScore)}
+                max={whosTurn === "blue" ? 8 - blueTeamScore : 9 - redTeamScore}
                 className="codename-slider"
                 value={cardNumber}
                 onChange={(e) => setCardNumber(+e.target.value)}

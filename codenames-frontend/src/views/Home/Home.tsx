@@ -18,7 +18,6 @@ import "./Home.css";
 import Cookies from "js-cookie"; // Import js-cookie for cookie handling
 import { apiUrl } from "../../config/api.tsx";
 
-
 /**
  * Props type definition for the Home component.
  */
@@ -152,14 +151,24 @@ const Home: React.FC<HomeProps> = ({
                         `${apiUrl}/api/users/createGuest`,
                         {
                           method: "POST",
-                          credentials: "include",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
                         }
                       );
 
-                      if (response.ok) {
-                        window.location.href = "/loading";
-                      } else {
-                        console.error("Failed to create guest account");
+                      const data = await response.json();
+
+                      try {
+                        if (response.ok) {
+                          document.cookie = `authToken=${data.token}; max-age=36000; path=/; secure; samesite=none`;
+                          document.cookie = `loggedIn=true; max-age=36000; path=/; secure; samesite=none`;
+                          window.location.href = "/loading";
+                        } else {
+                          console.error("Unexpected response format");
+                        }
+                      } catch (error) {
+                        
                       }
                     } catch (error) {
                       console.error("Error creating guest account:", error);

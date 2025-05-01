@@ -17,7 +17,7 @@ import logoutButton from "../../assets/icons/logout.svg";
 
 import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister.tsx";
 import { logout } from "../../shared/utils.tsx";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, createCookie } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { apiUrl } from "../../config/api.tsx";
 
@@ -273,7 +273,11 @@ const LoginPage: React.FC<LoginProps> = ({
         }
       );
 
+      const data = await response.json();
+
       if (response.ok) {
+        document.cookie = `authToken=${data.token}; max-age=36000; path=/; secure; samesite=none`;
+        document.cookie = `loggedIn=true; max-age=36000; path=/; secure; samesite=none`;
         window.location.href = "/loading";
       } else if (response.status === 401) {
         newErrors.push({
@@ -291,7 +295,9 @@ const LoginPage: React.FC<LoginProps> = ({
     }
   };
 
-  /** Toggles the visibility of the settings modal. */
+  /** 
+   * Toggles the visibility of the settings modal.
+   */
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };

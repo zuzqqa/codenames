@@ -9,6 +9,7 @@ import "./CreateGameForm.css";
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import React from "react";
 import { apiUrl } from "../../config/api.tsx";
+import { getUserId } from "../../shared/utils.tsx";
 
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -66,18 +67,9 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
         return;
       }
       try {
-        const getIdResponse = await fetch(
-          `${apiUrl}/api/users/getId`,
-          {
-            method: "GET",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const getIdResponse = await getUserId();
 
-        if (!getIdResponse.ok) {
+        if (getIdResponse === null) {
           setError("Failed to fetch ID");
           return;
         }

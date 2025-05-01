@@ -12,6 +12,7 @@ import backButton from "../../assets/icons/arrow-back.png";
 import "./RoomLobby.css";
 
 import { apiUrl } from "../../config/api.tsx";
+import { getUserId } from "../../shared/utils.tsx";
 
 /**
  * Properties for the RoomLobby component.
@@ -142,11 +143,11 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
 
-    const getIdResponse = await fetch(`${apiUrl}/api/users/getId`, {
-      method: "GET",
-      credentials: "include",
-    });
-    const userId = await getIdResponse.text();
+    const userId = await getUserId();
+
+    if (userId === null) {
+      return;
+    }
 
     const response = await fetch(
       `${apiUrl}/api/game-session/${storedGameId}/connect?userId=${userId}&teamIndex=0`,
@@ -170,11 +171,11 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
 
-    const getIdResponse = await fetch(`${apiUrl}/api/users/getId`, {
-      method: "GET",
-      credentials: "include",
-    });
-    const userId = await getIdResponse.text();
+    const userId = await getUserId();
+
+    if (userId === null) {
+      return;
+    }
 
     const response = await fetch(
       `${apiUrl}/api/game-session/${storedGameId}/connect?userId=${userId}&teamIndex=1`,
@@ -197,11 +198,11 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
 
-    const getIdResponse = await fetch(`${apiUrl}/api/users/getId`, {
-      method: "GET",
-      credentials: "include",
-    });
-    const userId = await getIdResponse.text();
+    const userId = await getUserId();
+
+    if (userId === null) {
+      return;
+    }
 
     try {
       const response = await fetch(

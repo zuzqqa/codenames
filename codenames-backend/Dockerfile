@@ -20,7 +20,7 @@ COPY pom.xml ./
 COPY src ./src
 
 # Pre-download dependencies to speed up build times
-RUN mvn dependency:go-offline
+RUN mvn dependency:go-offline --fail-never || mvn dependency:go-offline --fail-never || mvn dependency:go-offline
 
 # Expose port 8080 for the application
 EXPOSE 8080

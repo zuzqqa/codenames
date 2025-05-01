@@ -11,7 +11,7 @@ import profileIcon from "../../assets/icons/profile.png";
 import settingsIcon from "../../assets/icons/settings.png";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
-import {logout} from "../../shared/utils.tsx";
+import { getCookie, logout } from "../../shared/utils.tsx";
 import logoutButton from "../../assets/icons/logout.svg";
 import { apiUrl } from "../../config/api.tsx";
 
@@ -54,7 +54,7 @@ interface GameSession {
   timeForGuessing: string;
   timeForAHint: string;
   numberOfRounds: number;
-  connectedUsers: User[][]; 
+  connectedUsers: User[][];
 }
 
 /**
@@ -105,29 +105,38 @@ const JoinGame: React.FC<JoinGameProps> = ({
     stompClient.activate();
 
     return () => {
-      stompClient.deactivate(); 
+      stompClient.deactivate();
     };
   }, []);
 
   useEffect(() => {
     const fetchGuestStatus = async () => {
+      const token = getCookie("authToken");
+
+      if (!token) {
+        return;
+      }
+
       try {
         const response = await fetch(`${apiUrl}/api/users/isGuest`, {
           method: "GET",
-          credentials: "include",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         });
-  
+
         if (response.ok) {
           const guestStatus = await response.json();
           setIsGuest(guestStatus);
         } else {
-          console.error("Nie udało się pobrać statusu gościa");
+          console.error("Failed to retrieve guest status.");
         }
       } catch (error) {
-        console.error("Błąd podczas pobierania statusu gościa", error);
+        console.error("Error retrieving guest status: ", error);
       }
     };
-  
+
     fetchGuestStatus();
   }, []);
 
@@ -191,13 +200,11 @@ const JoinGame: React.FC<JoinGameProps> = ({
           onClose={toggleProfile}
           soundFXVolume={soundFXVolume}
         />
-        {document.cookie.split('; ').find(cookie => cookie.startsWith('loggedIn=')) && (
+        {document.cookie
+          .split("; ")
+          .find((cookie) => cookie.startsWith("loggedIn=")) && (
           <Button variant="logout" soundFXVolume={soundFXVolume}>
-            <img
-              src={logoutButton}
-              onClick={logout}
-              alt="Logout"
-            />
+            <img src={logoutButton} onClick={logout} alt="Logout" />
           </Button>
         )}
 
@@ -216,3 +223,4 @@ const JoinGame: React.FC<JoinGameProps> = ({
 };
 
 export default JoinGame;
+

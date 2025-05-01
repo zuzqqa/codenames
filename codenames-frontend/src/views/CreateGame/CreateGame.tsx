@@ -16,7 +16,7 @@ import "../../styles/App.css";
 import "../SelectGame/SelectGame.css";
 import "./CreateGame.css";
 
-import {logout} from "../../shared/utils.tsx";
+import { getCookie, logout } from "../../shared/utils.tsx";
 import { apiUrl } from "../../config/api.tsx";
 
 /**
@@ -35,7 +35,7 @@ interface CreateGameProps {
 /**
  * CreateGame component allows users to create a new game session.
  * It includes settings management and user logout functionality.
- * 
+ *
  * @component
  * @param {CreateGameProps} props - Component properties
  * @returns {JSX.Element} The rendered CreateGame component
@@ -51,28 +51,37 @@ const CreateGame: React.FC<CreateGameProps> = ({
   const { t } = useTranslation(); // Translation hook
   const [isGuest, setIsGuest] = useState<boolean | null>(null);
 
-    useEffect(() => {
-      const fetchGuestStatus = async () => {
-        try {
-          const response = await fetch(`${apiUrl}/api/users/isGuest`, {
-            method: "GET",
-            credentials: "include",
-          });
-    
-          if (response.ok) {
-            const guestStatus = await response.json();
-            setIsGuest(guestStatus);
-          } else {
-            console.error("Nie udało się pobrać statusu gościa");
-          }
-        } catch (error) {
-          console.error("Błąd podczas pobierania statusu gościa", error);
+  useEffect(() => {
+    const fetchGuestStatus = async () => {
+      const token = getCookie("authToken");
+
+      if (!token) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${apiUrl}/api/users/isGuest`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const guestStatus = await response.json();
+          setIsGuest(guestStatus);
+        } else {
+          console.error("Failed to retrieve guest status.");
         }
-      };
-    
-      fetchGuestStatus();
-    }, []);
-  
+      } catch (error) {
+        console.error("Error retrieving guest status: ", error);
+      }
+    };
+
+    fetchGuestStatus();
+  }, []);
+
   /**
    * Toggles the settings modal visibility.
    */
@@ -97,15 +106,13 @@ const CreateGame: React.FC<CreateGameProps> = ({
           </Button>
         )}
 
-        {document.cookie.split('; ').find(cookie => cookie.startsWith('loggedIn=')) && (
-                <Button variant="logout" soundFXVolume={soundFXVolume}>
-                    <img
-                        src={logoutButton}
-                        onClick={logout}
-                        alt="Logout"
-                    />
-                </Button>
-            )}
+        {document.cookie
+          .split("; ")
+          .find((cookie) => cookie.startsWith("loggedIn=")) && (
+          <Button variant="logout" soundFXVolume={soundFXVolume}>
+            <img src={logoutButton} onClick={logout} alt="Logout" />
+          </Button>
+        )}
 
         <SettingsModal
           isOpen={isSettingsOpen}

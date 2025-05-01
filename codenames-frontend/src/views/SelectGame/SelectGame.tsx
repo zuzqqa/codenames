@@ -17,7 +17,7 @@ import profileIcon from "../../assets/icons/profile.png";
 
 import "../../styles/App.css";
 import "./SelectGame.css";
-import {logout} from "../../shared/utils.tsx";
+import { getCookie, logout } from "../../shared/utils.tsx";
 import logoutButton from "../../assets/icons/logout.svg";
 import { apiUrl } from "../../config/api.tsx";
 
@@ -60,7 +60,7 @@ const SelectGame: React.FC<SelectGameProps> = ({
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
-  
+
   const toggleProfile = () => {
     setIsProfileOpen(!isProfileOpen);
   };
@@ -77,23 +77,32 @@ const SelectGame: React.FC<SelectGameProps> = ({
 
   useEffect(() => {
     const fetchGuestStatus = async () => {
+      const token = getCookie("authToken");
+
+      if (!token) {
+        return;
+      }
+
       try {
         const response = await fetch(`${apiUrl}/api/users/isGuest`, {
           method: "GET",
-          credentials: "include",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         });
-  
+
         if (response.ok) {
           const guestStatus = await response.json();
           setIsGuest(guestStatus);
         } else {
-          console.error("Nie udało się pobrać statusu gościa");
+          console.error("Failed to retrieve guest status.");
         }
       } catch (error) {
-        console.error("Błąd podczas pobierania statusu gościa", error);
+        console.error("Error retrieving guest status: ", error);
       }
     };
-  
+
     fetchGuestStatus();
   }, []);
 
@@ -110,23 +119,19 @@ const SelectGame: React.FC<SelectGameProps> = ({
             <img src={profileIcon} onClick={toggleProfile} alt="Profile" />
           </Button>
         )}
-    
         {/* Logout button */}
-        {document.cookie.split('; ').find(cookie => cookie.startsWith('loggedIn=')) && (
-                <Button variant="logout" soundFXVolume={soundFXVolume}>
-                <img
-                    src={logoutButton}
-                    onClick={logout}
-                    alt="Logout"
-                />
-            </Button>
+        {document.cookie
+          .split("; ")
+          .find((cookie) => cookie.startsWith("loggedIn=")) && (
+          <Button variant="logout" soundFXVolume={soundFXVolume}>
+            <img src={logoutButton} onClick={logout} alt="Logout" />
+          </Button>
         )}
-
         {/* Settings modal */}
         <SettingsModal
-          isOpen={isSettingsOpen} 
+          isOpen={isSettingsOpen}
           onClose={toggleSettings}
-          musicVolume={musicVolume} 
+          musicVolume={musicVolume}
           soundFXVolume={soundFXVolume}
           setMusicVolume={updateMusicVolume}
           setSoundFXVolume={setSoundFXVolume}
@@ -137,17 +142,12 @@ const SelectGame: React.FC<SelectGameProps> = ({
           onClose={toggleProfile}
           soundFXVolume={soundFXVolume}
         />
-        
-
         {/* Main content of the SelectGame page */}
-        <TitleComponent soundFXVolume={soundFXVolume}>
-          Codenames
-        </TitleComponent>
+        <TitleComponent soundFXVolume={soundFXVolume}>Codenames</TitleComponent>
         <CharactersComponent /> {/* Renders the characters component */}
         <SubtitleComponent variant="primary">
-          { t('home-subtitle') }
+          {t("home-subtitle")}
         </SubtitleComponent>
-
         {/* Menu section with options for creating or joining a room */}
         <MenuContainer>
           <div className="first-column">
@@ -156,7 +156,7 @@ const SelectGame: React.FC<SelectGameProps> = ({
               onClick={() => navigate("/create-game")} // Navigates to create game page
               soundFXVolume={soundFXVolume}
             >
-              <span className="button-text">{ t('create-game-button') }</span>
+              <span className="button-text">{t("create-game-button")}</span>
             </Button>
           </div>
           <div className="gold-bar"></div>
@@ -166,7 +166,7 @@ const SelectGame: React.FC<SelectGameProps> = ({
               onClick={() => navigate("/join-game")} // Navigates to join game page
               soundFXVolume={soundFXVolume}
             >
-              <span className="button-text">{ t('join-room-button') }</span>
+              <span className="button-text">{t("join-room-button")}</span>
             </Button>
           </div>
         </MenuContainer>
