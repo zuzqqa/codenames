@@ -26,7 +26,7 @@ const getGameIDFromLocalStorage = () => {
     return gameId;
 }
 
-const socket = io("http://localhost:3000");
+// const socket = io("http://localhost:3000");
 const ROOM_ID = getGameIDFromLocalStorage();
 
 interface AudioRoomProps {
@@ -42,36 +42,36 @@ const AudioRoom: React.FC<AudioRoomProps> = ({soundFXVolume}) => {
     const [stream, setStream] = useState<MediaStream | null>(null);
     const [isConnected, setIsConnected] = useState(false);
 
-    useEffect(() => {
-        myAudioRef.current.muted = true;
-        navigator.mediaDevices.getUserMedia({ audio: true }).then((userStream) => {
-            setStream(userStream);
-            addAudioStream(myAudioRef.current, userStream);
+    // useEffect(() => {
+    //     myAudioRef.current.muted = true;
+    //     navigator.mediaDevices.getUserMedia({ audio: true }).then((userStream) => {
+    //         setStream(userStream);
+    //         addAudioStream(myAudioRef.current, userStream);
 
-            myPeer.current.on("call", (call) => {
-                call.answer(userStream);
-                const audio = new Audio();
-                call.on("stream", (userAudioStream) => addAudioStream(audio, userAudioStream));
-            });
+    //         myPeer.current.on("call", (call) => {
+    //             call.answer(userStream);
+    //             const audio = new Audio();
+    //             call.on("stream", (userAudioStream) => addAudioStream(audio, userAudioStream));
+    //         });
 
-            socket.on("user-connected", (userId: string) => {
-                connectToNewUser(userId, userStream);
-            });
-        });
+    //         socket.on("user-connected", (userId: string) => {
+    //             connectToNewUser(userId, userStream);
+    //         });
+    //     });
 
-        socket.on("user-disconnected", (userId: string) => {
-            if (peers.current[userId]) peers.current[userId].close();
-        });
+    //     socket.on("user-disconnected", (userId: string) => {
+    //         if (peers.current[userId]) peers.current[userId].close();
+    //     });
 
-        myPeer.current.on("open", (id) => {
-            socket.emit("join-room", ROOM_ID, id);
-        });
+    //     myPeer.current.on("open", (id) => {
+    //         socket.emit("join-room", ROOM_ID, id);
+    //     });
 
-        return () => {
-            socket.emit("leave-room", ROOM_ID, myPeer.current.id);
-            Object.values(peers.current).forEach((peer) => peer.close());
-        };
-    }, []);
+    //     return () => {
+    //         socket.emit("leave-room", ROOM_ID, myPeer.current.id);
+    //         Object.values(peers.current).forEach((peer) => peer.close());
+    //     };
+    // }, []);
 
     const connectToNewUser = (userId: string, userStream: MediaStream) => {
         const call = myPeer.current.call(userId, userStream);
@@ -88,7 +88,6 @@ const AudioRoom: React.FC<AudioRoomProps> = ({soundFXVolume}) => {
     };
 
     const leaveRoom = () => {
-        socket.emit("leave-room", ROOM_ID, myPeer.current.id);
         Object.values(peers.current).forEach((peer) => peer.close());
     }
 
@@ -100,7 +99,7 @@ const AudioRoom: React.FC<AudioRoomProps> = ({soundFXVolume}) => {
                     variant="circle"
                     soundFXVolume={soundFXVolume}
                     onClick={() => {
-                        socket.emit("join-room", ROOM_ID, myPeer.current.id)
+                    
                         setIsConnected(true);
                     }}
                 >

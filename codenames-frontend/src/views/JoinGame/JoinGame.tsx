@@ -79,38 +79,148 @@ const JoinGame: React.FC<JoinGameProps> = ({
    * Fetches the list of available game sessions on component mount.
    * Also establishes a WebSocket connection for real-time updates.
    */
-  useEffect(() => {
-    getGames();
+// Zmodyfikuj ten kod w swoim komponencie frontendowym
 
-    const socket = new SockJS(`${apiUrl}/ws`);
-
-    console.log(`${apiUrl}/ws`);
-
+useEffect(() => {
+  // Najpierw pobierz dane przez standardowe REST API
+  getGames();
+  
+  // Funkcja próbująca różnych metod połączenia
+  const connectWithFallbacks = async () => {
+    console.log("Próba połączenia z wykorzystaniem różnych metod...");
+  
+    
+    // 2. Próba z pełnym URL i explicit protokołem (obejście niektórych problemów z proxy)
+    try {
+      const sockOptions = {
+        transports: ['websocket', 'xhr-streaming', 'xhr-polling'],
+        debug: true
+      };
+      
+      // Spróbuj z różnymi wersjami ścieżki
+      const socketEndpoints = [
+        'https://codenames-backend-co4i.onrender.com/ws',
+        'https://codenames-backend-co4i.onrender.com/ws/',
+        'wss://codenames-backend-co4i.onrender.com/ws'
+      ];
+      
+      // Iteruj przez różne warianty endpointów
+      for (const endpoint of socketEndpoints) {
+        console.log(`Próba połączenia z: ${endpoint}`);
+        
+        try {
+          const socket = new SockJS(endpoint, null, sockOptions);
+          
+          socket.onopen = () => {
+            console.log(`Udane połączenie SockJS z: ${endpoint}`);
+            initializeStomp(socket, endpoint);
+          };
+          
+          socket.onerror = (error) => {
+            console.error(`Błąd SockJS z ${endpoint}:`, error);
+          };
+          
+          socket.onclose = (event) => {
+            console.log(`SockJS zamknięty (${endpoint}):`, event);
+          };
+          
+          // Daj trochę czasu na połączenie przed próbą następnego endpointu
+          await new Promise(resolve => setTimeout(resolve, 3000));
+          
+          // Jeśli socket nie jest otwarty po 3 sekundach, spróbuj następnego
+          if (socket.readyState !== 1) {
+            console.log(`Timeout dla ${endpoint}, próba następnego...`);
+            socket.close();
+          } else {
+            // Połączenie udane, przerwij pętlę
+            break;
+          }
+        } catch (sockError) {
+          console.error(`Błąd tworzenia SockJS dla ${endpoint}:`, sockError);
+        }
+      }
+    } catch (error) {
+      console.error("Błąd podczas prób połączenia SockJS:", error);
+    }
+    
+    // 3. Fallback do pollingu, jeśli wszystkie próby WebSocket zawiodły
+    console.log("Przejście do fallbacku polling...");
+    setupPolling();
+  };
+  
+  // Zainicjuj połączenie STOMP
+  function initializeStomp(socket: WebSocket, endpoint: string) {
+    console.log(`Inicjalizacja STOMP dla ${endpoint}...`);
+    
     const stompClient = new Client({
       webSocketFactory: () => socket,
-      onConnect: () => {
-        stompClient.subscribe("/game/all", (message) => {
-          const updatedGameSessionsList = JSON.parse(message.body);
-          if (updatedGameSessionsList) {
-            const filteredUpdatedGames = updatedGameSessionsList.filter(
-              (game: GameSession) => game.status === "CREATED"
-            );
-            setGameSessions(filteredUpdatedGames);
-            setFilteredGames(filteredUpdatedGames);
-          }
-        });
+      debug: (str) => console.log("STOMP Debug:", str),
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+      
+      onConnect: (frame) => {
+        console.log("STOMP połączony!", frame);
+        
+        // Subskrybuj z handlerem błędów
+        try {
+          stompClient.subscribe("/game/all", (message) => {
+            console.log("Otrzymano wiadomość:", message);
+            try {
+              const data = JSON.parse(message.body);
+              console.log("Przetworzono dane:", data);
+              if (Array.isArray(data)) {
+                const filteredGames = data.filter(game => game.status === "CREATED");
+                setGameSessions(filteredGames);
+                setFilteredGames(filteredGames);
+              }
+            } catch (error) {
+              console.error("Błąd parsowania wiadomości:", error);
+            }
+          });
+          
+          // Wyślij wiadomość testową
+          stompClient.publish({
+            destination: "/chat/requestGames",
+            body: JSON.stringify({ action: "getGames" })
+          });
+        } catch (subscribeError) {
+          console.error("Błąd podczas subskrypcji:", subscribeError);
+        }
       },
+      
       onStompError: (frame) => {
-        console.error("STOMP error", frame);
+        console.error("STOMP error:", frame);
       },
+      
+      onWebSocketError: (event) => {
+        console.error("WebSocket error:", event);
+        setupPolling(); // Fallback do pollingu w przypadku błędu
+      }
     });
-
+    
     stompClient.activate();
-    console.log("halo");
-    return () => {
-      stompClient.deactivate();
-    };
-  }, []);
+    return stompClient;
+  }
+  
+  // Fallback do regularnego pollingu
+  function setupPolling() {
+    console.log("Uruchamianie fallbacku polling...");
+    // Ustaw interwał do pobierania danych
+    const intervalId = setInterval(() => {
+      console.log("Pobieranie danych przez polling...");
+      getGames();
+    }, 5000); // Co 5 sekund
+    
+    // Cleanup
+    return () => clearInterval(intervalId);
+  }
+  
+  // Rozpocznij próby połączenia
+  connectWithFallbacks();
+  
+}, []);
+  
 
   useEffect(() => {
     const fetchGuestStatus = async () => {
