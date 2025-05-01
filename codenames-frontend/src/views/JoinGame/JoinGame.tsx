@@ -83,6 +83,9 @@ const JoinGame: React.FC<JoinGameProps> = ({
     getGames();
 
     const socket = new SockJS(`${apiUrl}/ws`);
+
+    console.log(`${apiUrl}/ws`);
+
     const stompClient = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
@@ -103,7 +106,7 @@ const JoinGame: React.FC<JoinGameProps> = ({
     });
 
     stompClient.activate();
-
+    console.log("halo");
     return () => {
       stompClient.deactivate();
     };
