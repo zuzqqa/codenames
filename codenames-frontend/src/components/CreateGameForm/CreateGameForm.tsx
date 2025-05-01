@@ -9,8 +9,6 @@ import "./CreateGameForm.css";
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import React from "react";
 
-const generateId = () =>
-  Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 
 /**
  * Props for CreateGameForm component.
@@ -46,59 +44,49 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
       password: "",
       deckLanguage: "en",
     },
-
-    /**
-     * Handles form submission and creates a new game session.
-     * @param {Object} values - Form values.
-     */
     onSubmit: async (values) => {
       const newErrors: { id: string; message: string }[] = [];
       setErrors(newErrors);
-      
-      if(isPrivate && formik.values.password === '') {
+  
+      if (isPrivate && formik.values.password === '') {
         newErrors.push({
-          id: generateId(),
+          id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
           message: t("private-lobby-password-error"),
         });
-
+  
         setErrors([...newErrors]);
         return;
       }
       try {
-        const getIdResponse = await fetch(
-          "http://localhost:8080/api/users/getId",
-          {
-            method: "GET",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
+        // Pierwsze żądanie - pobranie ID
+        const getIdResponse = await fetch("http://localhost:8080/api/users/getId", {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+  
         if (!getIdResponse.ok) {
           setError("Failed to fetch ID");
           return;
         }
-
+  
         const requestData = {
           gameName: values.gameName,
           maxPlayers: values.playerSlider,
           password: values.password,
           language: values.deckLanguage,
         };
-
-        const response = await fetch(
-          "http://localhost:8080/api/game-session/create",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestData),
-          }
-        );
-
+  
+        const response = await fetch("http://localhost:8080/api/game-session/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestData),
+        });
+  
         if (response.ok) {
           const data = await response.json();
           localStorage.setItem("gameId", data.gameId);
@@ -111,6 +99,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
       }
     },
   });
+  
 
   /**
    * useEffect hook for handling the automatic removal of error messages after a delay.
@@ -156,34 +145,9 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
   /**
    * Handles navigation back and optionally aborts a game session.
    */
-  const handleBack = async () => {
-    const storedGameId = localStorage.getItem("gameId");
-
-    if (!storedGameId) {
-      setError("No game session found");
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/game-session/${storedGameId}/finish`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: null,
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to abort the game");
-      }
-
-      navigate("/games");
-    } catch (error) {
-      setError("Failed to abort the game. Please try again.");
-    }
+  const handleBack = () => {
+    // Po prostu przekierowujemy na /games bez potrzeby wywoływania backendu
+    navigate("/games");
   };
 
   /**

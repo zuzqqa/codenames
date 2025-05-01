@@ -9,6 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import static org.mockito.ArgumentMatchers.any;
+
 
 import java.util.Optional;
 
@@ -96,25 +98,33 @@ public class UserServiceTest {
     @Test
     public void shouldUpdateUser() {
         String userId = "123";
-        User mockUser = User.builder().id(userId).username("testUser").password("oldPass").build();
+        User mockUser = User.builder()
+                .id(userId)
+                .username("testUser")
+                .password("oldPass")
+                .build();
 
         // Mock repository behavior
         when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
-        when(passwordEncoder.encode("AlaMaKota")).thenReturn("encodedPassword");
 
+        // Nie oczekujemy zmiany hasła, więc nie mockujemy passwordEncoder
         assertNotNull(userService.getUserById(userId));
 
-        User updatedUser = User.builder().id(userId).username("updatedUser").password("AlaMaKota").build();
+        User updatedUser = User.builder()
+                .id(userId)
+                .username("updatedUser")
+                .password("AlaMaKota") // hasło przekazane, ale zostanie zignorowane
+                .build();
 
-        // Ensure that save() returns the updated user
-        when(userRepository.save(mockUser)).thenReturn(mockUser);
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        userService.updateUser(userId, updatedUser);  // Call update
+        userService.updateUser(userId, updatedUser);
 
-        // After update, the repository should return the updated user
         when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
 
-        assertEquals("updatedUser", userService.getUserById(userId).get().getUsername());  // Verify update
-        assertEquals("encodedPassword", userService.getUserById(userId).get().getPassword());  // Ensure password encoding
+        assertEquals("updatedUser", userService.getUserById(userId).get().getUsername());
+
+        assertEquals("oldPass", userService.getUserById(userId).get().getPassword());
     }
+
 }

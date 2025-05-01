@@ -151,7 +151,7 @@ public class DefaultUserService implements UserService {
                     user.setGuest(false);
                     user.setDescription(updatedUser.getDescription());
                     user.setProfilePic(updatedUser.getProfilePic());
-                    user.setPassword(passwordEncoder.encode(updatedUser.getPassword())); // <--- DODANE
+//                    user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
                     return userRepository.save(user);
                 })
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + id)));
