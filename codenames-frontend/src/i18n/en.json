@@ -70,5 +70,7 @@
   "e-mail-reset-sent": "Link to change your password was sent to the given e-mail address.",
   "pass-round": "Pass",
   "hint-zero": "Hint number cannot be zero.",
-  "invalid-login-or-password": "Invalid login or password."
+  "invalid-login-or-password": "Invalid login or password.",
+  "dont-have-an-account": "Don't have an account? Sign up.",
+  "already-have-an-account": "Already have an account? Log in."
 }

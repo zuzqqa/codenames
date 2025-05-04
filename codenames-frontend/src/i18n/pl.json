@@ -71,5 +71,8 @@
   "e-mail-reset-sent": "Link do zmiany hasła został wysłany na podany adres e-mail.",
   "pass-round": "Spasuj",
   "hint-zero": "Liczba w podpowiedzi nie moze być zerem.",
-  "invalid-login-or-password": "Nieprawidłowy login lub hasło."
+  "invalid-login-or-password": "Nieprawidłowy login lub hasło.",
+  "dont-have-an-account": "Nie masz jeszcze konta? Zarejestruj się.",
+  "already-have-an-account": "Masz już konto? Zaloguj się."
+
 }

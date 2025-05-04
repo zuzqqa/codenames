@@ -330,25 +330,27 @@ const LoginPage: React.FC<LoginProps> = ({
           <img src={logoutButton} onClick={logout} alt="Logout" />
         </Button>
       )}
+      <LoginRegisterContainer variant="login">
       <TitleComponent
         soundFXVolume={soundFXVolume}
         customStyle={{
-          fontSize: "4rem",
+          fontSize: "calc(3.6rem + 0.2vw)",
           textAlign: "left",
-          marginLeft: "35%",
-          marginBottom: "-2.2%",
+          position: "absolute",
+          top: "calc(-27rem - 1vh)",
+          left: "1.2rem"
         }}
         shadowStyle={{
-          fontSize: "4rem",
+          fontSize: "calc(3.6rem + 0.2vw)",
           textAlign: "left",
-          marginLeft: "35%",
-          marginBottom: "-2.2%",
+          position: "absolute",
+          top: "calc(-27rem - 1vh)",
+          left: "1.2rem"
         }}
       >
         {t("login-button-text")}
       </TitleComponent>
-      <LoginRegisterContainer>
-        <div className="login-container">
+        <div className="login-form-container">
           <form className="login-form" onSubmit={handleSubmit}>
             <FormInput
               type="text"
@@ -400,6 +402,7 @@ const LoginPage: React.FC<LoginProps> = ({
             <div className="gold-line"></div>
           </div>
           <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+            <div className="google-container">
             <GoogleLogin
               locale="en"
               onSuccess={() => {
@@ -410,7 +413,14 @@ const LoginPage: React.FC<LoginProps> = ({
                 console.log("Google login failed");
               }}
             />
+            </div>
           </GoogleOAuthProvider>
+          <a 
+          className="login-register-link"
+          onClick={() => navigate("/register")}
+          >
+          {t("dont-have-an-account")}
+          </a>
         </div>
         {errors.length > 0 && (
           <div className="toast-container">

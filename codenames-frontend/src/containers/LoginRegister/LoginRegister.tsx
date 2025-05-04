@@ -6,6 +6,7 @@ import "./LoginRegister.css";
  */
 interface LoginRegisterContainerProps {
   children: ReactNode; // Accepts strings, JSX, or any valid React nodes
+  variant: "login" | "register";
 }
 
 /**
@@ -16,8 +17,8 @@ interface LoginRegisterContainerProps {
  * @param {LoginRegisterContainerProps} props - The properties that define the LoginRegisterContainer component.
  * @returns {JSX.Element} The rendered login/register container.
  */
-const LoginRegisterContainer: React.FC<LoginRegisterContainerProps> = ({ children }) => {
-  return <div className="login-register-container">{children}</div>;
+const LoginRegisterContainer: React.FC<LoginRegisterContainerProps> = ({ children, variant }) => {
+  return <div className={`login-register-container ${variant}`}>{children}</div>;
 };
 
 export default LoginRegisterContainer;

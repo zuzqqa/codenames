@@ -1,4 +1,4 @@
-.login-container {
+.login-form-container {
   grid-column: 1 / span 3; 
   grid-row: 1 / span 6; 
   display: flex;
@@ -14,8 +14,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 60%; 
-  width: 90%; 
+  height: 55%; 
+  width: 95%; 
   padding: 10px; 
   border-radius: 17px; 
   margin-top: 1.2vw;
@@ -78,8 +78,31 @@
   cursor: pointer;
   text-decoration: none; 
   transition: border-bottom 0.1s ease; 
+  margin-bottom: 1.2rem;
 }
 
 .reset-password-link:hover {
+  border-bottom: 0.5px solid #FFD363; 
+}
+
+.google-container{
+  margin-top: 10px;
+  margin-bottom: 25px;
+}
+
+.login-register-link{
+  float: right;
+  font-size: 0.8em;
+  background: linear-gradient(to right, #FFD363, #FCF18B);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  cursor: pointer;
+  text-decoration: none; 
+  transition: border-bottom 0.1s ease; 
+  margin-bottom: 1.2rem;
+
+}
+
+.login-register-link:hover {
   border-bottom: 0.5px solid #FFD363; 
 }
