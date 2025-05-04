@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 import org.example.codenames.jwt.JwtService;
-import org.example.codenames.user.entity.FriendRequestsDTO;
+import org.example.codenames.user.entity.dto.FriendRequestsDTO;
 import org.example.codenames.user.entity.PasswordResetRequest;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.controller.api.UserController;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"; // Hook for managing component state
+import { io } from "socket.io-client";
 
 import BackgroundContainer from "../../containers/Background/Background";
 
@@ -9,14 +10,17 @@ import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 import ProfileModal from "../../components/UserProfileOverlay/ProfileModal";
 import profileIcon from "../../assets/icons/profile.png";
 import settingsIcon from "../../assets/icons/settings.png";
-import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
-import { getCookie, logout } from "../../shared/utils.tsx";
 import logoutButton from "../../assets/icons/logout.svg";
-import { apiUrl } from "../../config/api.tsx";
+
+import { getCookie, logout } from "../../shared/utils.tsx";
+import { apiUrl, socketUrl } from "../../config/api.tsx";
 
 /**
  * Props type definition for the JoinGame component.
+ * @typedef {Object} JoinGameProps
+ * @property {function} setVolume - Function to set global volume.
+ * @property {number} soundFXVolume - Current sound effects volume level.
+ * @property {function} setSoundFXVolume - Function to set sound effects volume.
  */
 interface JoinGameProps {
   setVolume: (volume: number) => void; // Function to set global volume
@@ -25,36 +29,39 @@ interface JoinGameProps {
 }
 
 /**
- * Represents a user in a game session.
- */
-interface User {
-  userId: string;
-  username: string;
-}
-
-/**
  * Enumeration of possible game session statuses.
+ * @enum {string}
+ * @property {string} CREATED - Session is created but not started.
+ * @property {string} LEADER_SELECTION - Session is in leader selection phase.
+ * @property {string} IN_PROGRESS - Session is currently in progress.
+ * @property {string} FINISHED - Session has finished.
  */
 enum SessionStatus {
   CREATED = "CREATED",
+  LEADER_SELECTION = "LEADER_SELECTION",
   IN_PROGRESS = "IN_PROGRESS",
   FINISHED = "FINISHED",
 }
 
 /**
- * Represents a game session.
+ * Represents a simplified game session (used in JoinGame list).
+ * @typedef {Object} GameSessionJoinGameDTO
+ * @property {SessionStatus} status - The current status of the game session.
+ * @property {string} sessionId - Unique identifier for the game session.
+ * @property {string} gameName - Name of the game session.
+ * @property {number} maxPlayers - Maximum number of players allowed in the session.
+ * @property {string} password - Password for joining the session (if any).
+ * @property {number} currentRedTeamPlayers - Number of players in the red team.
+ * @property {number} currentBlueTeamPlayers - Number of players in the blue team.
  */
-interface GameSession {
+interface GameSessionJoinGameDTO {
   status: SessionStatus;
   sessionId: string;
   gameName: string;
   maxPlayers: number;
   password: string;
-  durationOfTheRound: string;
-  timeForGuessing: string;
-  timeForAHint: string;
-  numberOfRounds: number;
-  connectedUsers: User[][];
+  currentRedTeamPlayers: number;
+  currentBlueTeamPlayers: number;
 }
 
 /**
@@ -71,157 +78,55 @@ const JoinGame: React.FC<JoinGameProps> = ({
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
-  const [gameSessions, setGameSessions] = useState<GameSession[]>([]);
-  const [filteredGames, setFilteredGames] = useState<GameSession[]>([]);
+  const [gameSessions, setGameSessions] = useState<GameSessionJoinGameDTO[]>([]);
+  const [filteredGames, setFilteredGames] = useState<GameSessionJoinGameDTO[]>([]);
   const [isGuest, setIsGuest] = useState<boolean | null>(null);
 
   /**
-   * Fetches the list of available game sessions on component mount.
-   * Also establishes a WebSocket connection for real-time updates.
+   * useEffect hook that establishes a Socket.IO connection to receive real-time game session updates.
+   *
+   * - Connects to the Socket.IO server on component mount.
+   * - Listens for the 'gameSessionsList' event and filters sessions with status "CREATED".
+   * - Updates local React state (`setGameSessions`, `setFilteredGames`) with the filtered list.
    */
-// Zmodyfikuj ten kod w swoim komponencie frontendowym
+  useEffect(() => {
+    getGames();
 
-useEffect(() => {
-  // Najpierw pobierz dane przez standardowe REST API
-  getGames();
-  
-  // Funkcja próbująca różnych metod połączenia
-  const connectWithFallbacks = async () => {
-    console.log("Próba połączenia z wykorzystaniem różnych metod...");
-  
-    
-    // 2. Próba z pełnym URL i explicit protokołem (obejście niektórych problemów z proxy)
-    try {
-      const sockOptions = {
-        transports: ['websocket', 'xhr-streaming', 'xhr-polling'],
-        debug: true
-      };
-      
-      // Spróbuj z różnymi wersjami ścieżki
-      const socketEndpoints = [
-        'https://codenames-backend-co4i.onrender.com/ws',
-        'https://codenames-backend-co4i.onrender.com/ws/',
-        'wss://codenames-backend-co4i.onrender.com/ws'
-      ];
-      
-      // Iteruj przez różne warianty endpointów
-      for (const endpoint of socketEndpoints) {
-        console.log(`Próba połączenia z: ${endpoint}`);
-        
-        try {
-          const socket = new SockJS(endpoint, null, sockOptions);
-          
-          socket.onopen = () => {
-            console.log(`Udane połączenie SockJS z: ${endpoint}`);
-            initializeStomp(socket, endpoint);
-          };
-          
-          socket.onerror = (error) => {
-            console.error(`Błąd SockJS z ${endpoint}:`, error);
-          };
-          
-          socket.onclose = (event) => {
-            console.log(`SockJS zamknięty (${endpoint}):`, event);
-          };
-          
-          // Daj trochę czasu na połączenie przed próbą następnego endpointu
-          await new Promise(resolve => setTimeout(resolve, 3000));
-          
-          // Jeśli socket nie jest otwarty po 3 sekundach, spróbuj następnego
-          if (socket.readyState !== 1) {
-            console.log(`Timeout dla ${endpoint}, próba następnego...`);
-            socket.close();
-          } else {
-            // Połączenie udane, przerwij pętlę
-            break;
-          }
-        } catch (sockError) {
-          console.error(`Błąd tworzenia SockJS dla ${endpoint}:`, sockError);
-        }
+    const socket = io(
+      `${ socketUrl }`,
+      {
+        transports: ["websocket"],
       }
-    } catch (error) {
-      console.error("Błąd podczas prób połączenia SockJS:", error);
-    }
+    );
+
+    socket.on("gameSessionsList", (updatedGameSessionsJson: string) => {    
+      try {
+        const updatedGameSessionsList: GameSessionJoinGameDTO[] = JSON.parse(updatedGameSessionsJson);
+
+        const filteredUpdatedGames = updatedGameSessionsList.filter(
+          (game) => game.status === "CREATED"
+        );
     
-    // 3. Fallback do pollingu, jeśli wszystkie próby WebSocket zawiodły
-    console.log("Przejście do fallbacku polling...");
-    setupPolling();
-  };
-  
-  // Zainicjuj połączenie STOMP
-  function initializeStomp(socket: WebSocket, endpoint: string) {
-    console.log(`Inicjalizacja STOMP dla ${endpoint}...`);
-    
-    const stompClient = new Client({
-      webSocketFactory: () => socket,
-      debug: (str) => console.log("STOMP Debug:", str),
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-      
-      onConnect: (frame) => {
-        console.log("STOMP połączony!", frame);
-        
-        // Subskrybuj z handlerem błędów
-        try {
-          stompClient.subscribe("/game/all", (message) => {
-            console.log("Otrzymano wiadomość:", message);
-            try {
-              const data = JSON.parse(message.body);
-              console.log("Przetworzono dane:", data);
-              if (Array.isArray(data)) {
-                const filteredGames = data.filter(game => game.status === "CREATED");
-                setGameSessions(filteredGames);
-                setFilteredGames(filteredGames);
-              }
-            } catch (error) {
-              console.error("Błąd parsowania wiadomości:", error);
-            }
-          });
-          
-          // Wyślij wiadomość testową
-          stompClient.publish({
-            destination: "/chat/requestGames",
-            body: JSON.stringify({ action: "getGames" })
-          });
-        } catch (subscribeError) {
-          console.error("Błąd podczas subskrypcji:", subscribeError);
-        }
-      },
-      
-      onStompError: (frame) => {
-        console.error("STOMP error:", frame);
-      },
-      
-      onWebSocketError: (event) => {
-        console.error("WebSocket error:", event);
-        setupPolling(); // Fallback do pollingu w przypadku błędu
+        setGameSessions(filteredUpdatedGames);
+        setFilteredGames(filteredUpdatedGames);
+      } catch (err) {
+        console.error("Error parsing gameSessionsList JSON:", err);
       }
     });
     
-    stompClient.activate();
-    return stompClient;
-  }
-  
-  // Fallback do regularnego pollingu
-  function setupPolling() {
-    console.log("Uruchamianie fallbacku polling...");
-    // Ustaw interwał do pobierania danych
-    const intervalId = setInterval(() => {
-      console.log("Pobieranie danych przez polling...");
-      getGames();
-    }, 5000); // Co 5 sekund
-    
-    // Cleanup
-    return () => clearInterval(intervalId);
-  }
-  
-  // Rozpocznij próby połączenia
-  connectWithFallbacks();
-  
-}, []);
-  
 
+    socket.on("connect_error", (error) => {
+      console.error("Socket.IO connection error", error);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  /**
+   * useEffect hook that checks if the user is a guest by making an API call.
+   */
   useEffect(() => {
     const fetchGuestStatus = async () => {
       const token = getCookie("authToken");
@@ -234,7 +139,7 @@ useEffect(() => {
         const response = await fetch(`${apiUrl}/api/users/isGuest`, {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         });
@@ -262,7 +167,7 @@ useEffect(() => {
       .then((response) => response.json())
       .then((data) => {
         const createdGames = data.filter(
-          (game: GameSession) => game.status === "CREATED"
+          (game: GameSessionJoinGameDTO) => game.status === "CREATED"
         );
         setGameSessions(createdGames);
         setFilteredGames(createdGames);
@@ -336,4 +241,3 @@ useEffect(() => {
 };
 
 export default JoinGame;
-

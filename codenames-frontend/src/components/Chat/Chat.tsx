@@ -134,6 +134,7 @@ const Chat: React.FC = () => {
       audioRoom[0].setAttribute("style", "top: 32%; transition: top 0.4s;");
     }
   };
+  
   const handleInputBlur = () => {
     setIsInputFocused(false);
     const audioRoom = document.getElementsByClassName("audio-room");

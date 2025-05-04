@@ -17,8 +17,9 @@ import profilePicImg from "../../assets/images/profile-pic.png";
 import "./ChooseLeader.css";
 
 import { formatTime } from "../../shared/utils";
-import { apiUrl } from "../../config/api.tsx";
+import { apiUrl, socketUrl } from "../../config/api.tsx";
 import { getUserId } from "../../shared/utils.tsx";
+import { io } from "socket.io-client";
 
 /**
  * Props for the ChooseLeader component.
@@ -34,49 +35,59 @@ interface ChooseLeaderProps {
 }
 
 /**
- * User object structure.
- * @typedef {Object} User
- * @property {string} id - Unique identifier of the user.
- * @property {string} username - Username of the user.
+ * Enum for user status.
+ * @enum {string}
+ * @property {string} INACTIVE - The user is inactive.
+ * @property {string} ACTIVE - The user is active.
  */
-interface User {
-  id: string;
-  username: string;
+enum UserStatus {
+  INACTIVE = "INACTIVE",
+  ACTIVE = "ACTIVE",
 }
 
 /**
- * Enum for session statuses.
+ * Represents a user in the game session.
+ * @typedef {Object} UserRoomLobbyDTO
+ * @property {string} username - The username of the player.
+ * @property {number} profilePic - The profile picture ID of the player.
+ * @property {UserStatus} status - The status of the player (active/inactive).
+ */
+interface UserRoomLobbyDTO {
+  id: string;
+  username: string;
+  profilePic: number;
+  status: UserStatus;
+}
+
+/**
+ * Enum for session status.
  * @enum {string}
+ * @property {string} CREATED - The session is created.
+ * @property {string} LEADER_SELECTION - The session is in leader selection phase.
+ * @property {string} IN_PROGRESS - The session is in progress.
+ * @property {string} FINISHED - The session is finished.
  */
 enum SessionStatus {
   CREATED = "CREATED",
+  LEADER_SELECTION = "LEADER_SELECTION",
   IN_PROGRESS = "IN_PROGRESS",
   FINISHED = "FINISHED",
 }
 
 /**
- * Game session object structure.
- * @typedef {Object} GameSession
- * @property {SessionStatus} status - Current status of the game session.
- * @property {string} sessionId - Unique identifier of the game session.
- * @property {string} gameName - Name of the game session.
- * @property {number} maxPlayers - Maximum number of players allowed.
- * @property {string} durationOfTheRound - Duration of a round in the game.
- * @property {string} timeForAHint - Time allocated for giving hints.
- * @property {string} timeForGuessing - Time allocated for guessing.
- * @property {User[][]} connectedUsers - Array of users in different teams.
- * @property {number} votingStartTime - Timestamp when voting started.
+ * Represents a game session.
+ * @typedef {Object} GameSessionRoomLobbyDTO
+ * @property {string} id - The unique identifier of the user.
+ * @property {SessionStatus} status - The current status of the session.
+ * @property {string} gameName - The name of the game.
+ * @property {number} maxPlayers - The maximum number of players allowed.
+ * @property {UserRoomLobbyDTO[][]} connectedUsers - List of users in each team.
  */
-interface GameSession {
+interface GameSessionRoomLobbyDTO {
   status: SessionStatus;
-  sessionId: string;
   gameName: string;
   maxPlayers: number;
-  durationOfTheRound: string;
-  timeForAHint: string;
-  timeForGuessing: string;
-  connectedUsers: User[][];
-  votingStartTime: number;
+  connectedUsers: UserRoomLobbyDTO[][];
 }
 
 /**
@@ -96,14 +107,14 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
 }) => {
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
-  const [selectedPlayer, setSelectedPlayer] = useState<User | null>(null);
+  const [selectedPlayer, setSelectedPlayer] = useState<UserRoomLobbyDTO | null>(null);
   const timeForVoting = 10; // Time for voting in seconds
   const [votingStartTime, setVotingStartTime] = useState<number>(Date.now()); // Voting start time
   const [timeLeft, setTimeLeft] = useState(timeForVoting); // Timer state (2 minutes = 120 seconds)
   const navigate = useNavigate(); // Hook for navigation
   const { t } = useTranslation(); // Hook for translations
-  const [redTeamPlayers, setRedTeamPlayers] = useState<User[]>([]);
-  const [blueTeamPlayers, setBlueTeamPlayers] = useState<User[]>([]);
+  const [redTeamPlayers, setRedTeamPlayers] = useState<UserRoomLobbyDTO[]>([]);
+  const [blueTeamPlayers, setBlueTeamPlayers] = useState<UserRoomLobbyDTO[]>([]);
   const [myTeam, setMyTeam] = useState<string | null>(null);
   const [isVoteCasted, setIsVoteCasted] = useState<boolean>(false);
   const [userId, setUserId] = useState<string | null>();
@@ -118,7 +129,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     if (storedGameId) {
       fetch(`${apiUrl}/api/game-session/${storedGameId}`)
         .then((response) => response.json())
-        .then(async (data: GameSession) => {
+        .then(async (data: GameSessionRoomLobbyDTO) => {
           if (data.connectedUsers) {
             setRedTeamPlayers(data.connectedUsers[0] || []);
             setBlueTeamPlayers(data.connectedUsers[1] || []);
@@ -133,7 +144,6 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
           } else {
             setMyTeam(null);
           }
-          setVotingStartTime(data.votingStartTime);
         })
         .catch((err) => console.error("Failed to load game session", err));
     } else {
@@ -147,30 +157,45 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
       );
     }, 1000);
 
-    // WebSocket connection using SockJS and STOMP
-    const socket = new SockJS(`${apiUrl}/ws`);
-    const stompClient = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        // Subscribe to the game session updates
-        stompClient.subscribe(`/game/${storedGameId}`, (message) => {
-          const updatedGameSession = JSON.parse(message.body);
-          if (updatedGameSession) {
+    const socket = io(`${socketUrl}`, {
+      transports: ["websocket"],
+    });
+
+    socket.on("connect", () => {
+      const storedGameId = localStorage.getItem("gameId");
+
+      if (storedGameId) {
+        socket.emit("joinGame", storedGameId);
+      }
+    });
+
+    socket.on(
+      "gameSessionUpdate",
+      (updatedGameSessionJson: string) => {
+        try {
+          const updatedGameSession: GameSessionRoomLobbyDTO = JSON.parse(updatedGameSessionJson);
+          
+          if(updatedGameSession.connectedUsers) {
             setRedTeamPlayers(updatedGameSession.connectedUsers[0] || []);
             setBlueTeamPlayers(updatedGameSession.connectedUsers[1] || []);
           }
-        });
-      },
-      onStompError: (frame) => {
-        console.error("STOMP error", frame);
-      },
+
+          if (updatedGameSession.status === "LEADER_SELECTION") {
+            navigate("/choose-leader");
+          }
+        } catch (err) {
+          console.error("Error parsing gameSessionsList JSON:", err);
+        }
+      }
+    );
+
+    socket.on("connect_error", (error) => {
+      console.error("Socket connection error:", error);
     });
 
-    stompClient.activate();
-
-    // Cleanup function to deactivate WebSocket connection
     return () => {
-      clearInterval(timer); // Clear the timer when component unmounts
+      clearInterval(timer); 
+      socket.disconnect();
     };
   }, [timeLeft, navigate]);
 
@@ -236,7 +261,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
    * Handles the player selection for voting.
    * @param {User} player - The selected player.
    */
-  const handlePlayerClick = (player: User) => {
+  const handlePlayerClick = (player: UserRoomLobbyDTO) => {
     if (myTeam === "red" && redTeamPlayers.includes(player))
       setSelectedPlayer(player);
     else if (myTeam === "blue" && blueTeamPlayers.includes(player))

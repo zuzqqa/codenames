@@ -1,5 +1,6 @@
 package org.example.codenames.gameSession.controller.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.example.codenames.gameSession.controller.api.GameSessionWebSocketController;
 import org.example.codenames.gameSession.entity.CreateGameRequest;
@@ -10,12 +11,14 @@ import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.gameState.entity.GameState;
 import org.example.codenames.gameState.service.api.GameStateService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.example.codenames.socket.service.api.SocketService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+
+import static org.example.codenames.gameSession.entity.dto.GameSessionMapper.toJoinGameDTOList;
+import static org.example.codenames.gameSession.entity.dto.GameSessionMapper.toRoomLobbyDTO;
 
 /**
  * Default implementation of the GameSessionWebSocketController interface.
@@ -31,11 +34,6 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
     private final GameSessionService gameSessionService;
 
     /**
-     * The SimpMessagingTemplate instance used to send messages to connected clients
-     */
-    private final SimpMessagingTemplate messagingTemplate;
-
-    /**
      * The GameSessionRepository instance used to interact with the game session database
      */
     private final GameSessionRepository gameSessionRepository;
@@ -46,18 +44,9 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
     private final GameStateService gameStateService;
 
     /**
-     * Constructor for the DefaultGameSessionWebSocketController class
-     * @param messagingTemplate The SimpMessagingTemplate instance used to send messages to connected clients
-     * @param gameSessionService The GameSessionService instance used to interact with the game session repository
-     * @param gameSessionRepository The GameSessionRepository instance used to interact with the game session database
+     * The SocketService instance used to send messages to connected clients
      */
-    @Autowired
-    public DefaultGameSessionWebSocketController(SimpMessagingTemplate messagingTemplate, GameSessionService gameSessionService, GameSessionRepository gameSessionRepository, GameStateService gameStateService) {
-        this.gameSessionService = gameSessionService;
-        this.messagingTemplate = messagingTemplate;
-        this.gameSessionRepository = gameSessionRepository;
-        this.gameStateService = gameStateService;
-    }
+    private final SocketService socketService;
 
     /**
      * Create a new game session
@@ -65,7 +54,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      * @return the response entity containing the game session id
      */
     @PostMapping("/create")
-    public ResponseEntity<Map<String, String>> createGameSession(@RequestBody CreateGameRequest request) {
+    public ResponseEntity<Map<String, String>> createGameSession(@RequestBody CreateGameRequest request) throws JsonProcessingException {
         // Create a new game session
         String gameId = gameSessionService.createGameSession(request);
         Map<String, String> response = new HashMap<>();
@@ -74,9 +63,28 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         response.put("gameId", gameId);
 
         // Send the game session to all clients
-        messagingTemplate.convertAndSend("/game/all" , gameSessionService.getAllGameSessions());
+        socketService.sendGameSessionsList(toJoinGameDTOList(gameSessionService.getAllGameSessions()));
 
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Get game session by id
+     *
+     * @param gameId The id of the game session to retrieve
+     * @return The game session with the specified id
+     */
+    @GetMapping("/{gameId}/full")
+    public ResponseEntity<GameSession> getGameSessionFull(@PathVariable String gameId) throws JsonProcessingException {
+        GameSession gameSession = gameSessionService.getGameSessionById(UUID.fromString(gameId));
+
+        if (gameSession != null) {
+            socketService.sendGameSessionUpdate(UUID.fromString(gameId), gameSession);
+
+            return ResponseEntity.ok(gameSession);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
@@ -103,7 +111,8 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
             if (added) {
                 // Send the game session to all clients
-                messagingTemplate.convertAndSend("/game/" + gameId, gameSessionRepository.findBySessionId(gameId));
+                socketService.sendGameSessionUpdate(gameId, toRoomLobbyDTO(gameSessionRepository.findBySessionId(gameId)));
+                socketService.sendGameSessionsList(toJoinGameDTOList(gameSessionService.getAllGameSessions()));
 
                 return ResponseEntity.ok().build();
             } else {
@@ -128,7 +137,8 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
             if (removed) {
                 // Send the game session to all clients
-                messagingTemplate.convertAndSend("/game/" + gameId, gameSessionRepository.findBySessionId(gameId));
+                socketService.sendGameSessionUpdate(gameId, toRoomLobbyDTO(gameSessionRepository.findBySessionId(gameId)));
+                socketService.sendGameSessionsList(toJoinGameDTOList(gameSessionService.getAllGameSessions()));
 
                 return ResponseEntity.ok().build();
             } else {
@@ -146,7 +156,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      */
     @Override
     @PostMapping("/{gameId}/start")
-    public ResponseEntity<Void> startGame(@PathVariable UUID gameId) {
+    public ResponseEntity<Void> startGame(@PathVariable UUID gameId) throws JsonProcessingException {
         // Set the game session status to leader selection
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
                 .orElseThrow(() -> new RuntimeException("Game with an ID of " + gameId + " does not exist."));
@@ -157,7 +167,8 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         gameSessionRepository.save(gameSession);
 
         // Send the game session to all clients
-        messagingTemplate.convertAndSend("/game/" + gameId, gameSessionRepository.findBySessionId(gameId));
+        socketService.sendGameSessionUpdate(gameId, toRoomLobbyDTO(gameSessionRepository.findBySessionId(gameId)));
+        socketService.sendGameSessionsList(toJoinGameDTOList(gameSessionService.getAllGameSessions()));
 
         return ResponseEntity.ok().build();
     }
@@ -168,13 +179,15 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      * @return the response entity
      */
     @PostMapping("/{gameId}/finish")
-    public ResponseEntity<Void> finishGame(@PathVariable UUID gameId) {
+    public ResponseEntity<Void> finishGame(@PathVariable UUID gameId) throws JsonProcessingException {
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
                 .orElseThrow(() -> new RuntimeException("Game with an ID of " + gameId + " does not exist."));
 
         // Set the game session status to finished
         gameSession.setStatus(GameSession.sessionStatus.FINISHED);
         gameSessionRepository.save(gameSession);
+
+        socketService.sendGameSessionUpdate(gameId, toRoomLobbyDTO(gameSessionRepository.findBySessionId(gameId)));
 
         return ResponseEntity.ok().build();
     }
@@ -192,10 +205,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
             return ResponseEntity.noContent().build();
         }
 
-        // Send the game sessions to all clients
-        messagingTemplate.convertAndSend("/game/all" , gameSessions);
-
-        return ResponseEntity.ok(gameSessions);
+        return ResponseEntity.ok(toJoinGameDTOList(gameSessions));
     }
 
     /**
@@ -205,7 +215,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      * @return the response entity
      */
     @PostMapping("/{gameId}/send-hint")
-    public ResponseEntity<Void> sendHint(@PathVariable UUID gameId, @RequestBody HintRequest hintRequest) {
+    public ResponseEntity<Void> sendHint(@PathVariable UUID gameId, @RequestBody HintRequest hintRequest) throws JsonProcessingException {
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId).orElseThrow(() ->
                 new IllegalArgumentException("Game with an ID of " + gameId + " does not exist."));
         GameState gameState = gameSession.getGameState();
@@ -216,8 +226,11 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
         gameSessionRepository.save(gameSession);
 
-        // Send the game session to all clients
-        messagingTemplate.convertAndSend("/game/" + gameId + "/timer", gameSession);
+        Optional<GameSession> optionalSession = gameSessionRepository.findBySessionId(gameId);
+
+        if(optionalSession.isPresent()) {
+            socketService.sendGameSessionUpdate(gameId, optionalSession.get());
+        }
 
         return ResponseEntity.ok().build();
     }
@@ -228,7 +241,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      * @return the response entity
      */
     @GetMapping("/{id}/change-turn")
-    public ResponseEntity<?> changeTurn(@PathVariable UUID id) {
+    public ResponseEntity<?> changeTurn(@PathVariable UUID id) throws JsonProcessingException {
         // Change the turn
         gameStateService.changeTurn(id);
 
@@ -237,8 +250,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
         clearVotes(gameSession, gameSessionRepository);
 
-        // Send the game session to all clients
-        messagingTemplate.convertAndSend("/game/" + id + "/timer", gameSession);
+        socketService.sendGameSessionUpdate(id, gameSession);
 
         return ResponseEntity.ok("Turn changed");
     }
@@ -266,14 +278,14 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      */
     @Override
     @PostMapping("/{gameId}/reveal-card")
-    public ResponseEntity<?> revealCard(@PathVariable UUID gameId, @RequestBody String cardIndex) {
+    public ResponseEntity<?> revealCard(@PathVariable UUID gameId, @RequestBody String cardIndex) throws JsonProcessingException {
         gameSessionService.revealCard(gameId, cardIndex);
 
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId).orElseThrow(() ->
                 new IllegalArgumentException("Game with an ID of " + gameId + " does not exist."));
 
-        // Send the game session to all clients
-        messagingTemplate.convertAndSend("/game/" + gameId + "/timer", gameSession);
+
+        socketService.sendGameSessionUpdate(gameId, gameSession);
 
         return ResponseEntity.ok("Card revealed.");
     }
@@ -287,15 +299,14 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      */
     @Override
     @PostMapping("/{gameId}/vote")
-    public ResponseEntity<?> submitVote(@PathVariable UUID gameId, @RequestBody VoteRequest voteRequest) {
+    public ResponseEntity<?> submitVote(@PathVariable UUID gameId, @RequestBody VoteRequest voteRequest) throws JsonProcessingException {
         // Submit vote
         gameSessionService.submitVote(gameId, voteRequest.getUserId(), voteRequest.getVotedUserId());
 
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId).orElseThrow(() ->
                 new IllegalArgumentException("Game with an ID of " + gameId + " does not exist."));
 
-        // Send the game session to all clients
-        messagingTemplate.convertAndSend("/game/" + gameId + "/timer", gameSession);
+        socketService.sendGameSessionUpdate(gameId, gameSession);
         
         return ResponseEntity.ok(voteRequest.getVotedUserId());
     }

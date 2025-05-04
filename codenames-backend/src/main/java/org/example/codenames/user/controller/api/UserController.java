@@ -4,7 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.example.codenames.user.entity.FriendRequestsDTO;
+import org.example.codenames.user.entity.dto.FriendRequestsDTO;
 import org.example.codenames.user.entity.PasswordResetRequest;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.userDetails.AuthRequest;

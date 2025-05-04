@@ -1,5 +1,3 @@
-import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -11,8 +9,9 @@ import backButton from "../../assets/icons/arrow-back.png";
 
 import "./RoomLobby.css";
 
-import { apiUrl } from "../../config/api.tsx";
+import { apiUrl, socketUrl } from "../../config/api.tsx";
 import { getUserId } from "../../shared/utils.tsx";
+import { io } from "socket.io-client";
 
 /**
  * Properties for the RoomLobby component.
@@ -24,21 +23,38 @@ interface RoomLobbyProps {
 }
 
 /**
- * Represents a user in the game session.
- * @typedef {Object} User
- * @property {string} userId - The unique ID of the user.
- * @property {string} username - The username of the player.
+ * Enum for user status.
+ * @enum {string}
+ * @property {string} INACTIVE - The user is inactive.
+ * @property {string} ACTIVE - The user is active.
  */
-interface User {
-  userId: string;
+enum UserStatus {
+  INACTIVE = "INACTIVE",
+  ACTIVE = "ACTIVE",
+}
+
+/**
+ * Represents a user in the game session.
+ * @typedef {Object} UserRoomLobbyDTO
+ * @property {string} id - The unique identifier of the user.
+ * @property {string} username - The username of the player.
+ * @property {number} profilePic - The profile picture ID of the player.
+ * @property {UserStatus} status - The status of the player (active/inactive).
+ */
+interface UserRoomLobbyDTO {
+  id: string;
   username: string;
   profilePic: number;
+  status: UserStatus;
 }
 
 /**
  * Enum for session status.
- * @readonly
  * @enum {string}
+ * @property {string} CREATED - The session is created.
+ * @property {string} LEADER_SELECTION - The session is in leader selection phase.
+ * @property {string} IN_PROGRESS - The session is in progress.
+ * @property {string} FINISHED - The session is finished.
  */
 enum SessionStatus {
   CREATED = "CREATED",
@@ -49,23 +65,17 @@ enum SessionStatus {
 
 /**
  * Represents a game session.
- * @typedef {Object} GameSession
+ * @typedef {Object} GameSessionRoomLobbyDTO
  * @property {SessionStatus} status - The current status of the session.
- * @property {string} sessionId - The unique ID of the session.
  * @property {string} gameName - The name of the game.
  * @property {number} maxPlayers - The maximum number of players allowed.
- * @property {string} timeForAHint - The time limit for hints.
- * @property {string} timeForGuessing - The time limit for guessing.
- * @property {User[][]} connectedUsers - List of users in each team.
+ * @property {UserRoomLobbyDTO[][]} connectedUsers - List of users in each team.
  */
-interface GameSession {
+interface GameSessionRoomLobbyDTO {
   status: SessionStatus;
-  sessionId: string;
   gameName: string;
   maxPlayers: number;
-  timeForAHint: string;
-  timeForGuessing: string;
-  connectedUsers: User[][];
+  connectedUsers: UserRoomLobbyDTO[][];
 }
 
 /**
@@ -78,19 +88,25 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const [gameSession, setGameSession] = useState<GameSession | null>(null);
-  const [redTeamPlayers, setRedTeamPlayers] = useState<User[]>([]);
-  const [blueTeamPlayers, setBlueTeamPlayers] = useState<User[]>([]);
-  const [client, setClient] = useState<Client | null>(null);
+  const [gameSession, setGameSession] =
+    useState<GameSessionRoomLobbyDTO | null>(null);
+  const [redTeamPlayers, setRedTeamPlayers] = useState<UserRoomLobbyDTO[]>([]);
+  const [blueTeamPlayers, setBlueTeamPlayers] = useState<UserRoomLobbyDTO[]>(
+    []
+  );
 
-
+  /**
+   * Initializes the WebSocket connection and fetches the game session data.
+   */
   useEffect(() => {
     const storedGameId = localStorage.getItem("gameId");
 
     if (storedGameId) {
       fetch(`${apiUrl}/api/game-session/${storedGameId}`)
         .then((response) => response.json())
-        .then((data: GameSession) => {
+        .then((data: GameSessionRoomLobbyDTO) => {
+          console.log("Game session data:", data);
+
           setGameSession({
             ...data,
           });
@@ -105,33 +121,44 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       navigate("/join-game");
     }
 
-    const socket = new SockJS(`${apiUrl}/ws`);
-    const stompClient = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        stompClient.subscribe("/game/" + storedGameId, (message) => {
-          const updatedGameSession = JSON.parse(message.body);
-          if (updatedGameSession) {
-            setRedTeamPlayers(updatedGameSession.connectedUsers[0] || []);
-            setBlueTeamPlayers(updatedGameSession.connectedUsers[1] || []);
-
-            if (updatedGameSession.status === SessionStatus.LEADER_SELECTION) {
-              navigate("/choose-leader");
-            }
-          }
-        });
-      },
-      onStompError: (frame) => {
-        console.error("STOMP error", frame);
-      },
+    const socket = io(`${socketUrl}`, {
+      transports: ["websocket"],
     });
 
-    stompClient.activate();
+    socket.on("connect", () => {
+      const storedGameId = localStorage.getItem("gameId");
+
+      if (storedGameId) {
+        socket.emit("joinGame", storedGameId);
+      }
+    });
+
+    socket.on(
+      "gameSessionUpdate",
+      (updatedGameSessionJson: string) => {
+        try {
+          const updatedGameSession: GameSessionRoomLobbyDTO = JSON.parse(updatedGameSessionJson);
+          
+          if(updatedGameSession.connectedUsers) {
+            setRedTeamPlayers(updatedGameSession.connectedUsers[0] || []);
+            setBlueTeamPlayers(updatedGameSession.connectedUsers[1] || []);
+          }
+
+          if (updatedGameSession.status === "LEADER_SELECTION") {
+            navigate("/choose-leader");
+          }
+        } catch (err) {
+          console.error("Error parsing gameSessionsList JSON:", err);
+        }
+      }
+    );
+
+    socket.on("connect_error", (error) => {
+      console.error("Socket connection error:", error);
+    });
 
     return () => {
-      if (stompClient) {
-        stompClient.deactivate();
-      }
+      socket.disconnect();
     };
   }, [navigate]);
 
@@ -276,10 +303,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                   <span className="button-text">Start</span>
                 </Button>
                 <div className="players-container">
-                  {/* <div className="cloud-container">
-                    <div className="cloud blue-cloud" />
-                    <div className="cloud red-cloud" />
-                  </div> */}
                   <div className="team">
                     <Button
                       className="join-button"
@@ -290,7 +313,10 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                       +
                     </Button>
                     {redTeamPlayers.map((player, index) => (
-                      <div key={index} className="player-container player-container-red">
+                      <div
+                        key={index}
+                        className="player-container player-container-red"
+                      >
                         <img
                           src={`/images/profile-pic-${player.profilePic}.png`}
                           alt="Player"
@@ -310,7 +336,10 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                       +
                     </Button>
                     {blueTeamPlayers.map((player, index) => (
-                      <div key={index} className="player-container player-container-blue">
+                      <div
+                        key={index}
+                        className="player-container player-container-blue"
+                      >
                         <img
                           src={`/images/profile-pic-${player.profilePic}.png`}
                           alt="Player"

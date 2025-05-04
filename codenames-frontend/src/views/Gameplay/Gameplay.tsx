@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Client } from "@stomp/stompjs";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useWebSocket } from "./useWebSocket";
 
 import BackgroundContainer from "../../containers/Background/Background";
 
@@ -27,12 +24,11 @@ import votingLabel from "../../assets/images/medieval-label.png";
 
 import "./Gameplay.css";
 import Chat from "../../components/Chat/Chat.tsx";
-
+import { useLocation, useNavigate } from "react-router-dom";
 import AudioRoom from "../../components/AudioRoom/AudioRoom.tsx";
-
-import { apiUrl } from "../../config/api.tsx";
+import { apiUrl, socketUrl } from "../../config/api.tsx";
+import { io } from "socket.io-client";
 import { getUserId } from "../../shared/utils.tsx";
-
 /**
  * Represents properties for controlling gameplay-related settings, such as volume levels.
  */
@@ -119,9 +115,8 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [cardText, setCardText] = useState("");
   const [cardNumber, setCardNumber] = useState(1);
   const storedGameId = localStorage.getItem("gameId");
-  const gameSessionData = useWebSocket(storedGameId);
   const [gameSession, setGameSession] = useState<GameSession>();
-
+  const [gameSessionData, setGameSessionData] = useState<GameSession>();
   const [redTeamPlayers, setRedTeamPlayers] = useState<User[]>([]);
   const [blueTeamPlayers, setBlueTeamPlayers] = useState<User[]>([]);
   const [myTeam, setMyTeam] = useState<string | null>(null);
@@ -256,18 +251,6 @@ const Gameplay: React.FC<GameplayProps> = ({
     }
   };
 
-  /**
-   * Effect that triggers the function to fetch user by user id.
-   *  when the component is mounted.
-   */
-  useEffect(() => {
-    fetchUserId();
-  }, []);
-
-  /**
-   * Fetches the user ID from the server.
-   * Saves the fetched user ID in localStorage.
-   */
   const fetchUserId = async () => {
     try {
       const id = await getUserId();
@@ -275,13 +258,50 @@ const Gameplay: React.FC<GameplayProps> = ({
       if (id === null) {
         return;
       }
-
       localStorage.setItem("userId", id);
       setUserId(id);
     } catch (error) {
       console.error("Error fetching user ID", error);
     }
   };
+
+  useEffect(() => {
+    fetchUserId();
+  }, []);
+
+  /**
+   * Effect that triggers the function to fetch user by user id.
+   *  when the component is mounted.
+   */
+  useEffect(() => {
+    const socket = io(`${socketUrl}`, {
+      transports: ["websocket"],
+    });
+
+    socket.on("connect", () => {
+      const storedGameId = localStorage.getItem("gameId");
+
+      if (storedGameId) {
+        socket.emit("joinGame", storedGameId);
+      }
+    });
+
+    socket.on("gameSessionData", (updatedGameSessionJson: string) => {
+      try {
+        const updatedGameSession: GameSession = JSON.parse(
+          updatedGameSessionJson
+        );
+
+        setGameSessionData(updatedGameSession);
+      } catch (err) {
+        console.error("Error parsing gameSessionsList JSON:", err);
+      }
+    });
+
+    socket.on("connect_error", (error: any) => {
+      console.error("Socket connection error:", error);
+    });
+  }, []);
 
   /**
    * Toggles the visibility of the black card.
@@ -292,6 +312,10 @@ const Gameplay: React.FC<GameplayProps> = ({
     clickAudio.play();
     setIsCardVisible(true);
   };
+
+  useEffect(() => {
+    getUserId();
+  }, []);
 
   /**
    * Effect that loads the game session and sets the game state when the component is mounted.
@@ -308,25 +332,16 @@ const Gameplay: React.FC<GameplayProps> = ({
    * @returns {void} Updates the game session state and various other states based on fetched data.
    */
   useEffect(() => {
-    if (!storedGameId) {
-      navigate("/games");
-      return;
-    }
-
-    /**
-     * Fetches the game session data, then sets various states related to the game session.
-     * Handles errors if fetching fails.
-     *
-     * @returns {void} Updates the component's states based on the fetched data.
-     */
     const fetchGameSession = async () => {
+      if (!userId) return;
+
       try {
         const response = await fetch(
-          `${apiUrl}/api/game-session/${storedGameId}`
+          `${apiUrl}/api/game-session/${storedGameId}/full`
         );
         if (!response.ok) throw new Error("Failed to fetch game session");
-        const data = await response.json();
 
+        const data = await response.json();
         setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
         setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
         setAmICurrentLeader(
@@ -351,7 +366,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     };
 
     fetchGameSession();
-  }, []);
+  }, [userId]);
 
   /**
    * Effect that triggers the function to reveal cards voted by the team
@@ -391,7 +406,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     const fetchGameSession = async () => {
       try {
         const response = await fetch(
-          `${apiUrl}/api/game-session/${storedGameId}`
+          `${apiUrl}/api/game-session/${storedGameId}/full`
         );
         if (!response.ok) throw new Error("Failed to fetch game session");
         const data = await response.json();
@@ -663,12 +678,15 @@ const Gameplay: React.FC<GameplayProps> = ({
 
     const storedGameId = localStorage.getItem("gameId");
 
-    fetch(`${apiUrl}/api/game-session/${storedGameId}/change-turn`, {
-      method: "GET",
-      headers: {
-        credentials: "include",
-      },
-    });
+    fetch(
+      `${apiUrl}/api/game-session/${storedGameId}/change-turn`,
+      {
+        method: "GET",
+        headers: {
+          credentials: "include",
+        },
+      }
+    );
   };
 
   /**
