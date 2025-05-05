@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -69,7 +70,11 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public Optional<String> createUser(User user) {
-        user.setStatus(User.userStatus.INACTIVE);
+        if (Objects.equals(user.getRoles(), "ROLE_USER")) {
+            user.setStatus(User.userStatus.INACTIVE);
+        } else {
+            user.setStatus(User.userStatus.ACTIVE);
+        }
 
         if (!user.isGuest() && (user.getEmail() == null || user.getEmail().isEmpty())) {
             return Optional.of("Invalid email address");
