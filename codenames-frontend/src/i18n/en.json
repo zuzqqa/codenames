@@ -72,5 +72,8 @@
   "hint-zero": "Hint number cannot be zero.",
   "invalid-login-or-password": "Invalid login or password.",
   "dont-have-an-account": "Don't have an account? Sign up.",
-  "already-have-an-account": "Already have an account? Log in."
+  "already-have-an-account": "Already have an account? Log in.",
+  "too-few-players": "Too few players to start the game.",
+  "logged-in-as": "Logged in as: ",
+  "profile-title": "Profile"
 }

@@ -419,5 +419,4 @@ public class DefaultUserController implements UserController {
 
         return ResponseEntity.ok(user.map(User::isGuest).orElse(true));
     }
-
 }
