@@ -157,19 +157,19 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
       );
     }, 1000);
 
-    const socket = io(`${socketUrl}`, {
+    const gameSocket = io(`${socketUrl}/game`, {
       transports: ["websocket"],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
 
-    socket.on("connect", () => {
-      const storedGameId = localStorage.getItem("gameId");
-
+    gameSocket.on("connect", () => {
       if (storedGameId) {
-        socket.emit("joinGame", storedGameId);
+        gameSocket.emit("joinGame", storedGameId);
       }
     });
 
-    socket.on(
+    gameSocket.on(
       "gameSessionUpdate",
       (updatedGameSessionJson: string) => {
         try {
@@ -189,13 +189,13 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
       }
     );
 
-    socket.on("connect_error", (error) => {
-      console.error("Socket connection error:", error);
+    gameSocket.on("connect_error", (error) => {
+      console.error("Game socket connection error:", error);
     });
 
     return () => {
       clearInterval(timer); 
-      socket.disconnect();
+      gameSocket.disconnect();
     };
   }, [timeLeft, navigate]);
 

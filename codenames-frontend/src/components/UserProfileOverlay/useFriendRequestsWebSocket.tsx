@@ -23,17 +23,16 @@ const useFriendRequestsWebSocket = (username: string) => {
   
     try {
       const response = await fetch(`${apiUrl}/api/users/${username}/friendRequests`);
-      const responseText = await response.text();  // Przechwycimy odpowiedź jako tekst
+      const responseText = await response.text();  
   
       if (!response.ok) {
         console.error("Server Error: ", response.status, responseText);
         throw new Error(`Error: ${response.status} - ${responseText}`);
       }
   
-      console.log("Response Text:", responseText);  // Logowanie surowej odpowiedzi
+      console.log("Response Text:", responseText);
   
-      // Spróbuj sparsować odpowiedź jako JSON
-      const data = JSON.parse(responseText);  // Parsowanie ręcznie, żeby sprawdzić, czy odpowiedź to JSON
+      const data = JSON.parse(responseText); 
       setState({
         friends: data.friends || [],
         sentRequests: data.sentRequests || [],
@@ -46,7 +45,7 @@ const useFriendRequestsWebSocket = (username: string) => {
   
 
   useEffect(() => {
-    fetchRequests(); // Początkowe pobranie danych
+    fetchRequests(); 
 
     const socket = new SockJS(`${apiUrl}/ws`);
     const client = new Client({

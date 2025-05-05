@@ -78,8 +78,12 @@ const JoinGame: React.FC<JoinGameProps> = ({
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
-  const [gameSessions, setGameSessions] = useState<GameSessionJoinGameDTO[]>([]);
-  const [filteredGames, setFilteredGames] = useState<GameSessionJoinGameDTO[]>([]);
+  const [gameSessions, setGameSessions] = useState<GameSessionJoinGameDTO[]>(
+    []
+  );
+  const [filteredGames, setFilteredGames] = useState<GameSessionJoinGameDTO[]>(
+    []
+  );
   const [isGuest, setIsGuest] = useState<boolean | null>(null);
 
   /**
@@ -92,35 +96,35 @@ const JoinGame: React.FC<JoinGameProps> = ({
   useEffect(() => {
     getGames();
 
-    const socket = io(
-      `${ socketUrl }`,
-      {
-        transports: ["websocket"],
-      }
-    );
+    const gameSocket = io(`${socketUrl}/game`, {
+      transports: ["websocket"],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
 
-    socket.on("gameSessionsList", (updatedGameSessionsJson: string) => {    
+    gameSocket.on("gameSessionsList", (updatedGameSessionsJson: string) => {
       try {
-        const updatedGameSessionsList: GameSessionJoinGameDTO[] = JSON.parse(updatedGameSessionsJson);
+        const updatedGameSessionsList: GameSessionJoinGameDTO[] = JSON.parse(
+          updatedGameSessionsJson
+        );
 
         const filteredUpdatedGames = updatedGameSessionsList.filter(
           (game) => game.status === "CREATED"
         );
-    
+
         setGameSessions(filteredUpdatedGames);
         setFilteredGames(filteredUpdatedGames);
       } catch (err) {
         console.error("Error parsing gameSessionsList JSON:", err);
       }
     });
-    
 
-    socket.on("connect_error", (error) => {
-      console.error("Socket.IO connection error", error);
+    gameSocket.on("connect_error", (error) => {
+      console.error("Game socket connection error.", error);
     });
 
     return () => {
-      socket.disconnect();
+      gameSocket.disconnect();
     };
   }, []);
 

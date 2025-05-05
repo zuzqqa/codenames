@@ -274,19 +274,19 @@ const Gameplay: React.FC<GameplayProps> = ({
    *  when the component is mounted.
    */
   useEffect(() => {
-    const socket = io(`${socketUrl}`, {
+    const gameSocket = io(`${socketUrl}/game`, {
       transports: ["websocket"],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
 
-    socket.on("connect", () => {
-      const storedGameId = localStorage.getItem("gameId");
-
+    gameSocket.on("connect", () => {
       if (storedGameId) {
-        socket.emit("joinGame", storedGameId);
+        gameSocket.emit("joinGame", storedGameId);
       }
     });
 
-    socket.on("gameSessionData", (updatedGameSessionJson: string) => {
+    gameSocket.on("gameSessionData", (updatedGameSessionJson: string) => {
       try {
         const updatedGameSession: GameSession = JSON.parse(
           updatedGameSessionJson
@@ -298,9 +298,13 @@ const Gameplay: React.FC<GameplayProps> = ({
       }
     });
 
-    socket.on("connect_error", (error: any) => {
-      console.error("Socket connection error:", error);
+    gameSocket.on("connect_error", (error: any) => {
+      console.error("Game socket connection error:", error);
     });
+
+    return () => {
+      gameSocket.disconnect();
+    };
   }, []);
 
   /**
@@ -678,15 +682,12 @@ const Gameplay: React.FC<GameplayProps> = ({
 
     const storedGameId = localStorage.getItem("gameId");
 
-    fetch(
-      `${apiUrl}/api/game-session/${storedGameId}/change-turn`,
-      {
-        method: "GET",
-        headers: {
-          credentials: "include",
-        },
-      }
-    );
+    fetch(`${apiUrl}/api/game-session/${storedGameId}/change-turn`, {
+      method: "GET",
+      headers: {
+        credentials: "include",
+      },
+    });
   };
 
   /**

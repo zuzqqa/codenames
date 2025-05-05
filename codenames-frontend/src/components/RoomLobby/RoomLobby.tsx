@@ -105,8 +105,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       fetch(`${apiUrl}/api/game-session/${storedGameId}`)
         .then((response) => response.json())
         .then((data: GameSessionRoomLobbyDTO) => {
-          console.log("Game session data:", data);
-
           setGameSession({
             ...data,
           });
@@ -121,24 +119,25 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       navigate("/join-game");
     }
 
-    const socket = io(`${socketUrl}`, {
+    const gameSocket = io(`${socketUrl}/game`, {
       transports: ["websocket"],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
 
-    socket.on("connect", () => {
-      const storedGameId = localStorage.getItem("gameId");
-
+    gameSocket.on("connect", () => {
       if (storedGameId) {
-        socket.emit("joinGame", storedGameId);
+        gameSocket.emit("joinGame", storedGameId);
       }
     });
 
-    socket.on(
+    gameSocket.on(
       "gameSessionUpdate",
       (updatedGameSessionJson: string) => {
         try {
           const updatedGameSession: GameSessionRoomLobbyDTO = JSON.parse(updatedGameSessionJson);
           
+
           if(updatedGameSession.connectedUsers) {
             setRedTeamPlayers(updatedGameSession.connectedUsers[0] || []);
             setBlueTeamPlayers(updatedGameSession.connectedUsers[1] || []);
@@ -153,12 +152,12 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       }
     );
 
-    socket.on("connect_error", (error) => {
-      console.error("Socket connection error:", error);
+    gameSocket.on("connect_error", (error) => {
+      console.error("Game socket connection error:", error);
     });
 
     return () => {
-      socket.disconnect();
+      gameSocket.disconnect();
     };
   }, [navigate]);
 

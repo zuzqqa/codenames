@@ -1,20 +1,17 @@
-# Use Node.js 20 as the base image
-FROM node:20
+FROM node:20 as build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
 
-# Set the working directory inside the container
+FROM node:20-alpine
 WORKDIR /app
 
-# Copy package.json and package-lock.json for dependency installation
-COPY package.json package-lock.json ./
+RUN npm install -g serve
 
-# Install project dependencies
-RUN npm install
+COPY --from=build /app/dist ./dist
 
-# Copy the entire application source code
-COPY . .
+EXPOSE 8080
 
-# Expose port 5173 for the development server
-EXPOSE 5173
-
-# Start the application in development mode with host binding
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD ["serve", "-s", "dist", "-l", "8080"]

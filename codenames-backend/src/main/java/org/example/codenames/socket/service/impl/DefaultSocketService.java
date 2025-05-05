@@ -10,6 +10,7 @@ import org.example.codenames.gameSession.entity.dto.GameSessionJoinGameDTO;
 import org.example.codenames.gameSession.entity.dto.GameSessionRoomLobbyDTO;
 import org.example.codenames.socket.service.api.SocketService;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.URISyntaxException;
@@ -18,13 +19,11 @@ import java.util.UUID;
 
 @Service
 public class DefaultSocketService implements SocketService {
-
     private final Socket socket;
 
-    public DefaultSocketService() throws URISyntaxException {
-        socket = IO.socket("https://codenames-socket-io-server-35261654330.us-central1.run.app");
-
-        socket.connect();
+    public DefaultSocketService(@Value("${socketServer.url}") String socketServerUrl) throws URISyntaxException {
+        this.socket = IO.socket(socketServerUrl);
+        this.socket.connect();
     }
 
     @Override
