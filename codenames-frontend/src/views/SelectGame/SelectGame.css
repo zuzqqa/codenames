@@ -39,3 +39,12 @@
 
   background-image: linear-gradient(to right, #dab274, #745f3e);
 }
+
+.logged-in-user {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  font-size: 0.8rem;
+  z-index: 1000;
+  letter-spacing: 1px;
+}

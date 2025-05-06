@@ -143,6 +143,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   const clickAudio = new Audio(cardSound);
   const [votedCards, setVotedCards] = useState<number[]>([]);
   const [userId, setUserId] = useState<string | null>();
+  const [username, setUsername] = useState<string | null>(null);
 
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
@@ -279,6 +280,29 @@ const Gameplay: React.FC<GameplayProps> = ({
       console.error("Error fetching user ID", error);
     }
   };
+
+    useEffect(() => {
+      const fetchUsername = async () => {
+        try {
+          const response = await fetch("http://localhost:8080/api/users/getUsername", {
+            method: "GET",
+            credentials: "include"
+          });
+  
+          if (response.ok) {
+            const text = await response.text();
+            if (text !== "null") {
+              setUsername(text);
+            }
+          } else {
+            console.error("Failed to fetch username");
+          }
+        } catch (error) {
+          console.error("Error fetching username", error);
+        }
+      };
+      fetchUsername();
+    }, []);
 
   /**
    * Toggles the visibility of the black card.
@@ -1020,6 +1044,11 @@ const Gameplay: React.FC<GameplayProps> = ({
                 <div className="progress active"></div>
               </div>
             ))}
+          </div>
+        )}
+        {username && (
+          <div className="logged-in-user gold-text">
+            { t('logged-in-as') } {username}
           </div>
         )}
       </BackgroundContainer>

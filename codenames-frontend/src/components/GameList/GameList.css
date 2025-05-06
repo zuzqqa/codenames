@@ -128,7 +128,7 @@ button.variant-session:hover {
   z-index: 100;
   position: absolute;
   left: 59.66%;
-  top: 19%;
+  top: 16%;
   width: 0;
   height: 8vh;
   transition: width 1s ease-in-out;
@@ -147,10 +147,10 @@ button.variant-session:hover {
 
 .search-input-container {
   position: absolute;
-  padding: 5px 10px;
+  /* padding: 5px 10px; */
   width: 0;
   margin-left: 3.8em;
-  margin-top: -8.2vh;
+  margin-top: -7.8vh;
   opacity: 0;
   transition: opacity 0.8s ease-in-out 0.8s;
 }
@@ -233,7 +233,7 @@ button.variant-session:hover {
   margin: auto;
 }
 
-.lock-icon {
+.small-lock-icon {
   width: 1.5rem;
   margin: auto;
   margin-right: 0.5rem;

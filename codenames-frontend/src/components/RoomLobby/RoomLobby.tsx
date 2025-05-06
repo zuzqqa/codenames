@@ -9,6 +9,9 @@ import backButton from "../../assets/icons/arrow-back.png";
 import playerIcon from "../../assets/images/player-icon.png";
 import "./RoomLobby.css";
 
+const generateId = () =>
+  Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+
 /**
  * Properties for the RoomLobby component.
  * @typedef {Object} RoomLobbyProps
@@ -78,7 +81,60 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
   const [blueTeamPlayers, setBlueTeamPlayers] = useState<User[]>([]);
   const [isJoined, setIsJoined] = useState(false);
   const [client, setClient] = useState<Client | null>(null);
+  const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
 
+    /**
+   * Handles manual closing of a toast error.
+   *
+   * - Fades out the toast visually before removing it from the state.
+   *
+   * @param {string} id - The unique identifier of the error toast to be closed.
+   */
+  const handleCloseErrorToast = (id: string) => {
+    const toastElement = document.getElementById(id);
+    if (toastElement) {
+      toastElement.classList.add("hide");
+
+      setTimeout(() => {
+        setErrors((prevErrors) =>
+          prevErrors.filter((error) => error.id !== id)
+        );
+      }, 500);
+    }
+  };
+  
+  useEffect(() => {
+    if (errors.length === 0) return;
+
+    const timers: number[] = errors.map((error) => {
+      const toastElement = document.getElementById(error.id);
+
+      if (toastElement) {
+        // Fade out the toast after 8 seconds
+        const fadeOutTimer = setTimeout(() => {
+          toastElement.classList.add("hide");
+        }, 8000);
+
+        // Remove the error from state after 8.5 seconds
+        const removeTimer = setTimeout(() => {
+          setErrors((prevErrors) =>
+            prevErrors.filter((e) => e.id !== error.id)
+          );
+        }, 8500);
+
+        return removeTimer;
+      } else {
+        // Remove error if toast element is not found
+        return setTimeout(() => {
+          setErrors((prevErrors) =>
+            prevErrors.filter((e) => e.id !== error.id)
+          );
+        }, 8000);
+      }
+    });
+
+    return () => timers.forEach(clearTimeout);
+  }, [errors]);
 
   useEffect(() => {
     const storedGameId = localStorage.getItem("gameId");
@@ -260,9 +316,19 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
    * Starts the game session.
    */
   const start_game = async () => {
+    const newErrors: { id: string; message: string }[] = [];
+    setErrors(newErrors);
+
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
-
+    
+    if (redTeamPlayers.length < 2 || redTeamPlayers.length < 2) {
+      newErrors.push({
+        id: generateId(),
+        message: t("too-few-players"),
+      });
+      return;
+    }
     try {
       const response = await fetch(
         `http://localhost:8080/api/game-session/${storedGameId}/start`,
@@ -302,7 +368,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                 /{gameSession.maxPlayers}
               </div>
               <div className="lobby-players">
-                {(isJoined) ? (
+                {/* {(isJoined) ? (
                 <Button
                     variant={"primary-1"}
                     soundFXVolume={soundFXVolume}
@@ -311,7 +377,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                 >
                     <span className="button-text">{t("leave")}</span>
                 </Button>
-                ) : ("")}
+                ) : ("")} */}
                 <Button
                   variant={"room"}
                   soundFXVolume={soundFXVolume}
@@ -370,6 +436,30 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
             </div>
           )}
         </div>
+        {errors.length > 0 && (
+          <div className="toast-container">
+            {errors.map((error) => (
+              <div id={error.id} key={error.id} className="toast active">
+                <div className="toast-content">
+                  <i
+                    className="fa fa-exclamation-circle fa-3x"
+                    style={{ color: "#561723" }}
+                    aria-hidden="true"
+                  ></i>
+                  <div className="message">
+                    <span className="text text-1">Error</span>
+                    <span className="text text-2">{error.message}</span>
+                  </div>
+                </div>
+                <i
+                  className="fa-solid fa-xmark close"
+                  onClick={() => handleCloseErrorToast(error.id)}
+                ></i>
+                <div className="progress active"></div>
+              </div>
+            ))}
+          </div>
+        )}
       </RoomMenu>
     </>
   );

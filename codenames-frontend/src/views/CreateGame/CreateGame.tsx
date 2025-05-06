@@ -48,6 +48,8 @@ const CreateGame: React.FC<CreateGameProps> = ({
   const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
   const { t } = useTranslation(); // Translation hook
   const [isGuest, setIsGuest] = useState<boolean | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
+  
 
     useEffect(() => {
       const fetchGuestStatus = async () => {
@@ -69,6 +71,30 @@ const CreateGame: React.FC<CreateGameProps> = ({
       };
     
       fetchGuestStatus();
+    }, []);
+
+    useEffect(() => {
+      const fetchUsername = async () => {
+        try {
+          const response = await fetch("http://localhost:8080/api/users/getUsername", {
+            method: "GET",
+            credentials: "include"
+          });
+  
+          if (response.ok) {
+            const text = await response.text();
+            if (text !== "null") {
+              setUsername(text);
+            }
+          } else {
+            console.error("Failed to fetch username");
+          }
+        } catch (error) {
+          console.error("Error fetching username", error);
+        }
+      };
+  
+      fetchUsername();
     }, []);
   
   /**
@@ -126,6 +152,11 @@ const CreateGame: React.FC<CreateGameProps> = ({
           <GameTitleBar></GameTitleBar>
           <CreateGameForm soundFXVolume={soundFXVolume} />
         </>
+        {username && (
+          <div className="logged-in-user gold-text">
+            { t('logged-in-as') } {username}
+          </div>
+        )}
       </BackgroundContainer>
     </>
   );

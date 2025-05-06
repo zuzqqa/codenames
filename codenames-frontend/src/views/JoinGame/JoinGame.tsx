@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"; // Hook for managing component state
+import { useTranslation } from "react-i18next"; // Importing the useTranslation hook from react-i18next
 
 import BackgroundContainer from "../../containers/Background/Background";
 
@@ -73,7 +74,10 @@ const JoinGame: React.FC<JoinGameProps> = ({
   const [gameSessions, setGameSessions] = useState<GameSession[]>([]);
   const [filteredGames, setFilteredGames] = useState<GameSession[]>([]);
   const [isGuest, setIsGuest] = useState<boolean | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
 
+  const { t } = useTranslation(); // Hook for translations
+  
   /**
    * Fetches the list of available game sessions on component mount.
    * Also establishes a WebSocket connection for real-time updates.
@@ -129,6 +133,30 @@ const JoinGame: React.FC<JoinGameProps> = ({
   
     fetchGuestStatus();
   }, []);
+
+    useEffect(() => {
+      const fetchUsername = async () => {
+        try {
+          const response = await fetch("http://localhost:8080/api/users/getUsername", {
+            method: "GET",
+            credentials: "include"
+          });
+  
+          if (response.ok) {
+            const text = await response.text();
+            if (text !== "null") {
+              setUsername(text);
+            }
+          } else {
+            console.error("Failed to fetch username");
+          }
+        } catch (error) {
+          console.error("Error fetching username", error);
+        }
+      };
+  
+      fetchUsername();
+    }, []);
 
   /**
    * Fetches all available game sessions from the backend.
@@ -209,6 +237,11 @@ const JoinGame: React.FC<JoinGameProps> = ({
             setFilteredSessions={setFilteredGames}
           />
         </>
+        {username && (
+          <div className="logged-in-user gold-text">
+            { t('logged-in-as') } {username}
+          </div>
+        )}
       </BackgroundContainer>
     </>
   );
