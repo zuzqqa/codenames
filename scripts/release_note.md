@@ -1,9 +1,13 @@
-Admin is now active on init
+UI Fixes and Enhancements
 **🔧 What's included in this release?**
-Admin is now active
+Navigation, Layout, Language, and Responsiveness
 
 Key additions: 
-- admin is active
+- fixed back button in create game
+- incorrect password notification
+- "already have an account?" button in register form
+- "don't have an account?" button in login form
+- username indicator in the left down corner
 
 **🚧 What's still under development?**
 
