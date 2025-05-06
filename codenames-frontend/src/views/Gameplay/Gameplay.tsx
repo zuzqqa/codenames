@@ -647,12 +647,23 @@ const Gameplay: React.FC<GameplayProps> = ({
         setCardNumber(1);
       }
 
-      if (event.key === "ArrowUp") {
-        setCardNumber((prev) => Math.min(prev + 1, 10));
-      }
+      const maxValue = amIBlueTeamLeader ? 8 : 9;
+      if (amIBlueTeamLeader || amIRedTeamLeader) {
+        if (event.key === "ArrowUp") {
+          setCardNumber((prev) => Math.min(prev + 1, maxValue));
+        }
 
-      if (event.key === "ArrowDown") {
-        setCardNumber((prev) => Math.max(prev - 1, 1));
+        if (event.key === "ArrowDown") {
+          setCardNumber((prev) => Math.max(prev - 1, 1));
+        }
+
+        if (event.key === "ArrowLeft") {
+          setCardNumber((prev) => Math.max(prev - 1, 1));
+        }
+
+        if (event.key === "ArrowRight") {
+          setCardNumber((prev) => Math.min(prev + 1, maxValue));
+        }
       }
     };
 
@@ -1064,6 +1075,19 @@ const Gameplay: React.FC<GameplayProps> = ({
               />
               <span className="slider-value">{cardNumber}</span>
             </div>
+            <Button variant="transparent" soundFXVolume={soundFXVolume} className="confirm-button">
+                <i
+                    className="fa-solid fa-check confirm" style={{ color: "white" }}
+                    onClick={() => {
+                    if (validateCardText(cardText)) {
+                        sendHint();
+                        setIsCardVisible(false);
+                        setCardText("");
+                        setCardNumber(1);
+                    }
+                    }}
+                ></i>
+            </Button>
           </div>
         )}
         {errors.length > 0 && (
