@@ -17,6 +17,7 @@ import "../../styles/App.css";
 import "./Home.css";
 import Cookies from "js-cookie"; // Import js-cookie for cookie handling
 import { apiUrl } from "../../config/api.tsx";
+import { secure } from "../../config/api.tsx";
 
 /**
  * Props type definition for the Home component.
@@ -161,8 +162,8 @@ const Home: React.FC<HomeProps> = ({
 
                       try {
                         if (response.ok) {
-                          document.cookie = `authToken=${data.token}; max-age=36000; path=/; secure; samesite=none`;
-                          document.cookie = `loggedIn=true; max-age=36000; path=/; secure; samesite=none`;
+                          document.cookie = `authToken=${data.token}; max-age=36000; path=/; ${ secure }`;
+                          document.cookie = `loggedIn=true; max-age=36000; path=/; ${ secure }`;
                           window.location.href = "/loading";
                         } else {
                           console.error("Unexpected response format");

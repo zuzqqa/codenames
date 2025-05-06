@@ -21,6 +21,8 @@ import polygon1Img from "../../assets/images/Polygon1.png";
 import polygon2Img from "../../assets/images/Polygon2.png";
 import cardSound from "../../assets/sounds/card-filp.mp3";
 import votingLabel from "../../assets/images/medieval-label.png";
+import micIcon from "../../assets/icons/mic.svg";
+import closeIcon from "../../assets/icons/close.png";
 
 import "./Gameplay.css";
 import Chat from "../../components/Chat/Chat.tsx";
@@ -142,7 +144,13 @@ const Gameplay: React.FC<GameplayProps> = ({
   const clickAudio = new Audio(cardSound);
   const [votedCards, setVotedCards] = useState<number[]>([]);
   const [userId, setUserId] = useState<string | null>();
+  const [isOverlayVisible, setIsOverlayVisible] = useState(false);
 
+  const toggleOverlay = () => {
+    setIsOverlayVisible(!isOverlayVisible);
+  };
+
+  
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
@@ -838,12 +846,25 @@ const Gameplay: React.FC<GameplayProps> = ({
           })()}
         </span>
 
-        {/* Settings button */}
         <Button variant="circle" soundFXVolume={soundFXVolume}>
           <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
         </Button>
 
-        {/* Settings modal */}
+        <div className={`custom-overlay ${isOverlayVisible ? 'open' : ''}`}>
+          <div className="overlay-content">
+            <button className="close-btn" onClick={() => setIsOverlayVisible(false)}><img src={closeIcon}></img></button>
+            <div className="audio-room">
+          <AudioRoom soundFXVolume={soundFXVolume} />
+        </div>
+          </div>
+        </div>
+
+        {!isOverlayVisible && (
+          <div className="half-circle-btn" onClick={() => setIsOverlayVisible(true)}>
+            <img className="mic-icon" src={micIcon} alt="Microphone" />
+          </div>
+        )}
+
         <SettingsModal
           isOpen={isSettingsOpen}
           onClose={toggleSettings}
@@ -863,9 +884,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         <div className="banner-container">
           <img src={getBanner()} />
         </div>
-        <div className="audio-room">
-          <AudioRoom soundFXVolume={soundFXVolume} />
-        </div>
+        
         <Chat />
         <div className="content-container">
           <div className="timer-container">

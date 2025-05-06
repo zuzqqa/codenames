@@ -1,19 +1,50 @@
 .audio-component {
-    position: relative; /* Allows positioning of child elements */
-    display: flex; /* Optional: Adjusts layout of child elements */
-    justify-content: center; /* Centers child elements horizontally */
-    align-items: center; /* Centers child elements vertically */
-    height: 100%; /* Adjust as needed */
-    width: 100%; /* Adjust as needed */
+  position: relative; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  height: 100%;
+  width: 100%;
 }
 
 .audio-component .audio-button {
-    position: absolute; /* Allows positioning within the parent */
-    top: 50%; /* Centers vertically */
-    left: 50%; /* Centers horizontally */
-    transform: translate(-50%, -50%); /* Adjusts for element's own size */
-    background-color: transparent; /* Transparent background */
-    border: none; /* No border */
-    cursor: pointer; /* Pointer cursor on hover */
-    z-index: 1; /* Ensures button is above other elements */
+  position: absolute; 
+  top: 50%; 
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: transparent; 
+  border: none; 
+  cursor: pointer; 
+  z-index: 1; 
+}
+
+.audio-room-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: 1fr 9fr;
+}
+
+.audio-room-header {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-direction: row;
+  grid-row: 1;
+}
+
+.audio-room-join-room {
+    position: relative;
+}
+
+.audio-room-leave-room {
+    position: relative;
+}
+
+.button-icon {
+    width: 24px;
+    height: 24px;
 }

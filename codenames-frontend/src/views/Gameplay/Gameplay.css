@@ -336,7 +336,7 @@ button {
   width: 100% !important;
   height: 2px !important;
   background: #605e5e !important;
-  border: #000000; /* To musi byc zeby dalo sie kolor zmienic mimo ze chuja robi xD */
+  border: #000000;
 }
 
 .codename-input-container .codename-slider::-webkit-slider-thumb {
@@ -344,7 +344,7 @@ button {
   appearance: none !important;
   width: 12px !important;
   height: 12px !important;
-  background: #f9e9d1 !important; /* kropka */
+  background: #f9e9d1 !important;
   border-radius: 50% !important;
   cursor: pointer !important;
   margin-top: -5px !important;
@@ -407,7 +407,7 @@ button {
 
 .corner-text {
   position: absolute;
-  color: #4F3D2A;
+  color: #4f3d2a;
   margin: auto;
   margin-left: 0.3em;
   font-size: calc(0.1rem + 0.8vw);
@@ -416,19 +416,104 @@ button {
 }
 
 .audio-room {
-  position: absolute;
-  top: 52%;
-  left: 17%;
+  position: relative;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 @keyframes hit {
-  0% { transform: rotate(30deg) scale(1); }
-  20% { transform: rotate(28deg) scale(1.1); }
-  40% { transform: rotate(32deg) scale(0.9); }
-  60% { transform: rotate(29deg) scale(1.05); }
-  80% { transform: rotate(31deg) scale(0.95); }
-  100% { transform: rotate(30deg) scale(1); }
+  0% {
+    transform: rotate(30deg) scale(1);
+  }
+  20% {
+    transform: rotate(28deg) scale(1.1);
+  }
+  40% {
+    transform: rotate(32deg) scale(0.9);
+  }
+  60% {
+    transform: rotate(29deg) scale(1.05);
+  }
+  80% {
+    transform: rotate(31deg) scale(0.95);
+  }
+  100% {
+    transform: rotate(30deg) scale(1);
+  }
+}
+
+.custom-overlay {
+  position: fixed;
+  top: 9%;
+  right: -400px;
+  width: 17%;
+  height: 70%;
+  background-image: url("../../assets/images/main-page-container.png");
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+  transition: right 0.3s ease-in-out;
+  border-top-left-radius: 17px;
+  border-bottom-left-radius: 17px;
+  border-left: 0.125rem solid #fcf18b;
+  border-top: 0.125rem solid #fcf18b;
+  border-bottom: 0.125rem solid #fcf18b;
+  z-index: 1000;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-overlay.open {
+  right: 0;
+}
+
+.overlay-content {
+  position: relative;
+  padding: 20px;
+  width: 80%;
+  height: 90%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.half-circle-btn {
+  position: fixed;
+  top: 12%;
+  right: 0;
+  width: 75px;
+  height: 60px;
+  background-image: linear-gradient(to top, #22303b, #0b1319);
+  border-top-left-radius: 40px;
+  border-bottom-left-radius: 40px;
+  border-left: 0.125rem solid #fcf18b;
+  border-top: 0.125rem solid #fcf18b;
+  border-bottom: 0.125rem solid #fcf18b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.mic-icon-button {
+  top: 7rem;
+}
+.mic-icon {
+  width: 2.5rem;
 }

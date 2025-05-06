@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 
+import jakarta.annotation.PostConstruct;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.entity.dto.GameSessionJoinGameDTO;
 import org.example.codenames.gameSession.entity.dto.GameSessionRoomLobbyDTO;
@@ -19,40 +20,64 @@ import java.util.UUID;
 
 @Service
 public class DefaultSocketService implements SocketService {
-    private final Socket socket;
 
-    public DefaultSocketService(@Value("${socketServer.url}") String socketServerUrl) throws URISyntaxException {
-        this.socket = IO.socket(socketServerUrl);
-        this.socket.connect();
+    private Socket socket;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final String socketServerUrl;
+
+    public DefaultSocketService(@Value("${socketServer.url}") String socketServerUrl) {
+        this.socketServerUrl = socketServerUrl;
+    }
+
+    @PostConstruct
+    public void initializeSocket() throws URISyntaxException {
+        IO.Options options = IO.Options.builder()
+                .setTransports(new String[]{"websocket"})
+                .build();
+
+        socket = IO.socket(socketServerUrl, options);
+
+        socket.on(Socket.EVENT_CONNECT, args -> {
+            System.out.println("[SOCKET] Połączono z serwerem Socket.IO");
+        });
+
+        socket.on(Socket.EVENT_CONNECT_ERROR, args -> {
+            System.err.println("[SOCKET] Błąd połączenia: " + args[0]);
+        });
+
+        socket.connect();
     }
 
     @Override
     public void sendGameSessionUpdate(UUID gameId, GameSessionRoomLobbyDTO gameSession) throws JsonProcessingException {
         if (socket.connected()) {
-            ObjectMapper objectMapper = new ObjectMapper();
             String gameSessionJson = objectMapper.writeValueAsString(gameSession);
-
             socket.emit("gameSessionUpdate", gameId.toString(), gameSessionJson);
+            System.out.println("[SOCKET] Wysłano gameSessionUpdate: " + gameSessionJson);
+        } else {
+            System.err.println("[SOCKET] Socket niepołączony – nie wysłano gameSessionUpdate");
         }
     }
 
     @Override
     public void sendGameSessionsList(List<GameSessionJoinGameDTO> gameSessions) throws JsonProcessingException {
         if (socket.connected()) {
-            ObjectMapper objectMapper = new ObjectMapper();
             String gameSessionJson = objectMapper.writeValueAsString(gameSessions);
-
             socket.emit("gameSessionsList", gameSessionJson);
+            System.out.println("[SOCKET] Wysłano gameSessionsList: " + gameSessionJson);
+        } else {
+            System.err.println("[SOCKET] Socket niepołączony – nie wysłano gameSessionsList");
         }
     }
 
     @Override
     public void sendGameSessionUpdate(UUID gameId, GameSession gameSession) throws JsonProcessingException {
         if (socket.connected()) {
-            ObjectMapper objectMapper = new ObjectMapper();
             String gameSessionJson = objectMapper.writeValueAsString(gameSession);
-
             socket.emit("gameSessionData", gameId.toString(), gameSessionJson);
+            System.out.println("[SOCKET] Wysłano gameSessionData: " + gameSessionJson);
+        } else {
+            System.err.println("[SOCKET] Socket niepołączony – nie wysłano gameSessionData");
         }
     }
 }

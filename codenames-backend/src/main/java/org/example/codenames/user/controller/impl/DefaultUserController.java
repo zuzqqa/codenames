@@ -238,6 +238,8 @@ public class DefaultUserController implements UserController {
         }
 
         token = token.substring(7);
+        System.out.println(jwtService.getUsernameFromToken(token));
+
         return ResponseEntity.ok(jwtService.getUsernameFromToken(token));
     }
 

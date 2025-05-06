@@ -1,12 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import Peer, { MediaConnection } from "peerjs";
+import Cookies from "js-cookie";
+
 import Button from "../Button/Button.tsx";
+
+import { apiUrl, peerUrl, socketUrl } from "../../config/api.tsx";
+
+import callIcon from "../../assets/icons/call.svg";
+import callEndIcon from "../../assets/icons/end-call.svg";
 import Mic from "../../assets/icons/mic.png";
 import MicOff from "../../assets/icons/micOff.svg";
-import "./AudioRoom.css";
-import { peerUrl, socketUrl } from "../../config/api.tsx";
 
+import "./AudioRoom.css";
 /**
  * Retrieves a unique game ID from local storage or generates a new one if it doesn't exist.
  * @returns A unique game ID from local storage or generates a new one if it doesn't exist.
@@ -46,23 +52,19 @@ interface AudioRoomProps {
   soundFXVolume: number;
 }
 
-/**
- * AudioRoom component for handling audio communication in a room.
- * @param param0 - The props for the AudioRoom component.
- * @returns The AudioRoom component.
- */
+// ...
 const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
   const audioGridRef = useRef<HTMLDivElement>(null);
   const myPeerRef = useRef<Peer | null>(null);
   const myAudioRef = useRef(new Audio());
   const peers = useRef<{ [key: string]: MediaConnection }>({});
   const [userStream, setUserStream] = useState<MediaStream | null>(null);
+  const stopLedAnimation = useRef(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [username, setUsername] = useState(
+    localStorage.getItem("username") || ""
+  );
 
-  /**
-   * Cleans up peer connections and removes audio elements from the DOM.
-   * @returns {void}
-   */
   const cleanupPeerConnections = () => {
     console.log("[VOICE] Cleaning up peer connections");
 
@@ -77,9 +79,6 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
     }
   };
 
-  /**
-   * Sets up the user media stream and handles audio input/output.
-   */
   useEffect(() => {
     if (isConnected && !userStream) {
       navigator.mediaDevices
@@ -104,15 +103,36 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
     };
   }, [isConnected, userStream]);
 
-  /**
-   * Sets up the PeerJS connection and handles incoming/outgoing calls.
-   */
+  const fetchUsername = async (): Promise<string> => {
+    try {
+      console.log("Fetching username from server...");
+      const token = Cookies.get("authToken");
+
+      if (!token) return "";
+
+      const response = await fetch(`${apiUrl}/api/users/getUsername`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch username");
+
+      const name = await response.text();
+      console.log("Fetched username:", name);
+      return name === "null" ? "" : name;
+    } catch (err) {
+      console.error("Error fetching username:", err);
+      return "";
+    }
+  };
+
   useEffect(() => {
     if (!isConnected || !userStream) return;
 
     console.log("[VOICE] Setting up PeerJS connection");
 
-    // Generate a random ID for the peer connection
     const randomId =
       "user-" +
       Math.random().toString(36).substring(2, 10) +
@@ -121,41 +141,76 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
     const peer = new Peer(randomId, {
       host: `${peerUrl}`,
       secure: true,
-      debug: 2,
+      debug: 3,
+      config: {
+        iceServers: [
+          { urls: "stun:stun.l.google.com:19302" },
+          {
+            urls: "turn:relay1.expressturn.com:3478",
+            username: "efWL5HTQ6ZG17APRCZ",
+            credential: "unrYr5wHzYu7qDNF",
+          },
+        ],
+      },
     });
 
     myPeerRef.current = peer;
 
-    // Handle PeerJS events
     peer.on("open", (id) => {
       console.log(`[VOICE] PeerJS connected with ID: ${id}`);
-
-      // Join the room and emit the join-room event to the server
       chatNamespace.emit("join-room", ROOM_ID, id);
 
-      // Listen for incoming calls
       peer.on("call", (call) => {
         console.log(`[VOICE] Incoming call from: ${call.peer}`);
         call.answer(userStream);
 
-        const audio = new Audio();
-        // Set the audio element to play the incoming stream
+        const audio = document.createElement("audio");
+        audio.controls = true;
+        audio.autoplay = true;
+        audio.muted = false;
+
         call.on("stream", (remoteStream) => {
-          console.log(`[VOICE] Received stream from: ${call.peer}`);
+          const audio = document.createElement("audio");
+          audio.controls = true;
+          audio.autoplay = true;
+          audio.muted = false;
           audio.srcObject = remoteStream;
-          audio.addEventListener("loadedmetadata", () => {
-            audio.play().catch((e) => console.error("Audio play failed:", e));
-          });
-          audioGridRef.current?.appendChild(audio);
+
+          const led = document.getElementById("mic-led");
+          if (led) {
+            const audioCtx = new AudioContext();
+            const source = audioCtx.createMediaStreamSource(remoteStream);
+            const analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 256;
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+            source.connect(analyser);
+
+            const updateLed = () => {
+              if (stopLedAnimation.current) {
+                led.style.backgroundColor = "red";
+                return;
+              }
+
+              analyser.getByteFrequencyData(dataArray);
+              const avg =
+                dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+              const norm = Math.min(avg / 128, 1); 
+
+              const green = Math.floor(100 + norm * 155); 
+              led.style.backgroundColor = `rgb(0, ${green}, 0)`; 
+
+              requestAnimationFrame(updateLed);
+            };
+
+            updateLed();
+          }
         });
 
-        // Handle call close and error events
         call.on("close", () => {
           console.log(`[VOICE] Call closed from: ${call.peer}`);
           audio.remove();
         });
 
-        // Handle call error events
         call.on("error", (err) => {
           console.error(`[VOICE] Call error from ${call.peer}:`, err);
           audio.remove();
@@ -164,18 +219,25 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
         peers.current[call.peer] = call;
       });
 
-      // Listen for user connections and disconnections
       chatNamespace.on("user-connected", (userId) => {
         console.log(`[VOICE] User connected: ${userId}`);
-
         if (userId === id) return;
 
         const call = peer.call(userId, userStream);
 
-        const audio = new Audio();
-        // Set the audio element to play the incoming stream
+        const audio = document.createElement("audio");
+        audio.controls = true;
+        audio.autoplay = true;
+        audio.muted = false;
+
         call.on("stream", (remoteStream) => {
           console.log(`[VOICE] Received stream from called user: ${userId}`);
+          console.log("Remote tracks:", remoteStream.getTracks());
+          if (remoteStream.getAudioTracks().length === 0) {
+            console.error("No audio tracks in remote stream!");
+          }
+          console.log("Audio tracks:", remoteStream.getAudioTracks());
+
           audio.srcObject = remoteStream;
           audio.addEventListener("loadedmetadata", () => {
             audio.play().catch((e) => console.error("Audio play failed:", e));
@@ -183,7 +245,6 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
           audioGridRef.current?.appendChild(audio);
         });
 
-        // Handle call close and error events
         call.on("close", () => {
           console.log(`[VOICE] Call closed with: ${userId}`);
           audio.remove();
@@ -192,23 +253,18 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
         peers.current[userId] = call;
       });
 
-      // Listen for user disconnections
       chatNamespace.on("user-disconnected", (userId) => {
         console.log(`[VOICE] User disconnected: ${userId}`);
-
-        // Close the call and remove the audio element
         if (peers.current[userId]) {
           peers.current[userId].close();
           delete peers.current[userId];
         }
       });
     });
+    soundFXVolume = Math.max(0, Math.min(1, soundFXVolume));
 
-    // Handle PeerJS errors
     peer.on("error", (err) => {
       console.error("[VOICE] PeerJS error:", err);
-
-      // Handle specific error types
       if (err.type === "network" || err.type === "disconnected") {
         console.log("[VOICE] Network error, trying to reconnect...");
         cleanupPeerConnections();
@@ -217,12 +273,10 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
       }
     });
 
-    // Handle PeerJS disconnection and close events
     peer.on("disconnected", () => {
       console.log("[VOICE] PeerJS disconnected");
     });
 
-    // Handle PeerJS close event
     peer.on("close", () => {
       console.log("[VOICE] PeerJS connection closed");
     });
@@ -241,17 +295,15 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
     };
   }, [isConnected, userStream]);
 
-  /**
-   * Joins the audio room and sets up the necessary connections.
-   */
-  const joinRoom = () => {
+  const joinRoom = async () => {
     console.log("[VOICE] Joining audio room");
+
+    const fetchedName = await fetchUsername();
+    setUsername(fetchedName);
+
     setIsConnected(true);
   };
 
-  /**
-   * Leaves the audio room and cleans up connections.
-   */
   const leaveRoom = () => {
     console.log("[VOICE] Leaving audio room");
     cleanupPeerConnections();
@@ -260,33 +312,46 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
       userStream.getTracks().forEach((track) => track.stop());
     }
 
+    stopLedAnimation.current = true;
+
     setIsConnected(false);
   };
 
   return (
-    <div id="audio-component">
-      <div ref={audioGridRef} id="audio-grid"></div>
-      {!isConnected ? (
+    <div className="audio-room-container">
+      <div className="audio-room-header">
         <Button
           variant="circle"
+          className="audio-room-join-room"
           soundFXVolume={soundFXVolume}
           onClick={joinRoom}
         >
-          <img src={Mic} alt="Mic" style={{ width: "25px", height: "25px" }} />
+          <img className="button-icon" src={callIcon} />
         </Button>
-      ) : (
         <Button
           variant="circle"
+          className="audio-room-leave-room"
           soundFXVolume={soundFXVolume}
           onClick={leaveRoom}
         >
-          <img
-            src={MicOff}
-            alt="MicOff"
-            style={{ width: "25px", height: "25px" }}
-          />
+          <img className="button-icon" src={callEndIcon} />
         </Button>
-      )}
+      </div>
+      <div>
+        <p className="audio-room-username">{username}</p>
+      </div>
+      <div
+        id="mic-led"
+        style={{
+          width: "20px",
+          height: "20px",
+          borderRadius: "50%",
+          backgroundColor: "red",
+          marginTop: "10px",
+          transition: "background-color 0.3s ease",
+        }}
+      ></div>
+      <div ref={audioGridRef}></div>
     </div>
   );
 };
