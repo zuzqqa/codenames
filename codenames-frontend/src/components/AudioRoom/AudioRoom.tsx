@@ -13,6 +13,33 @@ import Mic from "../../assets/icons/mic.png";
 import MicOff from "../../assets/icons/micOff.svg";
 
 import "./AudioRoom.css";
+
+/**
+ * Enum for user status.
+ * @enum {string}
+ * @property {string} INACTIVE - The user is inactive.
+ * @property {string} ACTIVE - The user is active.
+ */
+enum UserStatus {
+  INACTIVE = "INACTIVE",
+  ACTIVE = "ACTIVE",
+}
+
+/**
+ * Represents a user in the game session.
+ * @typedef {Object} UserRoomLobbyDTO
+ * @property {string} id - The unique identifier of the user.
+ * @property {string} username - The username of the player.
+ * @property {number} profilePic - The profile picture ID of the player.
+ * @property {UserStatus} status - The status of the player (active/inactive).
+ */
+interface UserRoomLobbyDTO {
+  id: string;
+  username: string;
+  profilePic: number;
+  status: UserStatus;
+}
+
 /**
  * Retrieves a unique game ID from local storage or generates a new one if it doesn't exist.
  * @returns A unique game ID from local storage or generates a new one if it doesn't exist.
@@ -52,18 +79,58 @@ interface AudioRoomProps {
   soundFXVolume: number;
 }
 
-// ...
+/**
+ * AudioRoom component for handling audio communication in a room.
+ * @param {AudioRoomProps} props - The props for the AudioRoom component.
+ * @returns {JSX.Element} The rendered AudioRoom component.
+ */
 const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
   const audioGridRef = useRef<HTMLDivElement>(null);
   const myPeerRef = useRef<Peer | null>(null);
   const myAudioRef = useRef(new Audio());
   const peers = useRef<{ [key: string]: MediaConnection }>({});
   const [userStream, setUserStream] = useState<MediaStream | null>(null);
-  const stopLedAnimation = useRef(false);
   const [isConnected, setIsConnected] = useState(false);
   const [username, setUsername] = useState(
     localStorage.getItem("username") || ""
   );
+  const [connectedUsers, setConnectedUsers] = useState<UserRoomLobbyDTO[][]>();
+  const [userMicStates, setUserMicStates] = useState<{
+    [userId: string]: boolean;
+  }>({});
+
+  useEffect(() => {
+    const storedGameId = localStorage.getItem("gameId");
+    const token = Cookies.get("authToken");
+    if (storedGameId) {
+      fetch(`${apiUrl}/api/game-session/${storedGameId}/getConnectedUsers`)
+        .then((response) => response.json())
+        .then((data: UserRoomLobbyDTO[][]) => {
+          setConnectedUsers(data);
+        })
+        .catch((err) => console.error("Failed to load game session", err));
+    } else {
+      console.error("No game ID found in local storage");
+    }
+
+    if (token) {
+      fetch(`${apiUrl}/api/users/getUsername`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((response) => response.text())
+        .then((name) => {
+          if (name !== "null") {
+            setUsername(name);
+          }
+        })
+        .catch((err) => console.error("Failed to fetch username", err));
+    } else {
+      console.warn("No auth token found");
+    }
+  }, []);
 
   const cleanupPeerConnections = () => {
     console.log("[VOICE] Cleaning up peer connections");
@@ -102,31 +169,6 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
       }
     };
   }, [isConnected, userStream]);
-
-  const fetchUsername = async (): Promise<string> => {
-    try {
-      console.log("Fetching username from server...");
-      const token = Cookies.get("authToken");
-
-      if (!token) return "";
-
-      const response = await fetch(`${apiUrl}/api/users/getUsername`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch username");
-
-      const name = await response.text();
-      console.log("Fetched username:", name);
-      return name === "null" ? "" : name;
-    } catch (err) {
-      console.error("Error fetching username:", err);
-      return "";
-    }
-  };
 
   useEffect(() => {
     if (!isConnected || !userStream) return;
@@ -186,24 +228,26 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
             source.connect(analyser);
 
             const updateLed = () => {
-              if (stopLedAnimation.current) {
-                led.style.backgroundColor = "red";
-                return;
-              }
-
               analyser.getByteFrequencyData(dataArray);
               const avg =
                 dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
-              const norm = Math.min(avg / 128, 1); 
+              const norm = Math.min(avg / 128, 1);
 
-              const green = Math.floor(100 + norm * 155); 
-              led.style.backgroundColor = `rgb(0, ${green}, 0)`; 
+              const green = Math.floor(100 + norm * 155);
+              led.style.backgroundColor = `rgb(0, ${green}, 0)`;
 
               requestAnimationFrame(updateLed);
             };
 
             updateLed();
           }
+
+          chatNamespace.on("userMicActivity", ({ userId, isSpeaking }) => {
+            setUserMicStates((prev) => {
+              if (prev[userId] === isSpeaking) return prev;
+              return { ...prev, [userId]: isSpeaking };
+            });
+          });
         });
 
         call.on("close", () => {
@@ -281,6 +325,37 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
       console.log("[VOICE] PeerJS connection closed");
     });
 
+    const audioContext = new (window.AudioContext || window.AudioContext)();
+    const analyser = audioContext.createAnalyser();
+    const microphone = audioContext.createMediaStreamSource(userStream!);
+    microphone.connect(analyser);
+
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    const checkMicActivity = () => {
+      analyser.getByteFrequencyData(dataArray);
+      const sum = dataArray.reduce((acc, value) => acc + value, 0);
+      const isSpeaking = sum > 1000;
+
+      if (isSpeaking !== userMicStates[username]) {
+        setUserMicStates((prevState) => ({
+          ...prevState,
+          [username]: isSpeaking,
+        }));
+
+        chatNamespace.emit("userMicActivity", {
+          userId: username,
+          isSpeaking,
+          roomId: ROOM_ID,
+        });
+      }
+
+      requestAnimationFrame(checkMicActivity);
+    };
+
+    checkMicActivity();
+
     return () => {
       console.log("[VOICE] Cleaning up PeerJS and Socket.IO connections");
 
@@ -297,10 +372,6 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
 
   const joinRoom = async () => {
     console.log("[VOICE] Joining audio room");
-
-    const fetchedName = await fetchUsername();
-    setUsername(fetchedName);
-
     setIsConnected(true);
   };
 
@@ -312,8 +383,14 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
       userStream.getTracks().forEach((track) => track.stop());
     }
 
-    stopLedAnimation.current = true;
-
+    chatNamespace.emit("userMicActivity", {
+      userId: username,
+      isSpeaking: false,
+      roomId: ROOM_ID,
+    });
+    
+    setUserMicStates({});
+    
     setIsConnected(false);
   };
 
@@ -337,20 +414,50 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
           <img className="button-icon" src={callEndIcon} />
         </Button>
       </div>
-      <div>
+      <div className="audio-room-user-container">
         <p className="audio-room-username">{username}</p>
+        <div
+          id="mic-led"
+          style={{
+            width: "20px",
+            height: "20px",
+            borderRadius: "50%",
+            backgroundColor: userMicStates[username] ? "green" : "red",
+            marginTop: "10px",
+            transition: "background-color 0.3s ease",
+          }}
+        ></div>
+        <Button
+          variant="circle"
+          className="audio-room-leave-room"
+          soundFXVolume={soundFXVolume}
+          onClick={leaveRoom}
+        >
+          <img className="button-icon" src={Mic} />
+        </Button>
       </div>
-      <div
-        id="mic-led"
-        style={{
-          width: "20px",
-          height: "20px",
-          borderRadius: "50%",
-          backgroundColor: "red",
-          marginTop: "10px",
-          transition: "background-color 0.3s ease",
-        }}
-      ></div>
+      <div className="audio-room-leds">
+        {connectedUsers?.flat().map((user) =>
+          user.username !== username ? (
+            <div key={user.id} className="user-led-container">
+              <p>{user.username}</p>
+              <div
+                id={`mic-led-${user.id}`}
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  borderRadius: "50%",
+                  backgroundColor: userMicStates[user.username]
+                    ? "green"
+                    : "red",
+                  marginBottom: "10px",
+                  transition: "background-color 0.3s ease",
+                }}
+              ></div>
+            </div>
+          ) : null
+        )}
+      </div>
       <div ref={audioGridRef}></div>
     </div>
   );

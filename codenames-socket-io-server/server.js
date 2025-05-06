@@ -65,6 +65,10 @@ chatNamespace.on("connection", (socket) => {
       console.log(`[VOICE] User ${userId} disconnected from room: ${roomId}`);
       socket.to(roomId).emit("user-disconnected", userId);
     });
+
+    socket.on("userMicActivity", ({ userId, isSpeaking, roomId }) => {
+      socket.to(roomId).emit("userMicActivity", { userId, isSpeaking });
+    });
   });
 });
 

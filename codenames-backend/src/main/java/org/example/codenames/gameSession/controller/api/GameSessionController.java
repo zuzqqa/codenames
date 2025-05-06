@@ -1,6 +1,5 @@
 package org.example.codenames.gameSession.controller.api;
 
-import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.entity.dto.GameSessionRoomLobbyDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,4 +19,6 @@ public interface GameSessionController {
     ResponseEntity<?> getUsersByTeam(@PathVariable String gameId, @RequestParam String teamIndex);
 
     ResponseEntity<?> authenticatePassword(@PathVariable String gameId, @PathVariable String enteredPassword);
+
+    ResponseEntity<?> getConnectedUsers(@PathVariable String gameId);
 }

@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.example.codenames.gameSession.entity.dto.GameSessionMapper.toRoomLobbyDTO;
+import static org.example.codenames.user.entity.dto.UserMapper.toRoomLobbyDTOList;
 
 /**
  * Default implementation of the GameSessionController interface.
@@ -168,5 +169,12 @@ public class DefaultGameSessionController implements GameSessionController {
     @PostMapping("/{gameId}/authenticate-password/{enteredPassword}")
     public ResponseEntity<?> authenticatePassword(@PathVariable String gameId, @PathVariable String enteredPassword) {
         return ResponseEntity.ok(gameSessionService.authenticatePassword(UUID.fromString(gameId), enteredPassword));
+    }
+
+    @GetMapping("/{gameId}/getConnectedUsers")
+    public ResponseEntity<?> getConnectedUsers(@PathVariable String gameId) {
+        GameSession gameSession = gameSessionService.getGameSessionById(UUID.fromString(gameId));
+
+        return ResponseEntity.ok(toRoomLobbyDTOList(gameSession.getConnectedUsers()));
     }
 }

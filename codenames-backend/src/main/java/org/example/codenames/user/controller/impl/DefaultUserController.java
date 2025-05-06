@@ -238,7 +238,6 @@ public class DefaultUserController implements UserController {
         }
 
         token = token.substring(7);
-        System.out.println(jwtService.getUsernameFromToken(token));
 
         return ResponseEntity.ok(jwtService.getUsernameFromToken(token));
     }
@@ -377,7 +376,6 @@ public class DefaultUserController implements UserController {
      */
     @GetMapping("/{username}/friendRequests")
     public ResponseEntity<FriendRequestsDTO> getFriendRequests(@PathVariable String username) {
-        System.out.println("entering getFriendRequests function");
         Optional<User> user = userService.getUserByUsername(username);
         if (user.isPresent()) {
             User u = user.get();

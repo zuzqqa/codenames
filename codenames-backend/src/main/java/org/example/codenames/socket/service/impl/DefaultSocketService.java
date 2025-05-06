@@ -53,7 +53,6 @@ public class DefaultSocketService implements SocketService {
         if (socket.connected()) {
             String gameSessionJson = objectMapper.writeValueAsString(gameSession);
             socket.emit("gameSessionUpdate", gameId.toString(), gameSessionJson);
-            System.out.println("[SOCKET] Wysłano gameSessionUpdate: " + gameSessionJson);
         } else {
             System.err.println("[SOCKET] Socket niepołączony – nie wysłano gameSessionUpdate");
         }
@@ -64,7 +63,6 @@ public class DefaultSocketService implements SocketService {
         if (socket.connected()) {
             String gameSessionJson = objectMapper.writeValueAsString(gameSessions);
             socket.emit("gameSessionsList", gameSessionJson);
-            System.out.println("[SOCKET] Wysłano gameSessionsList: " + gameSessionJson);
         } else {
             System.err.println("[SOCKET] Socket niepołączony – nie wysłano gameSessionsList");
         }
@@ -75,7 +73,6 @@ public class DefaultSocketService implements SocketService {
         if (socket.connected()) {
             String gameSessionJson = objectMapper.writeValueAsString(gameSession);
             socket.emit("gameSessionData", gameId.toString(), gameSessionJson);
-            System.out.println("[SOCKET] Wysłano gameSessionData: " + gameSessionJson);
         } else {
             System.err.println("[SOCKET] Socket niepołączony – nie wysłano gameSessionData");
         }
