@@ -40,7 +40,10 @@ const Home: React.FC<HomeProps> = ({
 }) => {
   // State variables for managing component behavior
   const [isGameStarted, setIsGameStarted] = useState(false); // Tracks if the game has started
-  const [musicVolume, setMusicVolume] = useState(50); // Music volume level
+  const [musicVolume, setMusicVolume] = useState(() => {
+    const savedVolume = localStorage.getItem("musicVolume");
+    return savedVolume ? parseFloat(savedVolume) : 50;
+  });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const { t } = useTranslation(); // Hook for translation
   const navigate = useNavigate(); // Hook for navigation
@@ -58,6 +61,10 @@ const Home: React.FC<HomeProps> = ({
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
+
+  useEffect(() => {
+    localStorage.setItem("musicVolume", musicVolume.toString());
+  }, [musicVolume]);
 
   /**
    * Effect that checks if the user is logged in using cookies and navigates to the games page if authenticated.

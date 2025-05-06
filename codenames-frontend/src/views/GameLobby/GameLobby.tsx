@@ -35,7 +35,10 @@ const GameLobby: React.FC<GameLobbyProps> = ({
   soundFXVolume,
   setSoundFXVolume,
 }) => {
-  const [musicVolume, setMusicVolume] = useState(50); // Music volume level
+  const [musicVolume, setMusicVolume] = useState(() => {
+    const savedVolume = localStorage.getItem("musicVolume");
+    return savedVolume ? parseFloat(savedVolume) : 50;
+  });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [username, setUsername] = useState<string | null>(null);
   const { t } = useTranslation();
@@ -46,6 +49,10 @@ const GameLobby: React.FC<GameLobbyProps> = ({
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
+
+  useEffect(() => {
+    localStorage.setItem("musicVolume", musicVolume.toString());
+  }, [musicVolume]);
 
   useEffect(() => {
     const fetchUsername = async () => {

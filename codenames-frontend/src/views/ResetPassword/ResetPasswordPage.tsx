@@ -40,7 +40,10 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
 }) => {
   const [password, setPassword] = useState<string>("");
   const [passwordRepeat, setPasswordRepeat] = useState<string>("");
-  const [musicVolume, setMusicVolume] = useState(50); // Music volume level
+  const [musicVolume, setMusicVolume] = useState(() => {
+    const savedVolume = localStorage.getItem("musicVolume");
+    return savedVolume ? parseFloat(savedVolume) : 50;
+  });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { t } = useTranslation();
@@ -70,6 +73,10 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
       setPassword(password.slice(0, -1));
     }
   };
+
+  useEffect(() => {
+    localStorage.setItem("musicVolume", musicVolume.toString());
+  }, [musicVolume]);
 
   /**
    * useEffect hook for handling the automatic removal of error messages after a delay.

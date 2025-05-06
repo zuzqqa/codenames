@@ -43,7 +43,10 @@ const CreateGame: React.FC<CreateGameProps> = ({
   soundFXVolume,
   setSoundFXVolume,
 }) => {
-  const [musicVolume, setMusicVolume] = useState(50); // Music volume level
+  const [musicVolume, setMusicVolume] = useState(() => {
+    const savedVolume = localStorage.getItem("musicVolume");
+    return savedVolume ? parseFloat(savedVolume) : 50;
+  });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
   const { t } = useTranslation(); // Translation hook
@@ -63,10 +66,10 @@ const CreateGame: React.FC<CreateGameProps> = ({
             const guestStatus = await response.json();
             setIsGuest(guestStatus);
           } else {
-            console.error("Nie udało się pobrać statusu gościa");
+            console.error("Falied to fetch guest status.");
           }
         } catch (error) {
-          console.error("Błąd podczas pobierania statusu gościa", error);
+          console.error("Error while fetching guest status.", error);
         }
       };
     
@@ -97,6 +100,10 @@ const CreateGame: React.FC<CreateGameProps> = ({
       fetchUsername();
     }, []);
   
+  useEffect(() => {
+    localStorage.setItem("musicVolume", musicVolume.toString());
+  }, [musicVolume]);
+
   /**
    * Toggles the settings modal visibility.
    */

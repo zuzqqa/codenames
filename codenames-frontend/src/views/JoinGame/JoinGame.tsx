@@ -68,7 +68,10 @@ const JoinGame: React.FC<JoinGameProps> = ({
   soundFXVolume,
   setSoundFXVolume,
 }) => {
-  const [musicVolume, setMusicVolume] = useState(50); // Music volume level
+  const [musicVolume, setMusicVolume] = useState(() => {
+    const savedVolume = localStorage.getItem("musicVolume");
+    return savedVolume ? parseFloat(savedVolume) : 50;
+  });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
   const [gameSessions, setGameSessions] = useState<GameSession[]>([]);
@@ -78,6 +81,10 @@ const JoinGame: React.FC<JoinGameProps> = ({
 
   const { t } = useTranslation(); // Hook for translations
   
+  useEffect(() => {
+    localStorage.setItem("musicVolume", musicVolume.toString());
+  }, [musicVolume]);
+
   /**
    * Fetches the list of available game sessions on component mount.
    * Also establishes a WebSocket connection for real-time updates.
