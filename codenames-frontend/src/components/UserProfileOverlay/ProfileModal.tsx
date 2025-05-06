@@ -18,6 +18,7 @@ import moreIcon from "../../assets/icons/more-icon.png";
 import trashIcon from "../../assets/icons/trash.png";
 import useFriendRequestsWebSocket from "./useFriendRequestsWebSocket.tsx"
 import "./ProfileModal.css";
+import apiUrl from "../../../api/api.ts";
 
 interface ProfileModalProps {
   soundFXVolume: number;
@@ -61,13 +62,13 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ soundFXVolume, isOpen, onCl
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
-        const getIdResponse = await fetch("http://localhost:8080/api/users/getId", {
+        const getIdResponse = await fetch(apiUrl + "/api/users/getId", {
           method: "GET",
           credentials: "include",
         });
         const id = await getIdResponse.text();
 
-        const userResponse = await fetch(`http://localhost:8080/api/users/${id}`, {
+        const userResponse = await fetch(apiUrl + `/api/users/${id}`, {
           method: "GET",
           credentials: "include",
         });
@@ -112,7 +113,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ soundFXVolume, isOpen, onCl
     const selectedProfilePic = availableProfilePics[profilePicIndex];
 
     try {
-      const response = await fetch(`http://localhost:8080/api/users/${currentUser.id}`, {
+      const response = await fetch(apiUrl + `/api/users/${currentUser.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -151,7 +152,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ soundFXVolume, isOpen, onCl
 
   const handleSearch = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/users/search?username=${searchQuery}`, {
+      const response = await fetch(apiUrl + `/api/users/search?username=${searchQuery}`, {
         method: "GET",
         credentials: "include",
       });

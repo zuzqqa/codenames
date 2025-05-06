@@ -1,3 +1,5 @@
+import apiUrl from "../../api/api.ts";
+
 /**
  * Logs out the user by sending a request to the server and clearing session cookies.
  * If successful, the user is redirected to the loading screen.
@@ -6,7 +8,7 @@
  */
 export const logout = async () => {
   try {
-    const response = await fetch("http://localhost:8080/api/users/logout", {
+    const response = await fetch(apiUrl + "/api/users/logout", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

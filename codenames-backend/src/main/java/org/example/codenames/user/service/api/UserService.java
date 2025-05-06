@@ -3,8 +3,11 @@ package org.example.codenames.user.service.api;
 import jakarta.servlet.http.HttpServletRequest;
 import org.example.codenames.user.entity.User;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Service for managing users.
@@ -39,4 +42,8 @@ public interface UserService {
     boolean resetPassword(String uuid, HttpServletRequest request, String password);
 
     void deleteUserById(String id);
+
+    void markUserActive(String userId);
+
+    boolean isUserActive(String userId);
 }

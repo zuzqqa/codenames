@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import "./CreateGameForm.css";
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import React from "react";
+import apiUrl from "../../../api/api.ts";
 
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -66,7 +67,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
       }
       try {
         const getIdResponse = await fetch(
-          "http://localhost:8080/api/users/getId",
+          apiUrl + "/api/users/getId",
           {
             method: "GET",
             credentials: "include",
@@ -89,7 +90,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
         };
 
         const response = await fetch(
-          "http://localhost:8080/api/game-session/create",
+          apiUrl + "/api/game-session/create",
           {
             method: "POST",
             headers: {
@@ -166,7 +167,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/game-session/${storedGameId}/finish`,
+        apiUrl + `/api/game-session/${storedGameId}/finish`,
         {
           method: "POST",
           headers: {

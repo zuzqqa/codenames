@@ -69,6 +69,7 @@ public class AppInitializer implements InitializingBean {
                 .password(password)
                 .email(email)
                 .roles(roles)
+                .status(User.userStatus.ACTIVE)
                 .build();
         if (userService.getUserByUsername(username).isEmpty()) {
             userService.createUser(user);

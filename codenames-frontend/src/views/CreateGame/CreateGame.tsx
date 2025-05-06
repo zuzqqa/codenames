@@ -16,6 +16,7 @@ import "../SelectGame/SelectGame.css";
 import "./CreateGame.css";
 import {logout} from "../../shared/utils.tsx";
 import logoutButton from "../../assets/icons/logout.svg";
+import apiUrl from "../../../api/api.ts";
 
 /**
  * Props interface for CreateGame component.
@@ -52,7 +53,7 @@ const CreateGame: React.FC<CreateGameProps> = ({
     useEffect(() => {
       const fetchGuestStatus = async () => {
         try {
-          const response = await fetch("http://localhost:8080/api/users/isGuest", {
+          const response = await fetch(apiUrl + "/api/users/isGuest", {
             method: "GET",
             credentials: "include",
           });

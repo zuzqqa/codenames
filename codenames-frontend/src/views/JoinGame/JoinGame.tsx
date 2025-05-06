@@ -13,6 +13,7 @@ import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import {logout} from "../../shared/utils.tsx";
 import logoutButton from "../../assets/icons/logout.svg";
+import apiUrl from "../../../api/api.ts";
 
 /**
  * Props type definition for the JoinGame component.
@@ -81,7 +82,7 @@ const JoinGame: React.FC<JoinGameProps> = ({
   useEffect(() => {
     getGames();
 
-    const socket = new SockJS("http://localhost:8080/ws");
+    const socket = new SockJS(apiUrl + "/ws");
     const stompClient = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
@@ -111,7 +112,7 @@ const JoinGame: React.FC<JoinGameProps> = ({
   useEffect(() => {
     const fetchGuestStatus = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/users/isGuest", {
+        const response = await fetch(apiUrl + "/api/users/isGuest", {
           method: "GET",
           credentials: "include",
         });
@@ -135,9 +136,10 @@ const JoinGame: React.FC<JoinGameProps> = ({
    * Only sessions in the "CREATED" state are stored.
    */
   const getGames = () => {
-    fetch("http://localhost:8080/api/game-session/all")
+    fetch(apiUrl + "/api/game-session/all")
       .then((response) => response.json())
       .then((data) => {
+        console.log(data);
         const createdGames = data.filter(
           (game: GameSession) => game.status === "CREATED"
         );

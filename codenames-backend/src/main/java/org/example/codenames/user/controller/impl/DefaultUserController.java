@@ -238,6 +238,20 @@ public class DefaultUserController implements UserController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/activity/{id}")
+    public ResponseEntity<String> getUserActivity(@PathVariable String id) {
+        return userService.isUserActive(id) ?
+                ResponseEntity.ok("User is active") :
+                ResponseEntity.ok("User is not active");
+    }
+
+    @PostMapping("/activity")
+    public ResponseEntity<String> updateUserActivity(@RequestBody String id) {
+
+        userService.markUserActive(id);
+        return ResponseEntity.ok("User activity updated");
+    }
+
     /**
      * Retrieves the username from the authentication token stored in a cookie.
      *
@@ -281,6 +295,7 @@ public class DefaultUserController implements UserController {
         String username = userService.generateUniqueUsername();
 
         User guest = User.builder()
+                .id(UUID.randomUUID().toString())
                 .username(username)
                 .password("")
                 .roles("ROLE_GUEST")

@@ -5,6 +5,7 @@ import { t } from 'i18next';
 import '../../views/Gameplay/Gameplay.css';
 import './Chat.css';
 import { useCookies } from "react-cookie";
+import apiUrl from "../../../api/api.ts";
 
 /**
  * Defines the message type structure.
@@ -36,7 +37,7 @@ const Chat: React.FC = () => {
         const fetchPlayerName = async () => {
             try {
                 const response = await fetch(
-                    `http://localhost:8080/api/users/username/` + cookies.authToken
+                    apiUrl + `/api/users/username/` + cookies.authToken
                 );
                 if (!response.ok) {
                     throw new Error('Failed to fetch player name');

@@ -14,11 +14,14 @@ services:
         - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
         - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
         - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+        - REDIS_HOST=redis
+        - REDIS_PORT=6379
 
       volumes:
         - ./codenames-backend:/opt/codenames-backend
       depends_on:
         - mongodb
+        - redis
       networks:
         - codenames-network
 
@@ -70,9 +73,20 @@ services:
       - "3001:3001"
     networks:
         - codenames-network
-      
+
+  redis:
+    image: redis:alpine
+    container_name: codenames-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+        - codenames-network
+
 volumes:
   mongo_data:
+  redis_data:
 
 networks:
     codenames-network:

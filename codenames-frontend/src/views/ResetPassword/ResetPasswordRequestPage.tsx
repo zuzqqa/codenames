@@ -18,6 +18,7 @@ import spinnerIcon from "../../assets/icons/spinner.svg";
 
 import "../../styles/App.css";
 import "../ResetPassword/ResetPasswordRequestPage.css";
+import apiUrl from "../../../api/api.ts";
 
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -66,7 +67,7 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
 
     try {
       const response = await fetch(
-        "http://localhost:8080/api/email/reset-password",
+        apiUrl + "/api/email/reset-password",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
