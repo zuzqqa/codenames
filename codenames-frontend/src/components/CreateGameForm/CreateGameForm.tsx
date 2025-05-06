@@ -145,7 +145,6 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
    * Handles navigation back and optionally aborts a game session.
    */
   const handleBack = () => {
-    // Po prostu przekierowujemy na /games bez potrzeby wywoływania backendu
     navigate("/games");
   };
 
