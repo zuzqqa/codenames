@@ -15,7 +15,7 @@ import java.util.UUID;
  * Repository for GameSession entity
  */
 @Repository
-public interface GameSessionRepository extends CrudRepository<GameSession, String> {
+public interface GameSessionRepository extends CrudRepository<GameSession, UUID> {
     @NonNull
     Optional<GameSession> findBySessionId(UUID sessionId);
 

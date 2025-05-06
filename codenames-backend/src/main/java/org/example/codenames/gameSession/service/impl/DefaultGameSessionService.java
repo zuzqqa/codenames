@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -83,15 +84,16 @@ public class DefaultGameSessionService implements GameSessionService {
                 request.getMaxPlayers(),
                 request.getPassword().isEmpty() ? "" :passwordEncoder.encode(request.getPassword()),
                 new ArrayList<>() {{
-                    add(new ArrayList<>());
-                    add(new ArrayList<>());
+                    add(new ArrayList<User>());
+                    add(new ArrayList<User>());
                 }},
                 new ArrayList<>() {{
-                    add(new ArrayList<>());
-                    add(new ArrayList<>());
+                    add(new ArrayList<Integer>());
+                    add(new ArrayList<Integer>());
                 }},
                 gameState,
-                System.currentTimeMillis()
+                System.currentTimeMillis(),
+                Instant.now()
         );
 
         gameSessionRepository.save(newGame);
@@ -106,11 +108,7 @@ public class DefaultGameSessionService implements GameSessionService {
      */
     @Override
     public GameSession getGameSessionById(UUID gameId) {
-        if(gameSessionRepository.findBySessionId(gameId).isPresent()) {
-            return gameSessionRepository.findBySessionId(gameId).get();
-        }
-
-        return null;
+        return gameSessionRepository.findById(gameId).orElse(null);
     }
 
     /**
@@ -181,6 +179,7 @@ public class DefaultGameSessionService implements GameSessionService {
                 }
 
                 session.getVotes().get(teamIndex).set(votedIndex, session.getVotes().get(teamIndex).get(votedIndex) + 1);
+                touchSession(session);
                 gameSessionRepository.save(session);
                 return;
             }
@@ -213,6 +212,7 @@ public class DefaultGameSessionService implements GameSessionService {
         gameState.setBlueTeamLeader(blueTeamLeader);
         gameState.setRedTeamLeader(redTeamLeader);
 
+        touchSession(session);
         gameSessionRepository.save(session);
     }
 
@@ -255,38 +255,62 @@ public class DefaultGameSessionService implements GameSessionService {
     @Override
     public boolean addPlayerToSession(UUID sessionId, String userId, int teamIndex) {
         GameSession gameSession = getGameSessionById(sessionId);
-
         if (gameSession == null) {
             throw new IllegalArgumentException("Game session not found for ID: " + sessionId);
         }
 
-        if (gameSession.getMaxPlayers() == gameSession.getConnectedUsers().stream().mapToInt(List::size).sum()){
-            return false;
+        if(gameSession.getConnectedUsers().get(0) == null) {
+            ensureSessionStructure(gameSession);
         }
 
-        List<List<User>> connectedUsers = gameSession.getConnectedUsers();
-        List<List<Integer>> votes = gameSession.getVotes();
-
-        if (teamIndex < 0 || teamIndex >= connectedUsers.size()) {
-            return false;
+        if (gameSession.getConnectedUsers().get(0) == null || gameSession.getVotes().get(0) == null) {
+            ensureSessionStructure(gameSession);
         }
 
-        for(List<User> team : connectedUsers) {
-            if (team.stream().anyMatch(user -> user.getId().equals(userId))) {
+        if (gameSession.getConnectedUsers() == null || gameSession.getVotes() == null) {
+            throw new IllegalStateException("Game session data is not properly initialized.");
+        }
+
+        if (teamIndex < 0 || teamIndex >= gameSession.getConnectedUsers().size()) {
+            throw new IllegalArgumentException("Invalid team index: " + teamIndex);
+        }
+
+        if(gameSession.getConnectedUsers().get(teamIndex) != null) {
+            if (gameSession.getMaxPlayers() <= gameSession.getConnectedUsers().stream().mapToInt(List::size).sum()) {
                 return false;
             }
+
+            for (List<User> team : gameSession.getConnectedUsers()) {
+                if (team != null && team.stream().anyMatch(user -> user.getId().equals(userId))) {
+                    return false;
+                }
+            }
         }
-
-        Optional<User> user = userService.getUserById(userId);
-        User actualUser = user.orElseThrow(() -> new IllegalArgumentException("User not found for ID: " + userId));
-
-        connectedUsers.get(teamIndex).add(actualUser);
-        votes.get(teamIndex).add(0);
-
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("Checkpoint one");
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        User actualUser = userService.getUserById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found for ID: " + userId));
+        System.out.println(gameSession.getConnectedUsers());
+        gameSession.getConnectedUsers().get(teamIndex).add(actualUser);
+        gameSession.getVotes().get(teamIndex).add(0);
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("Checkpoint three");
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        touchSession(gameSession);
         gameSessionRepository.save(gameSession);
-
+        System.out.println(gameSession.getConnectedUsers());
         return true;
     }
+
 
     /**
      * Authenticates password for session.
@@ -350,6 +374,7 @@ public class DefaultGameSessionService implements GameSessionService {
         }
 
         if (removed) {
+            touchSession(gameSession);
             gameSessionRepository.save(gameSession);
         }
 
@@ -369,7 +394,37 @@ public class DefaultGameSessionService implements GameSessionService {
 
         gameStateService.cardsChosen(gameSession, Integer.parseInt(cardIndex));
 
+        touchSession(gameSession);
         gameSessionRepository.save(gameSession);
     }
+
+    /**
+     * Updates the last activity time of the session.
+     * @param session the session to be updated
+     */
+    private void touchSession(GameSession session) {
+        session.setLastUpdated(Instant.now());
+    }
+
+    /**
+     * Ensures the session structure is initialized correctly. Redis has issues when parsing complex datatypes and
+     * retrieving them.
+     * @param session the session to be checked
+     */
+    private void ensureSessionStructure(GameSession session) {
+        if (session.getConnectedUsers().get(0) == null) {
+            session.setConnectedUsers(new ArrayList<>() {{
+                add(new ArrayList<User>());
+                add(new ArrayList<User>());
+            }});
+        }
+        if (session.getVotes().get(0) == null) {
+            session.setVotes(new ArrayList<>() {{
+                add(new ArrayList<Integer>());
+                add(new ArrayList<Integer>());
+            }});
+        }
+    }
+
 }
 

@@ -6,9 +6,8 @@ import org.example.codenames.gameState.entity.GameState;
 import org.example.codenames.user.entity.User;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import jakarta.persistence.GeneratedValue;
@@ -17,7 +16,7 @@ import org.springframework.data.redis.core.RedisHash;
 /**
  * GameSession entity class.
  */
-@RedisHash(value = "gameSession", timeToLive = 3600) // gameSession will expire after 60 minutes
+@RedisHash(value = "gameSession")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -81,4 +80,9 @@ public class GameSession {
      * Voting start time.
      */
     private Long votingStartTime;
+
+    /**
+     * Last activity time.
+     */
+    private Instant lastUpdated;
 }

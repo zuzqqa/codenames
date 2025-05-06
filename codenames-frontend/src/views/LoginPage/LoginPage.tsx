@@ -19,6 +19,7 @@ import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister
 import { logout } from "../../shared/utils.tsx";
 import { useNavigate, useLocation } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import apiUrl from "../../../api/api.ts";
 
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -261,7 +262,7 @@ const LoginPage: React.FC<LoginProps> = ({
 
     try {
       const response = await fetch(
-        "http://localhost:8080/api/users/authenticate",
+        apiUrl + "/api/users/authenticate",
         {
           method: "POST",
           headers: {
@@ -400,7 +401,7 @@ const LoginPage: React.FC<LoginProps> = ({
               locale="en"
               onSuccess={() => {
                 window.location.href =
-                  "http://localhost:8080/oauth2/authorization/google";
+                  apiUrl + "/oauth2/authorization/google";
               }}
               onError={() => {
                 console.log("Google login failed");

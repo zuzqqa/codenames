@@ -43,4 +43,9 @@ public interface UserController {
     ResponseEntity<String> getIdByToken(String token);
 
     ResponseEntity<String> updatePassword(@PathVariable String token, HttpServletRequest request, @RequestBody PasswordResetRequest passwordResetRequest);
+
+    ResponseEntity<String> getUserActivity(String id);
+
+    ResponseEntity<String> updateUserActivity(@RequestBody String id);
+
 }

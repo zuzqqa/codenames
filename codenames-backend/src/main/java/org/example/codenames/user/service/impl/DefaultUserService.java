@@ -12,12 +12,18 @@ import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.api.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Default implementation of the {@link UserService} interface.
@@ -45,6 +51,10 @@ public class DefaultUserService implements UserService {
      */
     private final PasswordResetService passwordResetService;
 
+    private final StringRedisTemplate redisTemplate;
+
+    private static final long HEARTBEAT_TTL_SECONDS = 60 * 60 * 5;
+
     /**
      * Constructs a new DefaultUserService with the given user repository, password encoder, passwordResetTokenRepository and passwordResetService.
      *
@@ -54,11 +64,12 @@ public class DefaultUserService implements UserService {
      * @param passwordResetService the password reset service
      */
     @Autowired
-    public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PasswordResetTokenRepository passwordResetTokenRepository, PasswordResetService passwordResetService) {
+    public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PasswordResetTokenRepository passwordResetTokenRepository, PasswordResetService passwordResetService, StringRedisTemplate redisTemplate) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.passwordResetService = passwordResetService;
+        this.redisTemplate = redisTemplate;
     }
 
     /**
@@ -90,6 +101,8 @@ public class DefaultUserService implements UserService {
             }
             user.setProfilePic(0);
             user.setDescription("");
+        } else {
+            user.setStatus(User.userStatus.ACTIVE);
         }
 
         userRepository.save(user);
@@ -349,5 +362,13 @@ public class DefaultUserService implements UserService {
         } while (userRepository.existsByUsername(username));
 
         return username;
+    }
+
+    public void markUserActive(String userId) {
+        redisTemplate.opsForValue().set("activeUser:" + userId, LocalDateTime.now().toString(), Duration.ofSeconds(HEARTBEAT_TTL_SECONDS));
+    }
+
+    public boolean isUserActive(String userId) {
+        return Boolean.TRUE.equals(redisTemplate.hasKey("activeUser:" + userId));
     }
 }

@@ -15,6 +15,7 @@ import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { formatTime } from "../../shared/utils";
 import "./ChooseLeader.css";
+import apiUrl from "../../../api/api.ts";
 
 /**
  * Props for the ChooseLeader component.
@@ -112,7 +113,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     }
 
     if (storedGameId) {
-      fetch(`http://localhost:8080/api/game-session/${storedGameId}`)
+      fetch(apiUrl + `/api/game-session/${storedGameId}`)
         .then((response) => response.json())
         .then(async (data: GameSession) => {
           if (data.connectedUsers) {
@@ -144,7 +145,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     }, 1000);
 
     // WebSocket connection using SockJS and STOMP
-    const socket = new SockJS("http://localhost:8080/ws");
+    const socket = new SockJS(apiUrl + "/ws");
     const stompClient = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
@@ -184,7 +185,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
    */
   const fetchUserId = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/users/getId", {
+      const response = await fetch(apiUrl + "/api/users/getId", {
         method: "GET",
         credentials: "include",
       });
@@ -207,7 +208,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
 
     if (storedGameId) {
       await fetch(
-        `http://localhost:8080/api/game-session/${storedGameId}/assign-leaders?language=${
+        apiUrl + `/api/game-session/${storedGameId}/assign-leaders?language=${
           localStorage.getItem("i18nextLng") || "en"
         }`,
         {
@@ -255,7 +256,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
       };
 
       const response = await fetch(
-        `http://localhost:8080/api/game-session/${storedGameId}/vote`,
+        apiUrl + `/api/game-session/${storedGameId}/vote`,
         {
           method: "POST",
           credentials: "include",
