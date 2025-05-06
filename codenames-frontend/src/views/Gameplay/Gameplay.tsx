@@ -646,6 +646,14 @@ const Gameplay: React.FC<GameplayProps> = ({
         setCardText("");
         setCardNumber(1);
       }
+
+      if (event.key === "ArrowUp") {
+        setCardNumber((prev) => Math.min(prev + 1, 10));
+      }
+
+      if (event.key === "ArrowDown") {
+        setCardNumber((prev) => Math.max(prev - 1, 1));
+      }
     };
 
     document.addEventListener("keydown", handleKeyDown);
@@ -654,6 +662,36 @@ const Gameplay: React.FC<GameplayProps> = ({
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [cardText, cardNumber]);
+
+
+
+  /**
+   * Effect that handles the click outside of the card input area.
+   * If a click occurs outside the card input, it hides the card input and resets the card text and number.
+   *
+   * @returns {void} Cleanup function removes the event listener on component unmount.
+   */
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest(".card-black-img") && !target.closest(".codename-input-container")) {
+        setIsCardVisible(false);
+        setCardText("");
+        setCardNumber(1);
+      }
+    };
+    if (isCardVisible) {
+      const timer = setTimeout(() => {
+        document.addEventListener("click", handleClickOutside);
+      }, 1);
+      return () => {
+        document.removeEventListener("click", handleClickOutside);
+      };
+    }
+    else {
+        document.removeEventListener("click", handleClickOutside);
+    }
+  }, [isCardVisible]);
 
   /**
    * Effect that triggers the function to reveal cards voted by the team
@@ -994,6 +1032,12 @@ const Gameplay: React.FC<GameplayProps> = ({
               src={cardBlackImg}
               alt="Black Card"
             />
+            <Button className="close-button" variant="transparent" soundFXVolume={soundFXVolume}>
+                <i
+                    className="fa-solid fa-xmark close"
+                    onClick={() => setIsCardVisible(false)}
+                ></i>
+            </Button>
             <div className="codename-input-container">
               <input
                 type="text"
