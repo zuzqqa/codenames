@@ -48,6 +48,13 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
       const newErrors: { id: string; message: string }[] = [];
       setErrors(newErrors);
   
+      if (!values.gameName) {
+        newErrors.push({
+          id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
+          message: t("game-name-required"),
+        });
+      }
+    
       if (isPrivate && formik.values.password === '') {
         newErrors.push({
           id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
@@ -70,6 +77,33 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
           setError("Failed to fetch ID");
           return;
         }
+
+        if (newErrors.length > 0) {
+          return;
+        }
+
+        const checkNameResponse = await fetch(`http://localhost:8080/api/game-session/check-name?name=${encodeURIComponent(values.gameName)}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        
+        if (checkNameResponse.ok) {
+          const nameExists = await checkNameResponse.json();
+          if (!nameExists.available) {
+            newErrors.push({
+              id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
+              message: t("game-name-already-exists"),
+            });
+            setErrors([...newErrors]);
+            return;
+          }
+        } else {
+          setError("Failed to verify game name");
+          return;
+        }
+        
   
         const requestData = {
           gameName: values.gameName,
@@ -140,6 +174,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
 
     return () => timers.forEach(clearTimeout);
   }, [errors]);
+
 
   /**
    * Handles navigation back and optionally aborts a game session.
@@ -230,11 +265,6 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
               name="password"
               onChange={formik.handleChange}
             />
-            {formik.touched.gameName && formik.errors.gameName ? (
-              <ErrorMessage name="gameName">
-                {(errorMessage) => <div className="error">{errorMessage}</div>}
-              </ErrorMessage>
-            ) : null}
             <div
               className="slider-container"
               style={{

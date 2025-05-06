@@ -78,5 +78,7 @@
   "too-few-players": "Zbyt mało graczy, aby rozpocząć grę.",
   "logged-in-as": "Zalogowano jako: ",
   "profile-title": "Profil",
-  "leave": "Opuść drużynę"
+  "leave": "Opuść drużynę",
+  "game-name-already-exists": "Gra o takiej nazwie już istnieje.",
+  "game-name-required": "Nazwa gry jest wymagana."
 }

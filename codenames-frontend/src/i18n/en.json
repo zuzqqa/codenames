@@ -77,5 +77,8 @@
   "too-few-players": "Too few players to start the game.",
   "logged-in-as": "Logged in as: ",
   "profile-title": "Profile",
-  "leave": "Leave team"
+  "leave": "Leave team",
+  "game-name-already-exists": "Game with this name already exists.",
+  "game-name-required": "Game name is required."
+
 }
