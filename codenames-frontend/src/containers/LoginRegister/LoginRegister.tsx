@@ -6,7 +6,7 @@ import "./LoginRegister.css";
  */
 interface LoginRegisterContainerProps {
   children: ReactNode; // Accepts strings, JSX, or any valid React nodes
-  variant: "login" | "register";
+  variant: "login" | "register" | "reset";
 }
 
 /**
