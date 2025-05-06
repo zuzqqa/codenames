@@ -646,6 +646,25 @@ const Gameplay: React.FC<GameplayProps> = ({
         setCardText("");
         setCardNumber(1);
       }
+
+      const maxValue = amIBlueTeamLeader ? 8 : 9;
+      if (amIBlueTeamLeader || amIRedTeamLeader) {
+        if (event.key === "ArrowUp") {
+          setCardNumber((prev) => Math.min(prev + 1, maxValue));
+        }
+
+        if (event.key === "ArrowDown") {
+          setCardNumber((prev) => Math.max(prev - 1, 1));
+        }
+
+        if (event.key === "ArrowLeft") {
+          setCardNumber((prev) => Math.max(prev - 1, 1));
+        }
+
+        if (event.key === "ArrowRight") {
+          setCardNumber((prev) => Math.min(prev + 1, maxValue));
+        }
+      }
     };
 
     document.addEventListener("keydown", handleKeyDown);
@@ -654,6 +673,36 @@ const Gameplay: React.FC<GameplayProps> = ({
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [cardText, cardNumber]);
+
+
+
+  /**
+   * Effect that handles the click outside of the card input area.
+   * If a click occurs outside the card input, it hides the card input and resets the card text and number.
+   *
+   * @returns {void} Cleanup function removes the event listener on component unmount.
+   */
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest(".card-black-img") && !target.closest(".codename-input-container")) {
+        setIsCardVisible(false);
+        setCardText("");
+        setCardNumber(1);
+      }
+    };
+    if (isCardVisible) {
+      const timer = setTimeout(() => {
+        document.addEventListener("click", handleClickOutside);
+      }, 1);
+      return () => {
+        document.removeEventListener("click", handleClickOutside);
+      };
+    }
+    else {
+        document.removeEventListener("click", handleClickOutside);
+    }
+  }, [isCardVisible]);
 
   /**
    * Effect that triggers the function to reveal cards voted by the team
@@ -994,6 +1043,12 @@ const Gameplay: React.FC<GameplayProps> = ({
               src={cardBlackImg}
               alt="Black Card"
             />
+            <Button className="close-button" variant="transparent" soundFXVolume={soundFXVolume}>
+                <i
+                    className="fa-solid fa-xmark close"
+                    onClick={() => setIsCardVisible(false)}
+                ></i>
+            </Button>
             <div className="codename-input-container">
               <input
                 type="text"
@@ -1020,6 +1075,19 @@ const Gameplay: React.FC<GameplayProps> = ({
               />
               <span className="slider-value">{cardNumber}</span>
             </div>
+            <Button variant="transparent" soundFXVolume={soundFXVolume} className="confirm-button">
+                <i
+                    className="fa-solid fa-check confirm" style={{ color: "white" }}
+                    onClick={() => {
+                    if (validateCardText(cardText)) {
+                        sendHint();
+                        setIsCardVisible(false);
+                        setCardText("");
+                        setCardNumber(1);
+                    }
+                    }}
+                ></i>
+            </Button>
           </div>
         )}
         {errors.length > 0 && (
