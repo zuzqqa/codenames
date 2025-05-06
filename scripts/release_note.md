@@ -1,8 +1,9 @@
-Created Profile Modal
+Admin is now active on init
 **🔧 What's included in this release?**
-Created Profile Modal, implemented sending, deleting and accepting requests.
+Admin is now active
 
 Key additions: 
+- admin is active
 
 **🚧 What's still under development?**
 

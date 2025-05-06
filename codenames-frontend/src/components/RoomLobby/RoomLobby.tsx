@@ -12,7 +12,6 @@ import "./RoomLobby.css";
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 
-
 /**
  * Properties for the RoomLobby component.
  * @typedef {Object} RoomLobbyProps
@@ -80,6 +79,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
   const [gameSession, setGameSession] = useState<GameSession | null>(null);
   const [redTeamPlayers, setRedTeamPlayers] = useState<User[]>([]);
   const [blueTeamPlayers, setBlueTeamPlayers] = useState<User[]>([]);
+  const [isJoined, setIsJoined] = useState(false);
   const [client, setClient] = useState<Client | null>(null);
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
 
@@ -136,7 +136,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     return () => timers.forEach(clearTimeout);
   }, [errors]);
 
-
   useEffect(() => {
     const storedGameId = localStorage.getItem("gameId");
 
@@ -192,6 +191,10 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
    * Adds the current player to the red team.
    */
   const addPlayerToRedTeam = async () => {
+    if (isJoined) {
+      removePlayerFromTeam();
+    }
+
     // Fetch player ID, then add to red team via REST API
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
@@ -211,6 +214,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     );
 
     if (response.ok) {
+        setIsJoined(true);
     } else {
       console.error("Failed to add player to red team");
     }
@@ -220,6 +224,10 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
    * Adds the current player to the blue team.
    */
   const addPlayerToBlueTeam = async () => {
+    if (isJoined) {
+      removePlayerFromTeam()
+    }
+
     // Fetch player ID, then add to blue team via REST API
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
@@ -239,10 +247,40 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     );
 
     if (response.ok) {
+        setIsJoined(true);
     } else {
       console.error("Failed to add player to blue team");
     }
   };
+
+    /**
+     * Removes the current player from the specified team.
+     * @param {number} teamIndex - The index of the team to remove the player from (0 for red, 1 for blue).
+     */
+  const removePlayerFromTeam = async () => {
+    setIsJoined(false);
+    const storedGameId = localStorage.getItem("gameId");
+    if (!storedGameId) return;
+
+    const getIdResponse = await fetch("http://localhost:8080/api/users/getId", {
+      method: "GET",
+      credentials: "include",
+    });
+    const userId = await getIdResponse.text();
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/game-session/${storedGameId}/disconnect?userId=${userId}`,
+        { method: "DELETE", credentials: "include" }
+      );
+
+      if (!response.ok) {
+        console.error("Failed to remove player from team");
+      }
+    } catch (error) {
+      console.error("Error removing player from team", error);
+    }
+  }
 
   /**
    * Removes the current player from the game session.
@@ -283,7 +321,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
 
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
-
+    
     if (redTeamPlayers.length < 2 || redTeamPlayers.length < 2) {
       newErrors.push({
         id: generateId(),
@@ -330,6 +368,16 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                 /{gameSession.maxPlayers}
               </div>
               <div className="lobby-players">
+                {(isJoined) ? (
+                <Button
+                    variant={"primary-1"}
+                    soundFXVolume={soundFXVolume}
+                    className="leave-btn"
+                    onClick={removePlayerFromTeam}
+                >
+                    <span className="button-text">{t("leave")}</span>
+                </Button>
+                ) : ("")}
                 <Button
                   variant={"room"}
                   soundFXVolume={soundFXVolume}
@@ -418,3 +466,4 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
 };
 
 export default RoomLobby;
+
