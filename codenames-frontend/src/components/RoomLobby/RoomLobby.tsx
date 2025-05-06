@@ -368,7 +368,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                 /{gameSession.maxPlayers}
               </div>
               <div className="lobby-players">
-                {(isJoined) ? (
+                {/* {(isJoined) ? (
                 <Button
                     variant={"primary-1"}
                     soundFXVolume={soundFXVolume}
@@ -377,7 +377,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                 >
                     <span className="button-text">{t("leave")}</span>
                 </Button>
-                ) : ("")}
+                ) : ("")} */}
                 <Button
                   variant={"room"}
                   soundFXVolume={soundFXVolume}

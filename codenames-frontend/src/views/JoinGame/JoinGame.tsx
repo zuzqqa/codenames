@@ -143,7 +143,7 @@ const JoinGame: React.FC<JoinGameProps> = ({
           });
   
           if (response.ok) {
-            const text = await response.text(); // bo to ResponseEntity<String>
+            const text = await response.text();
             if (text !== "null") {
               setUsername(text);
             }

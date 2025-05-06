@@ -460,6 +460,29 @@ const RegisterPage: React.FC<RegisterProps> = ({
           >
             {t("already-have-an-account")}
           </a>
+          <a 
+          className="login-register-link guest-link"
+          onClick={async () => {
+            try {
+              const response = await fetch(
+                "http://localhost:8080/api/users/createGuest",
+                {
+                  method: "POST",
+                  credentials: "include",
+                }
+              );
+
+              if (response.ok) {
+                window.location.href = "/loading";
+              } else {
+                console.error("Failed to create guest account");
+              }
+            } catch (error) {
+              console.error("Error creating guest account:", error);
+            }
+          }}          >
+          {t("or-continue-as-guset")}
+          </a>
         </div>
         {errors.length > 0 && (
           <div className="toast-container">

@@ -58,7 +58,6 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
         return;
       }
       try {
-        // Pierwsze żądanie - pobranie ID
         const getIdResponse = await fetch("http://localhost:8080/api/users/getId", {
           method: "GET",
           credentials: "include",
@@ -169,6 +168,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
       }, 500);
     }
   };
+  
 
   return (
     <>

@@ -78,7 +78,7 @@
   cursor: pointer;
   text-decoration: none; 
   transition: border-bottom 0.1s ease; 
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.3rem;
 }
 
 .reset-password-link:hover {
@@ -105,4 +105,9 @@
 
 .login-register-link:hover {
   border-bottom: 0.5px solid #FFD363; 
+}
+
+.guest-link{
+  font-size: 0.72em;
+  padding: 0 5px;
 }
