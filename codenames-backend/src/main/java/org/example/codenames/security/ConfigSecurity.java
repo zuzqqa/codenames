@@ -83,6 +83,7 @@ public class ConfigSecurity {
                                 "api/game-session/**", "api/game-state/**", "api/cards/**"
                         ).permitAll()
                         .requestMatchers("/oauth2/**", "/api/auth/**").permitAll()
+                        .requestMatchers("/api/users/activity").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

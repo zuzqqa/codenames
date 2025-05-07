@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -43,4 +44,8 @@ public interface UserController {
     ResponseEntity<String> getIdByToken(String token);
 
     ResponseEntity<String> updatePassword(@PathVariable String token, HttpServletRequest request, @RequestBody PasswordResetRequest passwordResetRequest);
+
+    ResponseEntity<Void> updateUserActiveStatus(@RequestBody String userId);
+
+    ResponseEntity<Map<String, LocalDateTime>> getAllUserActivity();
 }

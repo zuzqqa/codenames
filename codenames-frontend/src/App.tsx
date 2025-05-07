@@ -25,6 +25,7 @@ import WinLossView from "./views/WinLossView/WinLossView";
 import LoadingPage from "./views/Loading/LoadingPage";
 import ResetPasswordPage from "./views/ResetPassword/ResetPasswordPage.tsx";
 import ResetPasswordRequestPage from "./views/ResetPassword/ResetPasswordRequestPage.tsx";
+import apiUrl from "../api/api.ts";
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -32,6 +33,7 @@ const App: React.FC = () => {
   const [audio] = useState(new Audio(soundFile));
   const [isPlaying, setIsPlaying] = useState(false);
   const { i18n } = useTranslation();
+  let userId = localStorage.getItem("userId") || "";
 
   const playAudio = () => {
     if (!isPlaying) {
@@ -96,6 +98,24 @@ const App: React.FC = () => {
   if (isAuthenticated === null) {
     return <div>Loading...</div>;
   }
+
+    setInterval(async () => {
+        if (!isAuthenticated) return;
+        if (!userId) {
+            const getIdResponse = await fetch(apiUrl + "/api/users/getId", {
+                method: "GET",
+                credentials: "include",
+            });
+            userId = await getIdResponse.text();
+            localStorage.setItem("userId", userId);
+        }
+        fetch(apiUrl + '/api/users/activity', {
+            method: 'POST',
+            body: userId,
+            headers: {'Content-Type': 'application/json'},
+            credentials: "include"
+        });
+    }, 10000);
 
   return (
     <Router>

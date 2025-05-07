@@ -2,6 +2,8 @@ package org.example.codenames.user.service.impl;
 
 import com.github.javafaker.Faker;
 
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.map.IMap;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.example.codenames.passwordResetToken.entity.PasswordResetToken;
@@ -12,13 +14,13 @@ import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.api.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 /**
  * Default implementation of the {@link UserService} interface.
@@ -47,19 +49,26 @@ public class DefaultUserService implements UserService {
     private final PasswordResetService passwordResetService;
 
     /**
+     * Map for storing active users.
+     */
+    private final IMap<String, LocalDateTime> activityMap;
+
+    /**
      * Constructs a new DefaultUserService with the given user repository, password encoder, passwordResetTokenRepository and passwordResetService.
      *
      * @param userRepository the user repository
      * @param passwordEncoder the password encoder
      * @param passwordResetTokenRepository the password reset tokens repository
      * @param passwordResetService the password reset service
+     * @param hazelcastInstance the Hazelcast instance for managing active users
      */
     @Autowired
-    public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PasswordResetTokenRepository passwordResetTokenRepository, PasswordResetService passwordResetService) {
+    public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PasswordResetTokenRepository passwordResetTokenRepository, PasswordResetService passwordResetService, HazelcastInstance hazelcastInstance) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.passwordResetService = passwordResetService;
+        this.activityMap = hazelcastInstance.getMap("activeUsers");
     }
 
     /**
@@ -359,5 +368,25 @@ public class DefaultUserService implements UserService {
         } while (userRepository.existsByUsername(username));
 
         return username;
+    }
+
+    /**
+     * Updates the user's active status.
+     *
+     * @param userId the ID of the user
+     */
+    @Override
+    public void updateUserActiveStatus(String userId) {
+        activityMap.put(userId, LocalDateTime.now());
+    }
+
+    /**
+     * Retrieves all active users.
+     *
+     * @return a map of all active users
+     */
+    @Override
+    public Map<String, LocalDateTime> getAllActiveUsers() {
+        return activityMap.getAll(activityMap.keySet());
     }
 }

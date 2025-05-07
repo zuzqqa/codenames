@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -281,6 +282,7 @@ public class DefaultUserController implements UserController {
         String username = userService.generateUniqueUsername();
 
         User guest = User.builder()
+                .id(UUID.randomUUID().toString())
                 .username(username)
                 .password("")
                 .roles("ROLE_GUEST")
@@ -418,5 +420,27 @@ public class DefaultUserController implements UserController {
         Optional<User> user = userService.getUserByUsername(username);
 
         return ResponseEntity.ok(user.map(User::isGuest).orElse(true));
+    }
+
+    /**
+     * Updates the timestamp of the last activity of a user.
+     *
+     * @param userId the ID of the user to be updated
+     * @return ResponseEntity with status 200 OK
+     */
+    @PostMapping("/activity")
+    public ResponseEntity<Void> updateUserActiveStatus(@RequestBody String userId) {
+        userService.updateUserActiveStatus(userId);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Retrieves the activity timestamps of all users.
+     *
+     * @return ResponseEntity containing a map of usernames and their last activity timestamps
+     */
+    @GetMapping("/activity")
+    public ResponseEntity<Map<String, LocalDateTime>> getAllUserActivity() {
+        return ResponseEntity.ok().body(userService.getAllActiveUsers());
     }
 }
