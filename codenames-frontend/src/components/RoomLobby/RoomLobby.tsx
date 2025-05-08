@@ -6,12 +6,19 @@ import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import Button from "../Button/Button.tsx";
 
 import backButton from "../../assets/icons/arrow-back.png";
+import linkIcon from "../../assets/icons/link.svg";
 
 import "./RoomLobby.css";
 
-import { apiUrl, socketUrl } from "../../config/api.tsx";
+import { apiUrl, frontendUrl, socketUrl } from "../../config/api.tsx";
 import { getUserId } from "../../shared/utils.tsx";
 import { io } from "socket.io-client";
+
+/**
+ * @returns {string} - The URL of the API.
+ */
+const generateId = () =>
+  Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 
 /**
  * Properties for the RoomLobby component.
@@ -94,6 +101,34 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
   const [blueTeamPlayers, setBlueTeamPlayers] = useState<UserRoomLobbyDTO[]>(
     []
   );
+  const [isJoined, setIsJoined] = useState(false);
+  const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
+  const [notifications, setNotifications] = useState<
+    { id: string; message: string }[]
+  >([]);
+  const [lobbyLink, setLobbyLink] = useState<string>("");
+  const [isLinkIsleExpanded, setIsLinkIsleExpanded] = useState(false);
+  const exampleLink = `${frontendUrl}/invite/${localStorage.getItem("gameId")}`;
+
+  /**
+   * Handles manual closing of a toast error.
+   *
+   * - Fades out the toast visually before removing it from the state.
+   *
+   * @param {string} id - The unique identifier of the error toast to be closed.
+   */
+  const handleCloseErrorToast = (id: string) => {
+    const toastElement = document.getElementById(id);
+    if (toastElement) {
+      toastElement.classList.add("hide");
+
+      setTimeout(() => {
+        setErrors((prevErrors) =>
+          prevErrors.filter((error) => error.id !== id)
+        );
+      }, 500);
+    }
+  };
 
   /**
    * Initializes the WebSocket connection and fetches the game session data.
@@ -131,26 +166,24 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       }
     });
 
-    gameSocket.on(
-      "gameSessionUpdate",
-      (updatedGameSessionJson: string) => {
-        try {
-          const updatedGameSession: GameSessionRoomLobbyDTO = JSON.parse(updatedGameSessionJson);
-          
+    gameSocket.on("gameSessionUpdate", (updatedGameSessionJson: string) => {
+      try {
+        const updatedGameSession: GameSessionRoomLobbyDTO = JSON.parse(
+          updatedGameSessionJson
+        );
 
-          if(updatedGameSession.connectedUsers) {
-            setRedTeamPlayers(updatedGameSession.connectedUsers[0] || []);
-            setBlueTeamPlayers(updatedGameSession.connectedUsers[1] || []);
-          }
-
-          if (updatedGameSession.status === "LEADER_SELECTION") {
-            navigate("/choose-leader");
-          }
-        } catch (err) {
-          console.error("Error parsing gameSessionsList JSON:", err);
+        if (updatedGameSession.connectedUsers) {
+          setRedTeamPlayers(updatedGameSession.connectedUsers[0] || []);
+          setBlueTeamPlayers(updatedGameSession.connectedUsers[1] || []);
         }
+
+        if (updatedGameSession.status === "LEADER_SELECTION") {
+          navigate("/choose-leader");
+        }
+      } catch (err) {
+        console.error("Error parsing gameSessionsList JSON:", err);
       }
-    );
+    });
 
     gameSocket.on("connect_error", (error) => {
       console.error("Game socket connection error:", error);
@@ -188,7 +221,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     );
 
     if (response.ok) {
-        setIsJoined(true);
+      setIsJoined(true);
     } else {
       console.error("Failed to add player to red team");
     }
@@ -199,7 +232,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
    */
   const addPlayerToBlueTeam = async () => {
     if (isJoined) {
-      removePlayerFromTeam()
+      removePlayerFromTeam();
     }
 
     // Fetch player ID, then add to blue team via REST API
@@ -221,16 +254,16 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     );
 
     if (response.ok) {
-        setIsJoined(true);
+      setIsJoined(true);
     } else {
       console.error("Failed to add player to blue team");
     }
   };
 
-    /**
-     * Removes the current player from the specified team.
-     * @param {number} teamIndex - The index of the team to remove the player from (0 for red, 1 for blue).
-     */
+  /**
+   * Removes the current player from the specified team.
+   * @param {number} teamIndex - The index of the team to remove the player from (0 for red, 1 for blue).
+   */
   const removePlayerFromTeam = async () => {
     setIsJoined(false);
     const storedGameId = localStorage.getItem("gameId");
@@ -254,7 +287,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     } catch (error) {
       console.error("Error removing player from team", error);
     }
-  }
+  };
 
   /**
    * Removes the current player from the game session.
@@ -331,7 +364,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     navigator.clipboard.writeText(tempLobbyLink).then(() => {
       console.log("Lobby link copied to clipboard:", tempLobbyLink);
     });
-  }
+  };
 
   /**
    * Handles manual closing of a toast notification.
@@ -347,7 +380,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
 
       setTimeout(() => {
         setNotifications((prevNotifications) =>
-            prevNotifications.filter((notification) => notification.id !== id)
+          prevNotifications.filter((notification) => notification.id !== id)
         );
       }, 500);
     }
@@ -376,7 +409,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
         // Remove the message from state after 8.5 seconds
         const removeTimer = setTimeout(() => {
           setNotifications((prevNotifications) =>
-              prevNotifications.filter((n) => n.id !== notification.id)
+            prevNotifications.filter((n) => n.id !== notification.id)
           );
         }, 8500);
 
@@ -385,7 +418,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
         // Remove message if toast element is not found
         return setTimeout(() => {
           setNotifications((prevNotifications) =>
-              prevNotifications.filter((n) => n.id !== notification.id)
+            prevNotifications.filter((n) => n.id !== notification.id)
           );
         }, 8000);
       }
@@ -393,7 +426,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
 
     return () => timers.forEach(clearTimeout);
   }, [notifications]);
-
 
   /**
    * useEffect hook for handling the copying of the lobby link to the clipboard.
@@ -407,7 +439,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     if (lobbyLink) {
       setNotifications((prevNotifications) => {
         const notificationExists = prevNotifications.some(
-            (n) => n.message === t("link-copied")
+          (n) => n.message === t("link-copied")
         );
 
         if (!notificationExists) {
@@ -460,38 +492,32 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                 {/*  <span className="button-text">Link</span>*/}
                 {/*</Button>*/}
                 <div className="lobby-link-switch">
-                    <img
-                        src={linkIcon}
-                        alt="Link"
-                        className="link-icon"
-                        onClick={handleLobbyLinkIsleUnroll}
-                    />
+                  <img
+                    src={linkIcon}
+                    alt="Link"
+                    className="link-icon"
+                    onClick={handleLobbyLinkIsleUnroll}
+                  />
                 </div>
                 <div
-                    className={`lobby-link-isle ${isLinkIsleExpanded ? "expanded" : ""}`}
+                  className={`lobby-link-isle ${
+                    isLinkIsleExpanded ? "expanded" : ""
+                  }`}
                 >
-                  <img
-                      src={linkIcon}
-                      alt="Link"
-                      className="isle-image"
-                  />
-                  <p className="isle-title">
-                    {t("invite-friends")}
-                  </p>
-                  <p className="isle-text">
-                    {t("invite-friends-text")}
-                  </p>
+                  <img src={linkIcon} alt="Link" className="isle-image" />
+                  <p className="isle-title">{t("invite-friends")}</p>
+                  <p className="isle-text">{t("invite-friends-text")}</p>
                   <p className="isle-fields">
                     <textarea
-                        className="lobby-link-textbox"
-                        value={exampleLink}
-                        readOnly
+                      className="lobby-link-textbox"
+                      value={exampleLink}
+                      readOnly
                     />
                     <Button
-                        variant={"primary-1"}
-                        soundFXVolume={soundFXVolume}
-                        className="link-btn"
-                        onClick={generateLobbyLink}
+                      variant={"primary-1"}
+                      soundFXVolume={soundFXVolume}
+                      className="link-btn"
+                      onClick={generateLobbyLink}
                     >
                       <span className="button-text">{t("copy")}</span>
                     </Button>
@@ -592,32 +618,32 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
           </div>
         )}
         {notifications.length > 0 && (
-            <div className="toast-container">
-              {notifications.map((notification) => (
-                  <div
-                      id={notification.id}
-                      key={notification.id}
-                      className="toast active"
-                  >
-                    <div className="toast-content">
-                      <i
-                          className="fa fa-info-circle fa-3x"
-                          style={{ color: "#1B74BB" }}
-                          aria-hidden="true"
-                      ></i>
-                      <div className="message">
-                        <span className="text text-1">Notification</span>
-                        <span className="text text-2">{notification.message}</span>
-                      </div>
-                    </div>
-                    <i
-                        className="fa-solid fa-xmark close"
-                        onClick={() => handleCloseNotificationToast(notification.id)}
-                    ></i>
-                    <div className="progress active notification"></div>
+          <div className="toast-container">
+            {notifications.map((notification) => (
+              <div
+                id={notification.id}
+                key={notification.id}
+                className="toast active"
+              >
+                <div className="toast-content">
+                  <i
+                    className="fa fa-info-circle fa-3x"
+                    style={{ color: "#1B74BB" }}
+                    aria-hidden="true"
+                  ></i>
+                  <div className="message">
+                    <span className="text text-1">Notification</span>
+                    <span className="text text-2">{notification.message}</span>
                   </div>
-              ))}
-            </div>
+                </div>
+                <i
+                  className="fa-solid fa-xmark close"
+                  onClick={() => handleCloseNotificationToast(notification.id)}
+                ></i>
+                <div className="progress active notification"></div>
+              </div>
+            ))}
+          </div>
         )}
       </RoomMenu>
     </>
@@ -625,4 +651,3 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
 };
 
 export default RoomLobby;
-

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"; // Hook for managing component state
+import { useTranslation } from "react-i18next";
 
 import BackgroundContainer from "../../containers/Background/Background";
 
@@ -49,7 +50,7 @@ const CreateGame: React.FC<CreateGameProps> = ({
   const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
   const [isGuest, setIsGuest] = useState<boolean | null>(null);
   const [username, setUsername] = useState<string | null>(null);
-  
+  const { t } = useTranslation(); 
 
   /**
    * Effect to fetch guest status from the server.

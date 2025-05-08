@@ -20,9 +20,16 @@ import "../../styles/App.css";
 import "../ResetPassword/ResetPasswordRequestPage.css";
 import { apiUrl } from "../../config/api.tsx";
 
+/**
+ * Generates a unique ID for notifications and errors.
+ * @returns A unique identifier string.
+ */
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 
+/**
+ * ResetPasswordRequestProps defines the properties for the ResetPasswordRequestPage component.
+ */ 
 interface ResetPasswordRequestProps {
   setVolume: (volume: number) => void;
   soundFXVolume: number;

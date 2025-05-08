@@ -21,17 +21,19 @@ import polygon1Img from "../../assets/images/Polygon1.png";
 import polygon2Img from "../../assets/images/Polygon2.png";
 import cardSound from "../../assets/sounds/card-filp.mp3";
 import votingLabel from "../../assets/images/medieval-label.png";
-import micIcon from "../../assets/icons/mic.svg";
 import closeIcon from "../../assets/icons/close.png";
 import micGoldIcon from "../../assets/icons/mic-gold.svg";
 
 import "./Gameplay.css";
+
 import Chat from "../../components/Chat/Chat.tsx";
-import { useLocation, useNavigate } from "react-router-dom";
+
+import { useNavigate } from "react-router-dom";
 import AudioRoom from "../../components/AudioRoom/AudioRoom.tsx";
 import { apiUrl, socketUrl } from "../../config/api.tsx";
 import { io } from "socket.io-client";
 import { getUserId } from "../../shared/utils.tsx";
+import Cookies from "js-cookie";
 
 /**
  * Represents properties for controlling gameplay-related settings, such as volume levels.
@@ -147,11 +149,20 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [votedCards, setVotedCards] = useState<number[]>([]);
   const [userId, setUserId] = useState<string | null>();
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+  const [ownUsername, setOwnUsername] = useState(
+    localStorage.getItem("username") || ""
+  );
+
+  /**
+   * This function toggles the visibility of the overlay.
+   */
   const toggleOverlay = () => {
     setIsOverlayVisible(!isOverlayVisible);
   };
 
-
+  /**
+   * This function toggles the visibility of the settings modal.
+   */
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
@@ -260,6 +271,10 @@ const Gameplay: React.FC<GameplayProps> = ({
     }
   };
 
+  /**
+   * Fetches the user ID from local storage and sets it in the state.
+   * @returns {void} Fetches the user ID from local storage and sets it in the state.
+   */
   const fetchUserId = async () => {
     try {
       const id = await getUserId();
@@ -276,6 +291,26 @@ const Gameplay: React.FC<GameplayProps> = ({
 
   useEffect(() => {
     fetchUserId();
+
+    const token = Cookies.get("authToken");
+
+    if (token) {
+          fetch(`${apiUrl}/api/users/getUsername`, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+            .then((response) => response.text())
+            .then((name) => {
+              if (name !== "null") {
+                setOwnUsername(name);
+              }
+            })
+            .catch((err) => console.error("Failed to fetch username", err));
+        } else {
+          console.warn("No auth token found");
+        }
   }, []);
 
   /**
@@ -426,6 +461,8 @@ const Gameplay: React.FC<GameplayProps> = ({
 
         setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
         setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
+        console.log(userId);
+        console.log(data);
         setAmICurrentLeader(
           data.gameState.currentSelectionLeader.id === userId
         );
@@ -1146,9 +1183,9 @@ const Gameplay: React.FC<GameplayProps> = ({
             ))}
           </div>
         )}
-        {username && (
+        {ownUsername && (
           <div className="logged-in-user gold-text">
-            { t('logged-in-as') } {username}
+            { t('logged-in-as') } {ownUsername}
           </div>
         )}
       </BackgroundContainer>

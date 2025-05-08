@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"; // Hook for managing component state
 import { io } from "socket.io-client";
+import { useTranslation } from "react-i18next"; // Hook for translations
 
 import BackgroundContainer from "../../containers/Background/Background";
 
