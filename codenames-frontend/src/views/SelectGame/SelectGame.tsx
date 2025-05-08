@@ -49,6 +49,7 @@ const SelectGame: React.FC<SelectGameProps> = ({
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // State to track if settings modal is open
   const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
   const [isGuest, setIsGuest] = useState<boolean | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
 
   const { t } = useTranslation(); // Hook for translations
 
@@ -104,6 +105,30 @@ const SelectGame: React.FC<SelectGameProps> = ({
     };
 
     fetchGuestStatus();
+  }, []);
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/users/getUsername", {
+          method: "GET",
+          credentials: "include"
+        });
+
+        if (response.ok) {
+          const text = await response.text();
+          if (text !== "null") {
+            setUsername(text);
+          }
+        } else {
+          console.error("Failed to fetch username");
+        }
+      } catch (error) {
+        console.error("Error fetching username", error);
+      }
+    };
+
+    fetchUsername();
   }, []);
 
   return (
@@ -170,6 +195,11 @@ const SelectGame: React.FC<SelectGameProps> = ({
             </Button>
           </div>
         </MenuContainer>
+        {username && (
+          <div className="logged-in-user gold-text">
+            { t('logged-in-as') } {username}
+          </div>
+        )}
       </BackgroundContainer>
     </>
   );

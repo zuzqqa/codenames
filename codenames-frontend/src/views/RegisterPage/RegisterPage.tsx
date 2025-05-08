@@ -374,27 +374,27 @@ const RegisterPage: React.FC<RegisterProps> = ({
           <img src={logoutButton} onClick={logout} alt="Logout" />
         </Button>
       )}
+      <LoginRegisterContainer variant="register">
       <TitleComponent
         soundFXVolume={soundFXVolume}
         customStyle={{
-          fontSize: "4rem",
+          fontSize: "calc(3.6rem + 0.2vw)",
           textAlign: "left",
-          marginLeft: "35%",
-          letterSpacing: "3px",
-          marginBottom: "-2.2%",
+          position: "absolute",
+          top: "calc(-28.8rem - 1vh)",
+          left: "1.2rem"
         }}
         shadowStyle={{
-          fontSize: "4rem",
+          fontSize: "calc(3.6rem + 0.2vw)",
           textAlign: "left",
-          marginLeft: "35%",
-          letterSpacing: "3px",
-          marginBottom: "-2.2%",
+          position: "absolute",
+          top: "calc(-28.8rem - 1vh)",
+          left: "1.2rem"
         }}
       >
         {t("register-button-text")}
       </TitleComponent>
-      <LoginRegisterContainer>
-        <div className="register-container">
+        <div className="register-form-container">
           <form className="register-form" onSubmit={handleSubmit}>
             <FormInput
               type="text"
@@ -442,6 +442,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
             <div className="gold-line"></div>
           </div>
           <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+            <div className="google-container">
             <GoogleLogin
               text="signup_with"
               onSuccess={() => {
@@ -452,7 +453,37 @@ const RegisterPage: React.FC<RegisterProps> = ({
                 console.log("Google login failed");
               }}
             />
+            </div>
           </GoogleOAuthProvider>
+          <a 
+          className="login-register-link"
+          onClick={() => navigate("/login")}
+          >
+            {t("already-have-an-account")}
+          </a>
+          <a 
+          className="login-register-link guest-link"
+          onClick={async () => {
+            try {
+              const response = await fetch(
+                "http://localhost:8080/api/users/createGuest",
+                {
+                  method: "POST",
+                  credentials: "include",
+                }
+              );
+
+              if (response.ok) {
+                window.location.href = "/loading";
+              } else {
+                console.error("Failed to create guest account");
+              }
+            } catch (error) {
+              console.error("Error creating guest account:", error);
+            }
+          }}          >
+          {t("or-continue-as-guset")}
+          </a>
         </div>
         {errors.length > 0 && (
           <div className="toast-container">

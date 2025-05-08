@@ -237,7 +237,7 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
       >
         {t("new-password")}
       </TitleComponent>
-      <LoginRegisterContainer>
+      <LoginRegisterContainer variant="reset">
         <div className="reset-password-container">
           <div className="reset-password-image">
             <div className="icon-circle">

@@ -3,12 +3,26 @@
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  height: 35%;
-  width: 32%;
   border-radius: 17px;
   box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.25);
   z-index: 1;
   display: grid;
   grid-template-columns: 10% 80% 10%;
   grid-template-rows: 10% auto;
+  position: relative;
+}
+
+.login-register-container.login {
+  height: 25rem;
+  width: 37rem;
+}
+
+.login-register-container.register {
+  height: 27rem;
+  width: 37rem;
+}
+
+login-register-container.reset{
+  height: 25rem;
+  width: 30rem;
 }

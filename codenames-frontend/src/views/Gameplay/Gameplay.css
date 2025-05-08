@@ -256,8 +256,34 @@ button {
   align-items: center;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.8);
   animation: fadeIn 0.2s ease-out;
+}
+
+.close-button {
+  position: absolute;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: transparent;
+  border: none;
+  color: #f9e9d1;
+  font-size: calc(0.4rem + 2vw);
+  cursor: pointer;
+  opacity: 0.5;
+  animation: scaleButton 0.5s ease-out forwards;
+}
+
+.confirm-button {
+  position: absolute;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: transparent;
+  border: none;
+  color: #f9e9d1;
+  font-size: calc(0.4rem + 2vw);
+  cursor: pointer;
+  opacity: 0.3;
+  animation: exitButton 0.5s ease-out forwards;
 }
 
 @keyframes fadeIn {
@@ -286,6 +312,32 @@ button {
   }
 }
 
+@keyframes scaleButton {
+  from {
+    transform: scale(0);
+    top: 50%;
+    left: 50%;
+  }
+  to {
+    transform: scale(0.4);
+    top: 33.75%;
+    left: 35.10%;
+  }
+}
+
+@keyframes exitButton {
+  from {
+    transform: scale(0);
+    top: 50%;
+    left: 49.10%;
+  }
+  to {
+    transform: scale(0.8);
+    top: 57%;
+    left: 49.10%;
+  }
+}
+
 .codename-input-container {
   position: fixed;
   display: flex;
@@ -300,7 +352,7 @@ button {
 .codename-input {
   flex: 1;
   position: fixed;
-  top: 45%;
+  top: 48%;
   left: 50%;
   transform: translate(-50%, -50%);
   transform-origin: center;
@@ -318,6 +370,7 @@ button {
 
 .codename-input-container .codename-slider {
   width: 80%;
+  margin-top: 35px;
   -webkit-appearance: none !important;
   appearance: none !important;
   background: #605e5e !important;
@@ -326,6 +379,7 @@ button {
   outline: none !important;
   opacity: 0.9 !important;
   transition: opacity 0.2s !important;
+  animation: scaleUp 0.5s ease-out forwards;
 }
 
 .codename-input-container .codename-slider:hover {
@@ -352,10 +406,12 @@ button {
 
 .slider-value {
   font-size: 1.2rem;
-  font-weight: bold;
   color: #f9e9d1;
   margin-top: 5px;
   margin-right: 12px;
+  animation: scaleUp 0.5s ease-out forwards;
+  font-family: "Arial", sans-serif;
+  font-weight: bold;
 }
 
 @keyframes inputScaleUp {

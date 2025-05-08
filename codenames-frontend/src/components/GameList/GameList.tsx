@@ -297,7 +297,7 @@ const GameList: React.FC<GameListProps> = ({
                   {gameSession.password !== "" && (
                     <img
                       src={lockIcon}
-                      className="password-overlay lock-icon"
+                      className="password-overlay small-lock-icon"
                     ></img>
                   )}
                   <div className="room-players">

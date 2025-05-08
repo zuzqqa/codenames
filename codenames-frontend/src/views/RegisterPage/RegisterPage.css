@@ -1,4 +1,4 @@
-.register-container {
+.register-form-container {
   margin-top: 0;
   grid-column: 1 / span 3; /* Stretch across all columns */
   grid-row: 1 / span 6; /* Stretch across all rows */
@@ -15,8 +15,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 60%; /* Full height of parent */
-  width: 90%; /* Full width of parent */
+  height: 55%; /* Full height of parent */
+  width: 95%; /* Full width of parent */
   padding: 10px; /* Padding for spacing */
   border-radius: 17px; /* Rounded corners */
   margin-bottom: 0;

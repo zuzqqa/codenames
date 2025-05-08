@@ -11,8 +11,6 @@ import React from "react";
 import { apiUrl } from "../../config/api.tsx";
 import { getUserId } from "../../shared/utils.tsx";
 
-const generateId = () =>
-  Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 
 /**
  * Props for CreateGameForm component.
@@ -48,21 +46,16 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
       password: "",
       deckLanguage: "en",
     },
-
-    /**
-     * Handles form submission and creates a new game session.
-     * @param {Object} values - Form values.
-     */
     onSubmit: async (values) => {
       const newErrors: { id: string; message: string }[] = [];
       setErrors(newErrors);
-      
-      if(isPrivate && formik.values.password === '') {
+  
+      if (isPrivate && formik.values.password === '') {
         newErrors.push({
-          id: generateId(),
+          id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
           message: t("private-lobby-password-error"),
         });
-
+  
         setErrors([...newErrors]);
         return;
       }
@@ -73,14 +66,14 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
           setError("Failed to fetch ID");
           return;
         }
-
+  
         const requestData = {
           gameName: values.gameName,
           maxPlayers: values.playerSlider,
           password: values.password,
           language: values.deckLanguage,
         };
-
+        
         const response = await fetch(
           `${apiUrl}/api/game-session/create`,
           {
@@ -91,7 +84,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
             body: JSON.stringify(requestData),
           }
         );
-
+        
         if (response.ok) {
           const data = await response.json();
           localStorage.setItem("gameId", data.gameId);
@@ -104,6 +97,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
       }
     },
   });
+  
 
   /**
    * useEffect hook for handling the automatic removal of error messages after a delay.
@@ -149,34 +143,8 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
   /**
    * Handles navigation back and optionally aborts a game session.
    */
-  const handleBack = async () => {
-    const storedGameId = localStorage.getItem("gameId");
-
-    if (!storedGameId) {
-      setError("No game session found");
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `${apiUrl}/api/game-session/${storedGameId}/finish`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: null,
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to abort the game");
-      }
-
-      navigate("/games");
-    } catch (error) {
-      setError("Failed to abort the game. Please try again.");
-    }
+  const handleBack = () => {
+    navigate("/games");
   };
 
   /**
@@ -198,6 +166,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
       }, 500);
     }
   };
+  
 
   return (
     <>

@@ -85,7 +85,10 @@ const JoinGame: React.FC<JoinGameProps> = ({
     []
   );
   const [isGuest, setIsGuest] = useState<boolean | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
 
+  const { t } = useTranslation(); // Hook for translations
+  
   /**
    * useEffect hook that establishes a Socket.IO connection to receive real-time game session updates.
    *
@@ -161,6 +164,30 @@ const JoinGame: React.FC<JoinGameProps> = ({
 
     fetchGuestStatus();
   }, []);
+
+    useEffect(() => {
+      const fetchUsername = async () => {
+        try {
+          const response = await fetch("http://localhost:8080/api/users/getUsername", {
+            method: "GET",
+            credentials: "include"
+          });
+  
+          if (response.ok) {
+            const text = await response.text();
+            if (text !== "null") {
+              setUsername(text);
+            }
+          } else {
+            console.error("Failed to fetch username");
+          }
+        } catch (error) {
+          console.error("Error fetching username", error);
+        }
+      };
+  
+      fetchUsername();
+    }, []);
 
   /**
    * Fetches all available game sessions from the backend.
@@ -239,6 +266,11 @@ const JoinGame: React.FC<JoinGameProps> = ({
             setFilteredSessions={setFilteredGames}
           />
         </>
+        {username && (
+          <div className="logged-in-user gold-text">
+            { t('logged-in-as') } {username}
+          </div>
+        )}
       </BackgroundContainer>
     </>
   );

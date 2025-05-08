@@ -69,5 +69,17 @@
   "e-mail-not-found": "There is no account with the given e-mail address.",
   "e-mail-reset-sent": "Link to change your password was sent to the given e-mail address.",
   "pass-round": "Pass",
-  "hint-zero": "Hint number cannot be zero."
+  "hint-zero": "Hint number cannot be zero.",
+  "invalid-login-or-password": "Invalid login or password.",
+  "dont-have-an-account": "Don't have an account? Sign up.",
+  "already-have-an-account": "Already have an account? Log in",
+  "or-continue-as-guset": "Or continue as guset",
+  "too-few-players": "Too few players to start the game.",
+  "logged-in-as": "Logged in as: ",
+  "profile-title": "Profile",
+  "leave": "Leave team",
+  "copy": "Copy",
+  "link-copied": "Link copied to clipboard.",
+  "invite-friends": "Invite friends",
+  "invite-friends-text": "Copy the link and share it with your friends so they can join the room."
 }

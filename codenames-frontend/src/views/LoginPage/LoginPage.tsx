@@ -14,6 +14,7 @@ import settingsIcon from "../../assets/icons/settings.png";
 import eyeIcon from "../../assets/icons/eye.svg";
 import eyeSlashIcon from "../../assets/icons/eye-slash.svg";
 import logoutButton from "../../assets/icons/logout.svg";
+import backButtonIcon from "../../assets/icons/arrow-back.png";
 
 import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister.tsx";
 import { logout } from "../../shared/utils.tsx";
@@ -291,7 +292,11 @@ const LoginPage: React.FC<LoginProps> = ({
         alert("Failed to log in: " + error);
       }
     } catch (error) {
-      alert("An error occurred during login. Please try again later." + error);
+      newErrors.push({
+        id: generateId(),
+        message: t("invalid-login-or-password"),
+      });
+      setErrors([...newErrors]);
     }
   };
 
@@ -333,25 +338,27 @@ const LoginPage: React.FC<LoginProps> = ({
           <img src={logoutButton} onClick={logout} alt="Logout" />
         </Button>
       )}
+      <LoginRegisterContainer variant="login">
       <TitleComponent
         soundFXVolume={soundFXVolume}
         customStyle={{
-          fontSize: "4rem",
+          fontSize: "calc(3.6rem + 0.2vw)",
           textAlign: "left",
-          marginLeft: "35%",
-          marginBottom: "-2.2%",
+          position: "absolute",
+          top: "calc(-27rem - 1vh)",
+          left: "1.2rem"
         }}
         shadowStyle={{
-          fontSize: "4rem",
+          fontSize: "calc(3.6rem + 0.2vw)",
           textAlign: "left",
-          marginLeft: "35%",
-          marginBottom: "-2.2%",
+          position: "absolute",
+          top: "calc(-27rem - 1vh)",
+          left: "1.2rem"
         }}
       >
         {t("login-button-text")}
       </TitleComponent>
-      <LoginRegisterContainer>
-        <div className="login-container">
+        <div className="login-form-container">
           <form className="login-form" onSubmit={handleSubmit}>
             <FormInput
               type="text"
@@ -403,6 +410,7 @@ const LoginPage: React.FC<LoginProps> = ({
             <div className="gold-line"></div>
           </div>
           <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+            <div className="google-container">
             <GoogleLogin
               locale="en"
               onSuccess={() => {
@@ -413,7 +421,37 @@ const LoginPage: React.FC<LoginProps> = ({
                 console.log("Google login failed");
               }}
             />
+            </div>
           </GoogleOAuthProvider>
+          <a 
+          className="login-register-link"
+          onClick={() => navigate("/register")}
+          >
+          {t("dont-have-an-account")}
+          </a>
+          <a 
+          className="login-register-link guest-link"
+          onClick={async () => {
+            try {
+              const response = await fetch(
+                "http://localhost:8080/api/users/createGuest",
+                {
+                  method: "POST",
+                  credentials: "include",
+                }
+              );
+
+              if (response.ok) {
+                window.location.href = "/loading";
+              } else {
+                console.error("Failed to create guest account");
+              }
+            } catch (error) {
+              console.error("Error creating guest account:", error);
+            }
+          }}          >
+          {t("or-continue-as-guset")}
+          </a>
         </div>
         {errors.length > 0 && (
           <div className="toast-container">

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import Button from "../../components/Button/Button";
@@ -37,6 +37,7 @@ const GameLobby: React.FC<GameLobbyProps> = ({
 }) => {
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
+  const [username, setUsername] = useState<string | null>(null);
   const { t } = useTranslation();
 
   /**
@@ -45,6 +46,30 @@ const GameLobby: React.FC<GameLobbyProps> = ({
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/users/getUsername", {
+          method: "GET",
+          credentials: "include"
+        });
+
+        if (response.ok) {
+          const text = await response.text();
+          if (text !== "null") {
+            setUsername(text);
+          }
+        } else {
+          console.error("Failed to fetch username");
+        }
+      } catch (error) {
+        console.error("Error fetching username", error);
+      }
+    };
+
+    fetchUsername();
+  }, []);
 
   return (
     <>
@@ -69,6 +94,11 @@ const GameLobby: React.FC<GameLobbyProps> = ({
           <GameTitleBar></GameTitleBar>
           <RoomLobby soundFXVolume={soundFXVolume} />
         </>
+        {username && (
+          <div className="logged-in-user gold-text">
+            { t('logged-in-as') } {username}
+          </div>
+        )}
       </BackgroundContainer>
     </>
   );

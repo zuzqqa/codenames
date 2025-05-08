@@ -48,6 +48,8 @@ const CreateGame: React.FC<CreateGameProps> = ({
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
   const [isGuest, setIsGuest] = useState<boolean | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
+  
 
   /**
    * Effect to fetch guest status from the server.
@@ -138,6 +140,11 @@ const CreateGame: React.FC<CreateGameProps> = ({
           <GameTitleBar></GameTitleBar>
           <CreateGameForm soundFXVolume={soundFXVolume} />
         </>
+        {username && (
+          <div className="logged-in-user gold-text">
+            { t('logged-in-as') } {username}
+          </div>
+        )}
       </BackgroundContainer>
     </>
   );
