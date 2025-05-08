@@ -7,6 +7,7 @@ import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import Button from "../Button/Button.tsx";
 import backButton from "../../assets/icons/arrow-back.png";
 import playerIcon from "../../assets/images/player-icon.png";
+import linkIcon from "../../assets/icons/link.svg";
 import "./RoomLobby.css";
 
 const generateId = () =>
@@ -82,6 +83,12 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
   const [isJoined, setIsJoined] = useState(false);
   const [client, setClient] = useState<Client | null>(null);
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
+  const [notifications, setNotifications] = useState<
+      { id: string; message: string }[]
+  >([]);
+  const [lobbyLink, setLobbyLink] = useState<string>("");
+  const [isLinkIsleExpanded, setIsLinkIsleExpanded] = useState(false);
+  const exampleLink = `https://localhost:5173/invite/${localStorage.getItem("gameId")}`;
 
     /**
    * Handles manual closing of a toast error.
@@ -102,7 +109,10 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       }, 500);
     }
   };
-  
+
+  /**
+   * useEffect hook for handling the automatic removal of error messages after a delay.
+   */
   useEffect(() => {
     if (errors.length === 0) return;
 
@@ -136,6 +146,14 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     return () => timers.forEach(clearTimeout);
   }, [errors]);
 
+
+  /**
+   * useEffect hook for fetching the game session data and setting up WebSocket connection.
+   *
+   * - Fetches the game session data from the server.
+   * - Sets up a WebSocket connection to receive real-time updates.
+   * - Navigates to the "choose-leader" page when the session status changes.
+   */
   useEffect(() => {
     const storedGameId = localStorage.getItem("gameId");
 
@@ -321,7 +339,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
 
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
-    
+
     if (redTeamPlayers.length < 2 || redTeamPlayers.length < 2) {
       newErrors.push({
         id: generateId(),
@@ -342,6 +360,115 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     } catch (error) {
       console.error("Error starting the game", error);
     }
+  };
+
+  /**
+   * Generates a lobby link and copies it to the clipboard.
+   */
+  const generateLobbyLink = () => {
+    console.log("Generating lobby link...");
+    const storedGameId = localStorage.getItem("gameId");
+    if (!storedGameId) return;
+
+    const tempLobbyLink = `http://localhost:5173/invite/${storedGameId}`;
+    setLobbyLink(tempLobbyLink);
+    navigator.clipboard.writeText(tempLobbyLink).then(() => {
+      console.log("Lobby link copied to clipboard:", tempLobbyLink);
+    });
+  }
+
+  /**
+   * Handles manual closing of a toast notification.
+   *
+   * - Fades out the toast visually before removing it from the state.
+   *
+   * @param {string} id - The unique identifier of the notification toast to be closed.
+   */
+  const handleCloseNotificationToast = (id: string) => {
+    const toastElement = document.getElementById(id);
+    if (toastElement) {
+      toastElement.classList.add("hide");
+
+      setTimeout(() => {
+        setNotifications((prevNotifications) =>
+            prevNotifications.filter((notification) => notification.id !== id)
+        );
+      }, 500);
+    }
+  };
+
+  /**
+   * useEffect hook for handling the automatic removal of notification messages after a delay.
+   *
+   * - Adds a fade-out effect to the toast notification before removal.
+   * - Removes notifications from the state after a timeout.
+   *
+   * @param {Array<{ id: string; message: string }>} errors - Array of notification messages with unique IDs.
+   */
+  useEffect(() => {
+    if (notifications.length === 0) return;
+
+    const timers: number[] = notifications.map((notification) => {
+      const toastElement = document.getElementById(notification.id);
+
+      if (toastElement) {
+        // Fade out the toast after 8 seconds
+        const fadeOutTimer = setTimeout(() => {
+          toastElement.classList.add("hide");
+        }, 8000);
+
+        // Remove the message from state after 8.5 seconds
+        const removeTimer = setTimeout(() => {
+          setNotifications((prevNotifications) =>
+              prevNotifications.filter((n) => n.id !== notification.id)
+          );
+        }, 8500);
+
+        return removeTimer;
+      } else {
+        // Remove message if toast element is not found
+        return setTimeout(() => {
+          setNotifications((prevNotifications) =>
+              prevNotifications.filter((n) => n.id !== notification.id)
+          );
+        }, 8000);
+      }
+    });
+
+    return () => timers.forEach(clearTimeout);
+  }, [notifications]);
+
+
+  /**
+   * useEffect hook for handling the copying of the lobby link to the clipboard.
+   *
+   * - Displays a notification message when the link is copied.
+   * - Clears the lobby link state after displaying the notification.
+   *
+   * @param {string} lobbyLink - The generated lobby link to be copied.
+   */
+  useEffect(() => {
+    if (lobbyLink) {
+      setNotifications((prevNotifications) => {
+        const notificationExists = prevNotifications.some(
+            (n) => n.message === t("link-copied")
+        );
+
+        if (!notificationExists) {
+          setLobbyLink("");
+          return [
+            ...prevNotifications,
+            { id: generateId(), message: t("link-copied") },
+          ];
+        }
+        setLobbyLink("");
+        return prevNotifications;
+      });
+    }
+  }, [lobbyLink]);
+
+  const handleLobbyLinkIsleUnroll = () => {
+    setIsLinkIsleExpanded((prev) => !prev);
   };
 
   return (
@@ -368,7 +495,53 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                 /{gameSession.maxPlayers}
               </div>
               <div className="lobby-players">
-                {/* {(isJoined) ? (
+                {/*<Button*/}
+                {/*    variant={"primary-1"}*/}
+                {/*    soundFXVolume={soundFXVolume}*/}
+                {/*    className="link-btn"*/}
+                {/*    onClick={generateLobbyLink}*/}
+                {/*>*/}
+                {/*  <span className="button-text">Link</span>*/}
+                {/*</Button>*/}
+                <div className="lobby-link-switch">
+                    <img
+                        src={linkIcon}
+                        alt="Link"
+                        className="link-icon"
+                        onClick={handleLobbyLinkIsleUnroll}
+                    />
+                </div>
+                <div
+                    className={`lobby-link-isle ${isLinkIsleExpanded ? "expanded" : ""}`}
+                >
+                  <img
+                      src={linkIcon}
+                      alt="Link"
+                      className="isle-image"
+                  />
+                  <p className="isle-title">
+                    {t("invite-friends")}
+                  </p>
+                  <p className="isle-text">
+                    {t("invite-friends-text")}
+                  </p>
+                  <p className="isle-fields">
+                    <textarea
+                        className="lobby-link-textbox"
+                        value={exampleLink}
+                        readOnly
+                    />
+                    <Button
+                        variant={"primary-1"}
+                        soundFXVolume={soundFXVolume}
+                        className="link-btn"
+                        onClick={generateLobbyLink}
+                    >
+                      <span className="button-text">{t("copy")}</span>
+                    </Button>
+                  </p>
+                </div>
+                {/*{(isJoined) ? (
                 <Button
                     variant={"primary-1"}
                     soundFXVolume={soundFXVolume}
@@ -377,7 +550,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                 >
                     <span className="button-text">{t("leave")}</span>
                 </Button>
-                ) : ("")} */}
+                ) : ("")}*/}
                 <Button
                   variant={"room"}
                   soundFXVolume={soundFXVolume}
@@ -459,6 +632,34 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
               </div>
             ))}
           </div>
+        )}
+        {notifications.length > 0 && (
+            <div className="toast-container">
+              {notifications.map((notification) => (
+                  <div
+                      id={notification.id}
+                      key={notification.id}
+                      className="toast active"
+                  >
+                    <div className="toast-content">
+                      <i
+                          className="fa fa-info-circle fa-3x"
+                          style={{ color: "#1B74BB" }}
+                          aria-hidden="true"
+                      ></i>
+                      <div className="message">
+                        <span className="text text-1">Notification</span>
+                        <span className="text text-2">{notification.message}</span>
+                      </div>
+                    </div>
+                    <i
+                        className="fa-solid fa-xmark close"
+                        onClick={() => handleCloseNotificationToast(notification.id)}
+                    ></i>
+                    <div className="progress active notification"></div>
+                  </div>
+              ))}
+            </div>
         )}
       </RoomMenu>
     </>
