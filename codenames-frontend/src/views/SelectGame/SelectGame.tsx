@@ -110,8 +110,8 @@ const SelectGame: React.FC<SelectGameProps> = ({
     <>
       <BackgroundContainer>
         {/* Settings button */}
-        <Button variant="circle" soundFXVolume={soundFXVolume}>
-          <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
+        <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
+          <img src={settingsIcon} alt="Settings" />
         </Button>
         {/* Profile button */}
         {isGuest === false && (

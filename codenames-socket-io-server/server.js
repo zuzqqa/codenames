@@ -49,25 +49,25 @@ const chatNamespace = io.of("/voice");
 chatNamespace.on("connection", (socket) => {
   console.log(`[VOICE] Client connected: ${socket.id}`);
 
-  socket.on("join-room", (roomId, userId) => {
-    console.log(`[VOICE] User ${userId} joined room: ${roomId}`);
+  socket.on("join-room", (roomId, username) => {
+    console.log(`[VOICE] User ${username} joined room: ${roomId}`);
 
     socket.join(roomId);
-    socket.to(roomId).emit("user-connected", userId);
+    socket.to(roomId).emit("user-connected", username);
 
-    socket.on("leave-room", (roomId, userId) => {
-      console.log(`[VOICE] User ${userId} left room: ${roomId}`);
+    socket.on("leave-room", (roomId, username) => {
+      console.log(`[VOICE] User ${username} left room: ${roomId}`);
       socket.leave(roomId);
-      socket.to(roomId).emit("user-disconnected", userId);
+      socket.to(roomId).emit("user-disconnected", username);
     });
 
     socket.on("disconnect", () => {
-      console.log(`[VOICE] User ${userId} disconnected from room: ${roomId}`);
-      socket.to(roomId).emit("user-disconnected", userId);
+      console.log(`[VOICE] User ${username} disconnected from room: ${roomId}`);
+      socket.to(roomId).emit("user-disconnected", username);
     });
 
-    socket.on("userMicActivity", ({ userId, isSpeaking, roomId }) => {
-      socket.to(roomId).emit("userMicActivity", { userId, isSpeaking });
+    socket.on("userMicActivity", ({ username, isSpeaking, roomId }) => {
+      socket.to(roomId).emit("userMicActivity", { username, isSpeaking });
     });
   });
 });

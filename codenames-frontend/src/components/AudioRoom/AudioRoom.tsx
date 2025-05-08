@@ -9,8 +9,8 @@ import { apiUrl, peerUrl, socketUrl } from "../../config/api.tsx";
 
 import callIcon from "../../assets/icons/call.svg";
 import callEndIcon from "../../assets/icons/end-call.svg";
-import Mic from "../../assets/icons/mic.png";
-import MicOff from "../../assets/icons/micOff.svg";
+import micIcon from "../../assets/icons/mic.svg";
+import micOffIcon from "../../assets/icons/micOff.svg";
 
 import "./AudioRoom.css";
 
@@ -90,15 +90,23 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
   const myAudioRef = useRef(new Audio());
   const peers = useRef<{ [key: string]: MediaConnection }>({});
   const [userStream, setUserStream] = useState<MediaStream | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const [username, setUsername] = useState(
+  const [iConnected, setiConnected] = useState(false);
+  const [ownUsername, setOwnUsername] = useState(
     localStorage.getItem("username") || ""
   );
   const [connectedUsers, setConnectedUsers] = useState<UserRoomLobbyDTO[][]>();
   const [userMicStates, setUserMicStates] = useState<{
-    [userId: string]: boolean;
+    [username: string]: boolean;
   }>({});
+  const micActivityFrameRef = useRef<number | null>(null);
+  const [muted, setMuted] = useState(false);
 
+  /**
+   * Effect to fetch connected users and username when the component mounts.
+   * It retrieves the game ID from local storage and fetches the connected users
+   * from the server. It also fetches the username of the current user.
+   * @returns {void}
+   */
   useEffect(() => {
     const storedGameId = localStorage.getItem("gameId");
     const token = Cookies.get("authToken");
@@ -123,7 +131,7 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
         .then((response) => response.text())
         .then((name) => {
           if (name !== "null") {
-            setUsername(name);
+            setOwnUsername(name);
           }
         })
         .catch((err) => console.error("Failed to fetch username", err));
@@ -132,6 +140,11 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
     }
   }, []);
 
+  /**
+   * Effect to clean up the audio stream and peer connections when the component unmounts.
+   * It stops all tracks of the user stream and closes all peer connections.
+   * @returns {void}
+   */
   const cleanupPeerConnections = () => {
     console.log("[VOICE] Cleaning up peer connections");
 
@@ -146,8 +159,36 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
     }
   };
 
+  /**
+   * Resets all microphone states to false (red).
+   * It sets the microphone state of all connected users to false (red).
+   * @returns {void}
+   */
+  const resetAllMicStates = () => {
+    if (connectedUsers) {
+      const allUsers = connectedUsers.flat();
+      const resetStates: { [username: string]: boolean } = {};
+
+      allUsers.forEach((user) => {
+        resetStates[user.username] = false;
+      });
+
+      resetStates[ownUsername] = false;
+
+      setUserMicStates(resetStates);
+    } else {
+      setUserMicStates((prev) => ({ ...prev, [ownUsername]: false }));
+    }
+  };
+
+  /**
+   * Effect to set up the user media stream when the component mounts.
+   * It requests the user's audio stream and sets it to the audio element.
+   * It also handles the cleanup of the user stream when the component unmounts.
+   * @returns {void}
+   */
   useEffect(() => {
-    if (isConnected && !userStream) {
+    if (iConnected && !userStream) {
       navigator.mediaDevices
         .getUserMedia({ audio: true })
         .then((stream) => {
@@ -158,20 +199,26 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
         })
         .catch((err) => {
           console.error("[VOICE] Error getting user media:", err);
-          setIsConnected(false);
+          setiConnected(false);
         });
     }
 
     return () => {
-      if (userStream && !isConnected) {
+      if (userStream && !iConnected) {
         userStream.getTracks().forEach((track) => track.stop());
         setUserStream(null);
       }
     };
-  }, [isConnected, userStream]);
+  }, [iConnected, userStream]);
 
+  /**
+   * Effect to set up the PeerJS connection and handle incoming/outgoing calls.
+   * It listens for user connections and disconnections, and manages the audio streams.
+   * It also handles microphone activity detection and updates the microphone states.
+   * @returns {void}
+   */
   useEffect(() => {
-    if (!isConnected || !userStream) return;
+    if (!iConnected || !userStream) return;
 
     console.log("[VOICE] Setting up PeerJS connection");
 
@@ -180,9 +227,12 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
       Math.random().toString(36).substring(2, 10) +
       "-" +
       Date.now().toString(36);
+
+    console.log(peerUrl, "peerUrl");
+
     const peer = new Peer(randomId, {
       host: `${peerUrl}`,
-      secure: true,
+      secure: false,
       debug: 3,
       config: {
         iceServers: [
@@ -242,10 +292,10 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
             updateLed();
           }
 
-          chatNamespace.on("userMicActivity", ({ userId, isSpeaking }) => {
+          chatNamespace.on("userMicActivity", ({ username, isSpeaking }) => {
             setUserMicStates((prev) => {
-              if (prev[userId] === isSpeaking) return prev;
-              return { ...prev, [userId]: isSpeaking };
+              if (prev[username] === isSpeaking) return prev;
+              return { ...prev, [username]: isSpeaking };
             });
           });
         });
@@ -263,11 +313,11 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
         peers.current[call.peer] = call;
       });
 
-      chatNamespace.on("user-connected", (userId) => {
-        console.log(`[VOICE] User connected: ${userId}`);
-        if (userId === id) return;
+      chatNamespace.on("user-connected", (username) => {
+        console.log(`[VOICE] User connected: ${username}`);
+        if (username === ownUsername) return;
 
-        const call = peer.call(userId, userStream);
+        const call = peer.call(username, userStream);
 
         const audio = document.createElement("audio");
         audio.controls = true;
@@ -275,7 +325,7 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
         audio.muted = false;
 
         call.on("stream", (remoteStream) => {
-          console.log(`[VOICE] Received stream from called user: ${userId}`);
+          console.log(`[VOICE] Received stream from called user: ${username}`);
           console.log("Remote tracks:", remoteStream.getTracks());
           if (remoteStream.getAudioTracks().length === 0) {
             console.error("No audio tracks in remote stream!");
@@ -290,19 +340,20 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
         });
 
         call.on("close", () => {
-          console.log(`[VOICE] Call closed with: ${userId}`);
+          console.log(`[VOICE] Call closed with: ${username}`);
           audio.remove();
         });
 
-        peers.current[userId] = call;
+        peers.current[username] = call;
       });
 
-      chatNamespace.on("user-disconnected", (userId) => {
-        console.log(`[VOICE] User disconnected: ${userId}`);
-        if (peers.current[userId]) {
-          peers.current[userId].close();
-          delete peers.current[userId];
+      chatNamespace.on("user-disconnected", (username) => {
+        console.log(`[VOICE] User disconnected: ${username}`);
+        if (peers.current[username]) {
+          peers.current[username].close();
+          delete peers.current[username];
         }
+        setUserMicStates((prev) => ({ ...prev, [username]: false }));
       });
     });
     soundFXVolume = Math.max(0, Math.min(1, soundFXVolume));
@@ -312,8 +363,8 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
       if (err.type === "network" || err.type === "disconnected") {
         console.log("[VOICE] Network error, trying to reconnect...");
         cleanupPeerConnections();
-        setIsConnected(false);
-        setTimeout(() => setIsConnected(true), 2000);
+        setiConnected(false);
+        setTimeout(() => setiConnected(true), 2000);
       }
     });
 
@@ -334,111 +385,192 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
     const dataArray = new Uint8Array(bufferLength);
 
     const checkMicActivity = () => {
+      if (!iConnected) {
+        if (micActivityFrameRef.current) {
+          cancelAnimationFrame(micActivityFrameRef.current);
+          micActivityFrameRef.current = null;
+        }
+        return;
+      }
+
       analyser.getByteFrequencyData(dataArray);
       const sum = dataArray.reduce((acc, value) => acc + value, 0);
       const isSpeaking = sum > 1000;
 
-      if (isSpeaking !== userMicStates[username]) {
-        setUserMicStates((prevState) => ({
-          ...prevState,
-          [username]: isSpeaking,
-        }));
+      setUserMicStates((prevState) => {
+        const currentSpeaking = prevState[ownUsername];
+        if (currentSpeaking !== isSpeaking) {
+          chatNamespace.emit("userMicActivity", {
+            username: ownUsername,
+            isSpeaking,
+            roomId: ROOM_ID,
+          });
 
-        chatNamespace.emit("userMicActivity", {
-          userId: username,
-          isSpeaking,
-          roomId: ROOM_ID,
-        });
-      }
+          return {
+            ...prevState,
+            [ownUsername]: isSpeaking,
+          };
+        }
+        return prevState;
+      });
 
-      requestAnimationFrame(checkMicActivity);
+      micActivityFrameRef.current = requestAnimationFrame(checkMicActivity);
     };
 
-    checkMicActivity();
+    micActivityFrameRef.current = requestAnimationFrame(checkMicActivity);
 
     return () => {
       console.log("[VOICE] Cleaning up PeerJS and Socket.IO connections");
 
       chatNamespace.off("user-connected");
       chatNamespace.off("user-disconnected");
+      chatNamespace.off("userMicActivity");
 
       if (peer.id) {
         chatNamespace.emit("leave-room", ROOM_ID, peer.id);
       }
 
+      if (micActivityFrameRef.current) {
+        cancelAnimationFrame(micActivityFrameRef.current);
+        micActivityFrameRef.current = null;
+      }
+
+      resetAllMicStates();
+
       cleanupPeerConnections();
     };
-  }, [isConnected, userStream]);
+  }, [iConnected, userStream, ownUsername]);
 
-  const joinRoom = async () => {
-    console.log("[VOICE] Joining audio room");
-    setIsConnected(true);
+  /**
+   * Toggles the mute state of the user.
+   */
+  const mute = () => {
+    setMuted((prevMuted) => {
+      const newMuted = !prevMuted;
+
+      if (userStream) {
+        userStream.getAudioTracks().forEach((track) => {
+          track.enabled = !newMuted;
+        });
+      }
+
+      const led = document.querySelector(".mic-led-own") as HTMLElement;
+      if (led) {
+        led.style.backgroundColor = newMuted ? "red" : "green";
+      }
+
+      return newMuted;
+    });
   };
 
+  /**
+   * Joins the audio room by connecting to the Socket.IO server.
+   * It emits a "join-room" event with the room ID and the user's ID.
+   * @returns {Promise<void>} - A promise that resolves when the user has joined the room.
+   */
+  const joinRoom = () => {
+    console.log("[VOICE] Joining audio room");
+    setiConnected(true);
+
+    return chatNamespace.connect();
+  };
+
+  /**
+   * Leaves the audio room by disconnecting from the Socket.IO server.
+   * It emits a "leave-room" event with the room ID and the user's ID.
+   * @returns {void}
+   */
   const leaveRoom = () => {
     console.log("[VOICE] Leaving audio room");
+
+    if (micActivityFrameRef.current) {
+      cancelAnimationFrame(micActivityFrameRef.current);
+      micActivityFrameRef.current = null;
+    }
+
+    resetAllMicStates();
+
     cleanupPeerConnections();
 
     if (userStream) {
       userStream.getTracks().forEach((track) => track.stop());
+      setUserStream(null);
     }
 
-    chatNamespace.emit("userMicActivity", {
-      userId: username,
-      isSpeaking: false,
-      roomId: ROOM_ID,
-    });
-    
-    setUserMicStates({});
-    
-    setIsConnected(false);
+    setiConnected(false);
+    setMuted(false);
+    const led = document.querySelector(".mic-led-own") as HTMLElement;
+    if (led) {
+      led.style.backgroundColor = "red";
+    }
+
+    chatNamespace.emit(
+      "userMicActivity",
+      {
+        username: ownUsername,
+        isSpeaking: false,
+        roomId: ROOM_ID,
+      },
+      () => {
+        chatNamespace.disconnect();
+      }
+    );
   };
 
   return (
     <div className="audio-room-container">
       <div className="audio-room-header">
-        <Button
-          variant="circle"
-          className="audio-room-join-room"
-          soundFXVolume={soundFXVolume}
-          onClick={joinRoom}
-        >
-          <img className="button-icon" src={callIcon} />
-        </Button>
-        <Button
-          variant="circle"
-          className="audio-room-leave-room"
-          soundFXVolume={soundFXVolume}
-          onClick={leaveRoom}
-        >
-          <img className="button-icon" src={callEndIcon} />
-        </Button>
-      </div>
-      <div className="audio-room-user-container">
-        <p className="audio-room-username">{username}</p>
-        <div
-          id="mic-led"
-          style={{
-            width: "20px",
-            height: "20px",
-            borderRadius: "50%",
-            backgroundColor: userMicStates[username] ? "green" : "red",
-            marginTop: "10px",
-            transition: "background-color 0.3s ease",
-          }}
-        ></div>
-        <Button
-          variant="circle"
-          className="audio-room-leave-room"
-          soundFXVolume={soundFXVolume}
-          onClick={leaveRoom}
-        >
-          <img className="button-icon" src={Mic} />
-        </Button>
+        <div className="audio-room-buttons">
+          <Button
+            onClick={iConnected ? leaveRoom : joinRoom}
+            className="audio-room-button"
+            variant="transparent"
+            soundFXVolume={soundFXVolume}
+          >
+            <img
+              className="button-icon"
+              src={iConnected ? callIcon : callEndIcon}
+              onClick={iConnected ? leaveRoom : joinRoom}
+              style={{
+                width: iConnected ? "29px" : "37px",
+                height: "29px",
+              }}
+            />
+          </Button>
+          <Button
+            onClick={mute}
+            disabled={!iConnected}
+            className="audio-room-button"
+            variant="transparent"
+            soundFXVolume={soundFXVolume}
+          >
+            <img
+              className="button-icon"
+              src={muted ? micOffIcon : micIcon}
+              style={{
+                height: "29px",
+                opacity: iConnected ? 1 : 0.5,
+              }}
+            />
+          </Button>
+          <div
+            className="mic-led-own"
+            style={{
+              backgroundColor:
+                userMicStates[ownUsername] && iConnected ? "green" : "red",
+            }}
+          />
+        </div>
+        <div className="audio-room-status">
+          <div className="audio-room-status-1">Status:</div>
+          <div className="audio-room-status-2">
+            {iConnected ? "connected" : "disconnected"}
+          </div>
+        </div>
       </div>
       <div className="audio-room-leds">
         {connectedUsers?.flat().map((user) =>
-          user.username !== username ? (
+          user.username !== ownUsername ? (
             <div key={user.id} className="user-led-container">
               <p>{user.username}</p>
               <div
@@ -447,9 +579,10 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
                   width: "20px",
                   height: "20px",
                   borderRadius: "50%",
-                  backgroundColor: userMicStates[user.username]
-                    ? "green"
-                    : "red",
+                  backgroundColor:
+                    userMicStates[user.username] && iConnected
+                      ? "green"
+                      : "red",
                   marginBottom: "10px",
                   transition: "background-color 0.3s ease",
                 }}

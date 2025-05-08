@@ -448,17 +448,16 @@ button {
 .custom-overlay {
   position: fixed;
   top: 9%;
-  right: -400px;
-  width: 17%;
+  right: -14%;
+  width: 13%;
   height: 70%;
-  background-image: url("../../assets/images/main-page-container.png");
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
   transition: right 0.3s ease-in-out;
-  border-top-left-radius: 17px;
-  border-bottom-left-radius: 17px;
-  border-left: 0.125rem solid #fcf18b;
-  border-top: 0.125rem solid #fcf18b;
-  border-bottom: 0.125rem solid #fcf18b;
+  border-radius: 1.0625rem 0rem 0rem 1.0625rem;
+  border-left: 5px solid #5B544E;
+  border-top: 5px solid #5B544E;
+  border-bottom: 5px solid #5B544E;
+  background: linear-gradient(180deg, #22303B 0%, #0B1319 100%);
   z-index: 1000;
   background-repeat: no-repeat;
   background-size: cover;
@@ -466,6 +465,7 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .custom-overlay.open {
@@ -474,9 +474,8 @@ button {
 
 .overlay-content {
   position: relative;
-  padding: 20px;
-  width: 80%;
-  height: 90%;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -484,11 +483,10 @@ button {
 
 .close-btn {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 2%;
+  left: 3%;
   background: transparent;
   border: none;
-  font-size: 24px;
   cursor: pointer;
 }
 
@@ -496,24 +494,8 @@ button {
   position: fixed;
   top: 12%;
   right: 0;
-  width: 75px;
-  height: 60px;
-  background-image: linear-gradient(to top, #22303b, #0b1319);
-  border-top-left-radius: 40px;
-  border-bottom-left-radius: 40px;
-  border-left: 0.125rem solid #fcf18b;
-  border-top: 0.125rem solid #fcf18b;
-  border-bottom: 0.125rem solid #fcf18b;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 1001;
 }
 
-.mic-icon-button {
-  top: 7rem;
-}
 .mic-icon {
-  width: 2.5rem;
+  height: 90%;
 }

@@ -23,6 +23,7 @@ import cardSound from "../../assets/sounds/card-filp.mp3";
 import votingLabel from "../../assets/images/medieval-label.png";
 import micIcon from "../../assets/icons/mic.svg";
 import closeIcon from "../../assets/icons/close.png";
+import micGoldIcon from "../../assets/icons/mic-gold.svg";
 
 import "./Gameplay.css";
 import Chat from "../../components/Chat/Chat.tsx";
@@ -31,6 +32,7 @@ import AudioRoom from "../../components/AudioRoom/AudioRoom.tsx";
 import { apiUrl, socketUrl } from "../../config/api.tsx";
 import { io } from "socket.io-client";
 import { getUserId } from "../../shared/utils.tsx";
+
 /**
  * Represents properties for controlling gameplay-related settings, such as volume levels.
  */
@@ -150,7 +152,6 @@ const Gameplay: React.FC<GameplayProps> = ({
     setIsOverlayVisible(!isOverlayVisible);
   };
 
-  
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
@@ -846,23 +847,33 @@ const Gameplay: React.FC<GameplayProps> = ({
           })()}
         </span>
 
-        <Button variant="circle" soundFXVolume={soundFXVolume}>
-          <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
+        <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
+          <img src={settingsIcon} alt="Settings" />
         </Button>
 
-        <div className={`custom-overlay ${isOverlayVisible ? 'open' : ''}`}>
+        <div className={`custom-overlay ${isOverlayVisible ? "open" : ""}`}>
           <div className="overlay-content">
-            <button className="close-btn" onClick={() => setIsOverlayVisible(false)}><img src={closeIcon}></img></button>
+            <button
+              className="close-btn"
+              onClick={() => setIsOverlayVisible(false)}
+            >
+              <img src={closeIcon}></img>
+            </button>
             <div className="audio-room">
-          <AudioRoom soundFXVolume={soundFXVolume} />
-        </div>
+              <AudioRoom soundFXVolume={soundFXVolume} />
+            </div>
           </div>
         </div>
 
         {!isOverlayVisible && (
-          <div className="half-circle-btn" onClick={() => setIsOverlayVisible(true)}>
-            <img className="mic-icon" src={micIcon} alt="Microphone" />
-          </div>
+          <Button
+            variant="half-circle"
+            className="half-circle-btn"
+            soundFXVolume={soundFXVolume}
+            onClick={() => setIsOverlayVisible(true)}
+          >
+            <img className="mic-icon" src={micGoldIcon} alt="Microphone" />
+          </Button>
         )}
 
         <SettingsModal
@@ -884,7 +895,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         <div className="banner-container">
           <img src={getBanner()} />
         </div>
-        
+
         <Chat />
         <div className="content-container">
           <div className="timer-container">

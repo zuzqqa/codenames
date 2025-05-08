@@ -304,20 +304,17 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     <>
       <BackgroundContainer>
         <GameTitleBar />
-        {/* Settings button */}
-        <Button variant="circle" soundFXVolume={soundFXVolume}>
-          <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
+        <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
+          <img src={settingsIcon} alt="Settings" />
         </Button>
-
-        {/* Settings modal */}
         <SettingsModal
           isOpen={isSettingsOpen}
           onClose={toggleSettings}
           musicVolume={musicVolume}
           soundFXVolume={soundFXVolume}
           setMusicVolume={(volume) => {
-            setMusicVolume(volume); // Update local music volume
-            setVolume(volume / 100); // Update global volume
+            setMusicVolume(volume); 
+            setVolume(volume / 100); 
           }}
           setSoundFXVolume={setSoundFXVolume}
         />

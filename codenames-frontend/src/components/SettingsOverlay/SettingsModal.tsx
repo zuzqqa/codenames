@@ -75,8 +75,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     <div className="settings-modal-container">
       <Modal isOpen={isOpen} onClose={handleCloseAllModals}>
         <TitleModal>{ t('settings-title') }</TitleModal>
-        <Button variant="circle" soundFXVolume={soundFXVolume}>
-          <img className="close-icon" src={closeIcon} onClick={handleCloseAllModals} alt="Close" />
+        <Button variant="circle" soundFXVolume={soundFXVolume} onClick={handleCloseAllModals}>
+          <img className="close-icon" src={closeIcon} alt="Close" />
         </Button>
 
         <div className="settings-overlay-container">

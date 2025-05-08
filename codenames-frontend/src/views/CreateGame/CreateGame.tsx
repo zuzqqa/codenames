@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react"; // Hook for managing component state
-import { useTranslation } from "react-i18next"; // Translation hook
 
 import BackgroundContainer from "../../containers/Background/Background";
 
@@ -48,9 +47,12 @@ const CreateGame: React.FC<CreateGameProps> = ({
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
-  const { t } = useTranslation(); // Translation hook
   const [isGuest, setIsGuest] = useState<boolean | null>(null);
 
+  /**
+   * Effect to fetch guest status from the server.
+   * It checks if the user is a guest and updates the state accordingly.
+   */
   useEffect(() => {
     const fetchGuestStatus = async () => {
       const token = getCookie("authToken");
@@ -89,6 +91,9 @@ const CreateGame: React.FC<CreateGameProps> = ({
     setIsSettingsOpen(!isSettingsOpen);
   };
 
+  /**
+   * Toggles the profile modal visibility.
+   */
   const toggleProfile = () => {
     setIsProfileOpen(!isProfileOpen);
   };
@@ -96,10 +101,9 @@ const CreateGame: React.FC<CreateGameProps> = ({
   return (
     <>
       <BackgroundContainer>
-        <Button variant="circle" soundFXVolume={soundFXVolume}>
-          <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
+        <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
+          <img src={settingsIcon} alt="Settings" />
         </Button>
-        {/* Profile button */}
         {isGuest === false && (
           <Button variant="circle-profile" soundFXVolume={soundFXVolume}>
             <img src={profileIcon} onClick={toggleProfile} alt="Profile" />
@@ -109,8 +113,8 @@ const CreateGame: React.FC<CreateGameProps> = ({
         {document.cookie
           .split("; ")
           .find((cookie) => cookie.startsWith("loggedIn=")) && (
-          <Button variant="logout" soundFXVolume={soundFXVolume}>
-            <img src={logoutButton} onClick={logout} alt="Logout" />
+          <Button variant="logout" soundFXVolume={soundFXVolume} onClick={logout}>
+            <img src={logoutButton} alt="Logout" />
           </Button>
         )}
 
@@ -120,12 +124,11 @@ const CreateGame: React.FC<CreateGameProps> = ({
           musicVolume={musicVolume}
           soundFXVolume={soundFXVolume}
           setMusicVolume={(volume) => {
-            setMusicVolume(volume); // Update local music volume
-            setVolume(volume / 100); // Update global volume
+            setMusicVolume(volume); 
+            setVolume(volume / 100); 
           }}
           setSoundFXVolume={setSoundFXVolume}
         />
-        {/* Profie modal */}
         <ProfileModal
           isOpen={isProfileOpen}
           onClose={toggleProfile}
