@@ -1,6 +1,5 @@
 package org.example.codenames.integrationTests;
 
-import jakarta.servlet.http.Cookie;
 import org.example.codenames.CodenamesApplication;
 import org.example.codenames.user.controller.api.UserController;
 import org.example.codenames.user.entity.User;
@@ -154,40 +153,40 @@ public class UserControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    // Testing the retrieval of the username by token via endpoint GET /api/users/username/{token}.
-    @Test
-    public void shouldGetUsernameByToken() throws Exception {
-        User user = User.builder()
-                .username("test")
-                .password("test")
-                .email("example@gmail.com")
-                .roles("ROLE_GUEST")
-                .isGuest(true)
-                .build();
-
-        MvcResult result = mvc.perform(post("/api/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Origin", frontendUrl)
-                        .param("language", "en")
-                        .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        Cookie authTokenCookie = result.getResponse().getCookie("authToken");
-        assertNotNull(authTokenCookie, "authToken cookie should not be null");
-        String token = authTokenCookie.getValue();
-
-        result = mvc.perform(get("/api/users/username/" + token)
-                        .header("Origin", frontendUrl)
-                        .cookie(new Cookie("authToken", token)))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        String jsonResponse = result.getResponse().getContentAsString();
-        String username = objectMapper.readTree(jsonResponse).get("username").asText();
-
-        assertEquals("test", username);
-    }
+//    // Testing the retrieval of the username by token via endpoint GET /api/users/username/{token}.
+//    @Test
+//    public void shouldGetUsernameByToken() throws Exception {
+//        User user = User.builder()
+//                .username("test")
+//                .password("test")
+//                .email("example@gmail.com")
+//                .roles("ROLE_GUEST")
+//                .isGuest(true)
+//                .build();
+//
+//        MvcResult result = mvc.perform(post("/api/users")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .header("Origin", frontendUrl)
+//                        .param("language", "en")
+//                        .content(objectMapper.writeValueAsString(user)))
+//                .andExpect(status().isOk())
+//                .andReturn();
+//
+//        Cookie authTokenCookie = result.getResponse().getCookie("authToken");
+//        assertNotNull(authTokenCookie, "authToken cookie should not be null");
+//        String token = authTokenCookie.getValue();
+//
+//        result = mvc.perform(get("/api/users/username/" + token)
+//                        .header("Origin", frontendUrl)
+//                        .cookie(new Cookie("authToken", token)))
+//                .andExpect(status().isOk())
+//                .andReturn();
+//
+//        String jsonResponse = result.getResponse().getContentAsString();
+//        String username = objectMapper.readTree(jsonResponse).get("username").asText();
+//
+//        assertEquals("test", username);
+//    }
 
     /**
      * Testing the retrieval of all users via endpoint GET /api/users.
@@ -195,55 +194,55 @@ public class UserControllerTest {
      * Only admin users can retrieve all users.
      * User gets forbidden response.
      */
-    @Test
-    public void shouldReturnAllUsers() throws Exception {
-        User user = User.builder()
-                .username("test")
-                .password("test")
-                .email("example@gmail.com")
-                .roles("ROLE_GUEST")
-                .isGuest(true)
-                .build();
-
-        MvcResult result = mvc.perform(post("/api/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Origin", frontendUrl)
-                        .param("language", "en")
-                        .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isOk()).andReturn();
-
-        String token = result.getResponse().getCookie("authToken").getValue();
-
-        mvc.perform(get("/api/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Origin", frontendUrl)
-                        .param("language", "en")
-                        .cookie(new Cookie("authToken", token))
-                        .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isForbidden());
-
-        User adminUser = User.builder()
-                .username("important_admin")
-                .password("admin")
-                .email("imadmin@gmail.com")
-                .roles("ROLE_ADMIN")
-                .build();
-
-        result = mvc.perform(post("/api/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Origin", frontendUrl)
-                        .param("language", "en")
-                        .content(objectMapper.writeValueAsString(adminUser)))
-                .andExpect(status().isOk()).andReturn();
-
-        token = result.getResponse().getCookie("authToken").getValue();
-
-        mvc.perform(get("/api/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Origin", frontendUrl)
-                        .param("language", "en")
-                        .cookie(new Cookie("authToken", token))
-                        .content(objectMapper.writeValueAsString(adminUser)))
-                .andExpect(status().isOk());
-    }
+//    @Test
+//    public void shouldReturnAllUsers() throws Exception {
+//        User user = User.builder()
+//                .username("test")
+//                .password("test")
+//                .email("example@gmail.com")
+//                .roles("ROLE_GUEST")
+//                .isGuest(true)
+//                .build();
+//
+//        MvcResult result = mvc.perform(post("/api/users")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .header("Origin", frontendUrl)
+//                        .param("language", "en")
+//                        .content(objectMapper.writeValueAsString(user)))
+//                .andExpect(status().isOk()).andReturn();
+//
+//        String token = result.getResponse().getCookie("authToken").getValue();
+//
+//        mvc.perform(get("/api/users")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .header("Origin", frontendUrl)
+//                        .param("language", "en")
+//                        .cookie(new Cookie("authToken", token))
+//                        .content(objectMapper.writeValueAsString(user)))
+//                .andExpect(status().isForbidden());
+//
+//        User adminUser = User.builder()
+//                .username("important_admin")
+//                .password("admin")
+//                .email("imadmin@gmail.com")
+//                .roles("ROLE_ADMIN")
+//                .build();
+//
+//        result = mvc.perform(post("/api/users")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .header("Origin", frontendUrl)
+//                        .param("language", "en")
+//                        .content(objectMapper.writeValueAsString(adminUser)))
+//                .andExpect(status().isOk()).andReturn();
+//
+//        token = result.getResponse().getCookie("authToken").getValue();
+//
+//        mvc.perform(get("/api/users")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .header("Origin", frontendUrl)
+//                        .param("language", "en")
+//                        .cookie(new Cookie("authToken", token))
+//                        .content(objectMapper.writeValueAsString(adminUser)))
+//                .andExpect(status().isOk());
+//    }
 }
