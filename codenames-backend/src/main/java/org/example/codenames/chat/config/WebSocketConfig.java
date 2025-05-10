@@ -1,5 +1,6 @@
 package org.example.codenames.chat.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -13,6 +14,8 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+    @Value("${frontend.origins:http://localhost:5173}")
+    private String[] allowedOrigins;
 
     /**
      * Configures the message broker with destination prefixes for clients and the application.
@@ -33,7 +36,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOrigins("http://localhost:5173") // Allows WebSocket connections from the specified origin
+                .setAllowedOrigins(allowedOrigins) // Allows WebSocket connections from the specified origin
                 .withSockJS(); // Enables SockJS fallback for browsers that do not support WebSockets
     }
 }

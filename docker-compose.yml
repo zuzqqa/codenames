@@ -10,15 +10,11 @@ services:
         - SECRET=${SECRET}
         - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
         - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
-        - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-        - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+        - MONGO_URI=${MONGO_URI}
         - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
         - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-
       volumes:
         - ./codenames-backend:/opt/codenames-backend
-      depends_on:
-        - mongodb
       networks:
         - codenames-network
 
@@ -36,44 +32,7 @@ services:
       - backend
     networks:
         - codenames-network
-
-  mongodb:
-    image: mongo
-    container_name: codenames-mongodb
-    ports:
-      - "27017:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-    volumes:
-      - mongo_data:/data/db
-      - ./codenames-backend/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-    networks:
-      - codenames-network
-
-  audioServer:
-    build:
-      context: ./codenames-audioserver
-    image: audioserver
-    container_name: codenames-audioserver
-    ports:
-      - "3000:3000"
-    networks:
-        - codenames-network
-
-  peerserver:
-    build:
-      context: ./codenames-peerserver
-    image: peerserver
-    container_name: codenames-peerserver
-    ports:
-      - "3001:3001"
-    networks:
-        - codenames-network
-      
-volumes:
-  mongo_data:
-
+        
 networks:
     codenames-network:
         driver: bridge

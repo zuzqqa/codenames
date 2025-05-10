@@ -8,7 +8,6 @@ import org.example.codenames.user.entity.User;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 import jakarta.persistence.GeneratedValue;
@@ -23,7 +22,6 @@ import jakarta.persistence.GeneratedValue;
 @Setter
 @Builder
 public class GameSession {
-
     /**
      * Enum for session status.
      */

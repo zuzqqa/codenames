@@ -251,7 +251,6 @@ public class DefaultGameStateService implements GameStateService {
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
         this.toogleTurn(gameSession);
-
         this.chooseRandomCurrentLeader(gameId);
     }
 
@@ -262,6 +261,7 @@ public class DefaultGameStateService implements GameStateService {
      */
     @Override
     public void chooseRandomCurrentLeader(UUID gameId) {
+        System.out.println(gameId);
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
@@ -270,6 +270,8 @@ public class DefaultGameStateService implements GameStateService {
         User newLeader = getNewLeader(gameSession, connectedUsers);
 
         gameSession.getGameState().setCurrentSelectionLeader(newLeader);
+        System.out.println(newLeader);
+        System.out.println(gameSession.getGameState().getCurrentSelectionLeader());
         gameSessionRepository.save(gameSession);
     }
 

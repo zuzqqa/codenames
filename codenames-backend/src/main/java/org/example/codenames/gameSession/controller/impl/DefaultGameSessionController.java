@@ -2,17 +2,21 @@ package org.example.codenames.gameSession.controller.impl;
 
 import org.example.codenames.gameSession.controller.api.GameSessionController;
 import org.example.codenames.gameSession.entity.GameSession;
+import org.example.codenames.gameSession.entity.dto.GameSessionRoomLobbyDTO;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.gameState.service.api.GameStateService;
 import org.example.codenames.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+
+import static org.example.codenames.gameSession.entity.dto.GameSessionMapper.toRoomLobbyDTO;
+import static org.example.codenames.user.entity.dto.UserMapper.toRoomLobbyDTOList;
 
 /**
  * Default implementation of the GameSessionController interface.
@@ -54,15 +58,14 @@ public class DefaultGameSessionController implements GameSessionController {
      * Get game session by id
      *
      * @param gameId The id of the game session to retrieve
-     *
      * @return The game session with the specified id
      */
     @GetMapping("/{gameId}")
-    public ResponseEntity<GameSession> getGameSession(@PathVariable String gameId) {
+    public ResponseEntity<GameSessionRoomLobbyDTO> getGameSession(@PathVariable String gameId) {
         GameSession gameSession = gameSessionService.getGameSessionById(UUID.fromString(gameId));
 
         if (gameSession != null) {
-            return ResponseEntity.ok(gameSession);
+            return ResponseEntity.ok(toRoomLobbyDTO(Optional.of(gameSession)));
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -166,5 +169,12 @@ public class DefaultGameSessionController implements GameSessionController {
     @PostMapping("/{gameId}/authenticate-password/{enteredPassword}")
     public ResponseEntity<?> authenticatePassword(@PathVariable String gameId, @PathVariable String enteredPassword) {
         return ResponseEntity.ok(gameSessionService.authenticatePassword(UUID.fromString(gameId), enteredPassword));
+    }
+
+    @GetMapping("/{gameId}/getConnectedUsers")
+    public ResponseEntity<?> getConnectedUsers(@PathVariable String gameId) {
+        GameSession gameSession = gameSessionService.getGameSessionById(UUID.fromString(gameId));
+
+        return ResponseEntity.ok(toRoomLobbyDTOList(gameSession.getConnectedUsers()));
     }
 }

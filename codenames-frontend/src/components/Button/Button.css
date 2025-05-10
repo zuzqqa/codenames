@@ -16,6 +16,7 @@
   transition: background-color 0.3s ease;
   border-radius: 1.6875rem;
   box-shadow: 0 0.25rem 0.25rem 0 rgba(0, 0, 0, 0.25);
+  cursor: pointer;
 }
 
 .button-text {
@@ -61,7 +62,7 @@
   background-image: linear-gradient(to top, #22303b, #0b1319);
 }
 
-.btn-circle-profile img{
+.btn-circle-profile img {
   height: 40px;
   margin-top: 3px;
   margin-left: 15px;
@@ -202,7 +203,7 @@
   background-image: linear-gradient(to right, #fff7ab, #dab274);
 }
 
-.btn-edit{
+.btn-edit {
   border-radius: 50%;
   width: 2.2rem;
   height: 2.6rem;
@@ -210,7 +211,7 @@
   border-width: 0.125rem;
 }
 
-.btn-edit img{
+.btn-edit img {
   width: 1.3rem;
 }
 
@@ -219,8 +220,20 @@
   min-width: 7rem;
 }
 
-.btn-transparent{
+.btn-transparent {
   background: transparent;
   border: none;
   box-shadow: none;
+}
+
+.btn-half-circle {
+  width: 75px;
+  height: 60px;
+  background-image: linear-gradient(to top, #22303b, #0b1319);
+  border: 0.125rem solid #fcf18b;
+  border-right: none;
+  border-radius: 40px 0 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

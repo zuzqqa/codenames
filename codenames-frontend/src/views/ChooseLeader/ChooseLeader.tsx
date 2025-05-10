@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Hook for programmatic navigation
 import { useTranslation } from "react-i18next"; // Hook for translations
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
 import BackgroundContainer from "../../containers/Background/Background";
 
@@ -11,10 +13,13 @@ import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 import settingsIcon from "../../assets/icons/settings.png";
 import compassImg from "../../assets/images/compass.png";
 import profilePicImg from "../../assets/images/profile-pic.png";
-import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
-import { formatTime } from "../../shared/utils";
+
 import "./ChooseLeader.css";
+
+import { formatTime } from "../../shared/utils";
+import { apiUrl, socketUrl } from "../../config/api.tsx";
+import { getUserId } from "../../shared/utils.tsx";
+import { io } from "socket.io-client";
 
 /**
  * Props for the ChooseLeader component.
@@ -30,49 +35,59 @@ interface ChooseLeaderProps {
 }
 
 /**
- * User object structure.
- * @typedef {Object} User
- * @property {string} id - Unique identifier of the user.
- * @property {string} username - Username of the user.
+ * Enum for user status.
+ * @enum {string}
+ * @property {string} INACTIVE - The user is inactive.
+ * @property {string} ACTIVE - The user is active.
  */
-interface User {
-  id: string;
-  username: string;
+enum UserStatus {
+  INACTIVE = "INACTIVE",
+  ACTIVE = "ACTIVE",
 }
 
 /**
- * Enum for session statuses.
+ * Represents a user in the game session.
+ * @typedef {Object} UserRoomLobbyDTO
+ * @property {string} username - The username of the player.
+ * @property {number} profilePic - The profile picture ID of the player.
+ * @property {UserStatus} status - The status of the player (active/inactive).
+ */
+interface UserRoomLobbyDTO {
+  id: string;
+  username: string;
+  profilePic: number;
+  status: UserStatus;
+}
+
+/**
+ * Enum for session status.
  * @enum {string}
+ * @property {string} CREATED - The session is created.
+ * @property {string} LEADER_SELECTION - The session is in leader selection phase.
+ * @property {string} IN_PROGRESS - The session is in progress.
+ * @property {string} FINISHED - The session is finished.
  */
 enum SessionStatus {
   CREATED = "CREATED",
+  LEADER_SELECTION = "LEADER_SELECTION",
   IN_PROGRESS = "IN_PROGRESS",
   FINISHED = "FINISHED",
 }
 
 /**
- * Game session object structure.
- * @typedef {Object} GameSession
- * @property {SessionStatus} status - Current status of the game session.
- * @property {string} sessionId - Unique identifier of the game session.
- * @property {string} gameName - Name of the game session.
- * @property {number} maxPlayers - Maximum number of players allowed.
- * @property {string} durationOfTheRound - Duration of a round in the game.
- * @property {string} timeForAHint - Time allocated for giving hints.
- * @property {string} timeForGuessing - Time allocated for guessing.
- * @property {User[][]} connectedUsers - Array of users in different teams.
- * @property {number} votingStartTime - Timestamp when voting started.
+ * Represents a game session.
+ * @typedef {Object} GameSessionRoomLobbyDTO
+ * @property {string} id - The unique identifier of the user.
+ * @property {SessionStatus} status - The current status of the session.
+ * @property {string} gameName - The name of the game.
+ * @property {number} maxPlayers - The maximum number of players allowed.
+ * @property {UserRoomLobbyDTO[][]} connectedUsers - List of users in each team.
  */
-interface GameSession {
+interface GameSessionRoomLobbyDTO {
   status: SessionStatus;
-  sessionId: string;
   gameName: string;
   maxPlayers: number;
-  durationOfTheRound: string;
-  timeForAHint: string;
-  timeForGuessing: string;
-  connectedUsers: User[][];
-  votingStartTime: number;
+  connectedUsers: UserRoomLobbyDTO[][];
 }
 
 /**
@@ -92,14 +107,14 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
 }) => {
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
-  const [selectedPlayer, setSelectedPlayer] = useState<User | null>(null);
+  const [selectedPlayer, setSelectedPlayer] = useState<UserRoomLobbyDTO | null>(null);
   const timeForVoting = 10; // Time for voting in seconds
   const [votingStartTime, setVotingStartTime] = useState<number>(Date.now()); // Voting start time
   const [timeLeft, setTimeLeft] = useState(timeForVoting); // Timer state (2 minutes = 120 seconds)
   const navigate = useNavigate(); // Hook for navigation
   const { t } = useTranslation(); // Hook for translations
-  const [redTeamPlayers, setRedTeamPlayers] = useState<User[]>([]);
-  const [blueTeamPlayers, setBlueTeamPlayers] = useState<User[]>([]);
+  const [redTeamPlayers, setRedTeamPlayers] = useState<UserRoomLobbyDTO[]>([]);
+  const [blueTeamPlayers, setBlueTeamPlayers] = useState<UserRoomLobbyDTO[]>([]);
   const [myTeam, setMyTeam] = useState<string | null>(null);
   const [isVoteCasted, setIsVoteCasted] = useState<boolean>(false);
   const [userId, setUserId] = useState<string | null>();
@@ -112,9 +127,9 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     }
 
     if (storedGameId) {
-      fetch(`http://localhost:8080/api/game-session/${storedGameId}`)
+      fetch(`${apiUrl}/api/game-session/${storedGameId}`)
         .then((response) => response.json())
-        .then(async (data: GameSession) => {
+        .then(async (data: GameSessionRoomLobbyDTO) => {
           if (data.connectedUsers) {
             setRedTeamPlayers(data.connectedUsers[0] || []);
             setBlueTeamPlayers(data.connectedUsers[1] || []);
@@ -129,7 +144,6 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
           } else {
             setMyTeam(null);
           }
-          setVotingStartTime(data.votingStartTime);
         })
         .catch((err) => console.error("Failed to load game session", err));
     } else {
@@ -143,30 +157,45 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
       );
     }, 1000);
 
-    // WebSocket connection using SockJS and STOMP
-    const socket = new SockJS("http://localhost:8080/ws");
-    const stompClient = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        // Subscribe to the game session updates
-        stompClient.subscribe(`/game/${storedGameId}`, (message) => {
-          const updatedGameSession = JSON.parse(message.body);
-          if (updatedGameSession) {
+    const gameSocket = io(`${socketUrl}/game`, {
+      transports: ["websocket"],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
+
+    gameSocket.on("connect", () => {
+      if (storedGameId) {
+        gameSocket.emit("joinGame", storedGameId);
+      }
+    });
+
+    gameSocket.on(
+      "gameSessionUpdate",
+      (updatedGameSessionJson: string) => {
+        try {
+          const updatedGameSession: GameSessionRoomLobbyDTO = JSON.parse(updatedGameSessionJson);
+          
+          if(updatedGameSession.connectedUsers) {
             setRedTeamPlayers(updatedGameSession.connectedUsers[0] || []);
             setBlueTeamPlayers(updatedGameSession.connectedUsers[1] || []);
           }
-        });
-      },
-      onStompError: (frame) => {
-        console.error("STOMP error", frame);
-      },
+
+          if (updatedGameSession.status === "LEADER_SELECTION") {
+            navigate("/choose-leader");
+          }
+        } catch (err) {
+          console.error("Error parsing gameSessionsList JSON:", err);
+        }
+      }
+    );
+
+    gameSocket.on("connect_error", (error) => {
+      console.error("Game socket connection error:", error);
     });
 
-    stompClient.activate();
-
-    // Cleanup function to deactivate WebSocket connection
     return () => {
-      clearInterval(timer); // Clear the timer when component unmounts
+      clearInterval(timer); 
+      gameSocket.disconnect();
     };
   }, [timeLeft, navigate]);
 
@@ -184,13 +213,12 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
    */
   const fetchUserId = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/users/getId", {
-        method: "GET",
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to fetch user ID");
+      const id = await getUserId();
 
-      const id = await response.text();
+      if (id === null) {
+        return;
+      }
+
       localStorage.setItem("userId", id);
       setUserId(id);
     } catch (error) {
@@ -207,7 +235,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
 
     if (storedGameId) {
       await fetch(
-        `http://localhost:8080/api/game-session/${storedGameId}/assign-leaders?language=${
+        `${apiUrl}/api/game-session/${storedGameId}/assign-leaders?language=${
           localStorage.getItem("i18nextLng") || "en"
         }`,
         {
@@ -233,7 +261,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
    * Handles the player selection for voting.
    * @param {User} player - The selected player.
    */
-  const handlePlayerClick = (player: User) => {
+  const handlePlayerClick = (player: UserRoomLobbyDTO) => {
     if (myTeam === "red" && redTeamPlayers.includes(player))
       setSelectedPlayer(player);
     else if (myTeam === "blue" && blueTeamPlayers.includes(player))
@@ -255,7 +283,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
       };
 
       const response = await fetch(
-        `http://localhost:8080/api/game-session/${storedGameId}/vote`,
+        `${apiUrl}/api/game-session/${storedGameId}/vote`,
         {
           method: "POST",
           credentials: "include",
@@ -276,20 +304,17 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     <>
       <BackgroundContainer>
         <GameTitleBar />
-        {/* Settings button */}
-        <Button variant="circle" soundFXVolume={soundFXVolume}>
-          <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
+        <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
+          <img src={settingsIcon} alt="Settings" />
         </Button>
-
-        {/* Settings modal */}
         <SettingsModal
           isOpen={isSettingsOpen}
           onClose={toggleSettings}
           musicVolume={musicVolume}
           soundFXVolume={soundFXVolume}
           setMusicVolume={(volume) => {
-            setMusicVolume(volume); // Update local music volume
-            setVolume(volume / 100); // Update global volume
+            setMusicVolume(volume); 
+            setVolume(volume / 100); 
           }}
           setSoundFXVolume={setSoundFXVolume}
         />

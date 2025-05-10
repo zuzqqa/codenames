@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"; // Hook for managing component state
-import { useTranslation } from "react-i18next"; // Importing the useTranslation hook from react-i18next
+import { io } from "socket.io-client";
+import { useTranslation } from "react-i18next"; // Hook for translations
 
 import BackgroundContainer from "../../containers/Background/Background";
 
@@ -10,13 +11,17 @@ import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 import ProfileModal from "../../components/UserProfileOverlay/ProfileModal";
 import profileIcon from "../../assets/icons/profile.png";
 import settingsIcon from "../../assets/icons/settings.png";
-import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
-import {logout} from "../../shared/utils.tsx";
 import logoutButton from "../../assets/icons/logout.svg";
+
+import { getCookie, logout } from "../../shared/utils.tsx";
+import { apiUrl, socketUrl } from "../../config/api.tsx";
 
 /**
  * Props type definition for the JoinGame component.
+ * @typedef {Object} JoinGameProps
+ * @property {function} setVolume - Function to set global volume.
+ * @property {number} soundFXVolume - Current sound effects volume level.
+ * @property {function} setSoundFXVolume - Function to set sound effects volume.
  */
 interface JoinGameProps {
   setVolume: (volume: number) => void; // Function to set global volume
@@ -25,36 +30,39 @@ interface JoinGameProps {
 }
 
 /**
- * Represents a user in a game session.
- */
-interface User {
-  userId: string;
-  username: string;
-}
-
-/**
  * Enumeration of possible game session statuses.
+ * @enum {string}
+ * @property {string} CREATED - Session is created but not started.
+ * @property {string} LEADER_SELECTION - Session is in leader selection phase.
+ * @property {string} IN_PROGRESS - Session is currently in progress.
+ * @property {string} FINISHED - Session has finished.
  */
 enum SessionStatus {
   CREATED = "CREATED",
+  LEADER_SELECTION = "LEADER_SELECTION",
   IN_PROGRESS = "IN_PROGRESS",
   FINISHED = "FINISHED",
 }
 
 /**
- * Represents a game session.
+ * Represents a simplified game session (used in JoinGame list).
+ * @typedef {Object} GameSessionJoinGameDTO
+ * @property {SessionStatus} status - The current status of the game session.
+ * @property {string} sessionId - Unique identifier for the game session.
+ * @property {string} gameName - Name of the game session.
+ * @property {number} maxPlayers - Maximum number of players allowed in the session.
+ * @property {string} password - Password for joining the session (if any).
+ * @property {number} currentRedTeamPlayers - Number of players in the red team.
+ * @property {number} currentBlueTeamPlayers - Number of players in the blue team.
  */
-interface GameSession {
+interface GameSessionJoinGameDTO {
   status: SessionStatus;
   sessionId: string;
   gameName: string;
   maxPlayers: number;
   password: string;
-  durationOfTheRound: string;
-  timeForGuessing: string;
-  timeForAHint: string;
-  numberOfRounds: number;
-  connectedUsers: User[][]; 
+  currentRedTeamPlayers: number;
+  currentBlueTeamPlayers: number;
 }
 
 /**
@@ -71,66 +79,90 @@ const JoinGame: React.FC<JoinGameProps> = ({
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
-  const [gameSessions, setGameSessions] = useState<GameSession[]>([]);
-  const [filteredGames, setFilteredGames] = useState<GameSession[]>([]);
+  const [gameSessions, setGameSessions] = useState<GameSessionJoinGameDTO[]>(
+    []
+  );
+  const [filteredGames, setFilteredGames] = useState<GameSessionJoinGameDTO[]>(
+    []
+  );
   const [isGuest, setIsGuest] = useState<boolean | null>(null);
   const [username, setUsername] = useState<string | null>(null);
 
   const { t } = useTranslation(); // Hook for translations
   
   /**
-   * Fetches the list of available game sessions on component mount.
-   * Also establishes a WebSocket connection for real-time updates.
+   * useEffect hook that establishes a Socket.IO connection to receive real-time game session updates.
+   *
+   * - Connects to the Socket.IO server on component mount.
+   * - Listens for the 'gameSessionsList' event and filters sessions with status "CREATED".
+   * - Updates local React state (`setGameSessions`, `setFilteredGames`) with the filtered list.
    */
   useEffect(() => {
     getGames();
 
-    const socket = new SockJS("http://localhost:8080/ws");
-    const stompClient = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        stompClient.subscribe("/game/all", (message) => {
-          const updatedGameSessionsList = JSON.parse(message.body);
-          if (updatedGameSessionsList) {
-            const filteredUpdatedGames = updatedGameSessionsList.filter(
-              (game: GameSession) => game.status === "CREATED"
-            );
-            setGameSessions(filteredUpdatedGames);
-            setFilteredGames(filteredUpdatedGames);
-          }
-        });
-      },
-      onStompError: (frame) => {
-        console.error("STOMP error", frame);
-      },
+    const gameSocket = io(`${socketUrl}/game`, {
+      transports: ["websocket"],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
 
-    stompClient.activate();
+    gameSocket.on("gameSessionsList", (updatedGameSessionsJson: string) => {
+      try {
+        const updatedGameSessionsList: GameSessionJoinGameDTO[] = JSON.parse(
+          updatedGameSessionsJson
+        );
+
+        const filteredUpdatedGames = updatedGameSessionsList.filter(
+          (game) => game.status === "CREATED"
+        );
+
+        setGameSessions(filteredUpdatedGames);
+        setFilteredGames(filteredUpdatedGames);
+      } catch (err) {
+        console.error("Error parsing gameSessionsList JSON:", err);
+      }
+    });
+
+    gameSocket.on("connect_error", (error) => {
+      console.error("Game socket connection error.", error);
+    });
 
     return () => {
-      stompClient.deactivate(); 
+      gameSocket.disconnect();
     };
   }, []);
 
+  /**
+   * useEffect hook that checks if the user is a guest by making an API call.
+   */
   useEffect(() => {
     const fetchGuestStatus = async () => {
+      const token = getCookie("authToken");
+
+      if (!token) {
+        return;
+      }
+
       try {
-        const response = await fetch("http://localhost:8080/api/users/isGuest", {
+        const response = await fetch(`${apiUrl}/api/users/isGuest`, {
           method: "GET",
-          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         });
-  
+
         if (response.ok) {
           const guestStatus = await response.json();
           setIsGuest(guestStatus);
         } else {
-          console.error("Nie udało się pobrać statusu gościa");
+          console.error("Failed to retrieve guest status.");
         }
       } catch (error) {
-        console.error("Błąd podczas pobierania statusu gościa", error);
+        console.error("Error retrieving guest status: ", error);
       }
     };
-  
+
     fetchGuestStatus();
   }, []);
 
@@ -163,11 +195,11 @@ const JoinGame: React.FC<JoinGameProps> = ({
    * Only sessions in the "CREATED" state are stored.
    */
   const getGames = () => {
-    fetch("http://localhost:8080/api/game-session/all")
+    fetch(`${apiUrl}/api/game-session/all`)
       .then((response) => response.json())
       .then((data) => {
         const createdGames = data.filter(
-          (game: GameSession) => game.status === "CREATED"
+          (game: GameSessionJoinGameDTO) => game.status === "CREATED"
         );
         setGameSessions(createdGames);
         setFilteredGames(createdGames);
@@ -190,8 +222,8 @@ const JoinGame: React.FC<JoinGameProps> = ({
   return (
     <>
       <BackgroundContainer>
-        <Button variant="circle" soundFXVolume={soundFXVolume}>
-          <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
+        <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
+          <img src={settingsIcon} alt="Settings" />
         </Button>
 
         <SettingsModal
@@ -218,13 +250,11 @@ const JoinGame: React.FC<JoinGameProps> = ({
           onClose={toggleProfile}
           soundFXVolume={soundFXVolume}
         />
-        {document.cookie.split('; ').find(cookie => cookie.startsWith('loggedIn=')) && (
+        {document.cookie
+          .split("; ")
+          .find((cookie) => cookie.startsWith("loggedIn=")) && (
           <Button variant="logout" soundFXVolume={soundFXVolume}>
-            <img
-              src={logoutButton}
-              onClick={logout}
-              alt="Logout"
-            />
+            <img src={logoutButton} onClick={logout} alt="Logout" />
           </Button>
         )}
 

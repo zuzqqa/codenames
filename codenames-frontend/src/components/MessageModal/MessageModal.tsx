@@ -10,6 +10,8 @@ import spinnerIcon from "../../assets/icons/spinner.svg";
 
 import "./MessageModal.css";
 
+import { apiUrl } from "../../config/api.tsx";
+
 /**
  * Props for the MessageModal component.
  * @typedef {Object} MessageModalProps
@@ -62,7 +64,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
     };
 
     try {
-      const response = await fetch("http://localhost:8080/api/email/send-report", {
+      const response = await fetch(`${apiUrl}/api/email/send-report`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dataToSend),

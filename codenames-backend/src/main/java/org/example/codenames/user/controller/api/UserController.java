@@ -3,12 +3,17 @@ package org.example.codenames.user.controller.api;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.example.codenames.user.entity.dto.FriendRequestsDTO;
 import org.example.codenames.user.entity.PasswordResetRequest;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.userDetails.AuthRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,6 +29,8 @@ import java.util.Map;
 public interface UserController {
     ResponseEntity<Map<String, String>> createUser(@RequestBody User user, HttpServletResponse response, String language) throws MessagingException, IOException;
 
+    RedirectView activateAccount(@PathVariable String token);
+
     ResponseEntity<User> getUserById(String id);
 
     List<User> getAllUsers();
@@ -36,11 +43,25 @@ public interface UserController {
 
     ResponseEntity<String> authenticateAndSetCookie(AuthRequest authRequest, HttpServletResponse response);
 
-    ResponseEntity<Void> logout(HttpServletResponse response);
+    ResponseEntity<String> getUsernameByToken(@RequestHeader(value = "Authorization", required = false) String token);
 
-    ResponseEntity<String> getUsernameByToken(String token);
+    ResponseEntity<String> getIdByToken(@RequestHeader(value = "Authorization", required = false) String token);
 
-    ResponseEntity<String> getIdByToken(String token);
+    ResponseEntity<Boolean> isGuest(@RequestHeader(value = "Authorization", required = false) String token);
 
+    ResponseEntity<String> createGuest(HttpServletResponse response);
+
+    ResponseEntity<List<User>> searchUsers(@RequestParam String username);
+
+    ResponseEntity<Void> sendFriendRequest(@PathVariable String receiverUsername, @RequestParam String senderUsername);
+
+    ResponseEntity<Void> declineFriendRequest(@PathVariable String senderUsername, @RequestParam String receiverUsername);
+
+    ResponseEntity<Void> acceptFriendRequest(@PathVariable String senderUsername, @RequestParam String receiverUsername);
+
+    ResponseEntity<Void> removeFriend(@PathVariable String friendUsername, @RequestParam String userUsername);
+
+    ResponseEntity<FriendRequestsDTO> getFriendRequests(@PathVariable String username);
+    
     ResponseEntity<String> updatePassword(@PathVariable String token, HttpServletRequest request, @RequestBody PasswordResetRequest passwordResetRequest);
 }

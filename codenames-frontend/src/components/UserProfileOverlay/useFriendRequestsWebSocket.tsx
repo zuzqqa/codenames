@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
+import { apiUrl } from "../../config/api.tsx";
+
 interface FriendRequestsState {
   friends: string[];
   sentRequests: string[];
@@ -20,18 +22,17 @@ const useFriendRequestsWebSocket = (username: string) => {
     if (!username) return;
   
     try {
-      const response = await fetch(`http://localhost:8080/api/users/${username}/friendRequests`);
-      const responseText = await response.text();  // Przechwycimy odpowiedź jako tekst
+      const response = await fetch(`${apiUrl}/api/users/${username}/friendRequests`);
+      const responseText = await response.text();  
   
       if (!response.ok) {
         console.error("Server Error: ", response.status, responseText);
         throw new Error(`Error: ${response.status} - ${responseText}`);
       }
   
-      console.log("Response Text:", responseText);  // Logowanie surowej odpowiedzi
+      console.log("Response Text:", responseText);
   
-      // Spróbuj sparsować odpowiedź jako JSON
-      const data = JSON.parse(responseText);  // Parsowanie ręcznie, żeby sprawdzić, czy odpowiedź to JSON
+      const data = JSON.parse(responseText); 
       setState({
         friends: data.friends || [],
         sentRequests: data.sentRequests || [],
@@ -44,9 +45,9 @@ const useFriendRequestsWebSocket = (username: string) => {
   
 
   useEffect(() => {
-    fetchRequests(); // Początkowe pobranie danych
+    fetchRequests(); 
 
-    const socket = new SockJS("http://localhost:8080/ws");
+    const socket = new SockJS(`${apiUrl}/ws`);
     const client = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
@@ -75,35 +76,35 @@ const useFriendRequestsWebSocket = (username: string) => {
   }, [username]);
 
   const sendFriendRequest = async (receiverUsername: string) => {
-    await fetch(`http://localhost:8080/api/users/sendRequest/${receiverUsername}?senderUsername=${username}`, {
+    await fetch(`${apiUrl}/api/users/sendRequest/${receiverUsername}?senderUsername=${username}`, {
       method: "POST",
     });
     fetchRequests(); // Aktualizacja stanu
   };
 
   const acceptFriendRequest = async (senderUsername: string) => {
-    await fetch(`http://localhost:8080/api/users/acceptRequest/${senderUsername}?receiverUsername=${username}`, {
+    await fetch(`${apiUrl}/api/users/acceptRequest/${senderUsername}?receiverUsername=${username}`, {
       method: "POST",
     });
     fetchRequests(); // Aktualizacja stanu
   };
 
   const declineFriendRequest = async (senderUsername: string) => {
-    await fetch(`http://localhost:8080/api/users/declineRequest/${senderUsername}?receiverUsername=${username}`, {
+    await fetch(`${apiUrl}/api/users/declineRequest/${senderUsername}?receiverUsername=${username}`, {
       method: "POST",
     });
     fetchRequests(); // Aktualizacja stanu
   };
 
   const undoFriendRequest = async (senderUsername: string) => {
-    await fetch(`http://localhost:8080/api/users/declineRequest/${username}?receiverUsername=${senderUsername}`, {
+    await fetch(`${apiUrl}/api/users/declineRequest/${username}?receiverUsername=${senderUsername}`, {
       method: "POST",
     });
     fetchRequests(); // Aktualizacja stanu
   };
 
   const removeFriend = async (friendUsername: string) => {
-    await fetch(`http://localhost:8080/api/users/removeFriend/${friendUsername}?userUsername=${username}`, {
+    await fetch(`${apiUrl}/api/users/removeFriend/${friendUsername}?userUsername=${username}`, {
       method: "DELETE",
     });
     fetchRequests(); // Aktualizacja stanu

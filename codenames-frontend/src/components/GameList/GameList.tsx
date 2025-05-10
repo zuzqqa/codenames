@@ -15,6 +15,8 @@ import searchButtonIcon from "../../assets/images/search-button.png";
 
 import "./GameList.css";
 
+import { apiUrl } from "../../config/api.tsx";
+
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 
@@ -23,42 +25,32 @@ const generateId = () =>
  */
 interface GameListProps {
   soundFXVolume: number;
-  gameSessions: GameSession[];
-  filteredSessions: GameSession[];
-  setFilteredSessions: (sessions: GameSession[]) => void;
+  gameSessions: GameSessionJoinGameDTO[];
+  filteredSessions: GameSessionJoinGameDTO[];
+  setFilteredSessions: (sessions: GameSessionJoinGameDTO[]) => void;
 }
 
 /**
- * Interface representing a user.
- */
-interface User {
-  userId: string;
-  username: string;
-}
-
-/**
- * Enum representing session statuses.
+ * Enumeration of possible game session statuses.
  */
 enum SessionStatus {
   CREATED = "CREATED",
+  LEADER_SELECTION = "LEADER_SELECTION",
   IN_PROGRESS = "IN_PROGRESS",
   FINISHED = "FINISHED",
 }
 
 /**
- * Interface representing a game session.
+ * Represents a simplified game session (used in JoinGame list).
  */
-interface GameSession {
-  status: SessionStatus; // Current status of the game session
-  sessionId: string; // Unique session identifier
-  gameName: string; // Name of the game session
-  maxPlayers: number; // Maximum number of players
+interface GameSessionJoinGameDTO {
+  status: SessionStatus;
+  sessionId: string;
+  gameName: string;
+  maxPlayers: number;
   password: string;
-  durationOfTheRound: string; // Duration of each round
-  timeForGuessing: string; // Time allocated for guessing
-  timeForAHint: string; // Time allocated for hints
-  numberOfRounds: number; // Total number of rounds in the game
-  connectedUsers: User[][]; // Array of connected users
+  currentRedTeamPlayers: number;
+  currentBlueTeamPlayers: number;
 }
 
 /**
@@ -206,7 +198,7 @@ const GameList: React.FC<GameListProps> = ({
     setErrors(newErrors);
 
     const response = await fetch(
-      `http://localhost:8080/api/game-session/${selectedSessionId}/authenticate-password/${enteredPassword}`,
+      `${apiUrl}/api/game-session/${selectedSessionId}/authenticate-password/${enteredPassword}`,
       {
         method: "POST",
         credentials: "include",
@@ -310,8 +302,8 @@ const GameList: React.FC<GameListProps> = ({
                   )}
                   <div className="room-players">
                     Slots:{" "}
-                    {gameSession.connectedUsers[0].length +
-                      gameSession.connectedUsers[1].length}
+                    {gameSession.currentRedTeamPlayers +
+                      gameSession.currentBlueTeamPlayers}
                     /{gameSession.maxPlayers}
                   </div>
                 </div>

@@ -1,5 +1,6 @@
 package org.example.codenames.gameState.controller.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
@@ -7,8 +8,8 @@ import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.gameState.controller.api.GameSateWebSocketController;
 import org.example.codenames.gameState.entity.CardsVoteRequest;
 import org.example.codenames.gameState.service.api.GameStateService;
+import org.example.codenames.socket.service.api.SocketService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -33,9 +34,9 @@ public class DefaultGameStateWebSocketController implements GameSateWebSocketCon
     private final GameSessionRepository gameSessionRepository;
 
     /**
-     * The SimpMessagingTemplate instance used to send messages to connected clients
+     * The SocketService instance used to send messages to connected clients
      */
-    private final SimpMessagingTemplate messagingTemplate;
+    private final SocketService socketService;
 
     /**
      * Submit votes for the game with the given id.
@@ -47,14 +48,14 @@ public class DefaultGameStateWebSocketController implements GameSateWebSocketCon
      */
     @Override
     @PostMapping("/{gameId}/voteCards")
-    public ResponseEntity<?> submitVotes(@PathVariable UUID gameId, @RequestBody CardsVoteRequest voteRequest) {
+    public ResponseEntity<?> submitVotes(@PathVariable UUID gameId, @RequestBody CardsVoteRequest voteRequest) throws JsonProcessingException {
         gameStateService.updateVotes(gameId, voteRequest);
 
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId).orElseThrow(() ->
                 new IllegalArgumentException("Game with an ID of " + gameId + " does not exist."));
 
         // Send the game session to all clients
-        messagingTemplate.convertAndSend("/game/" + gameId + "/timer", gameSession);
+        socketService.sendGameSessionUpdate(gameId, gameSession);
 
         return ResponseEntity.ok("Votes submitted successfully, sent to game");
     }

@@ -1,7 +1,7 @@
-# Use Eclipse Temurin JDK 17 as the base image
+# # Use Eclipse Temurin JDK 17 as the base image
 FROM eclipse-temurin:17.0.6_10-jdk
 
-# Metadata labels for the container image
+# # Metadata labels for the container image
 LABEL org.opencontainers.image.title="codenames-backend"
 LABEL org.opencontainers.image.authors="Codenames"
 LABEL org.opencontainers.image.version="0.0.1-SNAPSHOT"
