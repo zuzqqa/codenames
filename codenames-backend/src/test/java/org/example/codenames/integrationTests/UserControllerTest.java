@@ -20,7 +20,6 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -188,12 +187,12 @@ public class UserControllerTest {
 //        assertEquals("test", username);
 //    }
 
-    /**
-     * Testing the retrieval of all users via endpoint GET /api/users.
-     * Expected behavior:
-     * Only admin users can retrieve all users.
-     * User gets forbidden response.
-     */
+//    /**
+//     * Testing the retrieval of all users via endpoint GET /api/users.
+//     * Expected behavior:
+//     * Only admin users can retrieve all users.
+//     * User gets forbidden response.
+//     */
 //    @Test
 //    public void shouldReturnAllUsers() throws Exception {
 //        User user = User.builder()
