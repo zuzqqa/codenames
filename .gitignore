@@ -1,6 +1,8 @@
 # Compiled class file
 *.class
 
+env.yaml
+
 # Log file
 *.log
 spring.log

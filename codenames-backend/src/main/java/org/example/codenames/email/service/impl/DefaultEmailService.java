@@ -9,6 +9,7 @@ import org.example.codenames.email.service.api.EmailService;
 
 import org.example.codenames.passwordResetToken.service.api.PasswordResetService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -25,6 +26,9 @@ import java.nio.file.Files;
  */
 @Service
 public class DefaultEmailService implements EmailService {
+    @Value("${frontend.url:http://localhost:5173}")
+    private String frontendUrl;
+
     /**
      * Service for sending emails through JavaMail.
      */
@@ -123,7 +127,7 @@ public class DefaultEmailService implements EmailService {
 
         String token = passwordResetService.createResetToken(userEmail, request);
 
-        String resetLink = "http://localhost:5173/reset-password?token=" + token;
+        String resetLink = frontendUrl + "/reset-password?token=" + token;
 
         htmlContent = htmlContent.replace("{{reset_link}}", resetLink);
         helper.setTo(userEmail);

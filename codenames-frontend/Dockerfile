@@ -1,3 +1,5 @@
+## LOCAL HOST DOCKER FILE
+
 # Use Node.js 20 as the base image
 FROM node:20
 
@@ -18,3 +20,23 @@ EXPOSE 5173
 
 # Start the application in development mode with host binding
 CMD ["npm", "run", "dev", "--", "--host"]
+
+## DOCKER FILE FOR PRODUCTION
+
+# FROM node:20 as build
+# WORKDIR /app
+# COPY package*.json ./
+# RUN npm install
+# COPY . .
+# RUN npm run build
+
+# FROM node:20-alpine
+# WORKDIR /app
+
+# RUN npm install -g serve
+
+# COPY --from=build /app/dist ./dist
+
+# EXPOSE 8080
+
+# CMD ["serve", "-s", "dist", "-l", "8080"]

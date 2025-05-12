@@ -1,5 +1,6 @@
 package org.example.codenames.security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 import org.example.codenames.jwt.JwtAuthFilter;
@@ -7,6 +8,7 @@ import org.example.codenames.jwt.JwtService;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.userDetails.UserEntityDetailsService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -31,9 +33,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.util.Optional;
 
-import static org.example.codenames.util.CookieUtils.createAuthCookie;
-import static org.example.codenames.util.CookieUtils.createLoggedInCookie;
-
 /**
  * Security configuration class that defines authentication and authorization settings for the application.
  */
@@ -42,6 +41,9 @@ import static org.example.codenames.util.CookieUtils.createLoggedInCookie;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class ConfigSecurity {
+    @Value("${frontend.url:http://localhost:5173}")
+    private String frontendUrl;
+
     private final UserRepository userRepository;
     private final JwtAuthFilter jwtAuthFilter;
     private final JwtService jwtService;
@@ -149,19 +151,34 @@ public class ConfigSecurity {
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
         return (request, response, authentication) -> {
-            OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
+            try {
+                OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
             String email = oauth2User.getAttribute("email");
 
             Optional<User> existingUser = userRepository.findByEmail(email);
 
             String token = jwtService.generateToken(existingUser.get().getUsername());
+            
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType("application/json");
+    
+            String jsonResponse = String.format(
+            "{\"message\":\"success\", \"token\":\"%s\"}",
+            token
+            );
 
-            response.addCookie(createAuthCookie(token, true));
-            response.addCookie(createLoggedInCookie(true));
-
-            response.sendRedirect("http://localhost:5173/games");
+            response.getWriter().write(jsonResponse);
+            response.getWriter().flush();
+            }
+            catch (Exception e){
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\":\"" + e.getMessage() + "\"}");
+                response.getWriter().flush();
+            }
         };
     }
+
 
     /**
      * Bean definition for password encoding using BCrypt.

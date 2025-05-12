@@ -1,31 +1,18 @@
+import Cookies from 'js-cookie';
+import { apiUrl } from '../config/api.tsx';
+
 /**
- * Logs out the user by sending a request to the server and clearing session cookies.
- * If successful, the user is redirected to the loading screen.
- * @async
- * @function logout
+ * Logs out the user by clearing localStorage and removing authentication cookies.
+ * Then redirects the user to the loading screen.
  */
-export const logout = async () => {
-  try {
-    const response = await fetch("http://localhost:8080/api/users/logout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include", // Include cookies in the request
-    });
+export const logout = () => {
+  localStorage.removeItem("userId");
+  localStorage.removeItem("gameId");
+  
+  Cookies.remove("authToken");
+  Cookies.remove("loggedIn");
 
-    if (response.ok) {
-      localStorage.removeItem("userId");
-      localStorage.removeItem("gameId");
-
-      window.location.href = "/loading";
-    } else {
-      const error = await response.text();
-      alert("Failed to log out: " + error);
-    }
-  } catch (error) {
-    alert("An error occurred during logout. Please try again later." + error);
-  }
+  window.location.href = "/loading";
 };
 
 /**
@@ -41,3 +28,48 @@ export function formatTime(seconds: number) {
     remainingSeconds
   ).padStart(2, "0")}`;
 }
+
+/**
+ * Retrieves the value of a specific cookie by name.
+ * @param {string} name - The name of the cookie to retrieve.
+ * @returns {string | undefined} - The value of the cookie.
+ */
+export function getCookie(name: string) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+
+  if (parts.length === 2) return parts.pop()?.split(';').shift() ?? undefined;
+}
+
+/**
+ * Retrieves user's id value.
+ *
+ */
+export async function getUserId() {
+  const token = getCookie("authToken");
+
+  if (!token) {
+    return null;
+  }
+
+  try {
+    const response = await fetch(`${apiUrl}/api/users/getId`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.error("Error while downloading a user:", response.status);
+      return null;
+    }
+
+    const userId = await response.text();
+    return userId !== "null" ? userId : null;
+  } catch (error) {
+    console.error("Error:", error);
+    return null;
+  }
+};
