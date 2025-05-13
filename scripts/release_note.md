@@ -1,11 +1,11 @@
 Sprint documentation
 **🔧 What's included in this release?**
-Added sprint documentation
+Added sprint backlog documentation.
 
 Key additions: 
-- pdf file
-- latex file
-- images
+- Pdf file
+- Latex file
+- required images
 
 **🚧 What's still under development?**
 - UI for voice chat
