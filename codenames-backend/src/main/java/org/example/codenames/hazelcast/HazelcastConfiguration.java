@@ -25,8 +25,11 @@ public class HazelcastConfiguration {
                         .setName("activeUsers")
                         .setTimeToLiveSeconds(180))
                 .addMapConfig(new MapConfig()
-                        .setName("gameSessions")
-                        .setTimeToLiveSeconds(180));
+                        .setName("gameSessions"))
+                .addMapConfig(new MapConfig()
+                        .setName("userMap"))
+                .addMapConfig(new MapConfig()
+                        .setName("gameStateMap"));
         config.getSerializationConfig()
                 .getCompactSerializationConfig()
                 .addSerializer(new UserCompactSerializer())

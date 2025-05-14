@@ -30,7 +30,12 @@ public class GameStateCompactSerializer implements CompactSerializer<GameState> 
         writer.writeArrayOfString("cards", gs.getCards());
         writer.writeArrayOfInt32("cardsColors", Arrays.stream(gs.getCardsColors()).mapToInt(Integer::intValue).toArray());
         writer.writeArrayOfInt32("cardsVotes", gs.getCardsVotes().stream().mapToInt(Integer::intValue).toArray());
-        writer.writeArrayOfInt32("cardsChosen", gs.getCardsChosen().stream().mapToInt(Integer::intValue).toArray());
+        writer.writeArrayOfInt32(
+                "cardsChosen",
+                gs.getCardsChosen() != null
+                        ? gs.getCardsChosen().stream().mapToInt(i -> i).toArray()
+                        : new int[0]
+        );
 
         writer.writeString("hint", gs.getHint());
         writer.writeInt32("hintNumber", gs.getHintNumber());
