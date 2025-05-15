@@ -319,6 +319,11 @@ const GameList: React.FC<GameListProps> = ({
             ))}
           </ul>
         </div>
+        <div 
+        className="list-background"
+        style={{ gridColumn: "2", gridRow: "2" }}
+        ></div>
+
       </RoomMenu>
       {isPasswordOverlayOpen && (
         <div className="overlay-backdrop">

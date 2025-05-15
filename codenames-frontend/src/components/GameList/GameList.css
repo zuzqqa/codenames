@@ -8,8 +8,22 @@
   height: 8vh;
 }
 
+.list-background{
+  background-color: #0e1724;
+  opacity: 30%;
+  height: 75%;
+  margin-top: 9%;
+  border-radius: 17px;
+  width: 77.6%;
+  position: absolute;
+  left: 50%;
+  transform: translate(-53.22%, 0);
+  z-index: -10;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+}
+
 .list-container {
-  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-y: auto;
   max-height: 75%;
   margin-top: 9%;
   border-radius: 20px;
