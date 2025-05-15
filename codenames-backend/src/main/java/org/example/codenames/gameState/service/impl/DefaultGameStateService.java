@@ -122,7 +122,7 @@ public class DefaultGameStateService implements GameStateService {
         }
         // Adding neutral cards
         cardColorsList.add(3);
-        for (int i = 0; i < cardsTotal - (cardsRed + cardsBlue); i++) {
+        for (int i = 0; i < cardsTotal - (cardsRed + cardsBlue + 1); i++) {
             cardColorsList.add(0);
         }
 
