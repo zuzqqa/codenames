@@ -20,6 +20,7 @@ import eyeIcon from "../../assets/icons/eye.svg";
 import eyeSlashIcon from "../../assets/icons/eye-slash.svg";
 import logoutButtonIcon from "../../assets/icons/logout.svg";
 import lockIcon from "../../assets/icons/lock-solid-1.png";
+import sadFaceIcon from "../../assets/icons/sad-face.svg";
 
 import { logout } from "../../shared/utils.tsx";
 import { validatePassword } from "../../utils/validation.tsx";
@@ -49,7 +50,63 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
   const params = new URLSearchParams(location.search);
   const token = params.get("token");
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
+  const [tokenExpired, setTokenExpired] = useState(false);
 
+  useEffect(() => {
+    const validateToken = async () => {
+      const newErrors: React.SetStateAction<{ id: string; message: string }[]> =
+        [];
+      setErrors(newErrors);
+
+      if (!token) {
+        console.error("Token is missing");
+        newErrors.push({
+          id: generateId(),
+          message: "Token is missing",
+        });
+        setErrors([...newErrors]);
+        return;
+      }
+
+      try {
+        const url = `${apiUrl}/api/users/token-validation/${token}`;
+        console.log("Calling API at:", url);
+
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+        } else if (response.status === 410) {
+          setTokenExpired(true);
+        } else {
+          console.error("Unexpected response status:", response.status);
+          newErrors.push({
+            id: generateId(),
+            message: `Unexpected error (Status: ${response.status})`,
+          });
+          setErrors([...newErrors]);
+        }
+      } catch (error) {
+        console.error("Error retrieving token validation status: ", error);
+        newErrors.push({
+          id: generateId(),
+          message: `Connection error: ${error.message}`,
+        });
+        setErrors([...newErrors]);
+      }
+    };
+
+    validateToken();
+  }, []);
+
+  /**
+   * Handles the change event for the password repeat input field.
+   * @param e - The event triggered when the password input changes.
+   */
   const handlePasswordRepeatChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPasswordRepeat(e.target.value);
     const inputValue = e.target.value;
@@ -61,6 +118,10 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
     }
   };
 
+  /**
+   * Handles the change event for the password input field.
+   * @param e - The event triggered when the password input changes.
+   */
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
     const inputValue = e.target.value;
@@ -133,6 +194,10 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
     }
   };
 
+  /**
+   * Handles the form submission for resetting the password.
+   * @param e - The form event triggered on submission.
+   */
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -210,7 +275,11 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
         setMusicVolume={updateMusicVolume}
         setSoundFXVolume={setSoundFXVolume}
       />
-      <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
+      <Button
+        variant="circle"
+        soundFXVolume={soundFXVolume}
+        onClick={toggleSettings}
+      >
         <img src={settingsIcon} alt="Settings" />
       </Button>
       {document.cookie
@@ -237,56 +306,72 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
       >
         {t("new-password")}
       </TitleComponent>
-      <LoginRegisterContainer variant="reset">
+      <LoginRegisterContainer variant="reset1">
         <div className="reset-password-container">
           <div className="reset-password-image">
             <div className="icon-circle">
               <img
-                src={lockIcon}
+                src={tokenExpired ? sadFaceIcon : lockIcon}
                 className="lock-icon no-select"
                 alt="Lock Icon"
               />
             </div>
           </div>
-          <form className="page-r" onSubmit={handleSubmit}>
-            <FormInput
-              type="text"
-              placeholder={t("PASSWORD")}
-              value={
-                !isPasswordVisible ? "●".repeat(password.length) : password
-              }
-              onChange={handlePasswordChange}
-              button={
-                <Button
-                  variant="eye"
-                  soundFXVolume={soundFXVolume}
-                  onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                >
-                  <img
-                    src={isPasswordVisible ? eyeSlashIcon : eyeIcon}
-                    alt={isPasswordVisible ? "Hide password" : "Show password"}
-                  />
-                </Button>
-              }
-            />
-            <FormInput
-              type="text"
-              placeholder={t("REPEAT-PASSWORD")}
-              value={
-                !isPasswordVisible
-                  ? "●".repeat(passwordRepeat.length)
-                  : passwordRepeat
-              }
-              onChange={handlePasswordRepeatChange}
-            />
-            <Button
-              type="submit"
-              variant="primary"
-              soundFXVolume={soundFXVolume}
-            >
-              <span className="button-text">{t("submit-button")}</span>
-            </Button>
-          </form>
+          {tokenExpired ? (
+              <p className="token-expired-message">
+                {t("token-expired-message")}{" "}
+                <a href="/send-reset-password" className="text-link">
+                  {t("try-reset-password")}
+                </a>{" "}
+                {t("or")}{" "}
+                <a href="/" className="text-link">
+                  {t("go-back-to-homepage")}
+                </a>
+                .
+              </p>
+          ) : (
+            <form className="page-r" onSubmit={handleSubmit}>
+              <FormInput
+                type="text"
+                placeholder={t("PASSWORD")}
+                value={
+                  !isPasswordVisible ? "●".repeat(password.length) : password
+                }
+                onChange={handlePasswordChange}
+                button={
+                  <Button
+                    variant="eye"
+                    soundFXVolume={soundFXVolume}
+                    onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                  >
+                    <img
+                      src={isPasswordVisible ? eyeSlashIcon : eyeIcon}
+                      alt={
+                        isPasswordVisible ? "Hide password" : "Show password"
+                      }
+                    />
+                  </Button>
+                }
+              />
+              <FormInput
+                type="text"
+                placeholder={t("REPEAT-PASSWORD")}
+                value={
+                  !isPasswordVisible
+                    ? "●".repeat(passwordRepeat.length)
+                    : passwordRepeat
+                }
+                onChange={handlePasswordRepeatChange}
+              />
+              <Button
+                type="submit"
+                variant="primary"
+                soundFXVolume={soundFXVolume}
+              >
+                <span className="button-text">{t("submit-button")}</span>
+              </Button>
+            </form>
+          )}
         </div>
       </LoginRegisterContainer>
       {errors.length > 0 && (

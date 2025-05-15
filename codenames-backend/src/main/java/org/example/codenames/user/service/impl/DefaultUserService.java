@@ -4,9 +4,9 @@ import com.github.javafaker.Faker;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.example.codenames.passwordResetToken.entity.PasswordResetToken;
-import org.example.codenames.passwordResetToken.repository.api.PasswordResetTokenRepository;
-import org.example.codenames.passwordResetToken.service.api.PasswordResetService;
+import org.example.codenames.tokens.passwordResetToken.entity.PasswordResetToken;
+import org.example.codenames.tokens.passwordResetToken.repository.api.PasswordResetTokenRepository;
+import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetServiceToken;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.api.UserService;
@@ -44,7 +44,7 @@ public class DefaultUserService implements UserService {
     /**
      * Service responsible for handling password reset process.
      */
-    private final PasswordResetService passwordResetService;
+    private final PasswordResetServiceToken passwordResetServiceToken;
 
     /**
      * Constructs a new DefaultUserService with the given user repository, password encoder, passwordResetTokenRepository and passwordResetService.
@@ -52,14 +52,14 @@ public class DefaultUserService implements UserService {
      * @param userRepository the user repository
      * @param passwordEncoder the password encoder
      * @param passwordResetTokenRepository the password reset tokens repository
-     * @param passwordResetService the password reset service
+     * @param passwordResetServiceToken the password reset service
      */
     @Autowired
-    public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PasswordResetTokenRepository passwordResetTokenRepository, PasswordResetService passwordResetService) {
+    public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PasswordResetTokenRepository passwordResetTokenRepository, PasswordResetServiceToken passwordResetServiceToken) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
-        this.passwordResetService = passwordResetService;
+        this.passwordResetServiceToken = passwordResetServiceToken;
     }
 
     /**
@@ -282,14 +282,13 @@ public class DefaultUserService implements UserService {
         if (optionalPasswordResetToken.isPresent()) {
             PasswordResetToken passwordResetToken = optionalPasswordResetToken.get();
 
-            if (passwordResetService.isValidToken(token, request)) {
+            if (passwordResetServiceToken.isValidToken(token, request)) {
                 userRepository.findByEmail(passwordResetToken.getUserEmail())
                         .ifPresent(user -> {
                             String encodedPassword = passwordEncoder.encode(password);
                             user.setPassword(encodedPassword);
                             userRepository.save(user);
                         });
-
                 return true;
             }
         }

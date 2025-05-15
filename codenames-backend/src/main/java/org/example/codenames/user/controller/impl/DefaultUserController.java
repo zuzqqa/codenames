@@ -7,8 +7,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import lombok.RequiredArgsConstructor;
 
-import org.example.codenames.exception.ExceptionMessage;
+import org.example.codenames.email.service.api.EmailService;
 import org.example.codenames.jwt.JwtService;
+import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetServiceToken;
 import org.example.codenames.user.entity.dto.FriendRequestsDTO;
 import org.example.codenames.user.entity.PasswordResetRequest;
 import org.example.codenames.user.entity.User;
@@ -44,6 +45,8 @@ import java.util.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class DefaultUserController implements UserController {
+    private final EmailService emailService;
+    private final PasswordResetServiceToken passwordResetServiceToken;
     @Value("${frontend.url:http://localhost:5173}")
     private String frontendUrl;
 
@@ -73,11 +76,10 @@ public class DefaultUserController implements UserController {
      * Creates a new user and generates an authentication token.
      *
      * @param user the user to be created
-     * @param response the HTTP response to add the authentication cookie
      * @return ResponseEntity with status 200 OK
      */
     @PostMapping
-    public ResponseEntity<Map<String, String>> createUser(@RequestBody User user, HttpServletResponse response, @RequestParam String language) throws MessagingException, IOException {
+    public ResponseEntity<Map<String, String>> createUser(@RequestBody User user, @RequestParam String language) throws MessagingException, IOException {
         Optional<String> errorMessage = userService.createUser(user);
 
         if (errorMessage.isPresent()) {
@@ -87,24 +89,8 @@ public class DefaultUserController implements UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
-        String token = jwtService.generateToken(user.getUsername());
-
         if (!user.isGuest() && !Objects.equals(user.getRoles(), "ROLE_ADMIN")) {
-            String activationLink = backendUrl + "/api/users/activate/" + token;
-
-            ClassPathResource resource = new ClassPathResource("mail-templates/activate_account_templates/activate_account_" + language + ".html");
-            String htmlContent = new String(Files.readAllBytes(resource.getFile().toPath()), StandardCharsets.UTF_8);
-
-            htmlContent = htmlContent.replace("${activationLink}", activationLink);
-
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setTo(user.getEmail());
-            helper.setSubject(Objects.equals(language, "pl") ? "Aktywacja konta" : "Account activation");
-            helper.setText(htmlContent, true);
-
-            mailSender.send(message);
+            emailService.sendAccountActivationEmail(user.getUsername(), user.getEmail(), language);
         }
 
         return ResponseEntity.ok().build();
@@ -255,7 +241,7 @@ public class DefaultUserController implements UserController {
     @GetMapping("/is-guest")
     public ResponseEntity<Boolean> isGuest(@RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || !token.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Bearer token is invalid.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
         }
 
         String username = jwtService.getUsernameFromToken(token);
@@ -275,11 +261,11 @@ public class DefaultUserController implements UserController {
         String username = userService.generateUniqueUsername();
 
         User guest = User.builder()
-                .username(username)
-                .password("")
-                .roles("ROLE_GUEST")
-                .isGuest(true)
-                .build();
+                         .username(username)
+                         .password("")
+                         .roles("ROLE_GUEST")
+                         .isGuest(true)
+                         .build();
 
         userService.createUser(guest);
 
@@ -364,11 +350,12 @@ public class DefaultUserController implements UserController {
         Optional<User> user = userService.getUserByUsername(username);
         if (user.isPresent()) {
             User u = user.get();
+
             FriendRequestsDTO dto = FriendRequestsDTO.builder()
-                                    .friends(u.getFriends())
-                                    .sentRequests(u.getSentRequests())
-                                    .receivedRequests(u.getReceivedRequests())
-                                    .build();
+                                                     .friends(u.getFriends())
+                                                     .sentRequests(u.getSentRequests())
+                                                     .receivedRequests(u.getReceivedRequests())
+                                                     .build();
 
             return ResponseEntity.ok(dto);
         } else {
@@ -387,10 +374,21 @@ public class DefaultUserController implements UserController {
     @PostMapping("/reset-password/{token}")
     public ResponseEntity<String> updatePassword(@PathVariable String token, HttpServletRequest request, @RequestBody PasswordResetRequest passwordResetRequest) {
         boolean success = userService.resetPassword(token, request, passwordResetRequest.getPassword());
+
         if (success) {
+            passwordResetServiceToken.tokenUsed(token, request);
+
             return ResponseEntity.ok().build();
         }
 
         return ResponseEntity.badRequest().body("Invalid or expired token.");
+    }
+
+    @GetMapping("/token-validation/{token}")
+    public ResponseEntity<Void> isPasswordResetTokenValid(@PathVariable String token, HttpServletRequest request) {
+        if (passwordResetServiceToken.isValidToken(token, request))
+            return ResponseEntity.ok().build();
+
+        return ResponseEntity.status(HttpStatus.GONE).build();
     }
 }
