@@ -53,7 +53,7 @@ export async function getUserId() {
   }
 
   try {
-    const response = await fetch(`${apiUrl}/api/users/getId`, {
+    const response = await fetch(`${apiUrl}/api/users/get-id`, {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`,

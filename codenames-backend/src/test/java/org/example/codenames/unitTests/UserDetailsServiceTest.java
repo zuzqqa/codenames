@@ -2,7 +2,7 @@ package org.example.codenames.unitTests;
 
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
-import org.example.codenames.userDetails.UserEntityDetailsService;
+import org.example.codenames.userDetails.service.UserEntityDetailsService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

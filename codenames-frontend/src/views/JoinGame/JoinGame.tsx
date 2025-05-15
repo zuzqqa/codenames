@@ -144,7 +144,7 @@ const JoinGame: React.FC<JoinGameProps> = ({
       }
 
       try {
-        const response = await fetch(`${apiUrl}/api/users/isGuest`, {
+        const response = await fetch(`${apiUrl}/api/users/is-guest`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,

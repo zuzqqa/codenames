@@ -231,7 +231,6 @@ const LoginPage: React.FC<LoginProps> = ({
 
   /**
    * Handles manual closing of a toast notification.
-   *
    * - Fades out the toast visually before removing it from the state.
    *
    * @param {string} id - The unique identifier of the notification toast to be closed.
@@ -270,31 +269,46 @@ const LoginPage: React.FC<LoginProps> = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify(userData),
-          credentials: "include",
         }
       );
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        console.error("Failed to parse JSON response:", e);
+        throw new Error("Failed to parse JSON response");
+      }
 
       if (response.ok) {
         document.cookie = `authToken=${data.token}; max-age=36000; path=/; secure; samesite=none`;
         document.cookie = `loggedIn=true; max-age=36000; path=/; secure; samesite=none`;
         window.location.href = "/loading";
-      } else if (response.status === 401) {
-        newErrors.push({
-          id: generateId(),
-          message: t("account-not-activated"),
-        });
-
-        setErrors([...newErrors]);
       } else {
-        const error = await response.text();
-        alert("Failed to log in: " + error);
-      }
+        if (response.status === 401) {
+          if (data.error && data.error.includes("not active")) {
+            console.error(data.error);
+            newErrors.push({
+              id: generateId(),
+              message: t("account-not-activated"),
+            });    
+          } else {
+            console.error(data.error);
+            newErrors.push({
+              id: generateId(),
+              message: t("invalid-login-or-password"),
+            });
+          }
+          setErrors([...newErrors]);
+        } else {
+          alert("Failed to log in: " + (data.error || "Unknown error"));
+        }  
+      } 
     } catch (error) {
+      console.error("Login error:", error);
       newErrors.push({
         id: generateId(),
-        message: t("invalid-login-or-password"),
+        message: t("server-connection-error"),
       });
       setErrors([...newErrors]);
     }

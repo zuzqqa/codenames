@@ -156,9 +156,7 @@ public class DefaultUserService implements UserService {
                     user.setGuest(false);
                     user.setDescription(updatedUser.getDescription());
                     user.setProfilePic(updatedUser.getProfilePic());
-//                    user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
 
-                    // Tylko jeśli hasło zostało przesłane i nie jest puste
                     if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
                         user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
                     }

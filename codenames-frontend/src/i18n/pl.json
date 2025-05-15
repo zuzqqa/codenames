@@ -17,7 +17,7 @@
   "home-subtitle": "Twoja misja zaczyna się teraz",
   "play-button-text": "Graj",
   "login-button-text": "Zaloguj się",
-    "forgot-password-text": "Zapomniałeś hasła?",
+  "forgot-password-text": "Zapomniałeś hasła?",
   "register-button-text": "Zarejestruj się",
   "play-as-guest-button-text": "Zagraj jako gość",
   "PASSWORD": "HASŁO",
@@ -82,5 +82,6 @@
   "copy": "Kopiuj",
   "link-copied": "Skopiowano link do schowka.",
   "invite-friends": "Zapros ludzi",
-  "invite-friends-text": "Skopiuj link i podziel się nim ze swoimi przyjaciółmi, aby mogli dołączyć do pokoju."
+  "invite-friends-text": "Skopiuj link i podziel się nim ze swoimi przyjaciółmi, aby mogli dołączyć do pokoju.",
+  "server-connection-error": "Nie można połączyć się z serwerem. Spróbuj ponownie później."
 }
