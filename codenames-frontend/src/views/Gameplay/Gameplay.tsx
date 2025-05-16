@@ -609,6 +609,17 @@ const Gameplay: React.FC<GameplayProps> = ({
     console.log("Updated amICurrentLeader:", amICurrentLeader);
   }, [amICurrentLeader]);
 
+    useEffect(() => {
+    console.log("Updated isHintTime:", isHintTime);
+  }, [isHintTime]);
+
+    useEffect(() => {
+    console.log("Updated isGuessingTime:", isGuessingTime);
+  }, [isGuessingTime]);
+
+  useEffect(() => {
+    console.log("Updated gameSession:", gameSession);
+  }, [gameSession]);
   /**
    * Effect that checks the game scores after every update to the `redTeamScore` or `blueTeamScore`.
    * If the red team score reaches 9 or the blue team score reaches 8, it sets the winning team,
@@ -763,13 +774,20 @@ const Gameplay: React.FC<GameplayProps> = ({
    * Retrieves the game ID from local storage and sends a GET request.
    */
   const changeTurn = () => {
-    if (isHintTime && gameSession?.gameState?.hintNumber == "0") {
+    console.log("changing turn");
+    if (isHintTime && gameSession?.gameState?.hintNumber == "0" && cardNumber == 0) {
       const newErrors: { id: string; message: string }[] = [];
 
       newErrors.push({
         id: generateId(),
         message: t("hint-zero"),
       });
+
+      if (isHintTime && gameSession?.gameState?.hintNumber === "0") {
+        if (gameSession && gameSession.gameState) {
+          gameSession.gameState.hintNumber = String(cardNumber);
+        }
+      }
 
       setErrors(newErrors);
       return;
@@ -791,14 +809,16 @@ const Gameplay: React.FC<GameplayProps> = ({
    *
    * @returns {void} If the card text is empty or the user is not a team leader, the function exits early.
    */
-  const sendHint = () => {
+const sendHint = async () => {
+    
     if (!cardText.trim()) return;
 
     const storedGameId = localStorage.getItem("gameId");
 
     if (!amIRedTeamLeader && !amIBlueTeamLeader) return;
 
-    fetch(`${apiUrl}/api/game-session/${storedGameId}/send-hint`, {
+      try {
+    await fetch(`${apiUrl}/api/game-session/${storedGameId}/send-hint`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -806,6 +826,15 @@ const Gameplay: React.FC<GameplayProps> = ({
       },
       body: JSON.stringify({ hint: cardText, hintNumber: cardNumber }),
     });
+
+    setCardText("");
+
+    changeTurn();
+
+  } catch (err) {
+    console.error("Błąd przy wysyłaniu hinta", err);
+  }
+
 
     setCardText("");
   };

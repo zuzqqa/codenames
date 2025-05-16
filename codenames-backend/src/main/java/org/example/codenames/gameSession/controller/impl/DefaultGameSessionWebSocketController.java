@@ -242,11 +242,17 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      */
     @GetMapping("/{id}/change-turn")
     public ResponseEntity<?> changeTurn(@PathVariable UUID id) throws JsonProcessingException {
+        System.out.println("entering changeTurn in DefaultGameSessionWebSocketController");
+
         // Change the turn
         gameStateService.changeTurn(id);
+        System.out.println("after gameStateService.changeTurn(id) in DefaultGameSessionWebSocketController");
 
         GameSession gameSession = gameSessionRepository.findBySessionId(id).orElseThrow(() ->
                 new IllegalArgumentException("Game with an ID of " + id + " does not exist."));
+
+        System.out.println("isHintTurn in DefaultGameSessionWebSocketController: " + gameSession.getGameState().isHintTurn());
+        System.out.println("isGuessingTurn in DefaultGameSessionWebSocketController: " + gameSession.getGameState().isGuessingTurn());
 
         clearVotes(gameSession, gameSessionRepository);
 
