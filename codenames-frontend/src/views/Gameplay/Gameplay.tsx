@@ -461,8 +461,6 @@ const Gameplay: React.FC<GameplayProps> = ({
 
         setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
         setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
-        console.log(userId);
-        console.log(data);
         setAmICurrentLeader(
           data.gameState.currentSelectionLeader.id === userId
         );
@@ -600,26 +598,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     }
   }, [gameSession?.gameState?.currentSelectionLeader]);
 
-  /**
-   * Effect that logs the updated value of `amICurrentLeader` whenever it changes.
-   *
-   * @returns {void} Logs the updated state of `amICurrentLeader`.
-   */
-  useEffect(() => {
-    console.log("Updated amICurrentLeader:", amICurrentLeader);
-  }, [amICurrentLeader]);
 
-    useEffect(() => {
-    console.log("Updated isHintTime:", isHintTime);
-  }, [isHintTime]);
-
-    useEffect(() => {
-    console.log("Updated isGuessingTime:", isGuessingTime);
-  }, [isGuessingTime]);
-
-  useEffect(() => {
-    console.log("Updated gameSession:", gameSession);
-  }, [gameSession]);
   /**
    * Effect that checks the game scores after every update to the `redTeamScore` or `blueTeamScore`.
    * If the red team score reaches 9 or the blue team score reaches 8, it sets the winning team,
@@ -774,7 +753,6 @@ const Gameplay: React.FC<GameplayProps> = ({
    * Retrieves the game ID from local storage and sends a GET request.
    */
   const changeTurn = () => {
-    console.log("changing turn");
     if (isHintTime && gameSession?.gameState?.hintNumber == "0" && cardNumber == 0) {
       const newErrors: { id: string; message: string }[] = [];
 

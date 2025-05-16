@@ -228,25 +228,18 @@ public class DefaultGameStateService implements GameStateService {
      */
     @Override
     public void toogleTurn(GameSession gameSession) {
-        System.out.println("entering toogleTurn in DefaultGameStateService");
         GameState gameState = gameSession.getGameState();
 
         if (!gameState.isHintTurn()) {
             gameState.setTeamTurn((gameState.getTeamTurn() == 0) ? 1 : 0);
         }
 
-        System.out.println("isHintTurn before toggle: " + gameState.isHintTurn());
         gameState.setHintTurn(!gameState.isHintTurn());
-        System.out.println("isHintTurn after toggle: " + gameState.isHintTurn());
 
-        System.out.println("isGuessingTurn before toggle: " + gameState.isGuessingTurn());
         gameState.setGuessingTurn(!gameState.isGuessingTurn());
-        System.out.println("isGuessingTurn after toggle: " + gameState.isGuessingTurn());
 
 
         DefaultGameSessionWebSocketController.clearVotes(gameSession, gameSessionRepository);
-        System.out.println("isGuessingTurn after clearVotes: " + gameState.isGuessingTurn());
-        System.out.println("isHintTurn after clearVotes: " + gameState.isHintTurn());
 
     }
 
@@ -257,23 +250,15 @@ public class DefaultGameStateService implements GameStateService {
      */
     @Override
     public void changeTurn(UUID gameId) {
-        System.out.println("entering changeTurn in DefaultGameStateService");
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
         this.toogleTurn(gameSession);
-        System.out.println("after this.toogleTurn(gameSession) in DafaultGameState");
-        System.out.println("isHintTurn: " + gameSession.getGameState().isHintTurn());
-        System.out.println("isGuessingTurn: " + gameSession.getGameState().isGuessingTurn());
 
         this.chooseRandomCurrentLeader(gameId);
         gameSession = gameSessionRepository.findBySessionId(gameId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
         gameSessionRepository.save(gameSession);
-
-        System.out.println("after this.chooseRandomCurrentLeader(gameId) in DafaultGameState");
-        System.out.println("isHintTurn: " + gameSession.getGameState().isHintTurn());
-        System.out.println("isGuessingTurn: " + gameSession.getGameState().isGuessingTurn());
     }
 
     /**
@@ -283,7 +268,6 @@ public class DefaultGameStateService implements GameStateService {
      */
     @Override
     public void chooseRandomCurrentLeader(UUID gameId) {
-        System.out.println("Entering chooseRandomCurrentLeader");
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
@@ -292,8 +276,7 @@ public class DefaultGameStateService implements GameStateService {
         User newLeader = getNewLeader(gameSession, connectedUsers);
 
         gameSession.getGameState().setCurrentSelectionLeader(newLeader);
-        System.out.println(newLeader);
-        System.out.println(gameSession.getGameState().getCurrentSelectionLeader());
+
         gameSessionRepository.save(gameSession);
     }
 
