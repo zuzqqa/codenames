@@ -3,6 +3,7 @@ package org.example.codenames.scheduler;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
+import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,6 +25,12 @@ public class SchedulerService {
     private final IMap<String, LocalDateTime> activityMap;
 
     /**
+     * The gameSessionMap is a Hazelcast distributed map that stores the game sessions.
+     * The key is the game session ID and the value is the GameSession object.
+     */
+    private final IMap<String, GameSession> gameSessionMap;
+
+    /**
      * The userRepository is a Spring Data JPA repository that provides CRUD operations for User entities.
      */
     private final UserRepository userRepository;
@@ -35,6 +42,7 @@ public class SchedulerService {
      */
     public SchedulerService(HazelcastInstance hazelcastInstance, UserRepository userRepository) {
         this.activityMap = hazelcastInstance.getMap("activeUsers");
+        this.gameSessionMap = hazelcastInstance.getMap("gameSessions");
         this.userRepository = userRepository;
     }
 
@@ -61,4 +69,27 @@ public class SchedulerService {
         }
     }
 
+    /**
+     * Scheduled task to clean up the game session collection.
+     * This task runs every 10 minutes.
+     * Firstly it deletes any inactive users from the game sessions.
+     * Next it checks the game session map for active game sessions and deletes any game sessions that have no connected users.
+     */
+    @Scheduled(fixedRate = 600000)
+    public void cleanGameSessionCollection() {
+        Set<String> gameSessionKeys = gameSessionMap.keySet();
+        Set<String> activityKeys = activityMap.keySet();
+        List<GameSession> allGameSessions = gameSessionMap.values().stream().toList();
+        if(allGameSessions.isEmpty()) {
+            return;
+        }
+
+        for (GameSession gameSession : allGameSessions) {
+            gameSession.getConnectedUsers().get(0).removeIf(user -> !activityKeys.contains(user.getId()));
+            gameSession.getConnectedUsers().get(1).removeIf(user -> !activityKeys.contains(user.getId()));
+            if(gameSession.getConnectedUsers().get(0).isEmpty() && gameSession.getConnectedUsers().get(1).isEmpty()) {
+                gameSessionMap.delete(gameSession.getSessionId());
+            }
+        }
+    }
 }

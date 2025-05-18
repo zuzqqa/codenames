@@ -347,7 +347,6 @@ const Gameplay: React.FC<GameplayProps> = ({
         );
         if (!response.ok) throw new Error("Failed to fetch game session");
         const data = await response.json();
-        
         setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
         setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
         setAmICurrentLeader(
