@@ -289,24 +289,28 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
           <img src={logoutButtonIcon} onClick={logout} alt="Logout" />
         </Button>
       )}
-      <TitleComponent
+      <LoginRegisterContainer variant="reset1">
+        <TitleComponent
         soundFXVolume={soundFXVolume}
         customStyle={{
-          fontSize: "4rem",
+          fontSize: "calc(3.6rem + 0.2vw)",
           textAlign: "left",
-          marginLeft: "35%",
-          marginBottom: "-1.2%",
+          position: "absolute",
+          top: "calc(-22rem - 0.2vh)",
+          left: "1.2rem",
+          whiteSpace: "nowrap"
         }}
         shadowStyle={{
-          fontSize: "4rem",
+          fontSize: "calc(3.6rem + 0.2vw)",
           textAlign: "left",
-          marginLeft: "35%",
-          marginBottom: "-1.2%",
+          position: "absolute",
+          top: "calc(-22rem - 0.2vh)",
+          left: "1.2rem",
+          whiteSpace: "nowrap"
         }}
       >
         {t("new-password")}
       </TitleComponent>
-      <LoginRegisterContainer variant="reset1">
         <div className="reset-password-container">
           <div className="reset-password-image">
             <div className="icon-circle">

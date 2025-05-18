@@ -386,7 +386,7 @@ public class DefaultUserController implements UserController {
 
     @GetMapping("/token-validation/{token}")
     public ResponseEntity<Void> isPasswordResetTokenValid(@PathVariable String token, HttpServletRequest request) {
-        if (passwordResetServiceToken.isValidToken(token, request))
+        if (passwordResetServiceToken.isValidToken(token))
             return ResponseEntity.ok().build();
 
         return ResponseEntity.status(HttpStatus.GONE).build();
