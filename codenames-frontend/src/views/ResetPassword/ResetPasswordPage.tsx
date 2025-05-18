@@ -23,6 +23,7 @@ import lockIcon from "../../assets/icons/lock-solid-1.png";
 
 import { logout } from "../../shared/utils.tsx";
 import { validatePassword } from "../../utils/validation.tsx";
+import { apiUrl } from "../../config/api.tsx";
 
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -161,7 +162,7 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
       }
 
       const response = await fetch(
-        "http://localhost:8080/api/users/reset-password/" + token,
+        `${apiUrl}/api/users/reset-password/` + token,
         {
           method: "POST",
           headers: {
@@ -209,8 +210,8 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
         setMusicVolume={updateMusicVolume}
         setSoundFXVolume={setSoundFXVolume}
       />
-      <Button variant="circle" soundFXVolume={soundFXVolume}>
-        <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
+      <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
+        <img src={settingsIcon} alt="Settings" />
       </Button>
       {document.cookie
         .split("; ")

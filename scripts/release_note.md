@@ -1,16 +1,17 @@
-Improved hint pop up
+Sprint documentation
 **🔧 What's included in this release?**
-Added some improvements and quality of life changes to the hint pop up
+Added sprint backlog documentation.
 
 Key additions: 
-- Added exit button to exit the hint pop up
-- Added confirm button to confirm the hint
-- Added the ability to quit pop up by clicking with the mouse button outside of the hint card
-- Added the ability to modify slider value by using arrows
-- Centered text on the card
+- Pdf file
+- Latex file
+- required images
 
 **🚧 What's still under development?**
-- Preparations for demployment on Google Cloud Run have started
+- UI for voice chat
+- Automated deployment pipeline
+- Further gameplay fixes and quality of life improvements
+- Full socket-io integration chat fix
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 

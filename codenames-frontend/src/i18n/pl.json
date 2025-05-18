@@ -78,5 +78,9 @@
   "too-few-players": "Zbyt mało graczy, aby rozpocząć grę.",
   "logged-in-as": "Zalogowano jako: ",
   "profile-title": "Profil",
-  "leave": "Opuść drużynę"
+  "leave": "Opuść drużynę",
+  "copy": "Kopiuj",
+  "link-copied": "Skopiowano link do schowka.",
+  "invite-friends": "Zapros ludzi",
+  "invite-friends-text": "Skopiuj link i podziel się nim ze swoimi przyjaciółmi, aby mogli dołączyć do pokoju."
 }

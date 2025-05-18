@@ -36,8 +36,9 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ soundFXVolume }) => {
     const randomDuration = Math.random() * 2000 + 2000;
 
     // Set random navigation timeout
+    const endpoint = localStorage.getItem("gameId") ? "/game-lobby" : "/games";
     const timer = setTimeout(() => {
-      navigate("/games");
+      navigate(endpoint);
     }, randomDuration);
 
     // Dynamically set CSS variable for the animation duration

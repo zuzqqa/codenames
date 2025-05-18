@@ -67,6 +67,123 @@
   scale: 106%;
 }
 
+.lobby-link-switch {
+  position: absolute;
+  top: -235%;
+  left: 40%;
+  transform: translate(-50%, -50%);
+  margin: auto;
+  z-index: 15;
+  scale: 5%;
+}
+
+.lobby-link-isle {
+  position: absolute;
+  top: -75%;
+  right: 0;
+  width: 200px;
+  height: 100%;
+  background: linear-gradient(360deg, #f0e0b5 0%, #eed8b0 88.89%);
+  box-shadow: -4px 0 10px rgba(0, 0, 0, 0.3);
+  border-radius: 0 10px 10px 0;
+  padding: 1rem;
+  transition: right 0.5s ease-in-out;
+  z-index: -2;
+}
+
+.lobby-link-isle.expanded {
+  right: -48.98%;
+}
+
+.isle-image {
+  position: relative;
+  top: -5%;
+  left: 42%;
+  width: 21%;
+  height: 20%;
+}
+
+.isle-title {
+  position: absolute;
+  top: 14%;
+  left: 17.5%;
+  font-size: calc(0.8rem + 0.4vw);
+  color: #393633;
+  text-align: center;
+  font-weight: bold;
+}
+
+.isle-text {
+  position: absolute;
+  top: 30%;
+  left: 3%;
+  font-size: calc(0.5rem + 0.4vw);
+  color: #393633;
+  text-align: center;font-weight: normal;
+}
+
+.isle-fields {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: auto;
+  width: 100%;
+  gap: 1rem;
+}
+
+.link-btn {
+  flex-shrink: 0;
+  position: absolute;
+  top: 82%;
+  left: 81.5%;
+  transform: translate(-50%, -50%);
+  margin: auto;
+  z-index: 15;
+  width: 30%;
+  height: 20%;
+  font-size: 0.5rem;
+}
+
+.lobby-link-isle .link-btn {
+  background-image: linear-gradient(to top, #172956, #275a8d) !important;
+  border-radius: 0 10px 10px 0;
+}
+
+.link-btn .button-text {
+  font-size: calc(0.2rem + 0.8vw);
+}
+
+.lobby-link-textbox {
+  resize: none;
+  position: absolute;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 50%;
+  height: 11%;
+  top: 72%;
+  left: 3.25%;
+  padding: 11px 15px 10px;
+  font-size: calc(0.8rem + 0.4vw);
+  color: #000000;
+  background-color: #f0e0b5;
+  border: none;
+  border-radius: 10px 0 0 10px;
+  outline: none;
+  box-shadow: 4px 4px 6px 4px rgba(0, 0, 0, 0.3);
+  transition: border-color 0.3s, box-shadow 0.3s;
+  text-indent: 1px;
+}
+
+.lobby-link-textbox:focus {
+  /*white-space: initial;*/
+  /*text-overflow: initial;*/
+  /*height: 40%;*/
+  /*margin-top: 8px;*/
+}
+
 .lobby-players {
   width: 122.5%;
   max-height: 80%;

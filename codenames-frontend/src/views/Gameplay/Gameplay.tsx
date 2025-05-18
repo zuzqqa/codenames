@@ -21,13 +21,19 @@ import polygon1Img from "../../assets/images/Polygon1.png";
 import polygon2Img from "../../assets/images/Polygon2.png";
 import cardSound from "../../assets/sounds/card-filp.mp3";
 import votingLabel from "../../assets/images/medieval-label.png";
+import closeIcon from "../../assets/icons/close.png";
+import micGoldIcon from "../../assets/icons/mic-gold.svg";
 
 import "./Gameplay.css";
+
 import Chat from "../../components/Chat/Chat.tsx";
-import { Client } from "@stomp/stompjs";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useWebSocket } from "./useWebSocket";
+
+import { useNavigate } from "react-router-dom";
 import AudioRoom from "../../components/AudioRoom/AudioRoom.tsx";
+import { apiUrl, socketUrl } from "../../config/api.tsx";
+import { io } from "socket.io-client";
+import { getUserId } from "../../shared/utils.tsx";
+import Cookies from "js-cookie";
 
 /**
  * Represents properties for controlling gameplay-related settings, such as volume levels.
@@ -115,9 +121,8 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [cardText, setCardText] = useState("");
   const [cardNumber, setCardNumber] = useState(1);
   const storedGameId = localStorage.getItem("gameId");
-  const gameSessionData = useWebSocket(storedGameId);
   const [gameSession, setGameSession] = useState<GameSession>();
-
+  const [gameSessionData, setGameSessionData] = useState<GameSession>();
   const [redTeamPlayers, setRedTeamPlayers] = useState<User[]>([]);
   const [blueTeamPlayers, setBlueTeamPlayers] = useState<User[]>([]);
   const [myTeam, setMyTeam] = useState<string | null>(null);
@@ -143,8 +148,21 @@ const Gameplay: React.FC<GameplayProps> = ({
   const clickAudio = new Audio(cardSound);
   const [votedCards, setVotedCards] = useState<number[]>([]);
   const [userId, setUserId] = useState<string | null>();
-  const [username, setUsername] = useState<string | null>(null);
+  const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+  const [ownUsername, setOwnUsername] = useState(
+    localStorage.getItem("username") || ""
+  );
 
+  /**
+   * This function toggles the visibility of the overlay.
+   */
+  const toggleOverlay = () => {
+    setIsOverlayVisible(!isOverlayVisible);
+  };
+
+  /**
+   * This function toggles the visibility of the settings modal.
+   */
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
@@ -205,7 +223,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/game-session/${storedGameId}/voteCards`,
+        `${apiUrl}/api/game-session/${storedGameId}/voteCards`,
         {
           method: "POST",
           body: JSON.stringify({
@@ -239,7 +257,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
     try {
       const response = fetch(
-        `http://localhost:8080/api/game-session/${storedGameId}/reveal-card`,
+        `${apiUrl}/api/game-session/${storedGameId}/reveal-card`,
         {
           method: "POST",
           body: String(cardIndex),
@@ -254,26 +272,16 @@ const Gameplay: React.FC<GameplayProps> = ({
   };
 
   /**
-   * Effect that triggers the function to fetch user by user id.
-   *  when the component is mounted.
-   */
-  useEffect(() => {
-    fetchUserId();
-  }, []);
-
-  /**
-   * Fetches the user ID from the server.
-   * Saves the fetched user ID in localStorage.
+   * Fetches the user ID from local storage and sets it in the state.
+   * @returns {void} Fetches the user ID from local storage and sets it in the state.
    */
   const fetchUserId = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/users/getId", {
-        method: "GET",
-        credentials: "include",
-      });
-      if (!response.ok) throw new Error("Failed to fetch user ID");
+      const id = await getUserId();
 
-      const id = await response.text();
+      if (id === null) {
+        return;
+      }
       localStorage.setItem("userId", id);
       setUserId(id);
     } catch (error) {
@@ -281,28 +289,67 @@ const Gameplay: React.FC<GameplayProps> = ({
     }
   };
 
-    useEffect(() => {
-      const fetchUsername = async () => {
-        try {
-          const response = await fetch("http://localhost:8080/api/users/getUsername", {
+  useEffect(() => {
+    fetchUserId();
+
+    const token = Cookies.get("authToken");
+
+    if (token) {
+          fetch(`${apiUrl}/api/users/getUsername`, {
             method: "GET",
-            credentials: "include"
-          });
-  
-          if (response.ok) {
-            const text = await response.text();
-            if (text !== "null") {
-              setUsername(text);
-            }
-          } else {
-            console.error("Failed to fetch username");
-          }
-        } catch (error) {
-          console.error("Error fetching username", error);
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+            .then((response) => response.text())
+            .then((name) => {
+              if (name !== "null") {
+                setOwnUsername(name);
+              }
+            })
+            .catch((err) => console.error("Failed to fetch username", err));
+        } else {
+          console.warn("No auth token found");
         }
-      };
-      fetchUsername();
-    }, []);
+  }, []);
+
+  /**
+   * Effect that triggers the function to fetch user by user id.
+   *  when the component is mounted.
+   */
+  useEffect(() => {
+    const gameSocket = io(`${socketUrl}/game`, {
+      transports: ["websocket"],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
+
+    gameSocket.on("connect", () => {
+      if (storedGameId) {
+        gameSocket.emit("joinGame", storedGameId);
+      }
+    });
+
+    gameSocket.on("gameSessionData", (updatedGameSessionJson: string) => {
+      try {
+        const updatedGameSession: GameSession = JSON.parse(
+          updatedGameSessionJson
+        );
+
+        setGameSessionData(updatedGameSession);
+      } catch (err) {
+        console.error("Error parsing gameSessionsList JSON:", err);
+      }
+    });
+
+    gameSocket.on("connect_error", (error: any) => {
+      console.error("Game socket connection error:", error);
+    });
+
+    return () => {
+      gameSocket.disconnect();
+    };
+  }, []);
 
   /**
    * Toggles the visibility of the black card.
@@ -313,6 +360,10 @@ const Gameplay: React.FC<GameplayProps> = ({
     clickAudio.play();
     setIsCardVisible(true);
   };
+
+  useEffect(() => {
+    getUserId();
+  }, []);
 
   /**
    * Effect that loads the game session and sets the game state when the component is mounted.
@@ -329,23 +380,15 @@ const Gameplay: React.FC<GameplayProps> = ({
    * @returns {void} Updates the game session state and various other states based on fetched data.
    */
   useEffect(() => {
-    if (!storedGameId) {
-      navigate("/games");
-      return;
-    }
-
-    /**
-     * Fetches the game session data, then sets various states related to the game session.
-     * Handles errors if fetching fails.
-     *
-     * @returns {void} Updates the component's states based on the fetched data.
-     */
     const fetchGameSession = async () => {
+      if (!userId) return;
+
       try {
         const response = await fetch(
-          `http://localhost:8080/api/game-session/${storedGameId}`
+          `${apiUrl}/api/game-session/${storedGameId}/full`
         );
         if (!response.ok) throw new Error("Failed to fetch game session");
+
         const data = await response.json();
         setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
         setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
@@ -371,7 +414,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     };
 
     fetchGameSession();
-  }, []);
+  }, [userId]);
 
   /**
    * Effect that triggers the function to reveal cards voted by the team
@@ -411,14 +454,18 @@ const Gameplay: React.FC<GameplayProps> = ({
     const fetchGameSession = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/game-session/${storedGameId}`
+          `${apiUrl}/api/game-session/${storedGameId}/full`
         );
         if (!response.ok) throw new Error("Failed to fetch game session");
         const data = await response.json();
 
         setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
         setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
-        setAmICurrentLeader(data.gameState.currentSelectionLeader.id === userId);
+        console.log(userId);
+        console.log(data);
+        setAmICurrentLeader(
+          data.gameState.currentSelectionLeader.id === userId
+        );
         setGameSession(data);
         setRedTeamPlayers(data.connectedUsers[0] || []);
         setBlueTeamPlayers(data.connectedUsers[1] || []);
@@ -723,22 +770,19 @@ const Gameplay: React.FC<GameplayProps> = ({
         id: generateId(),
         message: t("hint-zero"),
       });
-  
+
       setErrors(newErrors);
       return;
     }
 
     const storedGameId = localStorage.getItem("gameId");
 
-    fetch(
-      `http://localhost:8080/api/game-session/${storedGameId}/change-turn`,
-      {
-        method: "GET",
-        headers: {
-          credentials: "include",
-        },
-      }
-    );
+    fetch(`${apiUrl}/api/game-session/${storedGameId}/change-turn`, {
+      method: "GET",
+      headers: {
+        credentials: "include",
+      },
+    });
   };
 
   /**
@@ -754,7 +798,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
     if (!amIRedTeamLeader && !amIBlueTeamLeader) return;
 
-    fetch(`http://localhost:8080/api/game-session/${storedGameId}/send-hint`, {
+    fetch(`${apiUrl}/api/game-session/${storedGameId}/send-hint`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -837,7 +881,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     if (text.split(" ").length == 1) {
       return true;
     }
-    
+
     newErrors.push({
       id: generateId(),
       message: t("hint-one-word"),
@@ -889,12 +933,35 @@ const Gameplay: React.FC<GameplayProps> = ({
           })()}
         </span>
 
-        {/* Settings button */}
-        <Button variant="circle" soundFXVolume={soundFXVolume}>
-          <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
+        <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
+          <img src={settingsIcon} alt="Settings" />
         </Button>
 
-        {/* Settings modal */}
+        <div className={`custom-overlay ${isOverlayVisible ? "open" : ""}`}>
+          <div className="overlay-content">
+            <button
+              className="close-btn"
+              onClick={() => setIsOverlayVisible(false)}
+            >
+              <img src={closeIcon}></img>
+            </button>
+            <div className="audio-room">
+              <AudioRoom soundFXVolume={soundFXVolume} />
+            </div>
+          </div>
+        </div>
+
+        {!isOverlayVisible && (
+          <Button
+            variant="half-circle"
+            className="half-circle-btn"
+            soundFXVolume={soundFXVolume}
+            onClick={() => setIsOverlayVisible(true)}
+          >
+            <img className="mic-icon" src={micGoldIcon} alt="Microphone" />
+          </Button>
+        )}
+
         <SettingsModal
           isOpen={isSettingsOpen}
           onClose={toggleSettings}
@@ -914,9 +981,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         <div className="banner-container">
           <img src={getBanner()} />
         </div>
-        <div className="audio-room">
-          <AudioRoom soundFXVolume={soundFXVolume} />
-        </div>
+
         <Chat />
         <div className="content-container">
           <div className="timer-container">
@@ -1002,7 +1067,10 @@ const Gameplay: React.FC<GameplayProps> = ({
                     isHintTime &&
                     whosTurn !== myTeam) ||
                   ((amIBlueTeamLeader || amIRedTeamLeader) && isGuessingTime) ||
-                  (!amIBlueTeamLeader && !amIRedTeamLeader && !amICurrentLeader && isGuessingTime) ||
+                  (!amIBlueTeamLeader &&
+                    !amIRedTeamLeader &&
+                    !amICurrentLeader &&
+                    isGuessingTime) ||
                   (!amIBlueTeamLeader && !amIRedTeamLeader && isHintTime) ||
                   (!amIBlueTeamLeader &&
                     !amIRedTeamLeader &&
@@ -1013,7 +1081,9 @@ const Gameplay: React.FC<GameplayProps> = ({
                 }
                 onClick={changeTurn}
               >
-                <span className="button-text">{amICurrentLeader ? t("pass-round") : t("end-round")}</span>
+                <span className="button-text">
+                  {amICurrentLeader ? t("pass-round") : t("end-round")}
+                </span>
               </Button>
               <div className="horizontal-gold-bar" />
             </div>
@@ -1063,7 +1133,7 @@ const Gameplay: React.FC<GameplayProps> = ({
               <input
                 type="range"
                 min={1}
-                max={whosTurn === "blue" ? (8 - blueTeamScore) : (9 - redTeamScore)}
+                max={whosTurn === "blue" ? 8 - blueTeamScore : 9 - redTeamScore}
                 className="codename-slider"
                 value={cardNumber}
                 onChange={(e) => setCardNumber(+e.target.value)}
@@ -1113,9 +1183,9 @@ const Gameplay: React.FC<GameplayProps> = ({
             ))}
           </div>
         )}
-        {username && (
+        {ownUsername && (
           <div className="logged-in-user gold-text">
-            { t('logged-in-as') } {username}
+            { t('logged-in-as') } {ownUsername}
           </div>
         )}
       </BackgroundContainer>

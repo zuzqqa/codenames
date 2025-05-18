@@ -18,10 +18,18 @@ import spinnerIcon from "../../assets/icons/spinner.svg";
 
 import "../../styles/App.css";
 import "../ResetPassword/ResetPasswordRequestPage.css";
+import { apiUrl } from "../../config/api.tsx";
 
+/**
+ * Generates a unique ID for notifications and errors.
+ * @returns A unique identifier string.
+ */
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 
+/**
+ * ResetPasswordRequestProps defines the properties for the ResetPasswordRequestPage component.
+ */ 
 interface ResetPasswordRequestProps {
   setVolume: (volume: number) => void;
   soundFXVolume: number;
@@ -66,7 +74,7 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
 
     try {
       const response = await fetch(
-        "http://localhost:8080/api/email/reset-password",
+        `${apiUrl}/api/email/reset-password`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -245,8 +253,8 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
         setMusicVolume={updateMusicVolume}
         setSoundFXVolume={setSoundFXVolume}
       />
-      <Button variant="circle" soundFXVolume={soundFXVolume}>
-        <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
+      <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
+        <img src={settingsIcon} alt="Settings" />
       </Button>
       {document.cookie
         .split("; ")

@@ -13,7 +13,7 @@ interface ButtonProps {
     /** Button type (default is "button") */
     type?: "button" | "submit" | "reset";
     /** Button variant for styles (default is "primary") */
-    variant?: "primary" | "primary-1" | "room" | "circle"| "circle-profile" | "circle-back" | "session" | "help" | "eye" | "eye2" | "logout" | "search" | "join-team" | "small" | "edit" | "navy-blue" | "transparent"; // Button variant for styles (default is "primary")
+    variant?: "primary" | "primary-1" | "room" | "circle"| "circle-profile" | "circle-back" | "session" | "help" | "eye" | "eye2" | "logout" | "search" | "join-team" | "small" | "edit" | "navy-blue" | "transparent" | "half-circle"; // Button variant for styles (default is "primary")
     /** Disabled state (default is false) */
     disabled?: boolean; 
     /** Sound volume for the click effect */
@@ -31,7 +31,7 @@ interface ButtonProps {
 const playSound = (volume: number) => {
     const audio = new Audio(soundFile);
     audio.volume = volume / 100;
-    audio.play().then();
+    audio.play();
 };
 
 /**

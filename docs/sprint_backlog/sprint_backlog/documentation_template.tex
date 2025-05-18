@@ -1,0 +1,477 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DOCUMENT DEFINITION AND BASIC SETTINGS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[12pt,a4paper,colorlinks=true,linkcolor=NavyBlue,citecolor=red,urlcolor=NavyBlue]{book}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}         
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FONT AND STYLE PACKS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{mathpazo}             
+\usepackage[semibold]{sourcesanspro}
+\usepackage{sectsty}
+\allsectionsfont{\sffamily} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% COLORS AND GRAPHIC STYLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{color}
+\definecolor{Valentia}{RGB}{233,78,82}
+\definecolor{Titleblue}{RGB}{114,146,162}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LAYOUT AND FORMATTING PACKAGES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{mdframed}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage[absolute]{textpos}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{geometry}
+\usepackage{scrextend}
+\usepackage{enumitem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% HEADER AND FOOTER SETTINGS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyheadoffset{0.005\textwidth}
+\fancyhead[LE]{\thepage}
+\fancyhead[RE]{\nouppercase\leftmark}
+\fancyhead[RO]{\thepage}
+\fancyhead[LO]{\nouppercase\rightmark}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% HYPERLINKS AND CHAPTER STYLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{hyperref}
+\usepackage[Sonny]{fncychap}
+\usepackage[colorlinks=true, linkcolor=blue, citecolor=red, urlcolor=blue]{hyperref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BEGINNING OF THE DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TITLE PAGE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{titlepage}
+\newgeometry{left=2.5cm, bottom=3cm, top=2cm, right=2.5cm}
+
+\tikz[remember picture,overlay] \node[opacity=0.03,inner sep=0pt] at (73.6mm, -124.25mm){\includegraphics{characters.png}};
+
+\centering
+\color{black}
+\fontsize{24}{13}\selectfont
+\textbf{DOKUMENT PROJEKTU} \\[2mm]
+\normalsize
+\color{black}
+\bigskip
+\textbf{Wersja dokumentu: 1.2}\\[1mm]
+\bigskip
+\textbf{Data utworzenia: 27.04.2025}\\[1mm]
+\bigskip
+\textbf{Data ostatniej aktualizacji: 28.04.2025}
+
+% Title of the project
+\color{black}
+\vspace{2cm}
+{\fontsize{28}{32} \selectfont \textbf{Gra internetowa}}\\ 
+\vspace{0.3cm} 
+{\fontsize{45}{32} \selectfont \textbf{Codenames}} 
+
+% Subtitle of the project
+\vspace{2cm}
+\fontsize{15}{18}\selectfont
+\color{black}
+\textbf{Sprint backlog\\}
+\bigskip
+\vspace{5cm}
+
+% Information about authors
+\normalsize
+\bigskip
+\fontsize{12}{12}\selectfont
+\vspace{1.5mm}
+\raggedright
+\begin{tabular}{ll}
+\textbf{Redaktor:} & Adam Chabraszewski \\[6mm]
+\textbf{Współautorzy:}
+& Zuzanna Nowak \\[2mm]
+& Agata Domasik \\[2mm]
+& Jakub Walasik \\[6mm]
+\textbf{Liczba stron:} & 28 \\[2mm]
+\end{tabular}
+
+% Logo
+\vspace{\fill}
+\begin{center}
+    \includegraphics[scale=0.3]{logo.png} 
+\end{center}
+\vspace{-15mm}
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% GEOMETRY SETTINGS FOR THE MAIN BODY OF THE DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newgeometry{top=2cm, bottom=2.5cm, left=2cm, right=2cm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CONTENT OF THE DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TABLE OF CONTENTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tableofcontents
+
+\chapter{Wprowadzenie - o dokumencie}
+\section{Cel dokumentu}
+Celem zadania jest opracowanie backlogu sprintu dla produktu wytwarzanego w ramach projektu. Backlog sprintu budowany jest na podstawie wybranych funkcji produktu opisanych w backlogu produktu, uwzględniając ich priorytety i oszacowania. Wybrane elementy są następnie rozbijane na szczegółowe zadania wytwórcze, które służą jako plan działania zespołu developerskiego podczas sprintu.
+
+\section{Odbiorcy}
+
+\begin{itemize}
+    \item Dr inż. Jakub Miler - prowadzący przedmiot \textit{Realizacja projektu informatycznego},
+    \item Dr inż. Katarzyna Łukasiewicz - prowadzący zajęcia projektowe,
+    \item Katedra Inżynierii Oprogramowania, \\[2mm] 
+Wydział Elektroniki, Telekomunikacji i Informatyki, \\[2mm]  
+Politechnika Gdańska,
+    \item Członkowie zespołu projektowego:
+    \begin{itemize}
+        \item[] Zuzanna Nowak, 193165 - kierownik projektu
+        \item[] Agata Domasik, 193577
+        \item[] Jakub Walasik, s193650
+        \item[] Adam Chabraszewski, s193373
+    \end{itemize}
+\end{itemize}
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapters
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Oszacowanie rozmiaru backlogu produktu}
+
+\section{Opis procesu szacowania}
+
+Proces szacowania elementów backlogu produktu został przeprowadzony z wykorzystaniem techniki \textbf{Planning Poker}.  
+W spotkaniu uczestniczył cały zespół deweloperski.  
+Każdy uczestnik podawał jedną wartość punktową ze zbioru (1, 2, 3, 5, 8, 13).
+
+Przebieg sesji Planning Poker wyglądał następująco:
+\begin{itemize}[topsep=0.1pt, itemsep=0.1pt]
+    \item Każdy element backlogu został odczytany i krótko omówiony przez lidera projektu (Zuzanna Nowak).
+    \item Członkowie zespołu niezależnie oceniali złożoność zadania, wybierając odpowiednią liczbę.
+    \item Wszystkie wybory były ujawniane jednocześnie.
+    \item W przypadku rozbieżnych ocen, następowała krótka dyskusja i powtórne głosowanie.
+    \item Finalna wartość story points dla każdego zadania została ustalona na podstawie konsensusu.
+\end{itemize}
+
+\section{Tabela oszacowania elementów backlogu produktu}
+\begin{center}
+\begin{tabular}{|p{5cm}|p{7cm}|p{2cm}|}
+\hline
+\textbf{Element backlogu produktu} & \textbf{Opis funkcji} & \textbf{Story Points} \\
+\hline
+SCRUM-10: Logowanie przez Google & Logowanie użytkownika za pomocą konta Google & 5 \\
+\hline
+SCRUM-13: Logowanie przez e-mail i hasło & Tradycyjne logowanie poprzez e-mail i hasło & 8 \\
+\hline
+SCRUM-22: Głosowanie na karty & Członkowie drużyny głosują na kartę do odsłonięcia & 8 \\
+\hline
+SCRUM-23: Widoczność odsłoniętych kart & Oznaczanie i pokazywanie odkrytych kart podczas rozgrywki & 5 \\
+\hline
+SCRUM-20: Automatyczny wybór kapitana & Losowy wybór kapitana drużyny przed grą & 5 \\
+\hline
+SCRUM-21: Podpowiedzi od kapitana & Wpisywanie przez kapitana słowa i liczby podpowiedzi & 8 \\
+\hline
+SCRUM-11: Dołączanie do publicznych lobby & Dołączenie do istniejącego publicznego lobby & 5 \\
+\hline
+SCRUM-9: Tworzenie prywatnych lobby & Tworzenie lobby zabezpieczonych hasłem & 8 \\
+\hline
+SCRUM-15: Czat tekstowy podczas gry & Funkcja rozmów tekstowych w trakcie rozgrywki & 5 \\
+\hline
+SCRUM-18: Intuicyjny ekran główny & Projekt przyjaznego ekranu głównego aplikacji & 3 \\
+\hline
+SCRUM-19: Przejrzysty ekran rozgrywki & Układ rozgrywki z wyraźnymi słowami i podpowiedziami & 5 \\
+\hline
+SCRUM-14: Czat głosowy w lobby & Rozmowy głosowe w lobby przed rozgrywką & 8 \\
+\hline
+SCRUM-16: Widok punktów rankingowych & Pokazywanie zdobytych punktów po grze & 3 \\
+\hline
+SCRUM-17: Tabela liderów & Wyświetlanie najlepszych graczy w tabeli rankingowej & 3 \\
+\hline
+\end{tabular}
+\end{center}
+
+\newpage
+\thispagestyle{empty}
+\null
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapters
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Założenia i dobór zakresu sprintu}
+
+\section{Pojemność zespołu}
+
+Zespół deweloperski składa się z czterech osób:
+\begin{itemize}[topsep=0pt, itemsep=0.3em]
+    \item Zuzanna Nowak (193165) — kierownik projektu,
+    \item Agata Domasik (193577),
+    \item Jakub Walasik (s193650),
+    \item Adam Chabraszewski (s193373).
+\end{itemize}
+
+\vspace{1em}
+Zakładamy, że w trakcie trwania sprintu każda osoba będzie miała do dyspozycji średnio \textbf{20 godzin pracy}.
+
+\vspace{1em}
+Całkowita pojemność zespołu wynosi więc:
+\[
+4 \times 20\ \text{godzin} = 80\ \text{godzin}.
+\]
+
+\section{Rezerwa na prace inne niż wytwarzanie}
+
+Przyjęto rezerwę w wysokości \textbf{20\%} całkowitej pojemności zespołu na spotkania Scrumowe, konsultacje oraz ewentualne nieprzewidziane zadania.  
+Oznacza to, że na prace wytwórcze dostępne będzie:
+\[
+80\ \text{godzin} \times 0{,}8 = 64\ \text{godziny}.
+\]
+
+\section{Średnia prędkość zespołu}
+
+Zakładana średnia prędkość zespołu wynosi \textbf{10–15 story points} na sprint, na podstawie wcześniejszych symulacji pracy oraz doświadczeń zespołu w podobnych projektach.
+
+\section{Dobór zakresu sprintu}
+
+W ramach sprintu wybrano następujące elementy backlogu produktu:
+\begin{itemize}[topsep=0pt, itemsep=0.3em]
+    \item \textbf{SCRUM-10}: Logowanie przez Google,
+    \item \textbf{SCRUM-13}: Logowanie przez e-mail i hasło.
+\end{itemize}
+
+\section{Uzasadnienie wyboru zakresu sprintu}
+
+Na potrzeby pierwszego sprintu zdecydowano się wybrać funkcje umożliwiające użytkownikom podstawowe uwierzytelnianie w systemie.  
+Obie funkcje (logowanie przez Google oraz logowanie przez e-mail i hasło) są \textbf{kluczowe dla dalszego rozwoju produktu} oraz warunkują możliwość korzystania z innych funkcjonalności systemu.
+
+\vspace{1em}
+Łączna suma story points wybranych funkcji mieści się w założonej prędkości zespołu.  
+Zrealizowanie tych funkcji stworzy solidną bazę techniczną dla kolejnych sprintów, umożliwiając szybsze wdrażanie nowych funkcji i rozwijanie systemu.
+
+
+\newpage
+\thispagestyle{empty}
+\null
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapters
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Cel sprintu}
+
+\section{Cel sprintu}
+Celem sprintu jest stworzenie \textbf{kompletnego i bezpiecznego mechanizmu logowania użytkowników} do aplikacji.  
+W szczególności sprint ma umożliwić użytkownikom:
+\begin{itemize}[itemsep=0.3em]
+    \item logowanie się za pomocą konta Google,
+    \item logowanie się za pomocą adresu e-mail i hasła.
+\end{itemize}
+
+\vspace{1em}
+Zrealizowanie tych funkcji zapewni:
+\begin{itemize}[itemsep=0.3em]
+    \item dostęp do systemu tylko dla uprawnionych użytkowników,
+    \item przygotowanie fundamentu technicznego dla dalszych funkcji wymagających autoryzacji,
+    \item zwiększenie bezpieczeństwa danych użytkowników,
+    \item stworzenie pierwszego, działającego przyrostu funkcjonalności, który można przedstawić interesariuszom.
+\end{itemize}
+
+\vspace{1em}
+Ukończenie sprintu będzie oznaczało, że podstawowe mechanizmy uwierzytelniania są gotowe do użycia i testowania w środowisku produkcyjnym.
+
+
+\newpage
+\thispagestyle{empty}
+\null
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapters
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Backlog sprintu}
+
+Backlog sprintu zawiera wszystkie elementy backlogu produktu, które zostały wybrane do realizacji w bieżącym sprincie. Poniżej znajduje się lista funkcji (user stories), które zostały priorytetowo wybrane przez zespół. Większe elementy backlogu zostały rozbite na szczegółowe zadania wytwórcze dla zespołu deweloperskiego i oszacowane w godzinach.
+
+\section{Lista elementów backlogu sprintu}
+\begin{center}
+\begin{tabular}{|p{4cm}|p{6cm}|p{2.5cm}|p{2.5cm}|}
+\hline
+\textbf{Element backlogu} & \textbf{Opis funkcji} & \textbf{Story Points} & \textbf{Czas w godzinach} \\
+\hline
+SCRUM-10: Logowanie przez Google & Umożliwienie logowania użytkowników za pomocą konta Google. & 5 & 8 \\
+\hline
+SCRUM-13: Logowanie przez e-mail i hasło & Umożliwienie logowania użytkowników za pomocą adresu e-mail i hasła. & 8 & 12 \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Rozbicie większych elementów backlogu na zadania wytwórcze}
+
+\begin{itemize}[topsep=0pt, itemsep=0.3em]
+    \item \textbf{SCRUM-10: Logowanie przez Google}
+    \begin{itemize}[topsep=0pt, itemsep=0.3em]
+        \item Zaimplementowanie API logowania przez Google – 4 godziny
+        \item Stworzenie formularza logowania i integracja z API – 4 godziny
+    \end{itemize}
+    \item \textbf{SCRUM-13: Logowanie przez e-mail i hasło}
+    \begin{itemize}[topsep=0pt, itemsep=0.3em]
+        \item Zaimplementowanie formularza logowania – 4 godziny
+        \item Walidacja e-maila i hasła – 4 godziny
+        \item Integracja z bazą danych użytkowników – 4 godziny
+    \end{itemize}
+\end{itemize}
+
+\section{Stan na początku sprintu}
+
+Na początku sprintu zespół deweloperski ocenił, że dostępna pojemność zespołu wynosi 80 godzin (cztery osoby, po 20 godzin na osobę). Wybór elementów backlogu do sprintu uwzględniał tę pojemność oraz średnią prędkość zespołu. W ramach tego sprintu zaplanowano realizację dwóch głównych funkcji: logowania przez Google oraz logowania przez e-mail i hasło.
+
+\section{Podsumowanie}
+
+Wszystkie elementy backlogu zostały oszacowane w story points i rozbite na zadania wytwórcze z przypisaniem odpowiedniego czasu do realizacji. Na początku sprintu zespół deweloperski ma wyraźny plan działania, który zapewni realizację funkcji logowania w przewidywanym czasie.
+
+
+\newpage
+\thispagestyle{empty}
+\null
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapters
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Kryteria akceptacji}
+
+\section{Kryteria akceptacji}
+Wszystkie wybrane do realizacji w sprincie elementy backlogu produktu zostały uzupełnione o odpowiednie kryteria akceptacji. Kryteria akceptacji zostały szczegółowo opisane i wprowadzone do narzędzia wspomagającego zarządzanie projektem. Poniżej znajdują się zaktualizowane kryteria akceptacji dla poszczególnych elementów backlogu sprintu.
+
+\section{SCRUM-10: Logowanie przez Google}
+\textbf{Kryteria akceptacji:}
+\begin{itemize}[topsep=0.1pt, itemsep=0.3em]
+    \item Użytkownik może zalogować się za pomocą swojego konta Google.
+    \item Po pomyślnym logowaniu użytkownik zostaje przekierowany na stronę główną aplikacji.
+    \item W przypadku błędów logowania (np. brak dostępu do konta Google) system wyświetla odpowiedni komunikat o błędzie.
+    \item Proces logowania przez Google działa zarówno na wersji mobilnej, jak i desktopowej aplikacji.
+\end{itemize}
+
+\section{SCRUM-13: Logowanie przez e-mail i hasło}
+\textbf{Kryteria akceptacji:}
+\begin{itemize}[topsep=0.1pt, itemsep=0.3em]
+    \item Użytkownik może zalogować się za pomocą adresu e-mail i hasła.
+    \item System weryfikuje poprawność wprowadzonych danych i zapewnia odpowiednią walidację formularza (np. sprawdzenie formatu e-maila).
+    \item Po pomyślnym logowaniu użytkownik jest przekierowywany na stronę główną aplikacji.
+    \item W przypadku nieprawidłowych danych logowania (np. błędne hasło) użytkownik otrzymuje odpowiedni komunikat o błędzie.
+    \item System pozwala na odzyskiwanie zapomnianego hasła przez użytkownika.
+\end{itemize}
+
+\section{Załączniki - Zrzuty ekranu z narzędzia wspomagającego}
+Kryteria akceptacji dla powyższych elementów zostały również zaktualizowane w narzędziu wspomagającym zarządzanie projektem (Jira). Poniżej znajdują się zrzuty ekranu z narzędzia, które pokazują zapisane kryteria akceptacji dla każdego z elementów.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{kryteria_google.png}
+\caption{Zrzut ekranu z Jiry: Kryteria akceptacji dla autoryzacji przez Google.}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{kryteria_login.png}
+\caption{Zrzut ekranu z Jiry: Kryteria akceptacji dla autoryzacji przez login.}
+\end{figure}
+
+\newpage
+\thispagestyle{empty}
+\null
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapters
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Definicja ukończenia}
+
+\section{Poprzednia definicja ukończenia}
+
+Dotychczasowa definicja ukończenia (DoD) była oparta na ogólnych zasadach związanych z procesem wytwórczym, obejmujących następujące punkty:
+
+\begin{enumerate}[topsep=0pt, itemsep=0.3em]
+    \item \textbf{Wykonanie wszystkich wymaganych zadań} - Wszystkie funkcje opisane w user story zostały zaimplementowane zgodnie z wymaganiami.
+    \item \textbf{Przeprowadzenie testów} - Wykonano testy jednostkowe, integracyjne, funkcjonalne, UI/UX oraz wydajnościowe, aby zapewnić poprawność działania funkcji.
+    \item \textbf{Przegląd kodu} - Kod przeszedł proces przeglądu kodu (code review) przez co najmniej jednego członka zespołu.
+    \item \textbf{Zatwierdzenie przez interesariuszy} - Zatwierdzenie funkcjonalności przez interesariuszy, potwierdzające, że funkcje działają zgodnie z wymaganiami.
+    \item \textbf{Utworzenie dokumentacji} - Stworzenie pełnej dokumentacji dla zaimplementowanych funkcji.
+    \item \textbf{Gotowość do wdrożenia} - Po zakończeniu prac nad zadaniem, funkcje są gotowe do wdrożenia w systemie produkcyjnym.
+\end{enumerate}
+
+\section{Zaktualizowana definicja ukończenia dla sprintu}
+
+Aby lepiej dopasować definicję ukończenia do wymagań tego sprintu, wprowadzono dodatkowe szczegóły dotyczące specyficznych zadań, takich jak logowanie przez Google i e-mail. Oto zaktualizowana definicja ukończenia dla tego sprintu:
+
+\begin{enumerate}[topsep=0pt, itemsep=0.3em]
+    \item \textbf{Wykonanie wszystkich wymaganych zadań} - Funkcje opisane w user story zostały zaimplementowane zgodnie z wymaganiami, w tym:
+    \begin{itemize}[topsep=0pt, itemsep=0.3em]
+        \item Logowanie przez Google i e-mail zostały zaimplementowane i działają zgodnie z wymaganiami.
+        \item Testowanie scenariuszy logowania na urządzeniach mobilnych i desktopowych.
+    \end{itemize}
+    \item \textbf{Przeprowadzenie testów} - Zrealizowano testy jednostkowe, integracyjne, funkcjonalne oraz UI/UX dla nowych funkcji logowania:
+    \begin{itemize}[topsep=0pt, itemsep=0.3em]
+        \item Testy logowania przez Google i e-mail zostały przeprowadzone na różnych przeglądarkach i urządzeniach.
+        \item Testy bezpieczeństwa w kontekście logowania zostały przeprowadzone i zakończone pozytywnie.
+    \end{itemize}
+    \item \textbf{Przegląd kodu} - Każda zmiana w kodzie została poddana przeglądowi przez co najmniej jednego członka zespołu, który sprawdził zgodność kodu z wymaganiami.
+    \item \textbf{Zatwierdzenie przez interesariuszy} - Funkcjonalności zostały zatwierdzone przez interesariuszy po pomyślnym zakończeniu testów i demo funkcji logowania. 
+    \item \textbf{Utworzenie dokumentacji} - Dokumentacja dla funkcji logowania (Google i e-mail) została przygotowana, obejmująca szczegóły dotyczące procesu logowania, jak również dokumentacja API.
+    \item \textbf{Gotowość do wdrożenia} - Po wykonaniu wszystkich powyższych kroków, funkcjonalności zostały uznane za gotowe do wdrożenia.
+\end{enumerate}
+
+\section{Podsumowanie}
+
+Zaktualizowana definicja ukończenia dla tego sprintu uwzględnia dodatkowe wymagania i procesy specyficzne dla funkcji logowania przez Google i e-mail. Dodanie nowych testów, przeglądów kodu oraz szczegółowej dokumentacji zapewnia wyższy poziom jakości i gotowości do wdrożenia. Ulepszona definicja ukończenia umożliwia lepszą organizację pracy zespołu i zapewnia pełną zgodność z wymaganiami projektowymi.
+
+
+\newpage
+\thispagestyle{empty}
+\null
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapters
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% END PAGE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\thispagestyle{empty}
+\tikz[remember picture,overlay] \node[opacity=0.03,inner sep=0pt] at (73.6mm, -124.25mm){\includegraphics{characters.png}};
+\begin{center}
+    \vspace*{\fill}
+    \includegraphics[width=0.3\textwidth]{logo.png} 
+    \vspace*{\fill}
+\end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% END OF DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}

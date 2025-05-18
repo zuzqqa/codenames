@@ -77,5 +77,9 @@
   "too-few-players": "Too few players to start the game.",
   "logged-in-as": "Logged in as: ",
   "profile-title": "Profile",
-  "leave": "Leave team"
+  "leave": "Leave team",
+  "copy": "Copy",
+  "link-copied": "Link copied to clipboard.",
+  "invite-friends": "Invite friends",
+  "invite-friends-text": "Copy the link and share it with your friends so they can join the room."
 }

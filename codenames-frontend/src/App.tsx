@@ -25,6 +25,7 @@ import WinLossView from "./views/WinLossView/WinLossView";
 import LoadingPage from "./views/Loading/LoadingPage";
 import ResetPasswordPage from "./views/ResetPassword/ResetPasswordPage.tsx";
 import ResetPasswordRequestPage from "./views/ResetPassword/ResetPasswordRequestPage.tsx";
+import Invite from "./components/Invite/Invite.tsx";
 import apiUrl from "../api/api.ts";
 
 const App: React.FC = () => {
@@ -288,6 +289,12 @@ const App: React.FC = () => {
               setSoundFXVolume={setSoundFX}
               soundFXVolume={soundFXVolume}
             />
+          }
+        />
+        <Route
+          path="/invite/:gameId"
+          element={
+            <Invite/>
           }
         />
         {/* Fallback route */}

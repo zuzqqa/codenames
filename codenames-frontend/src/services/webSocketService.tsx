@@ -1,6 +1,6 @@
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import apiUrl from '../../api/api.ts';
+import { apiUrl } from '../config/api.tsx';
 
 const socketUrl = apiUrl + '/ws'; // WebSocket endpoint
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"; // Hook for managing component state
-import { useTranslation } from "react-i18next"; // Translation hook
+import { useTranslation } from "react-i18next";
 
 import BackgroundContainer from "../../containers/Background/Background";
 
@@ -10,12 +10,14 @@ import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 import ProfileModal from "../../components/UserProfileOverlay/ProfileModal";
 import profileIcon from "../../assets/icons/profile.png";
 import settingsIcon from "../../assets/icons/settings.png";
+import logoutButton from "../../assets/icons/logout.svg";
 
 import "../../styles/App.css";
 import "../SelectGame/SelectGame.css";
 import "./CreateGame.css";
-import {logout} from "../../shared/utils.tsx";
-import logoutButton from "../../assets/icons/logout.svg";
+
+import { getCookie, logout } from "../../shared/utils.tsx";
+import { apiUrl } from "../../config/api.tsx";
 
 /**
  * Props interface for CreateGame component.
@@ -33,7 +35,7 @@ interface CreateGameProps {
 /**
  * CreateGame component allows users to create a new game session.
  * It includes settings management and user logout functionality.
- * 
+ *
  * @component
  * @param {CreateGameProps} props - Component properties
  * @returns {JSX.Element} The rendered CreateGame component
@@ -46,57 +48,45 @@ const CreateGame: React.FC<CreateGameProps> = ({
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
-  const { t } = useTranslation(); // Translation hook
   const [isGuest, setIsGuest] = useState<boolean | null>(null);
   const [username, setUsername] = useState<string | null>(null);
-  
+  const { t } = useTranslation(); 
 
-    useEffect(() => {
-      const fetchGuestStatus = async () => {
-        try {
-          const response = await fetch("http://localhost:8080/api/users/isGuest", {
-            method: "GET",
-            credentials: "include",
-          });
-    
-          if (response.ok) {
-            const guestStatus = await response.json();
-            setIsGuest(guestStatus);
-          } else {
-            console.error("Nie udało się pobrać statusu gościa");
-          }
-        } catch (error) {
-          console.error("Błąd podczas pobierania statusu gościa", error);
-        }
-      };
-    
-      fetchGuestStatus();
-    }, []);
+  /**
+   * Effect to fetch guest status from the server.
+   * It checks if the user is a guest and updates the state accordingly.
+   */
+  useEffect(() => {
+    const fetchGuestStatus = async () => {
+      const token = getCookie("authToken");
 
-    useEffect(() => {
-      const fetchUsername = async () => {
-        try {
-          const response = await fetch("http://localhost:8080/api/users/getUsername", {
-            method: "GET",
-            credentials: "include"
-          });
-  
-          if (response.ok) {
-            const text = await response.text();
-            if (text !== "null") {
-              setUsername(text);
-            }
-          } else {
-            console.error("Failed to fetch username");
-          }
-        } catch (error) {
-          console.error("Error fetching username", error);
+      if (!token) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${apiUrl}/api/users/isGuest`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const guestStatus = await response.json();
+          setIsGuest(guestStatus);
+        } else {
+          console.error("Failed to retrieve guest status.");
         }
-      };
-  
-      fetchUsername();
-    }, []);
-  
+      } catch (error) {
+        console.error("Error retrieving guest status: ", error);
+      }
+    };
+
+    fetchGuestStatus();
+  }, []);
+
   /**
    * Toggles the settings modal visibility.
    */
@@ -104,6 +94,9 @@ const CreateGame: React.FC<CreateGameProps> = ({
     setIsSettingsOpen(!isSettingsOpen);
   };
 
+  /**
+   * Toggles the profile modal visibility.
+   */
   const toggleProfile = () => {
     setIsProfileOpen(!isProfileOpen);
   };
@@ -111,25 +104,22 @@ const CreateGame: React.FC<CreateGameProps> = ({
   return (
     <>
       <BackgroundContainer>
-        <Button variant="circle" soundFXVolume={soundFXVolume}>
-          <img src={settingsIcon} onClick={toggleSettings} alt="Settings" />
+        <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
+          <img src={settingsIcon} alt="Settings" />
         </Button>
-        {/* Profile button */}
         {isGuest === false && (
           <Button variant="circle-profile" soundFXVolume={soundFXVolume}>
             <img src={profileIcon} onClick={toggleProfile} alt="Profile" />
           </Button>
         )}
 
-        {document.cookie.split('; ').find(cookie => cookie.startsWith('loggedIn=')) && (
-                <Button variant="logout" soundFXVolume={soundFXVolume}>
-                    <img
-                        src={logoutButton}
-                        onClick={logout}
-                        alt="Logout"
-                    />
-                </Button>
-            )}
+        {document.cookie
+          .split("; ")
+          .find((cookie) => cookie.startsWith("loggedIn=")) && (
+          <Button variant="logout" soundFXVolume={soundFXVolume} onClick={logout}>
+            <img src={logoutButton} alt="Logout" />
+          </Button>
+        )}
 
         <SettingsModal
           isOpen={isSettingsOpen}
@@ -137,12 +127,11 @@ const CreateGame: React.FC<CreateGameProps> = ({
           musicVolume={musicVolume}
           soundFXVolume={soundFXVolume}
           setMusicVolume={(volume) => {
-            setMusicVolume(volume); // Update local music volume
-            setVolume(volume / 100); // Update global volume
+            setMusicVolume(volume); 
+            setVolume(volume / 100); 
           }}
           setSoundFXVolume={setSoundFXVolume}
         />
-        {/* Profie modal */}
         <ProfileModal
           isOpen={isProfileOpen}
           onClose={toggleProfile}

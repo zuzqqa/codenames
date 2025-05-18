@@ -28,6 +28,10 @@ public class DefaultEmailController implements EmailController {
      * The EmailService instance for sending emails.
      */
     private final EmailService emailService;
+
+    /**
+     * The UserRepository instance.
+     */
     private final UserRepository userRepository;
 
     /**

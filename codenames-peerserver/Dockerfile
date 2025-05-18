@@ -1,10 +1,11 @@
 FROM node:20
 
-# Expose port 3001 for peerjs server
-EXPOSE 3001
+WORKDIR /app
 
-# Install peerjs globally
-RUN npm install -g peer
+COPY server.js .
 
-# Start the peerjs server
-CMD ["peerjs", "--port", "3001"]
+RUN npm install peer
+
+EXPOSE 8080
+
+CMD ["node", "server.js"]

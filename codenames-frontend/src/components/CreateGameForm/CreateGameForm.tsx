@@ -8,6 +8,8 @@ import { useState, useEffect } from "react";
 import "./CreateGameForm.css";
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import React from "react";
+import { apiUrl } from "../../config/api.tsx";
+import { getUserId } from "../../shared/utils.tsx";
 
 
 /**
@@ -58,15 +60,9 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
         return;
       }
       try {
-        const getIdResponse = await fetch("http://localhost:8080/api/users/getId", {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-  
-        if (!getIdResponse.ok) {
+        const getIdResponse = await getUserId();
+
+        if (getIdResponse === null) {
           setError("Failed to fetch ID");
           return;
         }
@@ -77,15 +73,18 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
           password: values.password,
           language: values.deckLanguage,
         };
-  
-        const response = await fetch("http://localhost:8080/api/game-session/create", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestData),
-        });
-  
+        
+        const response = await fetch(
+          `${apiUrl}/api/game-session/create`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestData),
+          }
+        );
+        
         if (response.ok) {
           const data = await response.json();
           localStorage.setItem("gameId", data.gameId);

@@ -8,15 +8,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 import org.example.codenames.jwt.JwtService;
-import org.example.codenames.user.entity.FriendRequestsDTO;
+import org.example.codenames.user.entity.dto.FriendRequestsDTO;
 import org.example.codenames.user.entity.PasswordResetRequest;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.controller.api.UserController;
 import org.example.codenames.user.service.api.UserService;
 import org.example.codenames.userDetails.AuthRequest;
-import static org.example.codenames.util.CookieUtils.createAuthCookie;
-import static org.example.codenames.util.CookieUtils.createLoggedInCookie;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +44,11 @@ import java.util.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class DefaultUserController implements UserController {
+    @Value("${frontend.url:http://localhost:5173}")
+    private String frontendUrl;
+
+    @Value("${backend.url:http://localhost:8080}")
+    private String backendUrl;
     /**
      * Service for managing actions on user's account.
      */
@@ -86,7 +90,7 @@ public class DefaultUserController implements UserController {
         String token = jwtService.generateToken(user.getUsername());
 
         if (!user.isGuest() && !Objects.equals(user.getRoles(), "ROLE_ADMIN")) {
-            String activationLink = "http://localhost:8080/api/users/activate/" + token;
+            String activationLink = backendUrl + "/api/users/activate/" + token;
 
             ClassPathResource resource = new ClassPathResource("mail-templates/activate_account_templates/activate_account_" + language + ".html");
             String htmlContent = new String(Files.readAllBytes(resource.getFile().toPath()), StandardCharsets.UTF_8);
@@ -101,10 +105,6 @@ public class DefaultUserController implements UserController {
             helper.setText(htmlContent, true);
 
             mailSender.send(message);
-        }
-
-        if (user.isGuest() || Objects.equals(user.getRoles(), "ROLE_ADMIN")) {
-            response.addCookie(createAuthCookie(token, true));
         }
 
         return ResponseEntity.ok().build();
@@ -122,9 +122,9 @@ public class DefaultUserController implements UserController {
             String username = jwtService.getUsernameFromToken(token);
             userService.activateUser(username);
 
-            return new RedirectView("http://localhost:5173/login?activated=true&username=" + username);
+            return new RedirectView(frontendUrl + "/login?activated=true&username=" + username);
         } catch (Exception e) {
-            return new RedirectView("http://localhost:5173/register?activated=false");
+            return new RedirectView(frontendUrl + "/register?activated=false");
         }
     }
 
@@ -208,67 +208,76 @@ public class DefaultUserController implements UserController {
             if (authentication.isAuthenticated()) {
 
                 if(!userService.isAccountActivated(authRequest.getUsername())){
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("The account is not active. Check your email and activate your account.");
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("{\"error\": \"The account is not active. Check your email and activate your account.\"}");
                 }
               
                 String token = jwtService.generateToken(authRequest.getUsername());
 
-                response.addCookie(createAuthCookie(token, true));
-                response.addCookie(createLoggedInCookie(true));
+                String jsonResponse = String.format("{\"message\": \"success\", \"token\": \"%s\"}", token);
 
-                return ResponseEntity.ok().build();
+                return ResponseEntity.ok(jsonResponse);
             } else {
                 throw new UsernameNotFoundException("Invalid username or password");
             }
         } catch (Exception e) {
-            throw new UsernameNotFoundException("Invalid username or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("{\"error\": \"Invalid username or password\"}");
         }
     }
 
     /**
-     * Logs out the user by clearing the authentication cookie.
+     * Retrieves the username from the authentication token stored in a header.
      *
-     * @param response the HTTP response to remove the authentication cookie
-     * @return ResponseEntity with status 200 OK
-     */
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
-        response.addCookie(createAuthCookie(null, false));
-        response.addCookie(createLoggedInCookie(false));
-
-        return ResponseEntity.ok().build();
-    }
-
-    /**
-     * Retrieves the username from the authentication token stored in a cookie.
-     *
-     * @param token the authentication token from the cookie
+     * @param token the authentication token from the header
      * @return ResponseEntity containing the username
      */
     @GetMapping("/getUsername")
-    public ResponseEntity<String> getUsernameByToken(@CookieValue(value = "authToken", required = false) String token) {
-        if (token == null) {
+    public ResponseEntity<String> getUsernameByToken(@RequestHeader(value = "Authorization", required = false) String token) {
+        if (token == null || !token.startsWith("Bearer ")) {
             return ResponseEntity.ok("null");
         }
+
+        token = token.substring(7);
 
         return ResponseEntity.ok(jwtService.getUsernameFromToken(token));
     }
 
     /**
-     * Retrieves the user ID from the authentication token stored in a cookie.
+     * Retrieves the user ID from the authentication token stored in a header.
      *
-     * @param token the authentication token from the cookie
+     * @param token the authentication token from the header
      * @return ResponseEntity containing the user ID or 404 if not found
      */
     @GetMapping("/getId")
-    public ResponseEntity<String> getIdByToken(@CookieValue(value = "authToken", required = false) String token) {
-        if (token == null) {
+    public ResponseEntity<String> getIdByToken(@RequestHeader(value = "Authorization", required = false) String token) {
+        if (token == null || !token.startsWith("Bearer ")) {
             return ResponseEntity.ok("null");
         }
+
+        token = token.substring(7);
         String username = jwtService.getUsernameFromToken(token);
         Optional<User> user = userService.getUserByUsername(username);
 
         return user.map(User::getId).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Checks if the currently authenticated user is a guest.
+     *
+     * @param token the authentication token from the header
+     * @return ResponseEntity containing true if the user is a guest or not authenticated, false otherwise
+     */
+    @GetMapping("/isGuest")
+    public ResponseEntity<Boolean> isGuest(@RequestHeader(value = "Authorization", required = false) String token) {
+        if (token == null || !token.startsWith("Bearer ")) {
+            return ResponseEntity.ok(false);
+        }
+
+        String username = jwtService.getUsernameFromToken(token);
+        Optional<User> user = userService.getUserByUsername(username);
+
+        return ResponseEntity.ok(user.map(User::isGuest).orElse(true));
     }
 
     /**
@@ -278,7 +287,7 @@ public class DefaultUserController implements UserController {
      * @return ResponseEntity with status 200 OK
      */
     @PostMapping("/createGuest")
-    public ResponseEntity<Void> createGuest(HttpServletResponse response) {
+    public ResponseEntity<String> createGuest(HttpServletResponse response) {
         String username = userService.generateUniqueUsername();
 
         User guest = User.builder()
@@ -292,11 +301,9 @@ public class DefaultUserController implements UserController {
         userService.createUser(guest);
 
         String token = jwtService.generateToken(guest.getUsername());
-
-        response.addCookie(createAuthCookie(token, true));
-        response.addCookie(createLoggedInCookie(true));
-
-        return ResponseEntity.ok().build();
+        String jsonResponse = String.format("{\"message\": \"success\", \"token\": \"%s\"}", token);
+        
+        return ResponseEntity.ok(jsonResponse);
     }
 
     /**
@@ -371,7 +378,6 @@ public class DefaultUserController implements UserController {
      */
     @GetMapping("/{username}/friendRequests")
     public ResponseEntity<FriendRequestsDTO> getFriendRequests(@PathVariable String username) {
-        System.out.println("entering getFriendRequests function");
         Optional<User> user = userService.getUserByUsername(username);
         if (user.isPresent()) {
             User u = user.get();
@@ -402,24 +408,6 @@ public class DefaultUserController implements UserController {
         }
 
         return ResponseEntity.badRequest().body("Invalid or expired token.");
-    }
-
-    /**
-     * Checks if the currently authenticated user is a guest.
-     *
-     * @param token the authentication token from the cookie
-     * @return ResponseEntity containing true if the user is a guest or not authenticated, false otherwise
-     */
-    @GetMapping("/isGuest")
-    public ResponseEntity<Boolean> isGuest(@CookieValue(value = "authToken", required = false) String token) {
-        if (token == null) {
-            return ResponseEntity.ok(true);
-        }
-
-        String username = jwtService.getUsernameFromToken(token);
-        Optional<User> user = userService.getUserByUsername(username);
-
-        return ResponseEntity.ok(user.map(User::isGuest).orElse(true));
     }
 
     /**
