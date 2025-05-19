@@ -122,7 +122,7 @@ public class DefaultGameStateService implements GameStateService {
         }
         // Adding neutral cards
         cardColorsList.add(3);
-        for (int i = 0; i < cardsTotal - (cardsRed + cardsBlue); i++) {
+        for (int i = 0; i < cardsTotal - (cardsRed + cardsBlue + 1); i++) {
             cardColorsList.add(0);
         }
 
@@ -235,9 +235,12 @@ public class DefaultGameStateService implements GameStateService {
         }
 
         gameState.setHintTurn(!gameState.isHintTurn());
+
         gameState.setGuessingTurn(!gameState.isGuessingTurn());
 
+
         DefaultGameSessionWebSocketController.clearVotes(gameSession, gameSessionRepository);
+
     }
 
     /**
@@ -251,7 +254,11 @@ public class DefaultGameStateService implements GameStateService {
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
         this.toogleTurn(gameSession);
+
         this.chooseRandomCurrentLeader(gameId);
+        gameSession = gameSessionRepository.findBySessionId(gameId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+        gameSessionRepository.save(gameSession);
     }
 
     /**
@@ -261,7 +268,6 @@ public class DefaultGameStateService implements GameStateService {
      */
     @Override
     public void chooseRandomCurrentLeader(UUID gameId) {
-        System.out.println(gameId);
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
@@ -270,8 +276,7 @@ public class DefaultGameStateService implements GameStateService {
         User newLeader = getNewLeader(gameSession, connectedUsers);
 
         gameSession.getGameState().setCurrentSelectionLeader(newLeader);
-        System.out.println(newLeader);
-        System.out.println(gameSession.getGameState().getCurrentSelectionLeader());
+
         gameSessionRepository.save(gameSession);
     }
 
