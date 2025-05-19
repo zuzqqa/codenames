@@ -26,7 +26,7 @@ import LoadingPage from "./views/Loading/LoadingPage";
 import ResetPasswordPage from "./views/ResetPassword/ResetPasswordPage.tsx";
 import ResetPasswordRequestPage from "./views/ResetPassword/ResetPasswordRequestPage.tsx";
 import Invite from "./components/Invite/Invite.tsx";
-import apiUrl from "../api/api.ts";
+import { apiUrl } from "./config/api.tsx"; // Importing API URL
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);

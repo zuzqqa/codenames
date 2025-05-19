@@ -1,17 +1,15 @@
-Sprint documentation
+🎮 Alpha Release – Early version of the game
 **🔧 What's included in this release?**
-Added sprint backlog documentation.
+Toast notification system (global useToast implementation). Migrated game sessions to Hazelcast in-memory database for quick access and optimization.
 
 Key additions: 
-- Pdf file
-- Latex file
-- required images
+- useToast provider
+- Hazelcast database
+- Scheduler for backend to do systematic cleanup of databases
 
 **🚧 What's still under development?**
-- UI for voice chat
-- Automated deployment pipeline
-- Further gameplay fixes and quality of life improvements
-- Full socket-io integration chat fix
+- UX/UI fixes
+- Hazelcast optimization
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 
