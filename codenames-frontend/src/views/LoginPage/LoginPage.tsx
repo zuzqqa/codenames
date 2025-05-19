@@ -21,6 +21,7 @@ import { logout } from "../../shared/utils.tsx";
 import { useNavigate, useLocation, createCookie } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { apiUrl } from "../../config/api.tsx";
+import {useToast} from "../../components/Toast/ToastContext.tsx";
 
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -56,6 +57,7 @@ const LoginPage: React.FC<LoginProps> = ({
   const [notifications, setNotifications] = useState<
     { id: string; message: string }[]
   >([]);
+  const { addToast } = useToast();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const isActivated = searchParams.get("activated") === "true";
@@ -87,88 +89,6 @@ const LoginPage: React.FC<LoginProps> = ({
   };
 
   /**
-   * useEffect hook for handling the automatic removal of error messages after a delay.
-   *
-   * - Adds a fade-out effect to the toast error before removal.
-   * - Removes errors from the state after a timeout.
-   *
-   * @param {Array<{ id: string; message: string }>} errors - Array of error messages with unique IDs.
-   */
-  useEffect(() => {
-    if (errors.length === 0) return;
-
-    const timers: number[] = errors.map((error) => {
-      const toastElement = document.getElementById(error.id);
-
-      if (toastElement) {
-        // Fade out the toast after 8 seconds
-        const fadeOutTimer = setTimeout(() => {
-          toastElement.classList.add("hide");
-        }, 8000);
-
-        // Remove the error from state after 8.5 seconds
-        const removeTimer = setTimeout(() => {
-          setErrors((prevErrors) =>
-            prevErrors.filter((e) => e.id !== error.id)
-          );
-        }, 8500);
-
-        return removeTimer;
-      } else {
-        // Remove error if toast element is not found
-        return setTimeout(() => {
-          setErrors((prevErrors) =>
-            prevErrors.filter((e) => e.id !== error.id)
-          );
-        }, 8000);
-      }
-    });
-
-    return () => timers.forEach(clearTimeout);
-  }, [errors]);
-
-  /**
-   * useEffect hook for handling the automatic removal of notification messages after a delay.
-   *
-   * - Adds a fade-out effect to the toast notification before removal.
-   * - Removes notifications from the state after a timeout.
-   *
-   * @param {Array<{ id: string; message: string }>} errors - Array of notification messages with unique IDs.
-   */
-  useEffect(() => {
-    if (notifications.length === 0) return;
-
-    const timers: number[] = notifications.map((notification) => {
-      const toastElement = document.getElementById(notification.id);
-
-      if (toastElement) {
-        // Fade out the toast after 8 seconds
-        const fadeOutTimer = setTimeout(() => {
-          toastElement.classList.add("hide");
-        }, 8000);
-
-        // Remove the message from state after 8.5 seconds
-        const removeTimer = setTimeout(() => {
-          setNotifications((prevNotifications) =>
-            prevNotifications.filter((n) => n.id !== notification.id)
-          );
-        }, 8500);
-
-        return removeTimer;
-      } else {
-        // Remove message if toast element is not found
-        return setTimeout(() => {
-          setNotifications((prevNotifications) =>
-            prevNotifications.filter((n) => n.id !== notification.id)
-          );
-        }, 8000);
-      }
-    });
-
-    return () => timers.forEach(clearTimeout);
-  }, [notifications]);
-
-  /**
    * useEffect hook for handling the automatic removal of notification messages after a delay.
    *
    * - Adds a fade-out effect to the toast notification before removal.
@@ -178,20 +98,7 @@ const LoginPage: React.FC<LoginProps> = ({
    */
   useEffect(() => {
     if (isActivated) {
-      setNotifications((prevNotifications) => {
-        const notificationExists = prevNotifications.some(
-          (n) => n.message === t("account-activated-notification")
-        );
-
-        if (!notificationExists) {
-          return [
-            ...prevNotifications,
-            { id: generateId(), message: t("account-activated-notification") },
-          ];
-        }
-
-        return prevNotifications;
-      });
+      addToast(t("account-activated-notification"), "notification");
     }
   }, [isActivated]);
 
@@ -210,60 +117,18 @@ const LoginPage: React.FC<LoginProps> = ({
   }, [username]);
 
   /**
-   * Handles manual closing of a toast error.
-   *
-   * - Fades out the toast visually before removing it from the state.
-   *
-   * @param {string} id - The unique identifier of the error toast to be closed.
-   */
-  const handleCloseErrorToast = (id: string) => {
-    const toastElement = document.getElementById(id);
-    if (toastElement) {
-      toastElement.classList.add("hide");
-
-      setTimeout(() => {
-        setErrors((prevErrors) =>
-          prevErrors.filter((error) => error.id !== id)
-        );
-      }, 500);
-    }
-  };
-
-  /**
-   * Handles manual closing of a toast notification.
-   *
-   * - Fades out the toast visually before removing it from the state.
-   *
-   * @param {string} id - The unique identifier of the notification toast to be closed.
-   */
-  const handleCloseNotificationToast = (id: string) => {
-    const toastElement = document.getElementById(id);
-    if (toastElement) {
-      toastElement.classList.add("hide");
-
-      setTimeout(() => {
-        setNotifications((prevNotifications) =>
-          prevNotifications.filter((notification) => notification.id !== id)
-        );
-      }, 500);
-    }
-  };
-
-  /**
    * Handles form submission and sends login credentials to the server.
    *
    * @param {FormEvent<HTMLFormElement>} e - Form submission event.
    */
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const newErrors: { id: string; message: string }[] = [];
-    setErrors(newErrors);
 
     const userData = { username: login, password };
 
     try {
       const response = await fetch(
-        `${apiUrl}/api/users/authenticate`,
+        "http://localhost:8080/api/users/authenticate",
         {
           method: "POST",
           headers: {
@@ -281,28 +146,17 @@ const LoginPage: React.FC<LoginProps> = ({
         document.cookie = `loggedIn=true; max-age=36000; path=/; secure; samesite=none`;
         window.location.href = "/loading";
       } else if (response.status === 401) {
-        newErrors.push({
-          id: generateId(),
-          message: t("account-not-activated"),
-        });
-
-        setErrors([...newErrors]);
+        addToast(t("account-not-activated"), "error");
       } else {
         const error = await response.text();
-        alert("Failed to log in: " + error);
+        addToast("Failed to log in: " + error, "error");
       }
     } catch (error) {
-      newErrors.push({
-        id: generateId(),
-        message: t("invalid-login-or-password"),
-      });
-      setErrors([...newErrors]);
+      addToast(t("invalid-login-or-password"), "error");
     }
   };
 
-  /** 
-   * Toggles the visibility of the settings modal.
-   */
+  /** Toggles the visibility of the settings modal. */
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
@@ -419,17 +273,18 @@ const LoginPage: React.FC<LoginProps> = ({
               }}
               onError={() => {
                 console.log("Google login failed");
+                addToast("Google login failed", "error");
               }}
             />
             </div>
           </GoogleOAuthProvider>
-          <a 
+          <a
           className="login-register-link"
           onClick={() => navigate("/register")}
           >
           {t("dont-have-an-account")}
           </a>
-          <a 
+          <a
           className="login-register-link guest-link"
           onClick={async () => {
             try {
@@ -453,58 +308,6 @@ const LoginPage: React.FC<LoginProps> = ({
           {t("or-continue-as-guset")}
           </a>
         </div>
-        {errors.length > 0 && (
-          <div className="toast-container">
-            {errors.map((error) => (
-              <div id={error.id} key={error.id} className="toast active">
-                <div className="toast-content">
-                  <i
-                    className="fa fa-exclamation-circle fa-3x"
-                    style={{ color: "#561723" }}
-                    aria-hidden="true"
-                  ></i>
-                  <div className="message">
-                    <span className="text text-1">Error</span>
-                    <span className="text text-2">{error.message}</span>
-                  </div>
-                </div>
-                <i
-                  className="fa-solid fa-xmark close"
-                  onClick={() => handleCloseErrorToast(error.id)}
-                ></i>
-                <div className="progress active"></div>
-              </div>
-            ))}
-          </div>
-        )}
-        {notifications.length > 0 && (
-          <div className="toast-container">
-            {notifications.map((notification) => (
-              <div
-                id={notification.id}
-                key={notification.id}
-                className="toast active"
-              >
-                <div className="toast-content">
-                  <i
-                    className="fa fa-info-circle fa-3x"
-                    style={{ color: "#1B74BB" }}
-                    aria-hidden="true"
-                  ></i>
-                  <div className="message">
-                    <span className="text text-1">Notification</span>
-                    <span className="text text-2">{notification.message}</span>
-                  </div>
-                </div>
-                <i
-                  className="fa-solid fa-xmark close"
-                  onClick={() => handleCloseNotificationToast(notification.id)}
-                ></i>
-                <div className="progress active notification"></div>
-              </div>
-            ))}
-          </div>
-        )}
       </LoginRegisterContainer>
     </BackgroundContainer>
   );
