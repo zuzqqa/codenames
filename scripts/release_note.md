@@ -1,16 +1,18 @@
-Add separate Docker configurations for frontend: optimized production build and local development setup
+Add GitHub Actions workflow for deploying all services to Google Cloud Run
 **🔧 What's included in this release?**
-Implemented separate Dockerfile.prod and Dockerfile.dev for the frontend, introducing a multi-stage production build with Alpine for optimization while maintaining hot-reload in development, along with corresponding updates to docker-compose.yml.
+Implemented a GitHub Actions workflow to automate deployment of backend, frontend, socket.io server, and peer server to Google Cloud Run using production Dockerfiles and Workload Identity Federation.
 
 Key additions: 
-- Added Dockerfile.prod with multi-stage build (Node + Alpine) for Cloud Run deployments.
-- Maintained Dockerfile.dev with hot-reload support for local development.
-- Updated docker-compose.yml to explicitly use dockerfile: Dockerfile.dev.
+- Created deploy.yml workflow triggered on main branch push
+- Used google-github-actions/auth@v2 for authentication via Workload Identity Federation
+- Deployed frontend with Dockerfile.prod using --file flag in gcloud builds submit
+- Injected backend environment variables via GitHub secret and temporary env.yaml
+- Used --set-env-vars for frontend build-time environment configuration
+- Removed env.yaml after deployment for security
 
 **🚧 What's still under development?**
 - UI/UX fixes.
 - Implementing Hazelcast for in-memory data access.
-- Set up CI/CD pipeline for automatic deployment.
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 
