@@ -27,21 +27,21 @@ jobs:
     - name: 'Set up gcloud'
       uses: 'google-github-actions/setup-gcloud@v2'
 
-    - name: 'Create env.yaml'
-      run: echo "$BACKEND_ENV_YAML" > env.yaml
+    # - name: 'Create env.yaml'
+    #   run: echo "$BACKEND_ENV_YAML" > env.yaml
 
-    - name: 'Deploy codenames-backend'
-      run: |
-        gcloud builds submit ./codenames-backend --tag gcr.io/codenames-458106/codenames-backend
-        gcloud run deploy codenames-backend \
-          --image gcr.io/codenames-458106/codenames-backend \
-          --region europe-central2 \
-          --platform managed \
-          --allow-unauthenticated \
-          --env-vars-file env.yaml
+    # - name: 'Deploy codenames-backend'
+    #   run: |
+    #     gcloud builds submit ./codenames-backend --tag gcr.io/codenames-458106/codenames-backend
+    #     gcloud run deploy codenames-backend \
+    #       --image gcr.io/codenames-458106/codenames-backend \
+    #       --region europe-central2 \
+    #       --platform managed \
+    #       --allow-unauthenticated \
+    #       --env-vars-file env.yaml
 
-    - name: 'Remove env.yaml'
-      run: rm env.yaml
+    # - name: 'Remove env.yaml'
+    #   run: rm env.yaml
 
     - name: 'Create env.yaml'
       run: echo "$FRONTEND_ENV_YAML" > env.yaml
