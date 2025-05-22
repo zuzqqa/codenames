@@ -45,7 +45,10 @@ jobs:
 
     - name: 'Create env.yaml'
       run: echo "$FRONTEND_ENV_YAML" > env.yaml
-      
+    
+    - name: Debug env.yaml
+      run: cat env.yaml
+
     - name: 'Prepare Dockerfile for frontend'
       run: cp ./codenames-frontend/Dockerfile.prod ./codenames-frontend/Dockerfile
   
