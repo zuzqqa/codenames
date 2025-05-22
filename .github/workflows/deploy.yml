@@ -43,16 +43,25 @@ jobs:
     - name: 'Remove env.yaml'
       run: rm env.yaml
 
+    - name: 'Create env.yaml'
+      run: echo "$FRONTEND_ENV_YAML" > env.yaml
+      
+    - name: 'Prepare Dockerfile for frontend'
+      run: cp ./codenames-frontend/Dockerfile.prod ./codenames-frontend/Dockerfile
+  
     - name: 'Deploy codenames-frontend'
       run: |
-        gcloud builds submit ./codenames-frontend --tag gcr.io/codenames-458106/codenames-frontend --file ./codenames-frontend/Dockerfile.prod
+        gcloud builds submit ./codenames-frontend --tag gcr.io/codenames-458106/codenames-frontend
         gcloud run deploy codenames-frontend \
           --image gcr.io/codenames-458106/codenames-frontend \
           --region europe-central2 \
           --platform managed \
           --allow-unauthenticated \
-          --set-env-vars="VITE_BACKEND_API_URL=${{ secrets.VITE_BACKEND_API_URL }},VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}"
+          --env-vars-file env.yaml
 
+    - name: 'Remove env.yaml'
+      run: rm env.yaml
+      
     - name: 'Deploy codenames-socket-io-server'
       run: |
         gcloud builds submit ./codenames-socket-io-server --tag gcr.io/codenames-458106/codenames-socket-io-server
