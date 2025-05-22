@@ -8,6 +8,7 @@ import GameTitleBar from "../../components/GameTitleBar/GameTitleBar";
 import RoomLobby from "../../components/RoomLobby/RoomLobby";
 
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
+import { apiUrl } from "../../config/api.tsx";
 
 /**
  * Props interface for GameLobby component.
@@ -50,7 +51,7 @@ const GameLobby: React.FC<GameLobbyProps> = ({
   useEffect(() => {
     const fetchUsername = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/users/getUsername", {
+        const response = await fetch(`${apiUrl}/api/users/getUsername`, {
           method: "GET",
           credentials: "include"
         });
