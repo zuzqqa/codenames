@@ -96,9 +96,15 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
       }
     } catch (error) {
       console.error("Error retrieving token validation status: ", error);
+      let errorMessage = "Unknown error";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === "string") {
+        errorMessage = error;
+      }
       newErrors.push({
         id: generateId(),
-        message: `Connection error: ${error.message}`,
+        message: `Connection error: ${errorMessage}`,
       });
       setErrors([...newErrors]);
     }
