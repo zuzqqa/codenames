@@ -36,6 +36,11 @@ interface ResetPasswordRequestProps {
   setSoundFXVolume: (volume: number) => void;
 }
 
+/**
+ * ResetPasswordRequestPage is a React functional component that handles the password reset request functionality.
+ * @param param0 - The properties for the ResetPasswordRequestPage component.
+ * @returns JSX.Element
+ */
 const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
   setVolume,
   soundFXVolume,
@@ -52,10 +57,18 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  /**
+   * Handles the change event for the email input field.
+   * @param e - The event triggered when the user types in the email input field.
+   */
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
 
+  /**
+   * Handles the form submission for the password reset request.
+   * @param e - The event triggered when the form is submitted.
+   */
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newNotifications: { id: string; message: string }[] = [];
@@ -83,13 +96,12 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
       );
 
       if (response.status == 200) {
+        setIsLoading(false);
         newNotifications.push({
           id: generateId(),
           message: t("e-mail-reset-sent"),
         });
         setNotifications([...newNotifications]);
-
-        navigate("/login");
       } else if (response.status == 404) {
         newNotifications.push({
           id: generateId(),
@@ -111,10 +123,17 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
     }
   };
 
+  /**
+   * Toggles the visibility of the settings modal.
+   */
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
 
+  /**
+   * Updates the music volume level.
+   * @param volume - The new volume level to set.
+   */
   const updateMusicVolume = (volume: number) => {
     setMusicVolume(volume);
     setVolume(volume); // Update global volume

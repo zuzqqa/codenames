@@ -171,7 +171,7 @@ public class DefaultGameSessionController implements GameSessionController {
         return ResponseEntity.ok(gameSessionService.authenticatePassword(UUID.fromString(gameId), enteredPassword));
     }
 
-    @GetMapping("/{gameId}/getConnectedUsers")
+    @GetMapping("/{gameId}/get-connected-users")
     public ResponseEntity<?> getConnectedUsers(@PathVariable String gameId) {
         GameSession gameSession = gameSessionService.getGameSessionById(UUID.fromString(gameId));
 

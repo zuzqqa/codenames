@@ -7,7 +7,7 @@ import org.example.codenames.jwt.JwtAuthFilter;
 import org.example.codenames.jwt.JwtService;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
-import org.example.codenames.userDetails.UserEntityDetailsService;
+import org.example.codenames.userDetails.service.UserEntityDetailsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -72,13 +72,13 @@ public class ConfigSecurity {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
-                                "/api/users", "/api/users/authenticate", "/api/users/getId", "/api/users/reset-password/**",
-                                "/api/users/getUsername", "/api/users/createGuest", "/api/users/username/**",
+                                "/api/users", "/api/users/authenticate", "/api/users/get-id", "/api/users/reset-password/**", "/api/users/token-validation/**",
+                                "/api/users/get-username", "/api/users/create-guest", "/api/users/username/**",
                                 "/api/email/send-report", "/api/game-session/create", "/api/game-session/**", "/api/game-session/*/finish",
                                 "/api/game-state/**", "/api/cards/**",
                                 "/api/users/activate/**", "/api/email/reset-password", "/api/email/reset-password/**",
-                                "/api/users/search", "/api/users/sendRequest/**", "/api/users/*/friendRequests", "/api/users/declineRequest/**",
-                                "/api/users/acceptRequest/**",  "/api/users/removeFriend/**"
+                                "/api/users/search", "/api/users/send-request/**", "/api/users/*/friend-requests", "/api/users/decline-request/**",
+                                "/api/users/accept-request/**",  "/api/users/remove-friend/**"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/email/send-report",

@@ -223,7 +223,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
     try {
       const response = await fetch(
-        `${apiUrl}/api/game-session/${storedGameId}/voteCards`,
+        `${apiUrl}/api/game-session/${storedGameId}/vote-cards`,
         {
           method: "POST",
           body: JSON.stringify({
@@ -295,7 +295,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     const token = Cookies.get("authToken");
 
     if (token) {
-          fetch(`${apiUrl}/api/users/getUsername`, {
+          fetch(`${apiUrl}/api/users/get-username`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,

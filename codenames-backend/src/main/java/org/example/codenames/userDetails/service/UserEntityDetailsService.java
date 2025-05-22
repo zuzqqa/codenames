@@ -1,8 +1,9 @@
-package org.example.codenames.userDetails;
+package org.example.codenames.userDetails.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.codenames.user.repository.api.UserRepository;
 
+import org.example.codenames.userDetails.model.UserEntityUserDetails;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

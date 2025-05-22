@@ -85,7 +85,7 @@ const SelectGame: React.FC<SelectGameProps> = ({
       }
 
       try {
-        const response = await fetch(`${apiUrl}/api/users/isGuest`, {
+        const response = await fetch(`${apiUrl}/api/users/is-guest`, {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`,
@@ -110,7 +110,7 @@ const SelectGame: React.FC<SelectGameProps> = ({
   useEffect(() => {
     const fetchUsername = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/users/getUsername", {
+        const response = await fetch(`${ apiUrl }/api/users/getUsername`, {
           method: "GET",
           credentials: "include"
         });

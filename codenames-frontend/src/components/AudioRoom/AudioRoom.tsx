@@ -45,13 +45,7 @@ interface UserRoomLobbyDTO {
  * @returns A unique game ID from local storage or generates a new one if it doesn't exist.
  */
 const getGameIDFromLocalStorage = () => {
-  const gameId = localStorage.getItem("gameId");
-  if (!gameId) {
-    const newGameId = Math.random().toString(36).substring(2, 15);
-    localStorage.setItem("gameId", newGameId);
-    return newGameId;
-  }
-  return gameId;
+  return localStorage.getItem("gameId");
 };
 
 /**
@@ -111,7 +105,7 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
     const storedGameId = localStorage.getItem("gameId");
     const token = Cookies.get("authToken");
     if (storedGameId) {
-      fetch(`${apiUrl}/api/game-session/${storedGameId}/getConnectedUsers`)
+      fetch(`${apiUrl}/api/game-session/${storedGameId}/get-connected-users`)
         .then((response) => response.json())
         .then((data: UserRoomLobbyDTO[][]) => {
           setConnectedUsers(data);
@@ -122,7 +116,7 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
     }
 
     if (token) {
-      fetch(`${apiUrl}/api/users/getUsername`, {
+      fetch(`${apiUrl}/api/users/get-username`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

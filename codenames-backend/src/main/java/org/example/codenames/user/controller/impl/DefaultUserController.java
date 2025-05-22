@@ -7,14 +7,17 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import lombok.RequiredArgsConstructor;
 
+import org.example.codenames.email.service.api.EmailService;
 import org.example.codenames.jwt.JwtService;
+import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetServiceToken;
 import org.example.codenames.user.entity.dto.FriendRequestsDTO;
 import org.example.codenames.user.entity.PasswordResetRequest;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.controller.api.UserController;
 import org.example.codenames.user.service.api.UserService;
-import org.example.codenames.userDetails.AuthRequest;
+import org.example.codenames.userDetails.auth.AuthRequest;
 
+import org.example.codenames.userDetails.auth.AuthResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
@@ -23,9 +26,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -43,6 +46,8 @@ import java.util.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class DefaultUserController implements UserController {
+    private final EmailService emailService;
+    private final PasswordResetServiceToken passwordResetServiceToken;
     @Value("${frontend.url:http://localhost:5173}")
     private String frontendUrl;
 
@@ -72,11 +77,10 @@ public class DefaultUserController implements UserController {
      * Creates a new user and generates an authentication token.
      *
      * @param user the user to be created
-     * @param response the HTTP response to add the authentication cookie
      * @return ResponseEntity with status 200 OK
      */
     @PostMapping
-    public ResponseEntity<Map<String, String>> createUser(@RequestBody User user, HttpServletResponse response, @RequestParam String language) throws MessagingException, IOException {
+    public ResponseEntity<Map<String, String>> createUser(@RequestBody User user, @RequestParam String language) throws MessagingException, IOException {
         Optional<String> errorMessage = userService.createUser(user);
 
         if (errorMessage.isPresent()) {
@@ -86,24 +90,8 @@ public class DefaultUserController implements UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
-        String token = jwtService.generateToken(user.getUsername());
-
         if (!user.isGuest() && !Objects.equals(user.getRoles(), "ROLE_ADMIN")) {
-            String activationLink = backendUrl + "/api/users/activate/" + token;
-
-            ClassPathResource resource = new ClassPathResource("mail-templates/activate_account_templates/activate_account_" + language + ".html");
-            String htmlContent = new String(Files.readAllBytes(resource.getFile().toPath()), StandardCharsets.UTF_8);
-
-            htmlContent = htmlContent.replace("${activationLink}", activationLink);
-
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setTo(user.getEmail());
-            helper.setSubject(Objects.equals(language, "pl") ? "Aktywacja konta" : "Account activation");
-            helper.setText(htmlContent, true);
-
-            mailSender.send(message);
+            emailService.sendAccountActivationEmail(user.getUsername(), user.getEmail(), language);
         }
 
         return ResponseEntity.ok().build();
@@ -195,35 +183,31 @@ public class DefaultUserController implements UserController {
      * Authenticates a user and sets an authentication cookie.
      *
      * @param authRequest the authentication request containing username and password
-     * @param response    the HTTP response to add the authentication cookie
-     * @return ResponseEntity with status 200 OK
      */
     @PostMapping("/authenticate")
-    public ResponseEntity<String> authenticateAndSetCookie(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
+    public ResponseEntity<AuthResponse> authenticateAndGenerateJWT(@RequestBody AuthRequest authRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
             );
-            if (authentication.isAuthenticated()) {
 
-                if(!userService.isAccountActivated(authRequest.getUsername())){
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("{\"error\": \"The account is not active. Check your email and activate your account.\"}");
-                }
-              
-                String token = jwtService.generateToken(authRequest.getUsername());
-
-                String jsonResponse = String.format("{\"message\": \"success\", \"token\": \"%s\"}", token);
-
-                return ResponseEntity.ok(jsonResponse);
-            } else {
-                throw new UsernameNotFoundException("Invalid username or password");
+            if (!userService.isAccountActivated(authRequest.getUsername())) {
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(new AuthResponse("Account is not active."));
             }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body("{\"error\": \"Invalid username or password\"}");
+
+            String token = jwtService.generateToken(authRequest.getUsername());
+            return ResponseEntity.ok(new AuthResponse(token));
+
+        } catch (BadCredentialsException ex) {
+            System.out.println(authRequest.getPassword());
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(new AuthResponse("Invalid username or password."));
         }
     }
+
 
     /**
      * Retrieves the username from the authentication token stored in a header.
@@ -231,31 +215,28 @@ public class DefaultUserController implements UserController {
      * @param token the authentication token from the header
      * @return ResponseEntity containing the username
      */
-    @GetMapping("/getUsername")
+    @GetMapping("/get-username")
     public ResponseEntity<String> getUsernameByToken(@RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || !token.startsWith("Bearer ")) {
-            return ResponseEntity.ok("null");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Bearer token is invalid.");
         }
 
-        token = token.substring(7);
-
-        return ResponseEntity.ok(jwtService.getUsernameFromToken(token));
+        return ResponseEntity.ok(jwtService.getUsernameFromToken(token.substring(7)));
     }
 
     /**
      * Retrieves the user ID from the authentication token stored in a header.
      *
      * @param token the authentication token from the header
-     * @return ResponseEntity containing the user ID or 404 if not found
+     * @return
      */
-    @GetMapping("/getId")
+    @GetMapping("/get-id")
     public ResponseEntity<String> getIdByToken(@RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || !token.startsWith("Bearer ")) {
-            return ResponseEntity.ok("null");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Bearer token is invalid.");
         }
 
-        token = token.substring(7);
-        String username = jwtService.getUsernameFromToken(token);
+        String username = jwtService.getUsernameFromToken(token.substring(7));
         Optional<User> user = userService.getUserByUsername(username);
 
         return user.map(User::getId).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
@@ -267,10 +248,10 @@ public class DefaultUserController implements UserController {
      * @param token the authentication token from the header
      * @return ResponseEntity containing true if the user is a guest or not authenticated, false otherwise
      */
-    @GetMapping("/isGuest")
+    @GetMapping("/is-guest")
     public ResponseEntity<Boolean> isGuest(@RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || !token.startsWith("Bearer ")) {
-            return ResponseEntity.ok(false);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
         }
 
         String username = jwtService.getUsernameFromToken(token);
@@ -285,16 +266,16 @@ public class DefaultUserController implements UserController {
      * @param response the HTTP response to add the authentication cookie
      * @return ResponseEntity with status 200 OK
      */
-    @PostMapping("/createGuest")
+    @PostMapping("/create-guest")
     public ResponseEntity<String> createGuest(HttpServletResponse response) {
         String username = userService.generateUniqueUsername();
 
         User guest = User.builder()
-                .username(username)
-                .password("")
-                .roles("ROLE_GUEST")
-                .isGuest(true)
-                .build();
+                         .username(username)
+                         .password("")
+                         .roles("ROLE_GUEST")
+                         .isGuest(true)
+                         .build();
 
         userService.createUser(guest);
 
@@ -323,7 +304,7 @@ public class DefaultUserController implements UserController {
      * @param senderUsername the username of the user sending the request
      * @return ResponseEntity with status 200 OK
      */
-    @PostMapping("/sendRequest/{receiverUsername}")
+    @PostMapping("/send-request/{receiverUsername}")
     public ResponseEntity<Void> sendFriendRequest(@PathVariable String receiverUsername, @RequestParam String senderUsername) {
         userService.sendFriendRequest(senderUsername, receiverUsername);
         return ResponseEntity.ok().build();
@@ -336,7 +317,7 @@ public class DefaultUserController implements UserController {
      * @param receiverUsername the username of the user declining the request
      * @return ResponseEntity with status 200 OK
      */
-    @PostMapping("/declineRequest/{senderUsername}")
+    @PostMapping("/decline-request/{senderUsername}")
     public ResponseEntity<Void> declineFriendRequest(@PathVariable String senderUsername, @RequestParam String receiverUsername) {
         userService.declineFriendRequest(receiverUsername, senderUsername);
         return ResponseEntity.ok().build();
@@ -349,7 +330,7 @@ public class DefaultUserController implements UserController {
      * @param receiverUsername the username of the user accepting the request
      * @return ResponseEntity with status 200 OK
      */
-    @PostMapping("/acceptRequest/{senderUsername}")
+    @PostMapping("/accept-request/{senderUsername}")
     public ResponseEntity<Void> acceptFriendRequest(@PathVariable String senderUsername, @RequestParam String receiverUsername) {
         userService.acceptFriendRequest(receiverUsername, senderUsername);
         return ResponseEntity.ok().build();
@@ -362,7 +343,7 @@ public class DefaultUserController implements UserController {
      * @param userUsername the username of the user initiating the removal
      * @return ResponseEntity with status 200 OK
      */
-    @DeleteMapping("/removeFriend/{friendUsername}")
+    @DeleteMapping("/remove-friend/{friendUsername}")
     public ResponseEntity<Void> removeFriend(@PathVariable String friendUsername, @RequestParam String userUsername) {
         userService.removeFriend(userUsername, friendUsername);
         return ResponseEntity.ok().build();
@@ -374,16 +355,18 @@ public class DefaultUserController implements UserController {
      * @param username the username of the user
      * @return ResponseEntity containing a {@link FriendRequestsDTO} or 404 if user not found
      */
-    @GetMapping("/{username}/friendRequests")
+    @GetMapping("/{username}/friend-requests")
     public ResponseEntity<FriendRequestsDTO> getFriendRequests(@PathVariable String username) {
         Optional<User> user = userService.getUserByUsername(username);
         if (user.isPresent()) {
             User u = user.get();
-            FriendRequestsDTO dto = new FriendRequestsDTO(
-                    u.getFriends(),
-                    u.getSentRequests(),
-                    u.getReceivedRequests()
-            );
+
+            FriendRequestsDTO dto = FriendRequestsDTO.builder()
+                                                     .friends(u.getFriends())
+                                                     .sentRequests(u.getSentRequests())
+                                                     .receivedRequests(u.getReceivedRequests())
+                                                     .build();
+
             return ResponseEntity.ok(dto);
         } else {
             return ResponseEntity.notFound().build();
@@ -401,10 +384,21 @@ public class DefaultUserController implements UserController {
     @PostMapping("/reset-password/{token}")
     public ResponseEntity<String> updatePassword(@PathVariable String token, HttpServletRequest request, @RequestBody PasswordResetRequest passwordResetRequest) {
         boolean success = userService.resetPassword(token, request, passwordResetRequest.getPassword());
+
         if (success) {
+            passwordResetServiceToken.tokenUsed(token, request);
+
             return ResponseEntity.ok().build();
         }
 
         return ResponseEntity.badRequest().body("Invalid or expired token.");
+    }
+
+    @GetMapping("/token-validation/{token}")
+    public ResponseEntity<Void> isPasswordResetTokenValid(@PathVariable String token, HttpServletRequest request) {
+        if (passwordResetServiceToken.isValidToken(token))
+            return ResponseEntity.ok().build();
+
+        return ResponseEntity.status(HttpStatus.GONE).build();
     }
 }

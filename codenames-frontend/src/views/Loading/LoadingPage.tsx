@@ -19,6 +19,7 @@ interface LoadingPageProps {
   setVolume: (volume: number) => void; // Function to set global volume
   soundFXVolume: number; // Current sound effects volume level
   setSoundFXVolume: (volume: number) => void; // Function to set sound effects volume
+  duration?: number; // Optional duration for the loading screen
 }
 
 /**
@@ -27,32 +28,27 @@ interface LoadingPageProps {
  * @param {LoadingPageProps} props - Component props.
  * @returns {JSX.Element} The rendered LoadingPage component.
  */
-const LoadingPage: React.FC<LoadingPageProps> = ({ soundFXVolume }) => {
+const LoadingPage: React.FC<LoadingPageProps> = ({ soundFXVolume, duration }) => {
   const { t } = useTranslation(); // Hook for translation
   const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
-    // Random time between 2000ms (2s) and 4000ms (4s)
-    const randomDuration = Math.random() * 2000 + 2000;
+    const defaultDuration = 3;
+    const effectiveDuration = duration ?? defaultDuration;
 
-    // Set random navigation timeout
-    const endpoint = localStorage.getItem("gameId") ? "/game-lobby" : "/games";
     const timer = setTimeout(() => {
-      navigate(endpoint);
-    }, randomDuration);
+    }, effectiveDuration);
 
-    // Dynamically set CSS variable for the animation duration
     const progressBar = document.getElementById("progressBar");
     if (progressBar) {
       progressBar.style.setProperty(
         "--progress-duration",
-        `${randomDuration}ms`
+        `${effectiveDuration}s`
       );
     }
 
-    // Cleanup timeout on unmount
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [navigate, duration]);
 
   return (
     <BackgroundContainer>

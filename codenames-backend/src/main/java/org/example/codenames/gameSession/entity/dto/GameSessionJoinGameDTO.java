@@ -3,6 +3,7 @@ package org.example.codenames.gameSession.entity.dto;
 import jakarta.persistence.GeneratedValue;
 
 import lombok.Data;
+import lombok.Builder;
 
 import org.example.codenames.gameSession.entity.GameSession;
 
@@ -11,6 +12,7 @@ import org.springframework.data.annotation.Id;
 import java.util.UUID;
 
 @Data
+@Builder
 public class GameSessionJoinGameDTO {
     /**
      * Game status.

@@ -7,8 +7,6 @@ import org.example.codenames.email.entity.EmailRequest;
 
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-
 /**
  * Service interface for handling email-related operations.
  */
@@ -16,7 +14,9 @@ import java.io.IOException;
 public interface EmailService {
     void sendEmail(EmailRequest request);
 
-    void sendConfirmationEmail(String userEmail, String language) throws MessagingException, IOException;
+    void sendConfirmationEmail(String userEmail, String language) throws MessagingException;
 
-    void sendResetPasswordEmail(String userEmail, HttpServletRequest request, String language) throws MessagingException, IOException;
+    void sendResetPasswordEmail(String userEmail, HttpServletRequest request, String language) throws MessagingException;
+
+    void sendAccountActivationEmail(String username, String userEmail, String language) throws MessagingException;
 }

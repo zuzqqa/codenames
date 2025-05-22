@@ -81,5 +81,10 @@
   "copy": "Copy",
   "link-copied": "Link copied to clipboard.",
   "invite-friends": "Invite friends",
-  "invite-friends-text": "Copy the link and share it with your friends so they can join the room."
+  "invite-friends-text": "Copy the link and share it with your friends so they can join the room.",
+  "server-connection-error": "Server connection error. Please try again later.",
+  "token-expired-message": "Your password reset link has expired or is invalid. Try",
+  "try-reset-password": "resetting your password",
+  "or": "again or",
+  "go-back-to-homepage": "go back to the homepage"
 }

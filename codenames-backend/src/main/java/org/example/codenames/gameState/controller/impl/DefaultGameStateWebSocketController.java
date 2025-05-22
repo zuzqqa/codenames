@@ -47,7 +47,7 @@ public class DefaultGameStateWebSocketController implements GameSateWebSocketCon
      * @return ResponseEntity containing the result of the operation.
      */
     @Override
-    @PostMapping("/{gameId}/voteCards")
+    @PostMapping("/{gameId}/vote-cards")
     public ResponseEntity<?> submitVotes(@PathVariable UUID gameId, @RequestBody CardsVoteRequest voteRequest) throws JsonProcessingException {
         gameStateService.updateVotes(gameId, voteRequest);
 
