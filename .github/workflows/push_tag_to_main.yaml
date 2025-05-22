@@ -150,4 +150,4 @@ jobs:
           push: true  # Push image to Docker Hub
           tags: codenames/codenames-frontend:${{ env.VERSION }}  # Tag image with the retrieved version
           context: ./codenames-frontend  # Set the build context
-          file: ./codenames-frontend/Dockerfile  # Use the frontend Dockerfile
+          file: ./codenames-frontend/Dockerfile.prod  # Use the frontend Dockerfile
