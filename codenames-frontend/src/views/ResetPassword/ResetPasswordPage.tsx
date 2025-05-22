@@ -56,75 +56,74 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
   const [notifications, setNotifications] = useState<
     { id: string; message: string }[]
   >([]);
-  
+
   useEffect(() => {
-  const validateToken = async () => {
-    const newErrors: { id: string; message: string }[] = [];
-    setErrors([]);
+    const validateToken = async () => {
+      const newErrors: { id: string; message: string }[] = [];
+      setErrors([]);
 
-    if (!token) {
-      console.error("Token is missing");
-      newErrors.push({
-        id: generateId(),
-        message: "Token is missing",
-      });
-      setErrors([...newErrors]);
-      return;
-    }
-
-    try {
-      const url = `${apiUrl}/api/users/token-validation/${token}`;
-      console.log("Calling API at:", url);
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-      } else if (response.status === 410) {
-        setTokenExpired(true);
-      } else {
-        console.error("Unexpected response status:", response.status);
+      if (!token) {
+        console.error("Token is missing");
         newErrors.push({
           id: generateId(),
-          message: `Unexpected error (Status: ${response.status})`,
+          message: "Token is missing",
+        });
+        setErrors([...newErrors]);
+        return;
+      }
+
+      try {
+        const url = `${apiUrl}/api/users/token-validation/${token}`;
+        console.log("Calling API at:", url);
+
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+        } else if (response.status === 410) {
+          setTokenExpired(true);
+        } else {
+          console.error("Unexpected response status:", response.status);
+          newErrors.push({
+            id: generateId(),
+            message: `Unexpected error (Status: ${response.status})`,
+          });
+          setErrors([...newErrors]);
+        }
+      } catch (error) {
+        console.error("Error retrieving token validation status: ", error);
+        let errorMessage = "Unknown error";
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        } else if (typeof error === "string") {
+          errorMessage = error;
+        }
+        newErrors.push({
+          id: generateId(),
+          message: `Connection error: ${errorMessage}`,
         });
         setErrors([...newErrors]);
       }
-    } catch (error) {
-      console.error("Error retrieving token validation status: ", error);
-      let errorMessage = "Unknown error";
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      } else if (typeof error === "string") {
-        errorMessage = error;
+    };
+
+    const MIN_LOADING_TIME_MS = 1500;
+    const start = Date.now();
+
+    validateToken().finally(() => {
+      const elapsed = Date.now() - start;
+      const remaining = MIN_LOADING_TIME_MS - elapsed;
+
+      if (remaining > 0) {
+        setTimeout(() => setIsLoading(false), remaining);
+      } else {
+        setIsLoading(false);
       }
-      newErrors.push({
-        id: generateId(),
-        message: `Connection error: ${errorMessage}`,
-      });
-      setErrors([...newErrors]);
-    }
-  };
-
-  const MIN_LOADING_TIME_MS = 1500;
-  const start = Date.now();
-
-  validateToken().finally(() => {
-    const elapsed = Date.now() - start;
-    const remaining = MIN_LOADING_TIME_MS - elapsed;
-
-    if (remaining > 0) {
-      setTimeout(() => setIsLoading(false), remaining);
-    } else {
-      setIsLoading(false);
-    }
-  });
-}, []);
-
+    });
+  }, []);
 
   /**
    * Handles the change event for the password repeat input field.
@@ -288,7 +287,14 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
     setVolume(volume);
   };
 
-  return isLoading ? (<LoadingPage duration={1.5} soundFXVolume={soundFXVolume}/>) : (
+  return isLoading ? (
+    <LoadingPage
+      duration={1.5}
+      soundFXVolume={soundFXVolume}
+      setVolume={setVolume}
+      setSoundFXVolume={setSoundFXVolume}
+    />
+  ) : (
     <BackgroundContainer>
       <GameTitleBar />
       <SettingsModal
