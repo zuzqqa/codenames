@@ -21,6 +21,7 @@ services:
   frontend:
     build:
       context: ./codenames-frontend
+      dockerfile: Dockerfile.dev
     container_name: codenames-frontend
     ports:
       - "5173:5173"

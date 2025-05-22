@@ -466,7 +466,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
           onClick={async () => {
             try {
               const response = await fetch(
-                "http://localhost:8080/api/users/createGuest",
+                `${apiUrl}/api/users/createGuest`,
                 {
                   method: "POST",
                   credentials: "include",

@@ -1,11 +1,11 @@
-Improve DTO usage, and remove unused gameId generation
+Add separate Docker configurations for frontend: optimized production build and local development setup
 **🔧 What's included in this release?**
-Improved DTO usage and removed unused gameId generation.
+Implemented separate Dockerfile.prod and Dockerfile.dev for the frontend, introducing a multi-stage production build with Alpine for optimization while maintaining hot-reload in development, along with corresponding updates to docker-compose.yml.
 
 Key additions: 
-- Added and useed builders in DTOs to improve readability and consistency across the codebase.
-- Added token validation and expiry checks by mounting the Reset Password Page component.
-- Created a dedicated page that displays when the password reset token expires.
+- Added Dockerfile.prod with multi-stage build (Node + Alpine) for Cloud Run deployments.
+- Maintained Dockerfile.dev with hot-reload support for local development.
+- Updated docker-compose.yml to explicitly use dockerfile: Dockerfile.dev.
 
 **🚧 What's still under development?**
 - UI/UX fixes.
