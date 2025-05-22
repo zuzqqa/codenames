@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
 
+env:
+  BACKEND_ENV_YAML: ${{ secrets.BACKEND_ENV_YAML }}
+  
 jobs:
   deploy:
     permissions:
@@ -25,7 +28,7 @@ jobs:
       uses: 'google-github-actions/setup-gcloud@v2'
 
     - name: 'Create env.yaml'
-      run: echo "${{ secrets.BACKEND_ENV_YAML }}" > env.yaml
+      run: echo "$BACKEND_ENV_YAML" > env.yaml
 
     - name: 'Deploy codenames-backend'
       run: |
