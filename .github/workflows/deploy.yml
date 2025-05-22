@@ -6,12 +6,7 @@ on:
 
 env:
   BACKEND_ENV_YAML: ${{ secrets.BACKEND_ENV_YAML }}
-  VITE_BACKEND_API_URL: ${{ secrets.VITE_BACKEND_API_URL }}
-  VITE_SOCKET_IO_SERVER: ${{ secrets.VITE_SOCKET_IO_SERVER }}
-  VITE_PEERSERVER: ${{ secrets.VITE_PEERSERVER }}
-  VITE_SECURE_COOKIES: ${{ secrets.VITE_SECURE_COOKIES }}
-  VITE_FRONTEND_URL: ${{ secrets.VITE_FRONTEND_URL }}
-  
+
 jobs:
   deploy:
     permissions:
@@ -32,21 +27,21 @@ jobs:
     - name: 'Set up gcloud'
       uses: 'google-github-actions/setup-gcloud@v2'
 
-    # - name: 'Create env.yaml'
-    #   run: echo "$BACKEND_ENV_YAML" > env.yaml
+    - name: 'Create env.yaml'
+      run: echo "$BACKEND_ENV_YAML" > env.yaml
 
-    # - name: 'Deploy codenames-backend'
-    #   run: |
-    #     gcloud builds submit ./codenames-backend --tag gcr.io/codenames-458106/codenames-backend
-    #     gcloud run deploy codenames-backend \
-    #       --image gcr.io/codenames-458106/codenames-backend \
-    #       --region europe-central2 \
-    #       --platform managed \
-    #       --allow-unauthenticated \
-    #       --env-vars-file env.yaml
+    - name: 'Deploy codenames-backend'
+      run: |
+        gcloud builds submit ./codenames-backend --tag gcr.io/codenames-458106/codenames-backend
+        gcloud run deploy codenames-backend \
+          --image gcr.io/codenames-458106/codenames-backend \
+          --region europe-central2 \
+          --platform managed \
+          --allow-unauthenticated \
+          --env-vars-file env.yaml
 
-    # - name: 'Remove env.yaml'
-    #   run: rm env.yaml
+    - name: 'Remove env.yaml'
+      run: rm env.yaml
 
     - name: 'Prepare Dockerfile for frontend'
       run: cp ./codenames-frontend/Dockerfile.prod ./codenames-frontend/Dockerfile
@@ -75,24 +70,6 @@ jobs:
           --platform managed \
           --allow-unauthenticated
   
-    # - name: 'Deploy codenames-frontend'
-    #   env:
-    #     VITE_BACKEND_API_URL: ${{ secrets.VITE_BACKEND_API_URL }}
-    #     VITE_SOCKET_IO_SERVER: ${{ secrets.VITE_SOCKET_IO_SERVER }}
-    #     VITE_PEERSERVER: ${{ secrets.VITE_PEERSERVER }}
-    #     VITE_SECURE_COOKIES: ${{ secrets.VITE_SECURE_COOKIES }}
-    #     VITE_FRONTEND_URL: ${{ secrets.VITE_FRONTEND_URL }}
-    #   run: |
-    #     gcloud builds submit ./codenames-frontend \
-    #       --tag gcr.io/codenames-458106/codenames-frontend \
-    #       --substitutions=_VITE_BACKEND_API_URL=$VITE_BACKEND_API_URL,_VITE_SOCKET_IO_SERVER=$VITE_SOCKET_IO_SERVER,_VITE_PEERSERVER=$VITE_PEERSERVER,_VITE_SECURE_COOKIES=$VITE_SECURE_COOKIES,_VITE_FRONTEND_URL=$VITE_FRONTEND_URL
-
-    #     gcloud run deploy codenames-frontend \
-    #       --image gcr.io/codenames-458106/codenames-frontend \
-    #       --region europe-central2 \
-    #       --platform managed \
-    #       --allow-unauthenticated
-
     - name: 'Deploy codenames-socket-io-server'
       run: |
         gcloud builds submit ./codenames-socket-io-server --tag gcr.io/codenames-458106/codenames-socket-io-server
