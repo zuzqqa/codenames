@@ -26,6 +26,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -182,22 +183,31 @@ public class DefaultUserController implements UserController {
      * Authenticates a user and sets an authentication cookie.
      *
      * @param authRequest the authentication request containing username and password
-     * @return
      */
     @PostMapping("/authenticate")
     public ResponseEntity<AuthResponse> authenticateAndGenerateJWT(@RequestBody AuthRequest authRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
-        );
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+            );
 
-        if (!userService.isAccountActivated(authRequest.getUsername())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthResponse("Account is not active."));
+            if (!userService.isAccountActivated(authRequest.getUsername())) {
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(new AuthResponse("Account is not active."));
+            }
+
+            String token = jwtService.generateToken(authRequest.getUsername());
+            return ResponseEntity.ok(new AuthResponse(token));
+
+        } catch (BadCredentialsException ex) {
+            System.out.println(authRequest.getPassword());
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(new AuthResponse("Invalid username or password."));
         }
-
-        String token = jwtService.generateToken(authRequest.getUsername());
-
-        return ResponseEntity.ok(new AuthResponse(token));
     }
+
 
     /**
      * Retrieves the username from the authentication token stored in a header.

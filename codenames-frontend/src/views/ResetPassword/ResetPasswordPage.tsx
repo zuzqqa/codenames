@@ -25,6 +25,7 @@ import sadFaceIcon from "../../assets/icons/sad-face.svg";
 import { logout } from "../../shared/utils.tsx";
 import { validatePassword } from "../../utils/validation.tsx";
 import { apiUrl } from "../../config/api.tsx";
+import LoadingPage from "../Loading/LoadingPage.tsx";
 
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -51,57 +52,73 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
   const token = params.get("token");
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
   const [tokenExpired, setTokenExpired] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(true);
+  const [notifications, setNotifications] = useState<
+    { id: string; message: string }[]
+  >([]);
+  
   useEffect(() => {
-    const validateToken = async () => {
-      const newErrors: React.SetStateAction<{ id: string; message: string }[]> =
-        [];
-      setErrors(newErrors);
+  const validateToken = async () => {
+    const newErrors: { id: string; message: string }[] = [];
+    setErrors([]);
 
-      if (!token) {
-        console.error("Token is missing");
+    if (!token) {
+      console.error("Token is missing");
+      newErrors.push({
+        id: generateId(),
+        message: "Token is missing",
+      });
+      setErrors([...newErrors]);
+      return;
+    }
+
+    try {
+      const url = `${apiUrl}/api/users/token-validation/${token}`;
+      console.log("Calling API at:", url);
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+      } else if (response.status === 410) {
+        setTokenExpired(true);
+      } else {
+        console.error("Unexpected response status:", response.status);
         newErrors.push({
           id: generateId(),
-          message: "Token is missing",
-        });
-        setErrors([...newErrors]);
-        return;
-      }
-
-      try {
-        const url = `${apiUrl}/api/users/token-validation/${token}`;
-        console.log("Calling API at:", url);
-
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (response.ok) {
-        } else if (response.status === 410) {
-          setTokenExpired(true);
-        } else {
-          console.error("Unexpected response status:", response.status);
-          newErrors.push({
-            id: generateId(),
-            message: `Unexpected error (Status: ${response.status})`,
-          });
-          setErrors([...newErrors]);
-        }
-      } catch (error) {
-        console.error("Error retrieving token validation status: ", error);
-        newErrors.push({
-          id: generateId(),
-          message: `Connection error: ${error.message}`,
+          message: `Unexpected error (Status: ${response.status})`,
         });
         setErrors([...newErrors]);
       }
-    };
+    } catch (error) {
+      console.error("Error retrieving token validation status: ", error);
+      newErrors.push({
+        id: generateId(),
+        message: `Connection error: ${error.message}`,
+      });
+      setErrors([...newErrors]);
+    }
+  };
 
-    validateToken();
-  }, []);
+  const MIN_LOADING_TIME_MS = 1500;
+  const start = Date.now();
+
+  validateToken().finally(() => {
+    const elapsed = Date.now() - start;
+    const remaining = MIN_LOADING_TIME_MS - elapsed;
+
+    if (remaining > 0) {
+      setTimeout(() => setIsLoading(false), remaining);
+    } else {
+      setIsLoading(false);
+    }
+  });
+}, []);
+
 
   /**
    * Handles the change event for the password repeat input field.
@@ -200,8 +217,9 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
    */
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    const newNotifications: { id: string; message: string }[] = [];
     const newErrors: { id: string; message: string }[] = [];
+
     setErrors(newErrors);
 
     if (!validatePassword(password)) {
@@ -264,7 +282,7 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
     setVolume(volume);
   };
 
-  return (
+  return isLoading ? (<LoadingPage duration={1.5} soundFXVolume={soundFXVolume}/>) : (
     <BackgroundContainer>
       <GameTitleBar />
       <SettingsModal
@@ -291,26 +309,26 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
       )}
       <LoginRegisterContainer variant="reset1">
         <TitleComponent
-        soundFXVolume={soundFXVolume}
-        customStyle={{
-          fontSize: "calc(3.6rem + 0.2vw)",
-          textAlign: "left",
-          position: "absolute",
-          top: "calc(-22rem - 0.2vh)",
-          left: "1.2rem",
-          whiteSpace: "nowrap"
-        }}
-        shadowStyle={{
-          fontSize: "calc(3.6rem + 0.2vw)",
-          textAlign: "left",
-          position: "absolute",
-          top: "calc(-22rem - 0.2vh)",
-          left: "1.2rem",
-          whiteSpace: "nowrap"
-        }}
-      >
-        {t("new-password")}
-      </TitleComponent>
+          soundFXVolume={soundFXVolume}
+          customStyle={{
+            fontSize: "calc(3.6rem + 0.2vw)",
+            textAlign: "left",
+            position: "absolute",
+            top: tokenExpired ? "calc(-22rem - 0.2vh)" : "calc(-23rem - 0.2vh)",
+            left: "1.2rem",
+            whiteSpace: "nowrap",
+          }}
+          shadowStyle={{
+            fontSize: "calc(3.6rem + 0.2vw)",
+            textAlign: "left",
+            position: "absolute",
+            top: tokenExpired ? "calc(-22rem - 0.2vh)" : "calc(-23rem - 0.2vh)",
+            left: "1.2rem",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {t("new-password")}
+        </TitleComponent>
         <div className="reset-password-container">
           <div className="reset-password-image">
             <div className="icon-circle">
@@ -322,17 +340,17 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
             </div>
           </div>
           {tokenExpired ? (
-              <p className="token-expired-message">
-                {t("token-expired-message")}{" "}
-                <a href="/send-reset-password" className="text-link">
-                  {t("try-reset-password")}
-                </a>{" "}
-                {t("or")}{" "}
-                <a href="/" className="text-link">
-                  {t("go-back-to-homepage")}
-                </a>
-                .
-              </p>
+            <p className="token-expired-message">
+              {t("token-expired-message")}{" "}
+              <a href="/send-reset-password" className="text-link">
+                {t("try-reset-password")}
+              </a>{" "}
+              {t("or")}{" "}
+              <a href="/" className="text-link">
+                {t("go-back-to-homepage")}
+              </a>
+              .
+            </p>
           ) : (
             <form className="page-r" onSubmit={handleSubmit}>
               <FormInput

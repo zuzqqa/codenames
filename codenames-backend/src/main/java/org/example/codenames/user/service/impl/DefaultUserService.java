@@ -282,7 +282,7 @@ public class DefaultUserService implements UserService {
         if (optionalPasswordResetToken.isPresent()) {
             PasswordResetToken passwordResetToken = optionalPasswordResetToken.get();
 
-            if (passwordResetServiceToken.isValidToken(token, request)) {
+            if (passwordResetServiceToken.isValidToken(token)) {
                 userRepository.findByEmail(passwordResetToken.getUserEmail())
                         .ifPresent(user -> {
                             String encodedPassword = passwordEncoder.encode(password);

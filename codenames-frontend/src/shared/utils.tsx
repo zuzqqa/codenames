@@ -12,7 +12,7 @@ export const logout = () => {
   Cookies.remove("authToken");
   Cookies.remove("loggedIn");
 
-  window.location.href = "/loading";
+  window.location.href = "/";
 };
 
 /**

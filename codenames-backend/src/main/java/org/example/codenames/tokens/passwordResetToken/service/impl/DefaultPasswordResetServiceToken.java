@@ -61,7 +61,6 @@ public class DefaultPasswordResetServiceToken implements PasswordResetServiceTok
      * Validates the provided password reset token.
      *
      * @param token the password reset token provided by the user
-     * @param request the HTTP request containing additional context (such as IP address) for the password reset operation
      * @return {@code true} if the token is valid (i.e., exists in the repository and can be used),
      *         {@code false} otherwise (e.g., if the token is not found in the repository).
      */

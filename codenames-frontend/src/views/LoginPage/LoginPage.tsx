@@ -260,7 +260,6 @@ const LoginPage: React.FC<LoginProps> = ({
 
     const userData = { username: login, password };
 
-    try {
       const response = await fetch(
         `${apiUrl}/api/users/authenticate`,
         {
@@ -283,7 +282,7 @@ const LoginPage: React.FC<LoginProps> = ({
       if (response.ok) {
         document.cookie = `authToken=${data.token}; max-age=36000; path=/; secure; samesite=none`;
         document.cookie = `loggedIn=true; max-age=36000; path=/; secure; samesite=none`;
-        window.location.href = "/loading";
+        window.location.href = "/games";
       } else {
         if (response.status === 401) {
           if (data.error && data.error.includes("not active")) {
@@ -304,14 +303,6 @@ const LoginPage: React.FC<LoginProps> = ({
           alert("Failed to log in: " + (data.error || "Unknown error"));
         }  
       } 
-    } catch (error) {
-      console.error("Login error:", error);
-      newErrors.push({
-        id: generateId(),
-        message: t("server-connection-error"),
-      });
-      setErrors([...newErrors]);
-    }
   };
 
   /** 
@@ -448,7 +439,7 @@ const LoginPage: React.FC<LoginProps> = ({
           onClick={async () => {
             try {
               const response = await fetch(
-                "http://localhost:8080/api/users/createGuest",
+                `${apiUrl}/api/users/createGuest`,
                 {
                   method: "POST",
                   credentials: "include",

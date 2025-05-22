@@ -96,13 +96,12 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
       );
 
       if (response.status == 200) {
+        setIsLoading(false);
         newNotifications.push({
           id: generateId(),
           message: t("e-mail-reset-sent"),
         });
         setNotifications([...newNotifications]);
-
-        navigate("/login");
       } else if (response.status == 404) {
         newNotifications.push({
           id: generateId(),
