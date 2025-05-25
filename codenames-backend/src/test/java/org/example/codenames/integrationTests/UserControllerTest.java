@@ -1,14 +1,13 @@
 package org.example.codenames.integrationTests;
 
+import com.hazelcast.core.Hazelcast;
 import org.example.codenames.CodenamesApplication;
 import org.example.codenames.email.service.api.EmailService;
 import org.example.codenames.user.controller.api.UserController;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -85,6 +84,11 @@ public class UserControllerTest {
     @BeforeEach
     void cleanDatabase() {
         userRepository.deleteAll();
+    }
+
+    @AfterAll
+    static void shutdown() {
+        Hazelcast.shutdownAll();
     }
 
     // Testing the preflight request.

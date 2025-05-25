@@ -1,9 +1,11 @@
 package org.example.codenames.integrationTests;
 
+import com.hazelcast.core.Hazelcast;
 import org.example.codenames.CodenamesApplication;
 import org.example.codenames.gameSession.controller.api.GameSessionController;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -75,6 +77,11 @@ public class GameSessionControllerTest {
     @AfterEach
     void cleanDatabase() {
         gameSessionRepository.deleteAll();
+    }
+
+    @AfterAll
+    static void shutdown() {
+        Hazelcast.shutdownAll();
     }
 
     @Test

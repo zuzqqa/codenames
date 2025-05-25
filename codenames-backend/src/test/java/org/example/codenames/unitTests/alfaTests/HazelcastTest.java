@@ -8,6 +8,7 @@ import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameState.entity.GameState;
 import org.example.codenames.hazelcast.HazelcastConfiguration;
 import org.example.codenames.user.entity.User;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,6 +75,11 @@ public class HazelcastTest {
     public void tearDown() {
         gameSessionMap.clear();
         hazelcastInstance.shutdown();
+    }
+
+    @AfterAll
+    public static void afterAll() {
+        Hazelcast.shutdownAll();
     }
 
     @Test
