@@ -184,33 +184,28 @@ public class DefaultUserController implements UserController {
      * Authenticates a user and sets an authentication cookie.
      *
      * @param authRequest the authentication request containing username and password
-     * @param response    the HTTP response to add the authentication cookie
-     * @return ResponseEntity with status 200 OK
      */
     @PostMapping("/authenticate")
-    public ResponseEntity<String> authenticateAndSetCookie(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
+    public ResponseEntity<AuthResponse> authenticateAndGenerateJWT(@RequestBody AuthRequest authRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
             );
-            if (authentication.isAuthenticated()) {
 
-                if(!userService.isAccountActivated(authRequest.getUsername())){
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("{\"error\": \"The account is not active. Check your email and activate your account.\"}");
-                }
-              
-                String token = jwtService.generateToken(authRequest.getUsername());
-
-                String jsonResponse = String.format("{\"message\": \"success\", \"token\": \"%s\"}", token);
-
-                return ResponseEntity.ok(jsonResponse);
-            } else {
-                throw new UsernameNotFoundException("Invalid username or password");
+            if (!userService.isAccountActivated(authRequest.getUsername())) {
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(new AuthResponse("Account is not active."));
             }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body("{\"error\": \"Invalid username or password\"}");
+
+            String token = jwtService.generateToken(authRequest.getUsername());
+            return ResponseEntity.ok(new AuthResponse(token));
+
+        } catch (BadCredentialsException ex) {
+            System.out.println(authRequest.getPassword());
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(new AuthResponse("Invalid username or password."));
         }
     }
 

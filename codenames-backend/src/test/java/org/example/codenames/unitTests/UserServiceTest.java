@@ -1,5 +1,7 @@
 package org.example.codenames.unitTests;
 
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.map.IMap;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.impl.DefaultUserService;
@@ -15,6 +17,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,6 +37,9 @@ public class UserServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;  // Mock the PasswordEncoder
+
+    @Mock
+    private HazelcastInstance hazelcastInstance;  // Mock the HazelcastInstance
 
     @InjectMocks
     private DefaultUserService userService;  // Inject mock into UserService

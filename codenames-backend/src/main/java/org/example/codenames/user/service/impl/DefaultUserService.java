@@ -19,7 +19,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Default implementation of the {@link UserService} interface.
@@ -47,9 +50,6 @@ public class DefaultUserService implements UserService {
      */
     private final PasswordResetServiceToken passwordResetServiceToken;
 
-    /**
-     * Map for storing active users.
-     */
     private final IMap<String, LocalDateTime> activityMap;
 
     /**
@@ -58,16 +58,15 @@ public class DefaultUserService implements UserService {
      * @param userRepository the user repository
      * @param passwordEncoder the password encoder
      * @param passwordResetTokenRepository the password reset tokens repository
-     * @param hazelcastInstance the Hazelcast instance for managing active users
      * @param passwordResetServiceToken the password reset service
      */
     @Autowired
-    public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PasswordResetTokenRepository passwordResetTokenRepository, PasswordResetService passwordResetService, HazelcastInstance hazelcastInstance) {
+    public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PasswordResetTokenRepository passwordResetTokenRepository, PasswordResetServiceToken passwordResetServiceToken, HazelcastInstance hazelcastInstance) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
-        this.activityMap = hazelcastInstance.getMap("activeUsers");
         this.passwordResetServiceToken = passwordResetServiceToken;
+        this.activityMap = hazelcastInstance.getMap("activeUsers");
     }
 
     /**
@@ -290,14 +289,13 @@ public class DefaultUserService implements UserService {
         if (optionalPasswordResetToken.isPresent()) {
             PasswordResetToken passwordResetToken = optionalPasswordResetToken.get();
 
-            if (passwordResetService.isValidToken(token, request)) {
+            if (passwordResetServiceToken.isValidToken(token)) {
                 userRepository.findByEmail(passwordResetToken.getUserEmail())
                         .ifPresent(user -> {
                             String encodedPassword = passwordEncoder.encode(password);
                             user.setPassword(encodedPassword);
                             userRepository.save(user);
                         });
-
                 return true;
             }
         }
@@ -365,5 +363,25 @@ public class DefaultUserService implements UserService {
         } while (userRepository.existsByUsername(username));
 
         return username;
+    }
+
+    /**
+     * Updates the user's active status.
+     *
+     * @param userId the ID of the user
+     */
+    @Override
+    public void updateUserActiveStatus(String userId) {
+        activityMap.put(userId, LocalDateTime.now());
+    }
+
+    /**
+     * Retrieves all active users.
+     *
+     * @return a map of all active users
+     */
+    @Override
+    public Map<String, LocalDateTime> getAllActiveUsers() {
+        return activityMap.getAll(activityMap.keySet());
     }
 }

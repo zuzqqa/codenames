@@ -24,7 +24,7 @@ import { apiUrl } from "../../config/api.tsx";
 import {useToast} from "../../components/Toast/ToastContext.tsx";
 
 const generateId = () =>
-  Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+    Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 
 /**
  * Props type definition for the LoginPage component.
@@ -42,10 +42,10 @@ interface LoginProps {
  * @returns {JSX.Element} The rendered LoginPage component.
  */
 const LoginPage: React.FC<LoginProps> = ({
-  setVolume,
-  soundFXVolume,
-  setSoundFXVolume,
-}) => {
+                                           setVolume,
+                                           soundFXVolume,
+                                           setSoundFXVolume,
+                                         }) => {
   const [login, setLogin] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
@@ -53,10 +53,6 @@ const LoginPage: React.FC<LoginProps> = ({
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
-  const [notifications, setNotifications] = useState<
-    { id: string; message: string }[]
-  >([]);
   const { addToast } = useToast();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -89,20 +85,6 @@ const LoginPage: React.FC<LoginProps> = ({
   };
 
   /**
-   * useEffect hook for handling the automatic removal of notification messages after a delay.
-   *
-   * - Adds a fade-out effect to the toast notification before removal.
-   * - Removes notifications from the state after a timeout.
-   *
-   * @param {Array<{ id: string; message: string }>} errors - Array of notification messages with unique IDs.
-   */
-  useEffect(() => {
-    if (isActivated) {
-      addToast(t("account-activated-notification"), "notification");
-    }
-  }, [isActivated]);
-
-  /**
    * Updates the `login` state whenever `username` changes.
    *
    * This effect listens for changes in `username`. If a new `username` is available,
@@ -126,7 +108,7 @@ const LoginPage: React.FC<LoginProps> = ({
 
     const userData = { username: login, password };
 
-      const response = await fetch(
+    const response = await fetch(
         `${apiUrl}/api/users/authenticate`,
         {
           method: "POST",
@@ -134,30 +116,31 @@ const LoginPage: React.FC<LoginProps> = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify(userData),
-          credentials: "include",
         }
-      );
+    );
 
-      let data;
-      try {
-        data = await response.json();
-      } catch (e) {
-        console.error("Failed to parse JSON response:", e);
-        throw new Error("Failed to parse JSON response");
-      }
+    let data;
+    try {
+      data = await response.json();
+    } catch (e) {
+      console.error("Failed to parse JSON response:", e);
+      throw new Error("Failed to parse JSON response");
+    }
 
-      if (response.ok) {
-        document.cookie = `authToken=${data.token}; max-age=36000; path=/; secure; samesite=none`;
-        document.cookie = `loggedIn=true; max-age=36000; path=/; secure; samesite=none`;
-        window.location.href = "/loading";
-      } else if (response.status === 401) {
-        addToast(t("account-not-activated"), "error");
+    if (response.ok) {
+      document.cookie = `authToken=${data.token}; max-age=36000; path=/; secure; samesite=none`;
+      document.cookie = `loggedIn=true; max-age=36000; path=/; secure; samesite=none`;
+      window.location.href = "/games";
+    } else {
+      if (response.status === 401) {
+        if (data.error && data.error.includes("not active")) {
+          addToast(t("account-not-activated"), "error");
+        } else {
+          addToast(t("invalid-login-or-password"), "error");
+        }
       } else {
-        const error = await response.text();
-        addToast("Failed to log in: " + error, "error");
+        addToast(t("login-failed"), "error");
       }
-    } catch (error) {
-      addToast(t("invalid-login-or-password"), "error");
     }
   };
 
@@ -179,144 +162,143 @@ const LoginPage: React.FC<LoginProps> = ({
   };
 
   return (
-    <BackgroundContainer>
-      <GameTitleBar />
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={toggleSettings}
-        musicVolume={musicVolume}
-        soundFXVolume={soundFXVolume}
-        setMusicVolume={updateMusicVolume}
-        setSoundFXVolume={setSoundFXVolume}
-      />
-      <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
-        <img src={settingsIcon} alt="Settings" />
-      </Button>
-      {document.cookie
-        .split("; ")
-        .find((cookie) => cookie.startsWith("loggedIn=")) && (
-        <Button variant="logout" soundFXVolume={soundFXVolume}>
-          <img src={logoutButton} onClick={logout} alt="Logout" />
+      <BackgroundContainer>
+        <GameTitleBar />
+        <SettingsModal
+            isOpen={isSettingsOpen}
+            onClose={toggleSettings}
+            musicVolume={musicVolume}
+            soundFXVolume={soundFXVolume}
+            setMusicVolume={updateMusicVolume}
+            setSoundFXVolume={setSoundFXVolume}
+        />
+        <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
+          <img src={settingsIcon} alt="Settings" />
         </Button>
-      )}
-      <LoginRegisterContainer variant="login">
-      <TitleComponent
-        soundFXVolume={soundFXVolume}
-        customStyle={{
-          fontSize: "calc(3.6rem + 0.2vw)",
-          textAlign: "left",
-          position: "absolute",
-          top: "calc(-27rem - 1vh)",
-          left: "1.2rem"
-        }}
-        shadowStyle={{
-          fontSize: "calc(3.6rem + 0.2vw)",
-          textAlign: "left",
-          position: "absolute",
-          top: "calc(-27rem - 1vh)",
-          left: "1.2rem"
-        }}
-      >
-        {t("login-button-text")}
-      </TitleComponent>
-        <div className="login-form-container">
-          <form className="login-form" onSubmit={handleSubmit}>
-            <FormInput
-              type="text"
-              placeholder="LOGIN"
-              value={login}
-              onChange={handleLoginChange}
-            />
-            <FormInput
-              type="text"
-              placeholder={t("PASSWORD")}
-              value={
-                !isPasswordVisible ? "●".repeat(password.length) : password
-              }
-              onChange={handlePasswordChange}
-              button={
-                <Button
-                  variant="eye"
-                  soundFXVolume={soundFXVolume}
-                  onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                >
-                  <img
-                    src={isPasswordVisible ? eyeSlashIcon : eyeIcon}
-                    alt={isPasswordVisible ? "Hide password" : "Show password"}
-                  />
-                </Button>
-              }
-            />
-            <div
-              className="reset-password"
-            >
-              <a
-                className="reset-password-link"
-                onClick={() => navigate("/send-reset-password")}
-              >
-                {t("forgot-password-text")}
-              </a>
-            </div>
-            <Button
-              type="submit"
-              variant="primary"
-              soundFXVolume={soundFXVolume}
-            >
-              <span className="button-text">{t("submit-button")}</span>
+        {document.cookie
+            .split("; ")
+            .find((cookie) => cookie.startsWith("loggedIn=")) && (
+            <Button variant="logout" soundFXVolume={soundFXVolume}>
+              <img src={logoutButton} onClick={logout} alt="Logout" />
             </Button>
-          </form>
-          <div className="or-container">
-            <div className="gold-line"></div>
-            <span className="or-text">{t("or")}</span>
-            <div className="gold-line"></div>
-          </div>
-          <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-            <div className="google-container">
-            <GoogleLogin
-              locale="en"
-              onSuccess={() => {
-                window.location.href =
-                  `${apiUrl}/oauth2/authorization/google`;
+        )}
+        <LoginRegisterContainer variant="login">
+          <TitleComponent
+              soundFXVolume={soundFXVolume}
+              customStyle={{
+                fontSize: "calc(3.6rem + 0.2vw)",
+                textAlign: "left",
+                position: "absolute",
+                top: "calc(-27rem - 1vh)",
+                left: "1.2rem"
               }}
-              onError={() => {
-                console.log("Google login failed");
-                addToast("Google login failed", "error");
+              shadowStyle={{
+                fontSize: "calc(3.6rem + 0.2vw)",
+                textAlign: "left",
+                position: "absolute",
+                top: "calc(-27rem - 1vh)",
+                left: "1.2rem"
               }}
-            />
-            </div>
-          </GoogleOAuthProvider>
-          <a
-          className="login-register-link"
-          onClick={() => navigate("/register")}
           >
-          {t("dont-have-an-account")}
-          </a>
-          <a 
-          className="login-register-link guest-link"
-          onClick={async () => {
-            try {
-              const response = await fetch(
-                `${apiUrl}/api/users/createGuest`,
-                {
-                  method: "POST",
-                  credentials: "include",
-                }
-              );
+            {t("login-button-text")}
+          </TitleComponent>
+          <div className="login-form-container">
+            <form className="login-form" onSubmit={handleSubmit}>
+              <FormInput
+                  type="text"
+                  placeholder="LOGIN"
+                  value={login}
+                  onChange={handleLoginChange}
+              />
+              <FormInput
+                  type="text"
+                  placeholder={t("PASSWORD")}
+                  value={
+                    !isPasswordVisible ? "●".repeat(password.length) : password
+                  }
+                  onChange={handlePasswordChange}
+                  button={
+                    <Button
+                        variant="eye"
+                        soundFXVolume={soundFXVolume}
+                        onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                    >
+                      <img
+                          src={isPasswordVisible ? eyeSlashIcon : eyeIcon}
+                          alt={isPasswordVisible ? "Hide password" : "Show password"}
+                      />
+                    </Button>
+                  }
+              />
+              <div
+                  className="reset-password"
+              >
+                <a
+                    className="reset-password-link"
+                    onClick={() => navigate("/send-reset-password")}
+                >
+                  {t("forgot-password-text")}
+                </a>
+              </div>
+              <Button
+                  type="submit"
+                  variant="primary"
+                  soundFXVolume={soundFXVolume}
+              >
+                <span className="button-text">{t("submit-button")}</span>
+              </Button>
+            </form>
+            <div className="or-container">
+              <div className="gold-line"></div>
+              <span className="or-text">{t("or")}</span>
+              <div className="gold-line"></div>
+            </div>
+            <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+              <div className="google-container">
+                <GoogleLogin
+                    locale="en"
+                    onSuccess={() => {
+                      window.location.href =
+                          `${apiUrl}/oauth2/authorization/google`;
+                    }}
+                    onError={() => {
+                      console.log("Google login failed");
+                    }}
+                />
+              </div>
+            </GoogleOAuthProvider>
+            <a
+                className="login-register-link"
+                onClick={() => navigate("/register")}
+            >
+              {t("dont-have-an-account")}
+            </a>
+            <a
+                className="login-register-link guest-link"
+                onClick={async () => {
+                  try {
+                    const response = await fetch(
+                        `${apiUrl}/api/users/createGuest`,
+                        {
+                          method: "POST",
+                          credentials: "include",
+                        }
+                    );
 
-              if (response.ok) {
-                window.location.href = "/loading";
-              } else {
-                console.error("Failed to create guest account");
-              }
-            } catch (error) {
-              console.error("Error creating guest account:", error);
-            }
-          }}          >
-          {t("or-continue-as-guset")}
-          </a>
-        </div>
-      </LoginRegisterContainer>
-    </BackgroundContainer>
+                    if (response.ok) {
+                      window.location.href = "/loading";
+                    } else {
+                      console.error("Failed to create guest account");
+                    }
+                  } catch (error) {
+                    console.error("Error creating guest account:", error);
+                  }
+                }}          >
+              {t("or-continue-as-guset")}
+            </a>
+          </div>
+        </LoginRegisterContainer>
+      </BackgroundContainer>
   );
 };
 
