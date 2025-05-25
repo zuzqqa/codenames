@@ -3,7 +3,9 @@ package org.example.codenames.user.service.api;
 import jakarta.servlet.http.HttpServletRequest;
 import org.example.codenames.user.entity.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -39,4 +41,8 @@ public interface UserService {
     boolean resetPassword(String uuid, HttpServletRequest request, String password);
 
     void deleteUserById(String id);
+
+    void updateUserActiveStatus(String userId);
+
+    Map<String, LocalDateTime> getAllActiveUsers();
 }

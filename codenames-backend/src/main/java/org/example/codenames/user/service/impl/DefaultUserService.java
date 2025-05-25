@@ -2,6 +2,8 @@ package org.example.codenames.user.service.impl;
 
 import com.github.javafaker.Faker;
 
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.map.IMap;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.example.codenames.tokens.passwordResetToken.entity.PasswordResetToken;
@@ -16,7 +18,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -46,6 +50,8 @@ public class DefaultUserService implements UserService {
      */
     private final PasswordResetServiceToken passwordResetServiceToken;
 
+    private final IMap<String, LocalDateTime> activityMap;
+
     /**
      * Constructs a new DefaultUserService with the given user repository, password encoder, passwordResetTokenRepository and passwordResetService.
      *
@@ -55,11 +61,12 @@ public class DefaultUserService implements UserService {
      * @param passwordResetServiceToken the password reset service
      */
     @Autowired
-    public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PasswordResetTokenRepository passwordResetTokenRepository, PasswordResetServiceToken passwordResetServiceToken) {
+    public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PasswordResetTokenRepository passwordResetTokenRepository, PasswordResetServiceToken passwordResetServiceToken, HazelcastInstance hazelcastInstance) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.passwordResetServiceToken = passwordResetServiceToken;
+        this.activityMap = hazelcastInstance.getMap("activeUsers");
     }
 
     /**
@@ -356,5 +363,25 @@ public class DefaultUserService implements UserService {
         } while (userRepository.existsByUsername(username));
 
         return username;
+    }
+
+    /**
+     * Updates the user's active status.
+     *
+     * @param userId the ID of the user
+     */
+    @Override
+    public void updateUserActiveStatus(String userId) {
+        activityMap.put(userId, LocalDateTime.now());
+    }
+
+    /**
+     * Retrieves all active users.
+     *
+     * @return a map of all active users
+     */
+    @Override
+    public Map<String, LocalDateTime> getAllActiveUsers() {
+        return activityMap.getAll(activityMap.keySet());
     }
 }

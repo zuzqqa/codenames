@@ -15,7 +15,6 @@ import jakarta.persistence.GeneratedValue;
 /**
  * GameSession entity class.
  */
-@Document(collection = "sessions")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
