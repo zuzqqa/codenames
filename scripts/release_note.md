@@ -1,10 +1,11 @@
-Improved copy-link isle in game lobby
+Fixed copy-link isle
 **🔧 What's included in this release?**
-improved responsiveness and and apperance of the copy-link isle in game lobby form
+Fixed copy-link isle apperance and responsiveness in game lobb
 
 Key additions: 
-- new icons
-- new styles
+- new link icon
+- new message icon
+- new styles for game lobby
 
 **🚧 What's still under development?**
 
