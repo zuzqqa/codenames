@@ -17,11 +17,6 @@ import java.util.stream.Collectors;
 @Repository
 public class GameSessionRepository {
 
-    @NonNull
-    List<GameSession> findAll();
-
-    boolean existsByGameName(String name);
-
     private final IMap<String, GameSession> gameSessionMap;
 
     public GameSessionRepository(HazelcastInstance hazelcastInstance) {
