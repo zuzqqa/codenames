@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -208,35 +209,37 @@ public class DefaultUserController implements UserController {
         }
     }
 
-
     /**
      * Retrieves the username from the authentication token stored in a header.
      *
      * @param token the authentication token from the header
      * @return ResponseEntity containing the username
      */
-    @GetMapping("/get-username")
+    @GetMapping("/getUsername")
     public ResponseEntity<String> getUsernameByToken(@RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || !token.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Bearer token is invalid.");
+            return ResponseEntity.ok("null");
         }
 
-        return ResponseEntity.ok(jwtService.getUsernameFromToken(token.substring(7)));
+        token = token.substring(7);
+
+        return ResponseEntity.ok(jwtService.getUsernameFromToken(token));
     }
 
     /**
      * Retrieves the user ID from the authentication token stored in a header.
      *
      * @param token the authentication token from the header
-     * @return
+     * @return ResponseEntity containing the user ID or 404 if not found
      */
-    @GetMapping("/get-id")
+    @GetMapping("/getId")
     public ResponseEntity<String> getIdByToken(@RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || !token.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Bearer token is invalid.");
+            return ResponseEntity.ok("null");
         }
 
-        String username = jwtService.getUsernameFromToken(token.substring(7));
+        token = token.substring(7);
+        String username = jwtService.getUsernameFromToken(token);
         Optional<User> user = userService.getUserByUsername(username);
 
         return user.map(User::getId).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
@@ -248,10 +251,10 @@ public class DefaultUserController implements UserController {
      * @param token the authentication token from the header
      * @return ResponseEntity containing true if the user is a guest or not authenticated, false otherwise
      */
-    @GetMapping("/is-guest")
+    @GetMapping("/isGuest")
     public ResponseEntity<Boolean> isGuest(@RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || !token.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+            return ResponseEntity.ok(false);
         }
 
         String username = jwtService.getUsernameFromToken(token);
@@ -266,16 +269,17 @@ public class DefaultUserController implements UserController {
      * @param response the HTTP response to add the authentication cookie
      * @return ResponseEntity with status 200 OK
      */
-    @PostMapping("/create-guest")
+    @PostMapping("/createGuest")
     public ResponseEntity<String> createGuest(HttpServletResponse response) {
         String username = userService.generateUniqueUsername();
 
         User guest = User.builder()
-                         .username(username)
-                         .password("")
-                         .roles("ROLE_GUEST")
-                         .isGuest(true)
-                         .build();
+                .id(UUID.randomUUID().toString())
+                .username(username)
+                .password("")
+                .roles("ROLE_GUEST")
+                .isGuest(true)
+                .build();
 
         userService.createUser(guest);
 
@@ -392,6 +396,28 @@ public class DefaultUserController implements UserController {
         }
 
         return ResponseEntity.badRequest().body("Invalid or expired token.");
+    }
+
+    /**
+     * Updates the timestamp of the last activity of a user.
+     *
+     * @param userId the ID of the user to be updated
+     * @return ResponseEntity with status 200 OK
+     */
+    @PostMapping("/activity")
+    public ResponseEntity<Void> updateUserActiveStatus(@RequestBody String userId) {
+        userService.updateUserActiveStatus(userId);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Retrieves the activity timestamps of all users.
+     *
+     * @return ResponseEntity containing a map of usernames and their last activity timestamps
+     */
+    @GetMapping("/activity")
+    public ResponseEntity<Map<String, LocalDateTime>> getAllUserActivity() {
+        return ResponseEntity.ok().body(userService.getAllActiveUsers());
     }
 
     @GetMapping("/token-validation/{token}")

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -65,4 +66,8 @@ public interface UserController {
     ResponseEntity<FriendRequestsDTO> getFriendRequests(@PathVariable String username);
     
     ResponseEntity<String> updatePassword(@PathVariable String token, HttpServletRequest request, @RequestBody PasswordResetRequest passwordResetRequest);
+
+    ResponseEntity<Void> updateUserActiveStatus(@RequestBody String userId);
+
+    ResponseEntity<Map<String, LocalDateTime>> getAllUserActivity();
 }
