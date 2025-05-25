@@ -48,7 +48,10 @@ const LoginPage: React.FC<LoginProps> = ({
                                          }) => {
   const [login, setLogin] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [musicVolume, setMusicVolume] = useState(50); // Music volume level
+  const [musicVolume, setMusicVolume] = useState(() => {
+    const savedVolume = localStorage.getItem("musicVolume");
+    return savedVolume ? parseFloat(savedVolume) : 50;
+  });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { t } = useTranslation();
@@ -83,6 +86,10 @@ const LoginPage: React.FC<LoginProps> = ({
       setPassword(password.slice(0, -1)); // Handle backspace
     }
   };
+
+  useEffect(() => {
+    localStorage.setItem("musicVolume", musicVolume.toString());
+  }, [musicVolume]);
 
   /**
    * Updates the `login` state whenever `username` changes.

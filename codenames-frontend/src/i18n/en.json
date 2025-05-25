@@ -85,6 +85,7 @@
   "server-connection-error": "Server connection error. Please try again later.",
   "token-expired-message": "Your password reset link has expired or is invalid. Try",
   "try-reset-password": "resetting your password",
-  "or": "again or",
-  "go-back-to-homepage": "go back to the homepage"
+  "go-back-to-homepage": "go back to the homepage",
+  "game-name-already-exists": "Game with this name already exists.",
+  "game-name-required": "Game name is required."
 }

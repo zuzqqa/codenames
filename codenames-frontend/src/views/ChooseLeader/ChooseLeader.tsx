@@ -105,7 +105,10 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
   soundFXVolume,
   setSoundFXVolume,
 }) => {
-  const [musicVolume, setMusicVolume] = useState(50); // Music volume level
+  const [musicVolume, setMusicVolume] = useState(() => {
+    const savedVolume = localStorage.getItem("musicVolume");
+    return savedVolume ? parseFloat(savedVolume) : 50;
+  });  
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [selectedPlayer, setSelectedPlayer] = useState<UserRoomLobbyDTO | null>(null);
   const timeForVoting = 10; // Time for voting in seconds
@@ -119,6 +122,10 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
   const [isVoteCasted, setIsVoteCasted] = useState<boolean>(false);
   const [userId, setUserId] = useState<string | null>();
 
+  useEffect(() => {
+    localStorage.setItem("musicVolume", musicVolume.toString());
+  }, [musicVolume]);
+  
   useEffect(() => {
     const storedGameId = localStorage.getItem("gameId");
 

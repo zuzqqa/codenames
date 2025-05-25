@@ -45,7 +45,10 @@ const SelectGame: React.FC<SelectGameProps> = ({
   soundFXVolume,
   setSoundFXVolume,
 }) => {
-  const [musicVolume, setMusicVolume] = useState(50); // State to manage music volume
+  const [musicVolume, setMusicVolume] = useState(() => {
+    const savedVolume = localStorage.getItem("musicVolume");
+    return savedVolume ? parseFloat(savedVolume) : 50;
+  });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // State to track if settings modal is open
   const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
   const [isGuest, setIsGuest] = useState<boolean | null>(null);
@@ -75,6 +78,11 @@ const SelectGame: React.FC<SelectGameProps> = ({
     setMusicVolume(volume);
     setVolume(volume); // Update global volume
   };
+
+  useEffect(() => {
+    localStorage.setItem("musicVolume", musicVolume.toString());
+  }, [musicVolume]);
+
 
   useEffect(() => {
     const fetchGuestStatus = async () => {

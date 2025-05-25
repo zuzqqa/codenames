@@ -3,8 +3,8 @@
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  height: 75%;
-  width: 45%;
+  height: clamp(480px, 75vh, 820px);
+  width: clamp(650px, 45vw, 560px);
   border-radius: 17px;
   box-shadow: inset 9.91px 9.91px 15px #2c2c2c, inset -9.91px -9.91px 15px #3d3d3d;
   z-index: 1;
@@ -17,7 +17,7 @@
 
 @media (min-height: 1080px) {
   .room-menu-container {
-    width: 29%;
-    height: 58%;
+    height: clamp(480px, 58vh, 820px);
+    width: clamp(650px, 29vw, 560px);
   }
 }

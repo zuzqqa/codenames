@@ -3,8 +3,8 @@
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  height: 31%;
-  width: 32%;
+  width: clamp(280px, 65vw, 600px);
+  height: clamp(250px, 30vh, 450px);
   border-radius: 17px;
   box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.25);
   z-index: 1;
@@ -12,4 +12,21 @@
   display: grid;
   grid-template-columns: 1fr 5px 1fr;
   grid-template-rows: 0.8fr 0.8fr 0.8fr 0.8fr;
+}
+
+
+
+@media (max-width: 700px) {
+  .menu-container {
+    display: flex;
+    flex-direction: column;
+    justify-content:space-evenly;
+    width: clamp(260px, 65vw, 600px);
+    height: auto;
+    padding: 1.5rem;
+  }
+
+  .gold-bar {
+    display: none;
+  }
 }
