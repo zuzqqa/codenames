@@ -114,7 +114,10 @@ const Gameplay: React.FC<GameplayProps> = ({
   soundFXVolume,
   setSoundFXVolume,
 }) => {
-  const [musicVolume, setMusicVolume] = useState(50);
+  const [musicVolume, setMusicVolume] = useState(() => {
+    const savedVolume = localStorage.getItem("musicVolume");
+    return savedVolume ? parseFloat(savedVolume) : 50;
+  });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { t } = useTranslation();
   const [isCardVisible, setIsCardVisible] = useState(false);
@@ -270,6 +273,10 @@ const Gameplay: React.FC<GameplayProps> = ({
       console.error("Error submitting vote:", error);
     }
   };
+
+  useEffect(() => {
+    localStorage.setItem("musicVolume", musicVolume.toString());
+  }, [musicVolume]);
 
   /**
    * Fetches the user ID from local storage and sets it in the state.

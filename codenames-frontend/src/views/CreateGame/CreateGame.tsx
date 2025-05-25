@@ -45,20 +45,37 @@ const CreateGame: React.FC<CreateGameProps> = ({
   soundFXVolume,
   setSoundFXVolume,
 }) => {
-  const [musicVolume, setMusicVolume] = useState(50); // Music volume level
+  const [musicVolume, setMusicVolume] = useState(() => {
+    const savedVolume = localStorage.getItem("musicVolume");
+    return savedVolume ? parseFloat(savedVolume) : 50;
+  });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
   const [isGuest, setIsGuest] = useState<boolean | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const { t } = useTranslation(); 
 
-  /**
-   * Effect to fetch guest status from the server.
-   * It checks if the user is a guest and updates the state accordingly.
-   */
-  useEffect(() => {
-    const fetchGuestStatus = async () => {
-      const token = getCookie("authToken");
+    useEffect(() => {
+      const fetchGuestStatus = async () => {
+        try {
+          const response = await fetch("http://localhost:8080/api/users/isGuest", {
+            method: "GET",
+            credentials: "include",
+          });
+    
+          if (response.ok) {
+            const guestStatus = await response.json();
+            setIsGuest(guestStatus);
+          } else {
+            console.error("Falied to fetch guest status.");
+          }
+        } catch (error) {
+          console.error("Error while fetching guest status.", error);
+        }
+      };
+    
+      fetchGuestStatus();
+    }, []);
 
       if (!token) {
         return;
@@ -79,6 +96,7 @@ const CreateGame: React.FC<CreateGameProps> = ({
         } else {
           console.error("Failed to retrieve guest status.");
         }
+<<<<<<< HEAD
       } catch (error) {
         console.error("Error retrieving guest status: ", error);
       }
@@ -86,6 +104,16 @@ const CreateGame: React.FC<CreateGameProps> = ({
 
     fetchGuestStatus();
   }, []);
+=======
+      };
+  
+      fetchUsername();
+    }, []);
+  
+  useEffect(() => {
+    localStorage.setItem("musicVolume", musicVolume.toString());
+  }, [musicVolume]);
+>>>>>>> 3951e6c9a3072ad1556f45819d1b2be2dc9f3828
 
   /**
    * Toggles the settings modal visibility.

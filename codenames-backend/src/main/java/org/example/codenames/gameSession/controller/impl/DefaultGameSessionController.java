@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.example.codenames.gameSession.entity.dto.GameSessionMapper.toRoomLobbyDTO;
@@ -171,10 +172,19 @@ public class DefaultGameSessionController implements GameSessionController {
         return ResponseEntity.ok(gameSessionService.authenticatePassword(UUID.fromString(gameId), enteredPassword));
     }
 
-    @GetMapping("/{gameId}/get-connected-users")
-    public ResponseEntity<?> getConnectedUsers(@PathVariable String gameId) {
-        GameSession gameSession = gameSessionService.getGameSessionById(UUID.fromString(gameId));
-
-        return ResponseEntity.ok(toRoomLobbyDTOList(gameSession.getConnectedUsers()));
+    /**
+     * Checks if a game name is available for use.
+     *
+     * @param name the name of the game to check for availability
+     *
+     * @return a map containing a key "available" with a boolean value indicating
+     *         whether the game name is available (true if not already taken,
+     *         false if already exists)
+     */
+    @GetMapping("/check-name")
+    public ResponseEntity<?> checkGameNameAvailability(@RequestParam String name) {
+        boolean exists = gameSessionRepository.existsByGameName(name);
+        return ResponseEntity.ok().body(Map.of("available", !exists));
     }
+
 }

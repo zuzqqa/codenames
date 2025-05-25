@@ -83,5 +83,7 @@
   "link-copied": "Skopiowano link do schowka.",
   "invite-friends": "Zapros ludzi",
   "invite-friends-text": "Skopiuj link i podziel się nim ze swoimi przyjaciółmi, aby mogli dołączyć do pokoju.",
-  "server-connection-error": "Nie można połączyć się z serwerem. Spróbuj ponownie później."
+  "server-connection-error": "Nie można połączyć się z serwerem. Spróbuj ponownie później.",
+  "game-name-already-exists": "Gra o takiej nazwie już istnieje.",
+  "game-name-required": "Nazwa gry jest wymagana."
 }

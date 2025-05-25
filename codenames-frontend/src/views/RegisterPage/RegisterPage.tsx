@@ -55,7 +55,10 @@ const RegisterPage: React.FC<RegisterProps> = ({
   const [email, setEmail] = useState<string>("");
   const [login, setLogin] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [musicVolume, setMusicVolume] = useState(50); // Music volume level
+  const [musicVolume, setMusicVolume] = useState(() => {
+    const savedVolume = localStorage.getItem("musicVolume");
+    return savedVolume ? parseFloat(savedVolume) : 50;
+  });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { t } = useTranslation();
@@ -101,6 +104,10 @@ const RegisterPage: React.FC<RegisterProps> = ({
       setPassword(password.slice(0, -1)); // Handle backspace
     }
   };
+
+  useEffect(() => {
+    localStorage.setItem("musicVolume", musicVolume.toString());
+  }, [musicVolume]);
 
   /**
    * useEffect hook for handling the automatic removal of error messages after a delay.

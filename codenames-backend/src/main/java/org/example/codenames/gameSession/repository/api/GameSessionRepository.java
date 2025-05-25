@@ -20,4 +20,6 @@ public interface GameSessionRepository extends MongoRepository<GameSession, Stri
 
     @NonNull
     List<GameSession> findAll();
+
+    boolean existsByGameName(String name);
 }
