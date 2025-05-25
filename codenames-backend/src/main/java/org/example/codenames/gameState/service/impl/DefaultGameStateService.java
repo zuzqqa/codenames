@@ -276,7 +276,7 @@ public class DefaultGameStateService implements GameStateService {
         User newLeader = getNewLeader(gameSession, connectedUsers);
 
         gameSession.getGameState().setCurrentSelectionLeader(newLeader);
-
+      
         gameSessionRepository.save(gameSession);
     }
 

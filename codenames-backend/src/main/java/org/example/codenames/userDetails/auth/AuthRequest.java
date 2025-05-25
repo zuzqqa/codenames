@@ -1,4 +1,4 @@
-package org.example.codenames.userDetails;
+package org.example.codenames.userDetails.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

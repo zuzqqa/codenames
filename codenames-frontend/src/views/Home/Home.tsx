@@ -149,7 +149,7 @@ const Home: React.FC<HomeProps> = ({
                     console.log(apiUrl);
                     try {
                       const response = await fetch(
-                        `${apiUrl}/api/users/createGuest`,
+                        `${apiUrl}/api/users/create-guest`,
                         {
                           method: "POST",
                           headers: {

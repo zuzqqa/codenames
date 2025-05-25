@@ -12,7 +12,7 @@ export const logout = () => {
   Cookies.remove("authToken");
   Cookies.remove("loggedIn");
 
-  window.location.href = "/loading";
+  window.location.href = "/";
 };
 
 /**
@@ -53,7 +53,7 @@ export async function getUserId() {
   }
 
   try {
-    const response = await fetch(`${apiUrl}/api/users/getId`, {
+    const response = await fetch(`${apiUrl}/api/users/get-id`, {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`,

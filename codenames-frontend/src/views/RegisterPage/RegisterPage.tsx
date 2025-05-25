@@ -288,12 +288,12 @@ const RegisterPage: React.FC<RegisterProps> = ({
           >
             {t("already-have-an-account")}
           </a>
-          <a
+          <a 
           className="login-register-link guest-link"
           onClick={async () => {
             try {
               const response = await fetch(
-                apiUrl + "/api/users/createGuest",
+                `${apiUrl}/api/users/createGuest`,
                 {
                   method: "POST",
                   credentials: "include",

@@ -126,9 +126,8 @@ const LoginPage: React.FC<LoginProps> = ({
 
     const userData = { username: login, password };
 
-    try {
       const response = await fetch(
-        "http://localhost:8080/api/users/authenticate",
+        `${apiUrl}/api/users/authenticate`,
         {
           method: "POST",
           headers: {
@@ -139,7 +138,13 @@ const LoginPage: React.FC<LoginProps> = ({
         }
       );
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        console.error("Failed to parse JSON response:", e);
+        throw new Error("Failed to parse JSON response");
+      }
 
       if (response.ok) {
         document.cookie = `authToken=${data.token}; max-age=36000; path=/; secure; samesite=none`;
@@ -156,7 +161,9 @@ const LoginPage: React.FC<LoginProps> = ({
     }
   };
 
-  /** Toggles the visibility of the settings modal. */
+  /**
+   * Toggles the visibility of the settings modal.
+   */
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
@@ -284,12 +291,12 @@ const LoginPage: React.FC<LoginProps> = ({
           >
           {t("dont-have-an-account")}
           </a>
-          <a
+          <a 
           className="login-register-link guest-link"
           onClick={async () => {
             try {
               const response = await fetch(
-                "http://localhost:8080/api/users/createGuest",
+                `${apiUrl}/api/users/createGuest`,
                 {
                   method: "POST",
                   credentials: "include",

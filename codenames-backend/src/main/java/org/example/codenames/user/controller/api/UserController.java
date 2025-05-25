@@ -7,7 +7,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.example.codenames.user.entity.dto.FriendRequestsDTO;
 import org.example.codenames.user.entity.PasswordResetRequest;
 import org.example.codenames.user.entity.User;
-import org.example.codenames.userDetails.AuthRequest;
+import org.example.codenames.userDetails.auth.AuthRequest;
+import org.example.codenames.userDetails.auth.AuthResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +29,7 @@ import java.util.Map;
  *
  */
 public interface UserController {
-    ResponseEntity<Map<String, String>> createUser(@RequestBody User user, HttpServletResponse response, String language) throws MessagingException, IOException;
+    ResponseEntity<Map<String, String>> createUser(@RequestBody User user, String language) throws MessagingException, IOException;
 
     RedirectView activateAccount(@PathVariable String token);
 
@@ -42,7 +43,7 @@ public interface UserController {
 
     ResponseEntity<Void> deleteUserById(String id);
 
-    ResponseEntity<String> authenticateAndSetCookie(AuthRequest authRequest, HttpServletResponse response);
+    ResponseEntity<AuthResponse> authenticateAndGenerateJWT(AuthRequest authRequest);
 
     ResponseEntity<String> getUsernameByToken(@RequestHeader(value = "Authorization", required = false) String token);
 

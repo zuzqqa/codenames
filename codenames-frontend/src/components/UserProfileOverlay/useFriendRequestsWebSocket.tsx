@@ -22,7 +22,7 @@ const useFriendRequestsWebSocket = (username: string) => {
     if (!username) return;
   
     try {
-      const response = await fetch(`${apiUrl}/api/users/${username}/friendRequests`);
+      const response = await fetch(`${apiUrl}/api/users/${username}/friend-requests`);
       const responseText = await response.text();  
   
       if (!response.ok) {
@@ -51,7 +51,7 @@ const useFriendRequestsWebSocket = (username: string) => {
     const client = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
-        client.subscribe(`/topic/${username}/friendRequests`, (message) => {
+        client.subscribe(`/topic/${username}/friend-requests`, (message) => {
           const updatedState = JSON.parse(message.body);
           setState({
             friends: updatedState.friends || [],
@@ -76,38 +76,38 @@ const useFriendRequestsWebSocket = (username: string) => {
   }, [username]);
 
   const sendFriendRequest = async (receiverUsername: string) => {
-    await fetch(`${apiUrl}/api/users/sendRequest/${receiverUsername}?senderUsername=${username}`, {
+    await fetch(`${apiUrl}/api/users/send-request/${receiverUsername}?senderUsername=${username}`, {
       method: "POST",
     });
-    fetchRequests(); // Aktualizacja stanu
+    fetchRequests(); 
   };
 
   const acceptFriendRequest = async (senderUsername: string) => {
-    await fetch(`${apiUrl}/api/users/acceptRequest/${senderUsername}?receiverUsername=${username}`, {
+    await fetch(`${apiUrl}/api/users/accept-request/${senderUsername}?receiverUsername=${username}`, {
       method: "POST",
     });
-    fetchRequests(); // Aktualizacja stanu
+    fetchRequests(); 
   };
 
   const declineFriendRequest = async (senderUsername: string) => {
-    await fetch(`${apiUrl}/api/users/declineRequest/${senderUsername}?receiverUsername=${username}`, {
+    await fetch(`${apiUrl}/api/users/decline-request/${senderUsername}?receiverUsername=${username}`, {
       method: "POST",
     });
-    fetchRequests(); // Aktualizacja stanu
+    fetchRequests(); 
   };
 
   const undoFriendRequest = async (senderUsername: string) => {
-    await fetch(`${apiUrl}/api/users/declineRequest/${username}?receiverUsername=${senderUsername}`, {
+    await fetch(`${apiUrl}/api/users/decline-request/${username}?receiverUsername=${senderUsername}`, {
       method: "POST",
     });
-    fetchRequests(); // Aktualizacja stanu
+    fetchRequests(); 
   };
 
   const removeFriend = async (friendUsername: string) => {
-    await fetch(`${apiUrl}/api/users/removeFriend/${friendUsername}?userUsername=${username}`, {
+    await fetch(`${apiUrl}/api/users/remove-friend/${friendUsername}?userUsername=${username}`, {
       method: "DELETE",
     });
-    fetchRequests(); // Aktualizacja stanu
+    fetchRequests(); 
   };
 
   return {

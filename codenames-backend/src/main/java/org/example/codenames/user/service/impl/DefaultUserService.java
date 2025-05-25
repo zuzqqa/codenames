@@ -6,9 +6,9 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.example.codenames.passwordResetToken.entity.PasswordResetToken;
-import org.example.codenames.passwordResetToken.repository.api.PasswordResetTokenRepository;
-import org.example.codenames.passwordResetToken.service.api.PasswordResetService;
+import org.example.codenames.tokens.passwordResetToken.entity.PasswordResetToken;
+import org.example.codenames.tokens.passwordResetToken.repository.api.PasswordResetTokenRepository;
+import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetServiceToken;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.api.UserService;
@@ -45,7 +45,7 @@ public class DefaultUserService implements UserService {
     /**
      * Service responsible for handling password reset process.
      */
-    private final PasswordResetService passwordResetService;
+    private final PasswordResetServiceToken passwordResetServiceToken;
 
     /**
      * Map for storing active users.
@@ -58,16 +58,16 @@ public class DefaultUserService implements UserService {
      * @param userRepository the user repository
      * @param passwordEncoder the password encoder
      * @param passwordResetTokenRepository the password reset tokens repository
-     * @param passwordResetService the password reset service
      * @param hazelcastInstance the Hazelcast instance for managing active users
+     * @param passwordResetServiceToken the password reset service
      */
     @Autowired
     public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PasswordResetTokenRepository passwordResetTokenRepository, PasswordResetService passwordResetService, HazelcastInstance hazelcastInstance) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
-        this.passwordResetService = passwordResetService;
         this.activityMap = hazelcastInstance.getMap("activeUsers");
+        this.passwordResetServiceToken = passwordResetServiceToken;
     }
 
     /**
@@ -164,9 +164,7 @@ public class DefaultUserService implements UserService {
                     user.setGuest(false);
                     user.setDescription(updatedUser.getDescription());
                     user.setProfilePic(updatedUser.getProfilePic());
-//                    user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
 
-                    // Tylko jeśli hasło zostało przesłane i nie jest puste
                     if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
                         user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
                     }
@@ -367,25 +365,5 @@ public class DefaultUserService implements UserService {
         } while (userRepository.existsByUsername(username));
 
         return username;
-    }
-
-    /**
-     * Updates the user's active status.
-     *
-     * @param userId the ID of the user
-     */
-    @Override
-    public void updateUserActiveStatus(String userId) {
-        activityMap.put(userId, LocalDateTime.now());
-    }
-
-    /**
-     * Retrieves all active users.
-     *
-     * @return a map of all active users
-     */
-    @Override
-    public Map<String, LocalDateTime> getAllActiveUsers() {
-        return activityMap.getAll(activityMap.keySet());
     }
 }

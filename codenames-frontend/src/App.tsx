@@ -137,7 +137,7 @@ const App: React.FC = () => {
           path="/login"
           element={
             isAuthenticated ? (
-              <Navigate to="/loading" replace />
+              <Navigate to="/games" replace />
             ) : (
               <LoginPage
                 setVolume={setVolume}
@@ -151,7 +151,7 @@ const App: React.FC = () => {
           path="/reset-password/*"
           element={
               isAuthenticated ? (
-                  <Navigate to="/loading" replace />
+                  <Navigate to="/games" replace />
               ) : (
                   <ResetPasswordPage
                       setVolume={setVolume}
@@ -165,7 +165,7 @@ const App: React.FC = () => {
           path="/send-reset-password"
           element={
               isAuthenticated ? (
-                  <Navigate to="/loading" replace />
+                  <Navigate to="/games" replace />
               ) : (
                   <ResetPasswordRequestPage
                       setVolume={setVolume}
@@ -179,7 +179,7 @@ const App: React.FC = () => {
           path="/register"
           element={
             isAuthenticated ? (
-              <Navigate to="/loading" replace />
+              <Navigate to="/games" replace />
             ) : (
               <RegisterPage
                 setVolume={setVolume}
@@ -288,6 +288,7 @@ const App: React.FC = () => {
               setVolume={setVolume}
               setSoundFXVolume={setSoundFX}
               soundFXVolume={soundFXVolume}
+              duration={2}
             />
           }
         />

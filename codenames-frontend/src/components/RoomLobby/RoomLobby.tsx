@@ -269,7 +269,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
 
-    const getIdResponse = await fetch("http://localhost:8080/api/users/getId", {
+    const getIdResponse = await fetch(`${apiUrl}/api/users/getId`, {
       method: "GET",
       credentials: "include",
     });
@@ -277,7 +277,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/game-session/${storedGameId}/disconnect?userId=${userId}`,
+        `${apiUrl}/api/game-session/${storedGameId}/disconnect?userId=${userId}`,
         { method: "DELETE", credentials: "include" }
       );
 
@@ -355,11 +355,10 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
    * Generates a lobby link and copies it to the clipboard.
    */
   const generateLobbyLink = () => {
-    console.log("Generating lobby link...");
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
 
-    const tempLobbyLink = `http://localhost:5173/invite/${storedGameId}`;
+    const tempLobbyLink = `${frontendUrl}/invite/${storedGameId}`;
     setLobbyLink(tempLobbyLink);
     navigator.clipboard.writeText(tempLobbyLink).then(() => {
       console.log("Lobby link copied to clipboard:", tempLobbyLink);

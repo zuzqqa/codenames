@@ -19,6 +19,6 @@ public class ChatController {
     @MessageMapping("/send/{gameId}")
     @SendTo("/topic/{gameId}/messages")
     public ChatMessage sendMessage(ChatMessage message) {
-        return message; // Broadcast the message to the specific game channel
+        return message;
     }
 }

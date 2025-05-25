@@ -1,4 +1,4 @@
-package org.example.codenames.userDetails;
+package org.example.codenames.userDetails.model;
 
 import lombok.Getter;
 import lombok.Setter;
