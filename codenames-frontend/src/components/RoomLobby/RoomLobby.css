@@ -8,6 +8,8 @@
   font-size: calc(0.4rem + 0.6vw);
   color: #5b544e;
   margin: 10% auto 0 auto;
+  position: relative;
+
 }
 
 .content {
@@ -68,121 +70,99 @@
 }
 
 .lobby-link-switch {
-  position: absolute;
-  top: -235%;
-  left: 40%;
-  transform: translate(-50%, -50%);
-  margin: auto;
-  z-index: 15;
-  scale: 5%;
+  grid-row: 1;
+  grid-column: 2;
+  transform: translate(40%, 130%);
+  cursor: pointer;
+
+}
+
+.link-icon{
+  height: calc(1rem + 0.8vw);
+
 }
 
 .lobby-link-isle {
   position: absolute;
-  top: -75%;
+  top: 1.5rem;
   right: 0;
-  width: 200px;
-  height: 100%;
+  width: clamp(180px, 22vw, 240px);
   background: linear-gradient(360deg, #f0e0b5 0%, #eed8b0 88.89%);
   box-shadow: -4px 0 10px rgba(0, 0, 0, 0.3);
   border-radius: 0 10px 10px 0;
-  padding: 1rem;
-  transition: right 0.5s ease-in-out;
+  padding: 0.6rem 1.8rem;
+  transition: transform 0.4s ease-in-out;
+  transform: translateX(98%);
   z-index: -2;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  text-align: center;
 }
 
 .lobby-link-isle.expanded {
-  right: -48.98%;
+  transform: translateX(0%);
 }
 
 .isle-image {
-  position: relative;
-  top: -5%;
-  left: 42%;
-  width: 21%;
-  height: 20%;
+  width: 2.7rem;
 }
 
 .isle-title {
-  position: absolute;
-  top: 14%;
-  left: 17.5%;
-  font-size: calc(0.8rem + 0.4vw);
-  color: #393633;
-  text-align: center;
+  font-size: 0.9rem;
   font-weight: bold;
+  color: #393633;
 }
 
 .isle-text {
-  position: absolute;
-  top: 30%;
-  left: 3%;
-  font-size: calc(0.5rem + 0.4vw);
+  font-size: 0.8rem;
   color: #393633;
-  text-align: center;font-weight: normal;
+  max-width: 100%;
+  margin: 0;
 }
 
 .isle-fields {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  height: auto;
   width: 100%;
-  gap: 1rem;
+  margin-top: 0.3rem;
+
+}
+
+.lobby-link-textbox {
+  flex: 1;
+  resize: none;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.8rem;
+  color: #393633;
+  background-color: #f0e0b5;
+  border: none;
+  border-radius: 6px 0 0 6px;
+  outline: none;
+  box-shadow: 1.5px 1.5px 3px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: "Wellfleet", serif;
+  max-width: 200px;
+
 }
 
 .link-btn {
   flex-shrink: 0;
-  position: absolute;
-  top: 82%;
-  left: 81.5%;
-  transform: translate(-50%, -50%);
-  margin: auto;
-  z-index: 15;
-  width: 30%;
-  height: 20%;
-  font-size: 0.5rem;
-}
-
-.lobby-link-isle .link-btn {
+  width: 26%;
+  padding: 0.3rem;
+  font-size: 0.65rem;
+  border-radius: 0 6px 6px 0;
   background-image: linear-gradient(to top, #172956, #275a8d) !important;
-  border-radius: 0 10px 10px 0;
 }
 
 .link-btn .button-text {
-  font-size: calc(0.2rem + 0.8vw);
+  font-size: 0.7rem;
 }
 
-.lobby-link-textbox {
-  resize: none;
-  position: absolute;
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 50%;
-  height: 11%;
-  top: 72%;
-  left: 3.25%;
-  padding: 11px 15px 10px;
-  font-size: calc(0.8rem + 0.4vw);
-  color: #000000;
-  background-color: #f0e0b5;
-  border: none;
-  border-radius: 10px 0 0 10px;
-  outline: none;
-  box-shadow: 4px 4px 6px 4px rgba(0, 0, 0, 0.3);
-  transition: border-color 0.3s, box-shadow 0.3s;
-  text-indent: 1px;
-}
 
-.lobby-link-textbox:focus {
-  /*white-space: initial;*/
-  /*text-overflow: initial;*/
-  /*height: 40%;*/
-  /*margin-top: 8px;*/
-}
 
 .lobby-players {
   width: 122.5%;
