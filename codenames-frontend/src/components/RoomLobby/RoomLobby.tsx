@@ -563,7 +563,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                           alt="Player"
                           className="player-icon"
                         />
-                        {player.username}
+                        <span className="player-username">{player.username}</span>
                       </div>
                     ))}
                   </div>

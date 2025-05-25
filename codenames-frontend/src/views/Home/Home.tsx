@@ -208,8 +208,7 @@ const Home: React.FC<HomeProps> = ({
                 <SubtitleComponent variant="start">
                   Your mission begins now
                 </SubtitleComponent>
-              </div>
-              <div className="start-button">
+                <div className="start-button">
                 {/* Start game button */}
                 <Button
                   variant="primary"
@@ -218,6 +217,7 @@ const Home: React.FC<HomeProps> = ({
                 >
                   <span className="button-text"> {t("play-button-text")}</span>
                 </Button>
+              </div>
               </div>
             </div>
           </>

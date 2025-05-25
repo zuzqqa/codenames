@@ -176,6 +176,12 @@
   position: relative;
 }
 
+.player-username{
+  font-family: "Wellfleet", serif;
+  text-transform: none;
+  margin-left: 5px;
+}
+
 .players-container {
   display: flex;
   flex-wrap: wrap;
