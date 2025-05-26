@@ -74,7 +74,7 @@ public class ConfigSecurity {
                         .requestMatchers(
                                 "/api/users", "/api/users/authenticate", "/api/users/get-id", "/api/users/reset-password/**", "/api/users/token-validation/**", "/api/users/is-guest",
                                 "/api/users/get-username", "/api/users/create-guest", "/api/users/username/**",
-                                "/api/email/send-report", "/api/game-session/create", "/api/game-session/**", "/api/game-session/*/finish",
+                                "/api/email/send-report", "/api/game-session/create", "/api/game-session/**", "/api/game-session/*/finish", "/api/game-session/*/change-turn",
                                 "/api/game-state/**", "/api/cards/**",
                                 "/api/users/activate/**", "/api/email/reset-password", "/api/email/reset-password/**",
                                 "/api/users/search", "/api/users/send-request/**", "/api/users/*/friend-requests", "/api/users/decline-request/**",
