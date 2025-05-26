@@ -3,6 +3,7 @@ package org.example.codenames.hazelcast.compactSerializers.gameSessionSerializer
 import com.hazelcast.nio.serialization.compact.*;
 import org.example.codenames.gameState.entity.GameState;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -56,8 +57,13 @@ public class GameStateCompactSerializer implements CompactSerializer<GameState> 
         gs.setCards(reader.readArrayOfString("cards"));
         gs.setCardsColors(Arrays.stream(reader.readArrayOfInt32("cardsColors")).boxed().toArray(Integer[]::new));
 
-        gs.setCardsVotes(Arrays.stream(reader.readArrayOfInt32("cardsVotes")).boxed().toList());
-        gs.setCardsChosen(Arrays.stream(reader.readArrayOfInt32("cardsChosen")).boxed().toList());
+        gs.setCardsVotes(new ArrayList<>(Arrays.stream(reader.readArrayOfInt32("cardsVotes"))
+                .boxed()
+                .toList()));
+
+        gs.setCardsChosen(new ArrayList<>(Arrays.stream(reader.readArrayOfInt32("cardsChosen"))
+                .boxed()
+                .toList()));
 
         gs.setHint(reader.readString("hint"));
         gs.setHintNumber(reader.readInt32("hintNumber"));
