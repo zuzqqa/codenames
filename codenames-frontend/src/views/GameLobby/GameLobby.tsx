@@ -58,7 +58,7 @@ const GameLobby: React.FC<GameLobbyProps> = ({
   useEffect(() => {
     const fetchUsername = async () => {
       try {
-        const response = await fetch(`${apiUrl}/api/users/getUsername`, {
+        const response = await fetch(`${apiUrl}/api/users/get-username`, {
           method: "GET",
           credentials: "include"
         });

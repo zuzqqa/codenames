@@ -103,7 +103,7 @@ const App: React.FC = () => {
     setInterval(async () => {
         if (!isAuthenticated) return;
         if (!userId) {
-            const getIdResponse = await fetch(apiUrl + "/api/users/getId", {
+            const getIdResponse = await fetch(apiUrl + "/api/users/get-id", {
                 method: "GET",
                 credentials: "include",
             });
