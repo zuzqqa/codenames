@@ -782,6 +782,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
     fetch(`${apiUrl}/api/game-session/${storedGameId}/change-turn`, {
       method: "GET",
+      credentials: "include",
     });
   };
 
