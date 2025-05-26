@@ -43,32 +43,32 @@ jobs:
     - name: 'Remove env.yaml'
       run: rm env.yaml
 
-    # - name: 'Prepare Dockerfile for frontend'
-    #   run: cp ./codenames-frontend/Dockerfile.prod ./codenames-frontend/Dockerfile
+    - name: 'Prepare Dockerfile for frontend'
+      run: cp ./codenames-frontend/Dockerfile.prod ./codenames-frontend/Dockerfile
       
-    # - name: 'Authenticate Docker with GCR'
-    #   run: gcloud auth configure-docker
+    - name: 'Authenticate Docker with GCR'
+      run: gcloud auth configure-docker
 
-    # - name: 'Build Docker image for frontend'
-    #   run: |
-    #     docker build ./codenames-frontend \
-    #       -t gcr.io/codenames-458106/codenames-frontend \
-    #       --build-arg VITE_BACKEND_API_URL=${{ secrets.VITE_BACKEND_API_URL }} \
-    #       --build-arg VITE_SOCKET_IO_SERVER=${{ secrets.VITE_SOCKET_IO_SERVER }} \
-    #       --build-arg VITE_PEERSERVER=${{ secrets.VITE_PEERSERVER }} \
-    #       --build-arg VITE_SECURE_COOKIES=${{ secrets.VITE_SECURE_COOKIES }} \
-    #       --build-arg VITE_FRONTEND_URL=${{ secrets.VITE_FRONTEND_URL }}
+    - name: 'Build Docker image for frontend'
+      run: |
+        docker build ./codenames-frontend \
+          -t gcr.io/codenames-458106/codenames-frontend \
+          --build-arg VITE_BACKEND_API_URL=${{ secrets.VITE_BACKEND_API_URL }} \
+          --build-arg VITE_SOCKET_IO_SERVER=${{ secrets.VITE_SOCKET_IO_SERVER }} \
+          --build-arg VITE_PEERSERVER=${{ secrets.VITE_PEERSERVER }} \
+          --build-arg VITE_SECURE_COOKIES=${{ secrets.VITE_SECURE_COOKIES }} \
+          --build-arg VITE_FRONTEND_URL=${{ secrets.VITE_FRONTEND_URL }}
     
-    # - name: 'Push Docker image to GCR'
-    #   run: docker push gcr.io/codenames-458106/codenames-frontend
+    - name: 'Push Docker image to GCR'
+      run: docker push gcr.io/codenames-458106/codenames-frontend
     
-    # - name: 'Deploy frontend to Cloud Run'
-    #   run: |
-    #     gcloud run deploy codenames-frontend \
-    #       --image gcr.io/codenames-458106/codenames-frontend \
-    #       --region europe-central2 \
-    #       --platform managed \
-    #       --allow-unauthenticated
+    - name: 'Deploy frontend to Cloud Run'
+      run: |
+        gcloud run deploy codenames-frontend \
+          --image gcr.io/codenames-458106/codenames-frontend \
+          --region europe-central2 \
+          --platform managed \
+          --allow-unauthenticated
   
     # - name: 'Deploy codenames-socket-io-server'
     #   run: |

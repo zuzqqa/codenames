@@ -759,7 +759,7 @@ const Gameplay: React.FC<GameplayProps> = ({
    * Sends a request to the backend to change the turn of the game.
    * Retrieves the game ID from local storage and sends a GET request.
    */
-  const changeTurn = () => {
+  const changeTurn = async () => {
     if (isHintTime && gameSession?.gameState?.hintNumber == "0" && cardNumber == 0) {
       const newErrors: { id: string; message: string }[] = [];
 
@@ -780,10 +780,17 @@ const Gameplay: React.FC<GameplayProps> = ({
 
     const storedGameId = localStorage.getItem("gameId");
 
-    fetch(`${apiUrl}/api/game-session/${storedGameId}/change-turn`, {
+    // Dla change-turn
+    console.log('Calling change-turn with gameId:', storedGameId);
+    console.log('API URL:', `${apiUrl}/api/game-session/${storedGameId}/change-turn`);
+
+    const response = await fetch(`${apiUrl}/api/game-session/${storedGameId}/change-turn`, {
       method: "GET",
       credentials: "include",
     });
+
+    console.log('Response status:', response.status);
+    console.log('Response headers:', [...response.headers.entries()]);
   };
 
   /**
