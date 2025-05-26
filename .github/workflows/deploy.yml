@@ -30,45 +30,45 @@ jobs:
     - name: 'Create env.yaml'
       run: echo "$BACKEND_ENV_YAML" > env.yaml
 
-    - name: 'Deploy codenames-backend'
-      run: |
-        gcloud builds submit ./codenames-backend --tag gcr.io/codenames-458106/codenames-backend
-        gcloud run deploy codenames-backend \
-          --image gcr.io/codenames-458106/codenames-backend \
-          --region europe-central2 \
-          --platform managed \
-          --allow-unauthenticated \
-          --env-vars-file env.yaml
-
-    - name: 'Remove env.yaml'
-      run: rm env.yaml
-
-    # - name: 'Prepare Dockerfile for frontend'
-    #   run: cp ./codenames-frontend/Dockerfile.prod ./codenames-frontend/Dockerfile
-      
-    # - name: 'Authenticate Docker with GCR'
-    #   run: gcloud auth configure-docker
-
-    # - name: 'Build Docker image for frontend'
+    # - name: 'Deploy codenames-backend'
     #   run: |
-    #     docker build ./codenames-frontend \
-    #       -t gcr.io/codenames-458106/codenames-frontend \
-    #       --build-arg VITE_BACKEND_API_URL=${{ secrets.VITE_BACKEND_API_URL }} \
-    #       --build-arg VITE_SOCKET_IO_SERVER=${{ secrets.VITE_SOCKET_IO_SERVER }} \
-    #       --build-arg VITE_PEERSERVER=${{ secrets.VITE_PEERSERVER }} \
-    #       --build-arg VITE_SECURE_COOKIES=${{ secrets.VITE_SECURE_COOKIES }} \
-    #       --build-arg VITE_FRONTEND_URL=${{ secrets.VITE_FRONTEND_URL }}
-    
-    # - name: 'Push Docker image to GCR'
-    #   run: docker push gcr.io/codenames-458106/codenames-frontend
-    
-    # - name: 'Deploy frontend to Cloud Run'
-    #   run: |
-    #     gcloud run deploy codenames-frontend \
-    #       --image gcr.io/codenames-458106/codenames-frontend \
+    #     gcloud builds submit ./codenames-backend --tag gcr.io/codenames-458106/codenames-backend
+    #     gcloud run deploy codenames-backend \
+    #       --image gcr.io/codenames-458106/codenames-backend \
     #       --region europe-central2 \
     #       --platform managed \
-    #       --allow-unauthenticated
+    #       --allow-unauthenticated \
+    #       --env-vars-file env.yaml
+
+    # - name: 'Remove env.yaml'
+    #   run: rm env.yaml
+
+    - name: 'Prepare Dockerfile for frontend'
+      run: cp ./codenames-frontend/Dockerfile.prod ./codenames-frontend/Dockerfile
+      
+    - name: 'Authenticate Docker with GCR'
+      run: gcloud auth configure-docker
+
+    - name: 'Build Docker image for frontend'
+      run: |
+        docker build ./codenames-frontend \
+          -t gcr.io/codenames-458106/codenames-frontend \
+          --build-arg VITE_BACKEND_API_URL=${{ secrets.VITE_BACKEND_API_URL }} \
+          --build-arg VITE_SOCKET_IO_SERVER=${{ secrets.VITE_SOCKET_IO_SERVER }} \
+          --build-arg VITE_PEERSERVER=${{ secrets.VITE_PEERSERVER }} \
+          --build-arg VITE_SECURE_COOKIES=${{ secrets.VITE_SECURE_COOKIES }} \
+          --build-arg VITE_FRONTEND_URL=${{ secrets.VITE_FRONTEND_URL }}
+    
+    - name: 'Push Docker image to GCR'
+      run: docker push gcr.io/codenames-458106/codenames-frontend
+    
+    - name: 'Deploy frontend to Cloud Run'
+      run: |
+        gcloud run deploy codenames-frontend \
+          --image gcr.io/codenames-458106/codenames-frontend \
+          --region europe-central2 \
+          --platform managed \
+          --allow-unauthenticated
   
     # - name: 'Deploy codenames-socket-io-server'
     #   run: |
