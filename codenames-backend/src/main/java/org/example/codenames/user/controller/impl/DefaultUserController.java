@@ -215,7 +215,7 @@ public class DefaultUserController implements UserController {
      * @param token the authentication token from the header
      * @return ResponseEntity containing the username
      */
-    @GetMapping("/getUsername")
+    @GetMapping("/get-username")
     public ResponseEntity<String> getUsernameByToken(@RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || !token.startsWith("Bearer ")) {
             return ResponseEntity.ok("null");
@@ -232,7 +232,7 @@ public class DefaultUserController implements UserController {
      * @param token the authentication token from the header
      * @return ResponseEntity containing the user ID or 404 if not found
      */
-    @GetMapping("/getId")
+    @GetMapping("/get-id")
     public ResponseEntity<String> getIdByToken(@RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || !token.startsWith("Bearer ")) {
             return ResponseEntity.ok("null");
@@ -251,7 +251,7 @@ public class DefaultUserController implements UserController {
      * @param token the authentication token from the header
      * @return ResponseEntity containing true if the user is a guest or not authenticated, false otherwise
      */
-    @GetMapping("/isGuest")
+    @GetMapping("/is-guest")
     public ResponseEntity<Boolean> isGuest(@RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || !token.startsWith("Bearer ")) {
             return ResponseEntity.ok(false);
@@ -269,7 +269,7 @@ public class DefaultUserController implements UserController {
      * @param response the HTTP response to add the authentication cookie
      * @return ResponseEntity with status 200 OK
      */
-    @PostMapping("/createGuest")
+    @PostMapping("/create-guest")
     public ResponseEntity<String> createGuest(HttpServletResponse response) {
         String username = userService.generateUniqueUsername();
 
