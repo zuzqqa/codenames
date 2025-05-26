@@ -30,18 +30,18 @@ jobs:
     - name: 'Create env.yaml'
       run: echo "$BACKEND_ENV_YAML" > env.yaml
 
-    - name: 'Deploy codenames-backend'
-      run: |
-        gcloud builds submit ./codenames-backend --tag gcr.io/codenames-458106/codenames-backend
-        gcloud run deploy codenames-backend \
-          --image gcr.io/codenames-458106/codenames-backend \
-          --region europe-central2 \
-          --platform managed \
-          --allow-unauthenticated \
-          --env-vars-file env.yaml
+    # - name: 'Deploy codenames-backend'
+    #   run: |
+    #     gcloud builds submit ./codenames-backend --tag gcr.io/codenames-458106/codenames-backend
+    #     gcloud run deploy codenames-backend \
+    #       --image gcr.io/codenames-458106/codenames-backend \
+    #       --region europe-central2 \
+    #       --platform managed \
+    #       --allow-unauthenticated \
+    #       --env-vars-file env.yaml
 
-    - name: 'Remove env.yaml'
-      run: rm env.yaml
+    # - name: 'Remove env.yaml'
+    #   run: rm env.yaml
 
     # - name: 'Prepare Dockerfile for frontend'
     #   run: cp ./codenames-frontend/Dockerfile.prod ./codenames-frontend/Dockerfile
@@ -70,14 +70,14 @@ jobs:
     #       --platform managed \
     #       --allow-unauthenticated
   
-    # - name: 'Deploy codenames-socket-io-server'
-    #   run: |
-    #     gcloud builds submit ./codenames-socket-io-server --tag gcr.io/codenames-458106/codenames-socket-io-server
-    #     gcloud run deploy codenames-socket-io-server \
-    #       --image gcr.io/codenames-458106/codenames-socket-io-server \
-    #       --region europe-central2 \
-    #       --platform managed \
-    #       --allow-unauthenticated
+    - name: 'Deploy codenames-socket-io-server'
+      run: |
+        gcloud builds submit ./codenames-socket-io-server --tag gcr.io/codenames-458106/codenames-socket-io-server
+        gcloud run deploy codenames-socket-io-server \
+          --image gcr.io/codenames-458106/codenames-socket-io-server \
+          --region europe-central2 \
+          --platform managed \
+          --allow-unauthenticated
 
     # - name: 'Deploy codenames-peerserver'
     #   run: |
