@@ -271,7 +271,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
 
-    const getIdResponse = await fetch(`${apiUrl}/api/users/getId`, {
+    const getIdResponse = await fetch(`${apiUrl}/api/users/get-id`, {
       method: "GET",
       credentials: "include",
     });
