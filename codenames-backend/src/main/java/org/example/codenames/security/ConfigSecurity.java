@@ -72,7 +72,7 @@ public class ConfigSecurity {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
-                                "/api/users", "/api/users/authenticate", "/api/users/get-id", "/api/users/reset-password/**", "/api/users/token-validation/**",
+                                "/api/users", "/api/users/authenticate", "/api/users/get-id", "/api/users/reset-password/**", "/api/users/token-validation/**", "/api/users/is-guest",
                                 "/api/users/get-username", "/api/users/create-guest", "/api/users/username/**",
                                 "/api/email/send-report", "/api/game-session/create", "/api/game-session/**", "/api/game-session/*/finish",
                                 "/api/game-state/**", "/api/cards/**",
