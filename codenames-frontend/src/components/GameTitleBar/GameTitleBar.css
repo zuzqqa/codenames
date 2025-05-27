@@ -1,27 +1,36 @@
 .footer-bar {
   height: 4vh;
+  min-height: 32px;
+  max-height: 50px;
 
   display: flex;
   position: absolute;
   top: 3%;
+  left: 50%;
+  transform: translateX(-50%);
   justify-content: center;
   align-items: center;
   padding: 0 3vw;
 
-  font-size: calc(0.4rem + 1vw);
+  font-size: calc(0.6rem + 0.9vw);
   text-transform: uppercase;
 
-  background: linear-gradient(to top, #32464d, #2c3d46, #22303b);
+  background: linear-gradient(to top, #22303b, #19242c);
   border-style: outset;
-  border-width: 0.5%;
+  border-width: 2px;
   border-color: #fcdc8b80;
   border-radius: 27px;
 
-  text-shadow: 0.2% 0.2% 0.4% rgba(0, 0, 0, 0.2);
+  text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.2);
   box-shadow: inset 2.91px 2.91px 5px #404040, inset -2.91px -2.91px 5px #565555;
   z-index: 10;
-  letter-spacing: 0.2%;
+  letter-spacing: 0.05em;
   text-align: center;
+
+  max-width: 95vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .footer-bar-title {
@@ -29,10 +38,14 @@
   background-clip: text;
   -webkit-background-clip: text;
   background-image: linear-gradient(to top, #FFD363, #FCF18B);
-  margin-top: 3px;
-  width: 10vw;
+
+  font-weight: bold;
   user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
+
+  padding-left: 0.3em;
+  width: auto;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

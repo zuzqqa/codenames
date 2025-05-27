@@ -1,18 +1,18 @@
-Add GitHub Actions workflow for deploying all services to Google Cloud Run
+Fixed copy-link isle and improved responsiveness
 **🔧 What's included in this release?**
-Implemented a GitHub Actions workflow to automate deployment of backend, frontend, socket.io server, and peer server to Google Cloud Run using production Dockerfiles and Workload Identity Federation.
+Fixed copy-link isle apperance and responsiveness in many views
 
 Key additions: 
-- Created deploy.yml workflow triggered on main branch push
-- Used google-github-actions/auth@v2 for authentication via Workload Identity Federation
-- Deployed frontend with Dockerfile.prod using --file flag in gcloud builds submit
-- Injected backend environment variables via GitHub secret and temporary env.yaml
-- Used --set-env-vars for frontend build-time environment configuration
-- Removed env.yaml after deployment for security
+- new link icon
+- new message icon
+- new styles for game lobby
+- new styles for subtitle component
+- new styles for characters component
+- new styles for game title bar component
+- new styles for menu component
 
 **🚧 What's still under development?**
-- UI/UX fixes.
-- Implementing Hazelcast for in-memory data access.
+- As always, perfection takes time — some features are still being polished, and a few rough edges are part of the charm of progress. We’re continuing to improve the site’s responsiveness across all devices, though screen size seems to be evolving faster than design specs. While we refine the experience, we trust in our users’ remarkable ability to uncover the unexpected before we even finish writing the test cases.We appreciate the early feedback (especially the passionate kind), and remind everyone that a living product evolves — sometimes in surprising directions. Stay tuned for updates, improvements, and the occasional “oh, that wasn’t supposed to happen.”
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 

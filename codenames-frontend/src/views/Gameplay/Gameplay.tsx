@@ -114,7 +114,10 @@ const Gameplay: React.FC<GameplayProps> = ({
   soundFXVolume,
   setSoundFXVolume,
 }) => {
-  const [musicVolume, setMusicVolume] = useState(50);
+  const [musicVolume, setMusicVolume] = useState(() => {
+    const savedVolume = localStorage.getItem("musicVolume");
+    return savedVolume ? parseFloat(savedVolume) : 50;
+  });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { t } = useTranslation();
   const [isCardVisible, setIsCardVisible] = useState(false);
@@ -270,6 +273,10 @@ const Gameplay: React.FC<GameplayProps> = ({
       console.error("Error submitting vote:", error);
     }
   };
+
+  useEffect(() => {
+    localStorage.setItem("musicVolume", musicVolume.toString());
+  }, [musicVolume]);
 
   /**
    * Fetches the user ID from local storage and sets it in the state.
@@ -752,7 +759,7 @@ const Gameplay: React.FC<GameplayProps> = ({
    * Sends a request to the backend to change the turn of the game.
    * Retrieves the game ID from local storage and sends a GET request.
    */
-  const changeTurn = () => {
+  const changeTurn = async () => {
     if (isHintTime && gameSession?.gameState?.hintNumber == "0" && cardNumber == 0) {
       const newErrors: { id: string; message: string }[] = [];
 
@@ -773,12 +780,17 @@ const Gameplay: React.FC<GameplayProps> = ({
 
     const storedGameId = localStorage.getItem("gameId");
 
-    fetch(`${apiUrl}/api/game-session/${storedGameId}/change-turn`, {
+    // Dla change-turn
+    console.log('Calling change-turn with gameId:', storedGameId);
+    console.log('API URL:', `${apiUrl}/api/game-session/${storedGameId}/change-turn`);
+
+    const response = await fetch(`${apiUrl}/api/game-session/${storedGameId}/change-turn`, {
       method: "GET",
-      headers: {
-        credentials: "include",
-      },
+      credentials: "include",
     });
+
+    console.log('Response status:', response.status);
+    console.log('Response headers:', [...response.headers.entries()]);
   };
 
   /**

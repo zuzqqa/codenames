@@ -50,6 +50,13 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
       const newErrors: { id: string; message: string }[] = [];
       setErrors(newErrors);
   
+      if (!values.gameName) {
+        newErrors.push({
+          id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
+          message: t("game-name-required"),
+        });
+      }
+    
       if (isPrivate && formik.values.password === '') {
         newErrors.push({
           id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
@@ -64,6 +71,10 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
 
         if (getIdResponse === null) {
           setError("Failed to fetch ID");
+          return;
+        }
+
+        if (newErrors.length > 0) {
           return;
         }
   
@@ -139,6 +150,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
 
     return () => timers.forEach(clearTimeout);
   }, [errors]);
+
 
   /**
    * Handles navigation back and optionally aborts a game session.
@@ -229,11 +241,6 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
               name="password"
               onChange={formik.handleChange}
             />
-            {formik.touched.gameName && formik.errors.gameName ? (
-              <ErrorMessage name="gameName">
-                {(errorMessage) => <div className="error">{errorMessage}</div>}
-              </ErrorMessage>
-            ) : null}
             <div
               className="slider-container"
               style={{

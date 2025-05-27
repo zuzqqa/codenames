@@ -85,13 +85,16 @@
 }
 
 .character-image-start img {
-  width: 75%;
+width: clamp(500px, 40vw, 650px);
+  max-width: 90vw;
   position: relative;
   z-index: 0;
 }
 
 .start-button {
-  position: absolute;
-  bottom: 15%;
-  transition: all 0.3s;
+  margin-top: 5.5vh;
+  display: flex;
+  justify-content: center;
 }
+
+

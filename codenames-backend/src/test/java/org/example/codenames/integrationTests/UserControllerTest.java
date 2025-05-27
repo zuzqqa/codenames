@@ -1,18 +1,19 @@
 package org.example.codenames.integrationTests;
 
+import com.hazelcast.core.Hazelcast;
 import org.example.codenames.CodenamesApplication;
+import org.example.codenames.email.service.api.EmailService;
 import org.example.codenames.user.controller.api.UserController;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -31,6 +32,7 @@ import java.time.Duration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -52,6 +54,9 @@ public class UserControllerTest {
 
     @Autowired
     private MockMvc mvc;
+
+    @MockBean
+    private EmailService emailService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -81,6 +86,11 @@ public class UserControllerTest {
         userRepository.deleteAll();
     }
 
+    @AfterAll
+    static void shutdown() {
+        Hazelcast.shutdownAll();
+    }
+
     // Testing the preflight request.
     @Test
     public void shouldAllowPreflight() throws Exception {
@@ -93,6 +103,7 @@ public class UserControllerTest {
     // Testing the creation of a new user via endpoint POST /api/users.
     @Test
     public void shouldAddUser() throws Exception {
+        doNothing().when(emailService).sendAccountActivationEmail("test", "example@gmail.com", "en");
         User user = User.builder()
                 .username("test")
                 .password("Test1234?")
@@ -115,10 +126,12 @@ public class UserControllerTest {
     // Testing the creation of a new user with an already existing username via endpoint POST /api/users.
     @Test
     public void addAlreadyExistingUser() throws Exception {
+        doNothing().when(emailService).sendAccountActivationEmail("test", "example@gmail.com", "en");
         User user = User.builder()
                 .username("test")
                 .password("Test1234?")
                 .email("example@gmail.com")
+                .status(User.userStatus.ACTIVE)
                 .build();
 
         mvc.perform(post("/api/users")

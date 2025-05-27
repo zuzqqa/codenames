@@ -2,7 +2,7 @@
   position: absolute;
   text-align: center;
   width: 100%;
-  margin-bottom: 9%;
+  margin-bottom: clamp(11rem, 22vh, 28rem);
   z-index: 2;
 }
 
@@ -82,5 +82,11 @@
   100% {
     transform: scale(1) translateY(0);
     opacity: 1;
+  }
+}
+
+@media (max-width: 700px) {
+    .primary-subtitle-container {
+    margin-bottom: clamp(6rem, 3vw, 9rem);
   }
 }
