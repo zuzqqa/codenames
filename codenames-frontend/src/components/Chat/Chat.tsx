@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import connect from "../../services/webSocketService.tsx";
-import { Client } from "@stomp/stompjs";
+import { io, Socket } from "socket.io-client";
 import { t } from "i18next";
 import "../../views/Gameplay/Gameplay.css";
 import "./Chat.css";
 import { useCookies } from "react-cookie";
-import { apiUrl } from "../../config/api.tsx";
+import { apiUrl, socketUrl } from "../../config/api.tsx";
 
 /**
  * Defines the message type structure.
@@ -25,7 +24,7 @@ const Chat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]); // Stores chat messages
   const [messageText, setMessageText] = useState(""); // Stores user input text
   const messagesEndRef = useRef<HTMLDivElement>(null); // Reference for automatic scrolling
-  const clientRef = useRef<Client | null>(null); // WebSocket client reference
+  const socketRef = useRef<Socket | null>(null);
   const [playerName, setPlayerName] = useState<string | null>(null); // Stores the player's name
   const [cookies] = useCookies(["authToken"]); // Handles authentication token
   const [gameId, setGameId] = useState(""); // Stores the game ID
@@ -53,20 +52,64 @@ const Chat: React.FC = () => {
   }, [cookies.authToken]);
 
   /**
-   * Loads stored messages from localStorage when the component mounts.
+   * Initializes the game ID from local storage when the component mounts.
+   */
+  useEffect(() => {
+    setGameId(localStorage.getItem("gameId") || "");
+  }, []);
+
+  /**
+   * Establishes a WebSocket connection to the chat server when the player name and game ID are available.
+   */
+  useEffect(() => {
+    if (!playerName || !gameId) return;
+
+    const chatSocket = io(`${socketUrl}/chat`, {
+      transports: ["websocket"],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
+
+    socketRef.current = chatSocket;
+
+    chatSocket.on("connect", () => {
+      console.log("Connected to /chat:", chatSocket.id);
+      chatSocket.emit("joinGame", gameId);
+    });
+
+    chatSocket.on(
+      "chatMessage",
+      (msg: { sender: string; content: string; gameID: string }) => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            text: msg.content,
+            type: msg.sender === playerName ? "outgoing" : "incoming",
+            sender: msg.sender,
+            gameID: msg.gameID,
+          },
+        ]);
+      }
+    );
+
+    return () => {
+      chatSocket.disconnect();
+    };
+  }, [playerName, gameId]);
+
+  /**
+   * Loads saved messages from local storage when the component mounts or the game ID changes.
    */
   useEffect(() => {
     const savedMessages = localStorage.getItem("chatMessages");
     if (savedMessages) {
-      let gameMessages = JSON.parse(savedMessages).filter(
-        (msg: Message) => msg.gameID === gameId
-      );
+      const gameMessages = JSON.parse(savedMessages).filter((msg: Message) => msg.gameID === gameId);
       setMessages(gameMessages);
     }
-  }, []);
+  }, [gameId]);
 
   /**
-   * Saves messages to localStorage whenever they change.
+   * Saves messages to local storage whenever the messages state changes.
    */
   useEffect(() => {
     if (messages.length > 0) {
@@ -75,72 +118,44 @@ const Chat: React.FC = () => {
   }, [messages]);
 
   /**
-   * Connects to the WebSocket server and listens for incoming messages.
-   */
-  useEffect(() => {
-    const client = connect((msg) => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          text: msg.content,
-          type: msg.sender === playerName ? "outgoing" : "incoming",
-          sender: msg.sender,
-          gameID: gameId,
-        },
-      ]);
-    }, gameId);
-
-    clientRef.current = client;
-
-    return () => {
-      client.deactivate(); // Cleanup WebSocket connection on unmount
-    };
-  }, [playerName]);
-
-  /**
-   * Retrieves the game ID from localStorage on mount.
-   */
-  useEffect(() => {
-    setGameId(localStorage.getItem("gameId") || "");
-  }, []);
-
-  /**
-   * Sends a message to the WebSocket server.
+   * Sends a chat message when the user presses Enter.
+   * Validates the message and emits it to the server.
    */
   const sendMessage = () => {
-    const client = clientRef.current;
-    if (!client || !messageText.trim()) return;
-    const message = { sender: playerName, content: messageText.trim() };
-    client.publish({
-      destination: "/chat/send/" + gameId, // Matches @MessageMapping in the backend
-      body: JSON.stringify(message),
-    });
-    setMessageText(""); // Clears input field
+    if (!socketRef.current || !messageText.trim()) return;
+
+    const message = {
+      sender: playerName,
+      content: messageText.trim(),
+      gameID: gameId,
+    };
+
+    socketRef.current.emit("chatMessage", message);
+
+    setMessageText("");
   };
 
   /**
-   * Scrolls to the bottom when messages update.
+   * Automatically scrolls to the bottom of the chat messages when new messages are added.
    */
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const [isInputFocused, setIsInputFocused] = useState(false); // Tracks input focus state
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
+  /**
+   * Handles input focus and blur events to adjust the chat UI.
+   */
   const handleInputFocus = () => {
     setIsInputFocused(true);
-    const audioRoom = document.getElementsByClassName("audio-room");
-    if (audioRoom.length > 0) {
-      audioRoom[0].setAttribute("style", "top: 32%; transition: top 0.4s;");
-    }
   };
-  
+
+  /**
+   * Handles input blur event to reset the focused state.
+   */
   const handleInputBlur = () => {
     setIsInputFocused(false);
-    const audioRoom = document.getElementsByClassName("audio-room");
-    if (audioRoom.length > 0) {
-      audioRoom[0].setAttribute("style", "top: 52%; transition: top 0.4s;");
-    }
   };
 
   return (

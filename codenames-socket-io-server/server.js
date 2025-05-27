@@ -72,6 +72,27 @@ chatNamespace.on("connection", (socket) => {
   });
 });
 
+const textChatNamespace = io.of("/chat");
+
+textChatNamespace.on("connection", (socket) => {
+  console.log("[CHAT] User connected:", socket.id);
+
+  socket.on("joinGame", (gameID) => {
+    socket.join(gameID);
+    console.log(`[CHAT] ${socket.id} joined room ${gameID}`);
+  });
+
+  socket.on("chatMessage", (msg) => {
+    console.log(`[CHAT] ${msg.sender} sent message to game ${msg.gameID}`);
+    
+    textChatNamespace.to(msg.gameID).emit("chatMessage", msg);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("[CHAT] User disconnected:", socket.id);
+  });
+});
+
 // --- START SERVER ---
 const PORT = process.env.PORT || 8080;
 
