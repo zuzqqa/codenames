@@ -23,6 +23,10 @@ import cardSound from "../../assets/sounds/card-filp.mp3";
 import votingLabel from "../../assets/images/medieval-label.png";
 import closeIcon from "../../assets/icons/close.png";
 import micGoldIcon from "../../assets/icons/mic-gold.svg";
+import homeIcon from "../../assets/icons/home.png";
+import homeBlack from "../../assets/icons/home-black.png";
+import homeGold from "../../assets/icons/home-gold.png";
+import logoutButton from "../../assets/icons/logout.svg";
 
 import "./Gameplay.css";
 
@@ -34,6 +38,7 @@ import { apiUrl, socketUrl } from "../../config/api.tsx";
 import { io } from "socket.io-client";
 import { getUserId } from "../../shared/utils.tsx";
 import Cookies from "js-cookie";
+import QuitModal from "../../components/QuitModal/QuitModal.tsx";
 
 /**
  * Represents properties for controlling gameplay-related settings, such as volume levels.
@@ -119,6 +124,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     return savedVolume ? parseFloat(savedVolume) : 50;
   });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isQuitModalOpen, setIsQuitModalOpen] = useState(false);
   const { t } = useTranslation();
   const [isCardVisible, setIsCardVisible] = useState(false);
   const [cardText, setCardText] = useState("");
@@ -169,6 +175,15 @@ const Gameplay: React.FC<GameplayProps> = ({
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
+
+  /**
+   * This function toggles the visibility of the quit modal.
+   */
+  const toggleQuitModal = () => {
+    console.log("Blue team leader", gameSession.gameState.blueTeamLeader);
+    console.log("Red team leader", gameSession.gameState.redTeamLeader);
+    setIsQuitModalOpen(!isQuitModalOpen);
+  }
 
   /**
    * This function returns the appropriate banner based on whether the user is a team leader
@@ -344,9 +359,29 @@ const Gameplay: React.FC<GameplayProps> = ({
         );
 
         setGameSessionData(updatedGameSession);
+        if (gameSession.gameState.blueTeamLeader.id === userId) {
+          setAmIBlueTeamLeader(true);
+        }
+        if (gameSession.gameState.redTeamLeader.id === userId) {
+          setAmIRedTeamLeader(true);
+        }
       } catch (err) {
         console.error("Error parsing gameSessionsList JSON:", err);
       }
+    });
+
+    gameSocket.on("userDisconnected", (userDisconnected: string) => {
+      console.log("User disconnected:", userDisconnected);
+      try {
+        const newError = {
+            id: generateId(),
+            message: t("user-disconnected", { userDisconnected }),
+        }
+        setErrors((prevErrors) => [...prevErrors, newError]);
+      }
+        catch (err) {
+            console.error("Error parsing gameSessionsList JSON:", err);
+        }
     });
 
     gameSocket.on("connect_error", (error: any) => {
@@ -627,6 +662,49 @@ const Gameplay: React.FC<GameplayProps> = ({
       return () => clearTimeout(timeoutId);
     }
   }, [redTeamScore, blueTeamScore]);
+
+  /**
+   * Effect that handles the win/loss depending on the size of a team.
+   * If any team has less than two players and the game is not finished,
+   * it sets the winning team to the other team and navigates to the win/loss page.
+   *
+   * @returns {void}
+   */
+  useEffect(() => {
+    console.log("players changed")
+    if (
+      gameSession?.status !== SessionStatus.FINISHED &&
+      (redTeamPlayers.length < 2 || blueTeamPlayers.length < 2)
+        && (redTeamPlayers.length > 0 && blueTeamPlayers.length > 0)
+    ) {
+      console.log("redTeamPlayers", redTeamPlayers);
+        console.log("blueTeamPlayers", blueTeamPlayers);
+      const winningTeam =
+        redTeamPlayers.length < 2 ? "blue" : "red";
+      setWinningTeam(winningTeam);
+      navigate("/win-loss", {
+        state: { result: winningTeam === myTeam ? "Victory" : "Loss" },
+      });
+    }
+  }, [blueTeamPlayers, redTeamPlayers]);
+
+
+
+  /**
+   * Effect that checks if the user is a team leader (either blue or red).
+   * If the user is a team leader, it sets the corresponding state variables.
+   *
+   * @returns {void} Updates the `amIBlueTeamLeader` and `amIRedTeamLeader` states.
+   */
+  useEffect(() => {
+    if (
+      gameSession?.gameState?.blueTeamLeader?.id === userId ||
+      gameSession?.gameState?.redTeamLeader?.id === userId
+    ) {
+      setAmIBlueTeamLeader(gameSession?.gameState.blueTeamLeader.id === userId);
+      setAmIRedTeamLeader(gameSession?.gameState.redTeamLeader.id === userId);
+    }
+  }, [gameSession?.gameState.redTeamLeader, gameSession?.gameState.blueTeamLeader]);
 
   /**
    * Reveals the cards voted by the team based on the `cardsToReveal` state.
@@ -910,6 +988,33 @@ const sendHint = async () => {
     if (newErrors.length > 0) return;
   };
 
+  const disconnectUser = () => {
+    const gameSocket = io(`${socketUrl}/game`, {
+      transports: ["websocket"],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
+    gameSocket.emit("disconnectUser", userId);
+    setIsQuitModalOpen(false);
+    const storedGameId = localStorage.getItem("gameId");
+    if (!storedGameId) return;
+
+    fetch(`${apiUrl}/api/game-session/${storedGameId}/disconnect?userId=${userId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        credentials: "include",
+      },
+    })
+      .then(() => {
+        localStorage.removeItem("gameId");
+        navigate("/games");
+      })
+      .catch((error) => {
+        console.error("Error disconnecting user:", error);
+      });
+  }
+
   return (
     <>
       <BackgroundContainer>
@@ -956,6 +1061,10 @@ const sendHint = async () => {
           <img src={settingsIcon} alt="Settings" />
         </Button>
 
+        <Button variant="logout" soundFXVolume={soundFXVolume} onClick={toggleQuitModal}>
+          <img src={logoutButton} alt="Home" />
+        </Button>
+
         <div className={`custom-overlay ${isOverlayVisible ? "open" : ""}`}>
           <div className="overlay-content">
             <button
@@ -992,6 +1101,18 @@ const sendHint = async () => {
           }}
           setSoundFXVolume={setSoundFXVolume}
         />
+        <QuitModal
+            isOpen={isQuitModalOpen}
+            onClose={toggleQuitModal}
+            soundFXVolume={soundFXVolume}
+        >
+          <Button variant="primary-1" soundFXVolume={soundFXVolume} onClick={disconnectUser}>
+            {t("quitModal.confirm")}
+          </Button>
+          <Button variant="primary-1" soundFXVolume={soundFXVolume} onClick={toggleQuitModal}>
+            {t("quitModal.cancel")}
+          </Button>
+        </QuitModal>
 
         <img className="polygon1" src={polygon1Img} />
         <img className="polygon2" src={polygon2Img} />
