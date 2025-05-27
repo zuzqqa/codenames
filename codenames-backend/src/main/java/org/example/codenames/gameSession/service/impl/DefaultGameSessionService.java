@@ -340,7 +340,6 @@ public class DefaultGameSessionService implements GameSessionService {
         }
 
         boolean removed = false;
-
         // Remove the user from the first team that contains them
         for (List<User> team : connectedUsers) {
             if (team.removeIf(user -> user.getId().equals(userId))) {
@@ -349,7 +348,22 @@ public class DefaultGameSessionService implements GameSessionService {
             }
         }
 
+        var gameState = gameSession.getGameState();
+
+        var redTeamPlayers = connectedUsers.get(0);
+
+        var blueTeamPlayers = connectedUsers.get(1);
+
+        if (gameState.getRedTeamLeader() != null && gameState.getRedTeamLeader().getId().equals(userId)) {
+            gameState.setRedTeamLeader(redTeamPlayers.isEmpty() ? null : redTeamPlayers.get(0));
+        }
+
+        if (gameState.getBlueTeamLeader() != null && gameState.getBlueTeamLeader().getId().equals(userId)) {
+            gameState.setBlueTeamLeader(blueTeamPlayers.isEmpty() ? null : blueTeamPlayers.get(0));
+        }
+
         if (removed) {
+            gameSession.setGameState(gameState);
             gameSessionRepository.save(gameSession);
         }
 

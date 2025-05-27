@@ -46,11 +46,11 @@ interface UserRoomLobbyDTO {
  */
 const getGameIDFromLocalStorage = () => {
   const gameId = localStorage.getItem("gameId");
-  if (!gameId) {
-    const newGameId = Math.random().toString(36).substring(2, 15);
-    localStorage.setItem("gameId", newGameId);
-    return newGameId;
-  }
+  // if (!gameId) {
+  //   const newGameId = Math.random().toString(36).substring(2, 15);
+  //   localStorage.setItem("gameId", newGameId);
+  //   return newGameId;
+  // }
   return gameId;
 };
 
