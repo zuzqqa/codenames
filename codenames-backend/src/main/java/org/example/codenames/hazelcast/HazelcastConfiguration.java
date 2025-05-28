@@ -7,6 +7,7 @@ import com.hazelcast.core.HazelcastInstance;
 import org.example.codenames.hazelcast.compactSerializers.gameSessionSerializers.GameSessionCompactSerializer;
 import org.example.codenames.hazelcast.compactSerializers.gameSessionSerializers.GameStateCompactSerializer;
 import org.example.codenames.hazelcast.compactSerializers.gameSessionSerializers.UserCompactSerializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -17,13 +18,17 @@ import org.springframework.context.annotation.Primary;
 @Configuration
 public class HazelcastConfiguration {
 
+    @Value("${codenames.hazelcast.users-map.ttl}")
+    private int activeUsersTtl;
+
     @Bean
     public Config hazelcastConfig() {
+
         Config config = new Config()
                 .setInstanceName("hazelcast-instance")
                 .addMapConfig(new MapConfig()
                         .setName("activeUsers")
-                        .setTimeToLiveSeconds(180))
+                        .setTimeToLiveSeconds(activeUsersTtl))
                 .addMapConfig(new MapConfig()
                         .setName("gameSessions"))
                 .addMapConfig(new MapConfig()

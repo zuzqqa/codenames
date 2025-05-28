@@ -6,6 +6,7 @@ import com.hazelcast.map.IMap;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -51,7 +52,7 @@ public class SchedulerService {
      * This task runs every 10 minutes.
      * It checks the activity map for active users and deletes any guest users that are not present in the activity map.
      */
-    @Scheduled(fixedRate = 600000)
+    @Scheduled(fixedRateString = "${codenames.scheduled.users-cleanup}")
     public void cleanUserCollection() {
 
         Set<String> activityKeys = activityMap.keySet();
@@ -75,7 +76,7 @@ public class SchedulerService {
      * Firstly it deletes any inactive users from the game sessions.
      * Next it checks the game session map for active game sessions and deletes any game sessions that have no connected users.
      */
-    @Scheduled(fixedRate = 600000)
+    @Scheduled(fixedRateString = "${codenames.scheduled.games-cleanup}")
     public void cleanGameSessionCollection() {
         Set<String> gameSessionKeys = gameSessionMap.keySet();
         Set<String> activityKeys = activityMap.keySet();
