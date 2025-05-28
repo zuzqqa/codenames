@@ -33,21 +33,22 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ soundFXVolume, duration }) =>
   const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
-    const defaultDuration = 3;
+    const defaultDuration = 3; // Default duration in seconds
     const effectiveDuration = duration ?? defaultDuration;
 
     const timer = setTimeout(() => {
-    }, effectiveDuration);
+      navigate("/"); // Navigate to "/" after the progress bar is full
+    }, effectiveDuration * 1000); // Convert seconds to milliseconds
 
     const progressBar = document.getElementById("progressBar");
     if (progressBar) {
       progressBar.style.setProperty(
-        "--progress-duration",
-        `${effectiveDuration}s`
+          "--progress-duration",
+          `${effectiveDuration}s`
       );
     }
 
-    return () => clearTimeout(timer);
+    return () => clearTimeout(timer); // Cleanup the timer
   }, [navigate, duration]);
 
   return (
