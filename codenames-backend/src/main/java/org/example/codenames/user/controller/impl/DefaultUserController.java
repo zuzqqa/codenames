@@ -424,6 +424,12 @@ public class DefaultUserController implements UserController {
         return ResponseEntity.ok().body(userService.getAllActiveUsers());
     }
 
+    /**
+     * Checks if a password reset token is valid.
+     * @param token the password reset token to validate.
+     * @param request the HTTP request containing additional context (such as IP address) for the token validation operation.
+     * @return ResponseEntity with status 200 OK if the token is valid, or 410 GONE if it is not valid or has expired.
+     */
     @GetMapping("/token-validation/{token}")
     public ResponseEntity<Void> isPasswordResetTokenValid(@PathVariable String token, HttpServletRequest request) {
         if (passwordResetServiceToken.isValidToken(token))

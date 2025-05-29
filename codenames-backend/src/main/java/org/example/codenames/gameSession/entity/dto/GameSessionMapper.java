@@ -45,7 +45,7 @@ public class GameSessionMapper {
                     .status(gameSession.getStatus())
                     .gameName(gameSession.getGameName())
                     .maxPlayers(gameSession.getMaxPlayers())
-                    .connectedUsers(toRoomLobbyDTOList(gameSession.getConnectedUsers()))
+                    .connectedUsers(gameSession.getConnectedUsers())
                     .build();
         } else {
             return GameSessionRoomLobbyDTO.builder().build();

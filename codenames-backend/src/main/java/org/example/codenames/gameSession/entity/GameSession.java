@@ -5,6 +5,7 @@ import lombok.*;
 import org.example.codenames.gameState.entity.GameState;
 import org.example.codenames.user.entity.User;
 
+import org.example.codenames.user.entity.dto.UserRoomLobbyDTO;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -61,7 +62,7 @@ public class GameSession {
     /**
      * List of connected users.
      */
-    private List<List<User>> connectedUsers;
+    private List<List<UserRoomLobbyDTO>> connectedUsers;
 
     /**
      * List of votes.

@@ -6,7 +6,7 @@ import org.example.codenames.gameSession.entity.dto.GameSessionRoomLobbyDTO;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.gameState.service.api.GameStateService;
-import org.example.codenames.user.entity.User;
+import org.example.codenames.user.entity.dto.UserRoomLobbyDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -146,14 +146,14 @@ public class DefaultGameSessionController implements GameSessionController {
             return ResponseEntity.status(404).body("Game session not found");
         }
 
-        List<List<User>> connectedUsers = gameSession.getConnectedUsers();
+        List<List<UserRoomLobbyDTO>> connectedUsers = gameSession.getConnectedUsers();
 
         // Check if team index is valid
         if (teamIndexInt < 0 || teamIndexInt >= connectedUsers.size()) {
             return ResponseEntity.status(400).body("Invalid team index. Must be 0 (red) or 1 (blue).");
         }
 
-        List<User> teamUsers = connectedUsers.get(teamIndexInt);
+        List<UserRoomLobbyDTO> teamUsers = connectedUsers.get(teamIndexInt);
 
         return ResponseEntity.ok(teamUsers);
     }
@@ -175,6 +175,6 @@ public class DefaultGameSessionController implements GameSessionController {
     public ResponseEntity<?> getConnectedUsers(@PathVariable String gameId) {
         GameSession gameSession = gameSessionService.getGameSessionById(UUID.fromString(gameId));
 
-        return ResponseEntity.ok(toRoomLobbyDTOList(gameSession.getConnectedUsers()));
+        return ResponseEntity.ok(gameSession.getConnectedUsers());
     }
 }

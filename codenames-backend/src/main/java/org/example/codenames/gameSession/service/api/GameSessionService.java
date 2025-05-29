@@ -2,7 +2,7 @@ package org.example.codenames.gameSession.service.api;
 
 import org.example.codenames.gameSession.entity.CreateGameRequest;
 import org.example.codenames.gameSession.entity.GameSession;
-import org.example.codenames.user.entity.User;
+import org.example.codenames.user.entity.dto.UserRoomLobbyDTO;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,7 +23,7 @@ public interface GameSessionService {
 
     void assignTeamLeaders(UUID sessionId);
 
-    User findLeader(List<User> team, List<Integer> teamVotes);
+    UserRoomLobbyDTO findLeader(List<UserRoomLobbyDTO> team, List<Integer> teamVotes);
 
     boolean addPlayerToSession(UUID sessionId, String userId, int teamIndex);
 

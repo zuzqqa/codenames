@@ -15,6 +15,7 @@ import "./RoomLobby.css";
 import { apiUrl, frontendUrl, socketUrl } from "../../config/api.tsx";
 import {getCookie, getUserId} from "../../shared/utils.tsx";
 import { io } from "socket.io-client";
+import {useToast} from "../Toast/ToastContext.tsx";
 
 /**
  * @returns {string} - The URL of the API.
@@ -104,33 +105,10 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     []
   );
   const [isJoined, setIsJoined] = useState(false);
-  const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
-  const [notifications, setNotifications] = useState<
-    { id: string; message: string }[]
-  >([]);
   const [lobbyLink, setLobbyLink] = useState<string>("");
   const [isLinkIsleExpanded, setIsLinkIsleExpanded] = useState(false);
   const exampleLink = `${frontendUrl}/invite/${localStorage.getItem("gameId")}`;
-
-  /**
-   * Handles manual closing of a toast error.
-   *
-   * - Fades out the toast visually before removing it from the state.
-   *
-   * @param {string} id - The unique identifier of the error toast to be closed.
-   */
-  const handleCloseErrorToast = (id: string) => {
-    const toastElement = document.getElementById(id);
-    if (toastElement) {
-      toastElement.classList.add("hide");
-
-      setTimeout(() => {
-        setErrors((prevErrors) =>
-          prevErrors.filter((error) => error.id !== id)
-        );
-      }, 500);
-    }
-  };
+  const {addToast} = useToast();
 
   /**
    * Initializes the WebSocket connection and fetches the game session data.
@@ -201,7 +179,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
    */
   const addPlayerToRedTeam = async () => {
     if (isJoined) {
-      removePlayerFromTeam();
+      await removePlayerFromTeam();
     }
 
     // Fetch player ID, then add to red team via REST API
@@ -234,7 +212,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
    */
   const addPlayerToBlueTeam = async () => {
     if (isJoined) {
-      removePlayerFromTeam();
+      await removePlayerFromTeam();
     }
 
     // Fetch player ID, then add to blue team via REST API
@@ -331,17 +309,12 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
    * Starts the game session.
    */
   const start_game = async () => {
-    const newErrors: { id: string; message: string }[] = [];
-    setErrors(newErrors);
 
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
 
     if (redTeamPlayers.length < 2 || redTeamPlayers.length < 2) {
-      newErrors.push({
-        id: generateId(),
-        message: t("too-few-players"),
-      });
+      addToast(t("too-few-players"), "error");
       return;
     }
     try {
@@ -373,94 +346,33 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     });
   };
 
-  /**
-   * Handles manual closing of a toast notification.
-   *
-   * - Fades out the toast visually before removing it from the state.
-   *
-   * @param {string} id - The unique identifier of the notification toast to be closed.
-   */
-  const handleCloseNotificationToast = (id: string) => {
-    const toastElement = document.getElementById(id);
-    if (toastElement) {
-      toastElement.classList.add("hide");
-
-      setTimeout(() => {
-        setNotifications((prevNotifications) =>
-          prevNotifications.filter((notification) => notification.id !== id)
-        );
-      }, 500);
-    }
-  };
-
-  /**
-   * useEffect hook for handling the automatic removal of notification messages after a delay.
-   *
-   * - Adds a fade-out effect to the toast notification before removal.
-   * - Removes notifications from the state after a timeout.
-   *
-   * @param {Array<{ id: string; message: string }>} errors - Array of notification messages with unique IDs.
-   */
-  useEffect(() => {
-    if (notifications.length === 0) return;
-
-    const timers: number[] = notifications.map((notification) => {
-      const toastElement = document.getElementById(notification.id);
-
-      if (toastElement) {
-        // Fade out the toast after 8 seconds
-        const fadeOutTimer = setTimeout(() => {
-          toastElement.classList.add("hide");
-        }, 8000);
-
-        // Remove the message from state after 8.5 seconds
-        const removeTimer = setTimeout(() => {
-          setNotifications((prevNotifications) =>
-            prevNotifications.filter((n) => n.id !== notification.id)
-          );
-        }, 8500);
-
-        return removeTimer;
-      } else {
-        // Remove message if toast element is not found
-        return setTimeout(() => {
-          setNotifications((prevNotifications) =>
-            prevNotifications.filter((n) => n.id !== notification.id)
-          );
-        }, 8000);
-      }
-    });
-
-    return () => timers.forEach(clearTimeout);
-  }, [notifications]);
-
-  /**
-   * useEffect hook for handling the copying of the lobby link to the clipboard.
-   *
-   * - Displays a notification message when the link is copied.
-   * - Clears the lobby link state after displaying the notification.
-   *
-   * @param {string} lobbyLink - The generated lobby link to be copied.
-   */
-  useEffect(() => {
-    if (lobbyLink) {
-      setNotifications((prevNotifications) => {
-        const notificationExists = prevNotifications.some(
-          (n) => n.message === t("link-copied")
-        );
-
-        if (!notificationExists) {
-          setLobbyLink("");
-          return [
-            ...prevNotifications,
-            { id: generateId(), message: t("link-copied") },
-          ];
-        }
-        setLobbyLink("");
-        return prevNotifications;
-      });
-    }
-  }, [lobbyLink]);
+  // /**
+  //  * useEffect hook for handling the copying of the lobby link to the clipboard.
+  //  *
+  //  * - Displays a notification message when the link is copied.
+  //  * - Clears the lobby link state after displaying the notification.
+  //  *
+  //  * @param {string} lobbyLink - The generated lobby link to be copied.
+  //  */
+  // useEffect(() => {
+  //   if (lobbyLink) {
+  //     setNotifications((prevNotifications) => {
+  //       const notificationExists = prevNotifications.some(
+  //         (n) => n.message === t("link-copied")
+  //       );
+  //
+  //       if (!notificationExists) {
+  //         setLobbyLink("");
+  //         return [
+  //           ...prevNotifications,
+  //           { id: generateId(), message: t("link-copied") },
+  //         ];
+  //       }
+  //       setLobbyLink("");
+  //       return prevNotifications;
+  //     });
+  //   }
+  // }, [lobbyLink]);
 
   const handleLobbyLinkIsleUnroll = () => {
     setIsLinkIsleExpanded((prev) => !prev);
@@ -507,7 +419,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                 {/*</Button>*/}
                 <div
                   className={`lobby-link-isle ${
-                    isLinkIsleExpanded ? "expanded" : ""
+                    isLinkIsleExpanded ? "" : "expanded"
                   }`}
                 >
                   <img src={messageIcon} alt="Link" className="isle-image" />
@@ -601,58 +513,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
             </div>
           )}
         </div>
-        {errors.length > 0 && (
-          <div className="toast-container">
-            {errors.map((error) => (
-              <div id={error.id} key={error.id} className="toast active">
-                <div className="toast-content">
-                  <i
-                    className="fa fa-exclamation-circle fa-3x"
-                    style={{ color: "#561723" }}
-                    aria-hidden="true"
-                  ></i>
-                  <div className="message">
-                    <span className="text text-1">Error</span>
-                    <span className="text text-2">{error.message}</span>
-                  </div>
-                </div>
-                <i
-                  className="fa-solid fa-xmark close"
-                  onClick={() => handleCloseErrorToast(error.id)}
-                ></i>
-                <div className="progress active"></div>
-              </div>
-            ))}
-          </div>
-        )}
-        {notifications.length > 0 && (
-          <div className="toast-container">
-            {notifications.map((notification) => (
-              <div
-                id={notification.id}
-                key={notification.id}
-                className="toast active"
-              >
-                <div className="toast-content">
-                  <i
-                    className="fa fa-info-circle fa-3x"
-                    style={{ color: "#1B74BB" }}
-                    aria-hidden="true"
-                  ></i>
-                  <div className="message">
-                    <span className="text text-1">Notification</span>
-                    <span className="text text-2">{notification.message}</span>
-                  </div>
-                </div>
-                <i
-                  className="fa-solid fa-xmark close"
-                  onClick={() => handleCloseNotificationToast(notification.id)}
-                ></i>
-                <div className="progress active notification"></div>
-              </div>
-            ))}
-          </div>
-        )}
       </RoomMenu>
     </>
   );

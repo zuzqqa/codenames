@@ -7,6 +7,8 @@ import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.gameState.entity.GameState;
 import org.example.codenames.gameState.service.api.GameStateService;
 import org.example.codenames.user.entity.User;
+import org.example.codenames.user.entity.dto.UserMapper;
+import org.example.codenames.user.entity.dto.UserRoomLobbyDTO;
 import org.example.codenames.user.service.api.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -165,7 +167,7 @@ public class DefaultGameSessionService implements GameSessionService {
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
         for (int teamIndex = 0; teamIndex < session.getConnectedUsers().size(); teamIndex++) {
-            List<User> team = session.getConnectedUsers().get(teamIndex);
+            List<UserRoomLobbyDTO> team = session.getConnectedUsers().get(teamIndex);
 
             if (team.stream().anyMatch(user -> user.getId().equals(userId))) {
                 int votedIndex = -1;
@@ -197,15 +199,15 @@ public class DefaultGameSessionService implements GameSessionService {
         GameSession session = gameSessionRepository.findBySessionId(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
-        List<List<User>> teams = session.getConnectedUsers();
+        List<List<UserRoomLobbyDTO>> teams = session.getConnectedUsers();
         List<List<Integer>> votes = session.getVotes();
 
         if (teams.size() != 2 || votes.size() != 2) {
             throw new IllegalStateException("Expected exactly two teams for leader assignment.");
         }
 
-        User redTeamLeader = findLeader(teams.get(0), votes.get(0));
-        User blueTeamLeader = findLeader(teams.get(1), votes.get(1));
+        UserRoomLobbyDTO redTeamLeader = findLeader(teams.get(0), votes.get(0));
+        UserRoomLobbyDTO blueTeamLeader = findLeader(teams.get(1), votes.get(1));
 
         // Create or update GameState with the leaders
         GameState gameState = session.getGameState();
@@ -219,15 +221,14 @@ public class DefaultGameSessionService implements GameSessionService {
     /**
      * Finds the leader of a team based on the votes.
      *
-     * @param team The team to find the leader for.
+     * @param team      The team to find the leader for.
      * @param teamVotes The votes for each player in the team.
-     *
      * @return The leader of the team.
      */
     @Override
-    public User findLeader(List<User> team, List<Integer> teamVotes) {
+    public UserRoomLobbyDTO findLeader(List<UserRoomLobbyDTO> team, List<Integer> teamVotes) {
         int maxVotes = -1;
-        User leader = null;
+        UserRoomLobbyDTO leader = null;
 
         for (int i = 0; i < team.size(); i++) {
             if (teamVotes.get(i) > maxVotes) {
@@ -264,14 +265,14 @@ public class DefaultGameSessionService implements GameSessionService {
             return false;
         }
 
-        List<List<User>> connectedUsers = gameSession.getConnectedUsers();
+        List<List<UserRoomLobbyDTO>> connectedUsers = gameSession.getConnectedUsers();
         List<List<Integer>> votes = gameSession.getVotes();
 
         if (teamIndex < 0 || teamIndex >= connectedUsers.size()) {
             return false;
         }
 
-        for(List<User> team : connectedUsers) {
+        for(List<UserRoomLobbyDTO> team : connectedUsers) {
             if (team.stream().anyMatch(user -> user.getId().equals(userId))) {
                 return false;
             }
@@ -280,7 +281,7 @@ public class DefaultGameSessionService implements GameSessionService {
         Optional<User> user = userService.getUserById(userId);
         User actualUser = user.orElseThrow(() -> new IllegalArgumentException("User not found for ID: " + userId));
 
-        connectedUsers.get(teamIndex).add(actualUser);
+        connectedUsers.get(teamIndex).add(UserMapper.toRoomLobbyDTO(actualUser));
         votes.get(teamIndex).add(0);
 
         gameSessionRepository.save(gameSession);
@@ -333,7 +334,7 @@ public class DefaultGameSessionService implements GameSessionService {
             throw new IllegalArgumentException("Game session not found for ID: " + sessionId);
         }
 
-        List<List<User>> connectedUsers = gameSession.getConnectedUsers();
+        List<List<UserRoomLobbyDTO>> connectedUsers = gameSession.getConnectedUsers();
 
         if (connectedUsers == null || connectedUsers.isEmpty()) {
             return false;
@@ -342,7 +343,7 @@ public class DefaultGameSessionService implements GameSessionService {
         boolean removed = false;
 
         // Remove the user from the first team that contains them
-        for (List<User> team : connectedUsers) {
+        for (List<UserRoomLobbyDTO> team : connectedUsers) {
             if (team.removeIf(user -> user.getId().equals(userId))) {
                 removed = true;
                 break;
@@ -377,7 +378,7 @@ public class DefaultGameSessionService implements GameSessionService {
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
-        for (List<User> team : gameSession.getConnectedUsers()) {
+        for (List<UserRoomLobbyDTO> team : gameSession.getConnectedUsers()) {
             if (team.stream().anyMatch(user -> user.getId().equals(userId))) {
                 return true;
             }

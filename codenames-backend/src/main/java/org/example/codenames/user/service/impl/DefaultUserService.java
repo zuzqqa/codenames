@@ -82,20 +82,19 @@ public class DefaultUserService implements UserService {
         } else {
             user.setStatus(User.userStatus.ACTIVE);
         }
+        if(!user.isGuest()) {
+            if (user.getEmail() == null || user.getEmail().isEmpty()) {
+                return Optional.of("Invalid email address");
+            }
 
-        if (!user.isGuest() && (user.getEmail() == null || user.getEmail().isEmpty())) {
-            return Optional.of("Invalid email address");
-        }
+            if (userRepository.existsByEmail(user.getEmail())) {
+                return Optional.of("E-mail already exists.");
+            }
 
-        if (!user.isGuest() && userRepository.existsByEmail(user.getEmail())) {
-            return Optional.of("E-mail already exists.");
-        }
+            if (userRepository.existsByUsername(user.getUsername())) {
+                return Optional.of("Username already exists.");
+            }
 
-        if (!user.isGuest() && userRepository.existsByUsername(user.getUsername())) {
-            return Optional.of("Username already exists.");
-        }
-
-        if (!user.isGuest()) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             if(user.getRoles() == null) {
                 user.setRoles("ROLE_USER");
@@ -103,7 +102,6 @@ public class DefaultUserService implements UserService {
             user.setProfilePic(0);
             user.setDescription("");
         }
-
         userRepository.save(user);
 
         return Optional.empty();
@@ -141,14 +139,6 @@ public class DefaultUserService implements UserService {
         return userRepository.findAll();
     }
 
-    /**
-     * Updates a user by their ID.
-     *
-     * @param id the ID of the user
-     * @param updatedUser the updated user
-     * @return the updated user, if found
-     * @throws IllegalArgumentException if the user was not found in the repository
-     */
     /**
      * Updates a user by their ID.
      * @param id the ID of the user
@@ -324,8 +314,7 @@ public class DefaultUserService implements UserService {
                     user.setStatus(User.userStatus.ACTIVE);
 
                     return userRepository.save(user);
-                })
-                .orElse(null);
+                });
     }
 
     /**
@@ -341,6 +330,26 @@ public class DefaultUserService implements UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         return user.getStatus() == User.userStatus.ACTIVE;
+    }
+
+    /**
+     * Updates the user's active status.
+     *
+     * @param userId the ID of the user
+     */
+    @Override
+    public void updateUserActiveStatus(String userId) {
+        activityMap.put(userId, LocalDateTime.now());
+    }
+
+    /**
+     * Retrieves all active users.
+     *
+     * @return a map of all active users
+     */
+    @Override
+    public Map<String, LocalDateTime> getAllActiveUsers() {
+        return activityMap.getAll(activityMap.keySet());
     }
 
     /**
@@ -363,25 +372,5 @@ public class DefaultUserService implements UserService {
         } while (userRepository.existsByUsername(username));
 
         return username;
-    }
-
-    /**
-     * Updates the user's active status.
-     *
-     * @param userId the ID of the user
-     */
-    @Override
-    public void updateUserActiveStatus(String userId) {
-        activityMap.put(userId, LocalDateTime.now());
-    }
-
-    /**
-     * Retrieves all active users.
-     *
-     * @return a map of all active users
-     */
-    @Override
-    public Map<String, LocalDateTime> getAllActiveUsers() {
-        return activityMap.getAll(activityMap.keySet());
     }
 }

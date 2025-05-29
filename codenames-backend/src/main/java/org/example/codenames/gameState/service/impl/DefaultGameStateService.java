@@ -10,6 +10,7 @@ import org.example.codenames.gameState.entity.GameState;
 import org.example.codenames.gameState.service.api.GameStateService;
 
 import org.example.codenames.user.entity.User;
+import org.example.codenames.user.entity.dto.UserRoomLobbyDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -271,9 +272,9 @@ public class DefaultGameStateService implements GameStateService {
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
-        List<List<User>> connectedUsers = gameSession.getConnectedUsers();
+        List<List<UserRoomLobbyDTO>> connectedUsers = gameSession.getConnectedUsers();
 
-        User newLeader = getNewLeader(gameSession, connectedUsers);
+        UserRoomLobbyDTO newLeader = getNewLeader(gameSession, connectedUsers);
 
         gameSession.getGameState().setCurrentSelectionLeader(newLeader);
       
@@ -288,12 +289,12 @@ public class DefaultGameStateService implements GameStateService {
      *
      * @return the new leader
      */
-    private static User getNewLeader(GameSession gameSession, List<List<User>> connectedUsers) {
+    private static UserRoomLobbyDTO getNewLeader(GameSession gameSession, List<List<UserRoomLobbyDTO>> connectedUsers) {
         int currentTeamIndex = gameSession.getGameState().getTeamTurn();
 
-        List<User> currentTeamPlayers = connectedUsers.get(currentTeamIndex);
+        List<UserRoomLobbyDTO> currentTeamPlayers = connectedUsers.get(currentTeamIndex);
 
-        List<User> availablePlayers = new ArrayList<>(currentTeamPlayers);
+        List<UserRoomLobbyDTO> availablePlayers = new ArrayList<>(currentTeamPlayers);
 
         availablePlayers.remove(gameSession.getGameState().getRedTeamLeader());
         availablePlayers.remove(gameSession.getGameState().getBlueTeamLeader());

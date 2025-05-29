@@ -7,6 +7,7 @@ import com.hazelcast.nio.serialization.compact.CompactSerializer;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.entity.GameSession.sessionStatus;
 import org.example.codenames.user.entity.User;
+import org.example.codenames.user.entity.dto.UserRoomLobbyDTO;
 
 import java.util.*;
 
@@ -32,16 +33,16 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
         writer.writeInt64("votingStartTime", session.getVotingStartTime() != null ? session.getVotingStartTime() : 0L);
 
         // Flatten List<List<User>> into a single list and store nested sizes
-        List<User> flatUsers = new ArrayList<>();
+        List<UserRoomLobbyDTO> flatUsers = new ArrayList<>();
         List<Integer> userGroupSizes = new ArrayList<>();
         if (session.getConnectedUsers() != null) {
-            for (List<User> group : session.getConnectedUsers()) {
+            for (List<UserRoomLobbyDTO> group : session.getConnectedUsers()) {
                 userGroupSizes.add(group.size());
                 flatUsers.addAll(group);
             }
         }
         writer.writeArrayOfInt32("userGroupSizes", userGroupSizes.stream().mapToInt(i -> i).toArray());
-        writer.writeArrayOfCompact("connectedUsersFlat", flatUsers.toArray(new User[0]));
+        writer.writeArrayOfCompact("connectedUsersFlat", flatUsers.toArray(new UserRoomLobbyDTO[0]));
 
         // Flatten List<List<Integer>> into a single list and store nested sizes
         List<Integer> flatVotes = new ArrayList<>();
@@ -76,11 +77,11 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
 
         // Reconstruct connectedUsers
         int[] userGroupSizes = reader.readArrayOfInt32("userGroupSizes");
-        User[] flatUsers = reader.readArrayOfCompact("connectedUsersFlat", User.class);
-        List<List<User>> connectedUsers = new ArrayList<>();
+        UserRoomLobbyDTO[] flatUsers = reader.readArrayOfCompact("connectedUsersFlat", UserRoomLobbyDTO.class);
+        List<List<UserRoomLobbyDTO>> connectedUsers = new ArrayList<>();
         int userIndex = 0;
         for (int size : userGroupSizes) {
-            List<User> group = new ArrayList<>();
+            List<UserRoomLobbyDTO> group = new ArrayList<>();
             for (int i = 0; i < size; i++) {
                 group.add(flatUsers[userIndex++]);
             }

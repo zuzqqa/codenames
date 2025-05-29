@@ -1,6 +1,5 @@
-package org.example.codenames.unitTests.alfaTests;
+package org.example.codenames.unitTests;
 
-import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
@@ -8,11 +7,11 @@ import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameState.entity.GameState;
 import org.example.codenames.hazelcast.HazelcastConfiguration;
 import org.example.codenames.user.entity.User;
+import org.example.codenames.user.entity.dto.UserRoomLobbyDTO;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
@@ -146,12 +145,9 @@ public class HazelcastTest {
         GameSession gameSession = gameSessionMap.get(sessionId);
 
         // Create a test user
-        User testUser = User.builder()
+        UserRoomLobbyDTO testUser = UserRoomLobbyDTO.builder()
                 .username("testUser")
-                .password("testPassword")
                 .id(UUID.randomUUID().toString())
-                .roles("ROLE_USER")
-                .isGuest(false)
                 .status(User.userStatus.ACTIVE)
                 .build();
 

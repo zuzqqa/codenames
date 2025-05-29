@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import org.example.codenames.user.entity.User;
+import org.example.codenames.user.entity.dto.UserRoomLobbyDTO;
 
 import java.util.List;
 
@@ -18,17 +19,17 @@ public class GameState {
     /**
      * Blue team leader
      */
-    private User blueTeamLeader;
+    private UserRoomLobbyDTO blueTeamLeader;
 
     /**
      * Red team leader
      */
-    private User redTeamLeader;
+    private UserRoomLobbyDTO redTeamLeader;
 
     /**
      * Leader with privilege to select cards
      */
-    private User currentSelectionLeader;
+    private UserRoomLobbyDTO currentSelectionLeader;
 
     /**
      * Blue team score
