@@ -34,6 +34,7 @@ import { apiUrl, socketUrl } from "../../config/api.tsx";
 import { io } from "socket.io-client";
 import { getUserId } from "../../shared/utils.tsx";
 import Cookies from "js-cookie";
+import {useToast} from "../../components/Toast/ToastContext.tsx";
 
 /**
  * Represents properties for controlling gameplay-related settings, such as volume levels.
@@ -120,6 +121,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { t } = useTranslation();
+  const { addToast } = useToast();
   const [isCardVisible, setIsCardVisible] = useState(false);
   const [cardText, setCardText] = useState("");
   const [cardNumber, setCardNumber] = useState(1);
@@ -147,7 +149,6 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [winningTeam, setWinningTeam] = useState<string>();
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
   const [cardsToReveal, setCardsToReveal] = useState<number[]>([]);
-  const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
   const clickAudio = new Audio(cardSound);
   const [votedCards, setVotedCards] = useState<number[]>([]);
   const [userId, setUserId] = useState<string | null>();
@@ -763,20 +764,13 @@ const Gameplay: React.FC<GameplayProps> = ({
    */
   const changeTurn = async () => {
     if (isHintTime && gameSession?.gameState?.hintNumber == "0" && cardNumber == 0) {
-      const newErrors: { id: string; message: string }[] = [];
-
-      newErrors.push({
-        id: generateId(),
-        message: t("hint-zero"),
-      });
+      addToast(t("hint-zero"), "error");
 
       if (isHintTime && gameSession?.gameState?.hintNumber === "0") {
         if (gameSession && gameSession.gameState) {
           gameSession.gameState.hintNumber = String(cardNumber);
         }
       }
-
-      setErrors(newErrors);
       return;
     }
 
@@ -802,7 +796,7 @@ const Gameplay: React.FC<GameplayProps> = ({
    * @returns {void} If the card text is empty or the user is not a team leader, the function exits early.
    */
 const sendHint = async () => {
-    
+
     if (!cardText.trim()) return;
 
     const storedGameId = localStorage.getItem("gameId");
@@ -832,67 +826,6 @@ const sendHint = async () => {
   };
 
   /**
-   * useEffect hook for handling the automatic removal of error messages after a delay.
-   *
-   * - Adds a fade-out effect to the toast notification before removal.
-   * - Removes errors from the state after a timeout.
-   *
-   * @param {Array<{ id: string; message: string }>} errors - Array of error messages with unique IDs.
-   */
-  useEffect(() => {
-    if (errors.length === 0) return;
-
-    const timers: number[] = errors.map((error) => {
-      const toastElement = document.getElementById(error.id);
-
-      if (toastElement) {
-        // Fade out the toast after 8 seconds
-        const fadeOutTimer = setTimeout(() => {
-          toastElement.classList.add("hide");
-        }, 8000);
-
-        // Remove the error from state after 8.5 seconds
-        const removeTimer = setTimeout(() => {
-          setErrors((prevErrors) =>
-            prevErrors.filter((e) => e.id !== error.id)
-          );
-        }, 8500);
-
-        return removeTimer;
-      } else {
-        // Remove error if toast element is not found
-        return setTimeout(() => {
-          setErrors((prevErrors) =>
-            prevErrors.filter((e) => e.id !== error.id)
-          );
-        }, 8000);
-      }
-    });
-
-    return () => timers.forEach(clearTimeout);
-  }, [errors]);
-
-  /**
-   * Handles manual closing of a toast error.
-   *
-   * - Fades out the toast visually before removing it from the state.
-   *
-   * @param {string} id - The unique identifier of the error toast to be closed.
-   */
-  const handleCloseErrorToast = (id: string) => {
-    const toastElement = document.getElementById(id);
-    if (toastElement) {
-      toastElement.classList.add("hide");
-
-      setTimeout(() => {
-        setErrors((prevErrors) =>
-          prevErrors.filter((error) => error.id !== id)
-        );
-      }, 500);
-    }
-  };
-
-  /**
    * Validates the hint text to ensure it is a single word.
    * @param text - The hint text to validate.
    */
@@ -902,14 +835,8 @@ const sendHint = async () => {
     if (text.split(" ").length == 1) {
       return true;
     }
+    addToast(t("hint-one-word"), "error");
 
-    newErrors.push({
-      id: generateId(),
-      message: t("hint-one-word"),
-    });
-
-    setErrors(newErrors);
-    if (newErrors.length > 0) return;
   };
 
   return (
@@ -1178,30 +1105,6 @@ const sendHint = async () => {
                     }}
                 ></i>
             </Button>
-          </div>
-        )}
-        {errors.length > 0 && (
-          <div className="toast-container">
-            {errors.map((error) => (
-              <div id={error.id} key={error.id} className="toast active">
-                <div className="toast-content">
-                  <i
-                    className="fa fa-exclamation-circle fa-3x"
-                    style={{ color: "#561723" }}
-                    aria-hidden="true"
-                  ></i>
-                  <div className="message">
-                    <span className="text text-1">Error</span>
-                    <span className="text text-2">{error.message}</span>
-                  </div>
-                </div>
-                <i
-                  className="fa-solid fa-xmark close"
-                  onClick={() => handleCloseErrorToast(error.id)}
-                ></i>
-                <div className="progress active"></div>
-              </div>
-            ))}
           </div>
         )}
         {ownUsername && (
