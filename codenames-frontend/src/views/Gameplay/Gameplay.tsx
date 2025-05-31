@@ -144,7 +144,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [whosTurn, setWhosTurn] = useState<string>("blue");
   const [isGuessingTime, setIsGuessingTime] = useState<boolean>();
   const [isHintTime, setIsHintTime] = useState<boolean>();
-  const [winningTeam, setWinningTeam] = useState<string>("blue");
+  const [winningTeam, setWinningTeam] = useState<string>();
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
   const [cardsToReveal, setCardsToReveal] = useState<number[]>([]);
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
@@ -529,6 +529,7 @@ const Gameplay: React.FC<GameplayProps> = ({
    */
   useEffect(() => {
     setGameSession(gameSession);
+    console.log(myTeam);
   }, [gameSession]);
 
   /**
@@ -615,12 +616,13 @@ const Gameplay: React.FC<GameplayProps> = ({
    */
   useEffect(() => {
     if (redTeamScore >= 9 || blueTeamScore >= 8) {
-      setWinningTeam(redTeamScore >= blueTeamScore ? "red" : "blue");
+      const winning = redTeamScore >= blueTeamScore ? "red" : "blue";
+      setWinningTeam(winning);
       revealCardsVotedByTeam();
 
       const timeoutId = setTimeout(() => {
         navigate("/win-loss", {
-          state: { result: winningTeam === myTeam ? "Victory" : "Loss" },
+          state: { result: winning === myTeam ? "Victory" : "Loss" },
         });
       }, 3000);
 
