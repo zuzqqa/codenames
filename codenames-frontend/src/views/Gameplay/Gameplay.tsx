@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useRef} from "react";
 import { useTranslation } from "react-i18next";
 
 import BackgroundContainer from "../../containers/Background/Background";
@@ -35,7 +35,7 @@ import Chat from "../../components/Chat/Chat.tsx";
 import { useNavigate } from "react-router-dom";
 import AudioRoom from "../../components/AudioRoom/AudioRoom.tsx";
 import { apiUrl, socketUrl } from "../../config/api.tsx";
-import { io } from "socket.io-client";
+import {io, Socket} from "socket.io-client";
 import { getUserId } from "../../shared/utils.tsx";
 import Cookies from "js-cookie";
 import QuitModal from "../../components/QuitModal/QuitModal.tsx";
@@ -158,9 +158,11 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [votedCards, setVotedCards] = useState<number[]>([]);
   const [userId, setUserId] = useState<string | null>();
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+  const [hasPlayerDisconnected, setHasPlayerDisconnected] = useState(false);
   const [ownUsername, setOwnUsername] = useState(
     localStorage.getItem("username") || ""
   );
+  const gameSocketRef = useRef<Socket | null>(null);
 
   /**
    * This function toggles the visibility of the overlay.
@@ -180,8 +182,6 @@ const Gameplay: React.FC<GameplayProps> = ({
    * This function toggles the visibility of the quit modal.
    */
   const toggleQuitModal = () => {
-    console.log("Blue team leader", gameSession.gameState.blueTeamLeader);
-    console.log("Red team leader", gameSession.gameState.redTeamLeader);
     setIsQuitModalOpen(!isQuitModalOpen);
   }
 
@@ -346,6 +346,8 @@ const Gameplay: React.FC<GameplayProps> = ({
       reconnectionDelay: 1000,
     });
 
+    gameSocketRef.current = gameSocket;
+
     gameSocket.on("connect", () => {
       if (storedGameId) {
         gameSocket.emit("joinGame", storedGameId);
@@ -370,13 +372,14 @@ const Gameplay: React.FC<GameplayProps> = ({
       }
     });
 
-    gameSocket.on("userDisconnected", (userDisconnected: string) => {
-      console.log("User disconnected:", userDisconnected);
+    gameSocket.on("disconnectUser", (userId: string) => {
+      console.log("User disconnected:", userId);
+      setHasPlayerDisconnected(true);
       try {
         const newError = {
-            id: generateId(),
-            message: t("user-disconnected", { userDisconnected }),
-        }
+          id: generateId(),
+          message: t("user-disconnected"),
+        };
         setErrors((prevErrors) => [...prevErrors, newError]);
       }
         catch (err) {
@@ -500,7 +503,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         );
         if (!response.ok) throw new Error("Failed to fetch game session");
         const data = await response.json();
-
+        setHasPlayerDisconnected(false);
         setAmIBlueTeamLeader(data.gameState.blueTeamLeader.id === userId);
         setAmIRedTeamLeader(data.gameState.redTeamLeader.id === userId);
         setAmICurrentLeader(
@@ -524,7 +527,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     };
 
     fetchGameSession();
-  }, [storedGameId, navigate]);
+  }, [storedGameId, navigate, hasPlayerDisconnected]);
 
   /**
    * Effect that checks if the turn has changed, and if so, updates the `whosTurn` state.
@@ -671,14 +674,12 @@ const Gameplay: React.FC<GameplayProps> = ({
    * @returns {void}
    */
   useEffect(() => {
-    console.log("players changed")
+    setHasPlayerDisconnected(false);
     if (
       gameSession?.status !== SessionStatus.FINISHED &&
       (redTeamPlayers.length < 2 || blueTeamPlayers.length < 2)
         && (redTeamPlayers.length > 0 && blueTeamPlayers.length > 0)
     ) {
-      console.log("redTeamPlayers", redTeamPlayers);
-        console.log("blueTeamPlayers", blueTeamPlayers);
       const winningTeam =
         redTeamPlayers.length < 2 ? "blue" : "red";
       setWinningTeam(winningTeam);
@@ -686,7 +687,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         state: { result: winningTeam === myTeam ? "Victory" : "Loss" },
       });
     }
-  }, [blueTeamPlayers, redTeamPlayers]);
+  }, [gameSession, blueTeamPlayers, redTeamPlayers, hasPlayerDisconnected]);
 
 
 
@@ -697,6 +698,7 @@ const Gameplay: React.FC<GameplayProps> = ({
    * @returns {void} Updates the `amIBlueTeamLeader` and `amIRedTeamLeader` states.
    */
   useEffect(() => {
+    setHasPlayerDisconnected(false);
     if (
       gameSession?.gameState?.blueTeamLeader?.id === userId ||
       gameSession?.gameState?.redTeamLeader?.id === userId
@@ -704,7 +706,7 @@ const Gameplay: React.FC<GameplayProps> = ({
       setAmIBlueTeamLeader(gameSession?.gameState.blueTeamLeader.id === userId);
       setAmIRedTeamLeader(gameSession?.gameState.redTeamLeader.id === userId);
     }
-  }, [gameSession?.gameState.redTeamLeader, gameSession?.gameState.blueTeamLeader]);
+  }, [gameSession, gameSession?.gameState.redTeamLeader, gameSession?.gameState.blueTeamLeader, hasPlayerDisconnected]);
 
   /**
    * Reveals the cards voted by the team based on the `cardsToReveal` state.
@@ -989,14 +991,12 @@ const sendHint = async () => {
   };
 
   const disconnectUser = () => {
-    const gameSocket = io(`${socketUrl}/game`, {
-      transports: ["websocket"],
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-    });
-    gameSocket.emit("disconnectUser", userId);
-    setIsQuitModalOpen(false);
     const storedGameId = localStorage.getItem("gameId");
+    if (gameSocketRef.current) {
+      console.log("Disconnecting user:", userId);
+      gameSocketRef.current.emit("disconnectUser", userId, storedGameId);
+    }
+    setIsQuitModalOpen(false);
     if (!storedGameId) return;
 
     fetch(`${apiUrl}/api/game-session/${storedGameId}/disconnect?userId=${userId}`, {
@@ -1106,11 +1106,11 @@ const sendHint = async () => {
             onClose={toggleQuitModal}
             soundFXVolume={soundFXVolume}
         >
-          <Button variant="primary-1" soundFXVolume={soundFXVolume} onClick={disconnectUser}>
-            {t("quitModal.confirm")}
+          <Button variant="primary" soundFXVolume={soundFXVolume} onClick={disconnectUser} className="yes-button">
+            {t("yes")}
           </Button>
-          <Button variant="primary-1" soundFXVolume={soundFXVolume} onClick={toggleQuitModal}>
-            {t("quitModal.cancel")}
+          <Button variant="primary" soundFXVolume={soundFXVolume} onClick={toggleQuitModal} className="no-button">
+            {t("no")}
           </Button>
         </QuitModal>
 

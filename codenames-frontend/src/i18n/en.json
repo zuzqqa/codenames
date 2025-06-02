@@ -87,5 +87,9 @@
   "try-reset-password": "resetting your password",
   "go-back-to-homepage": "go back to the homepage",
   "game-name-already-exists": "Game with this name already exists.",
-  "game-name-required": "Game name is required."
+  "game-name-required": "Game name is required.",
+  "user-disconnected": "User disconnected",
+  "yes": "Yes",
+  "no": "No",
+  "leave-title": "Do you want to leave the game?"
 }
