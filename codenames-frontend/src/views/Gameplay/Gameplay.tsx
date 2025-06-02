@@ -361,10 +361,10 @@ const Gameplay: React.FC<GameplayProps> = ({
         );
 
         setGameSessionData(updatedGameSession);
-        if (gameSession.gameState.blueTeamLeader.id === userId) {
+        if (gameSession?.gameState.blueTeamLeader.id === userId) {
           setAmIBlueTeamLeader(true);
         }
-        if (gameSession.gameState.redTeamLeader.id === userId) {
+        if (gameSession?.gameState.redTeamLeader.id === userId) {
           setAmIRedTeamLeader(true);
         }
       } catch (err) {
