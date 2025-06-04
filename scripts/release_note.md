@@ -1,15 +1,14 @@
-🎮 Alpha Release – Early version of the game
+Introduced leaving game fucntion
 **🔧 What's included in this release?**
-This patch addresses minor bugs and readjustments.
+Added leave game button and logic
 
 Key additions: 
-- Fixed loading view
-- Fixed fetch headers that did not include Bearer Token
-- Made scheduled tasks timers configurable via application.properties file
+- Leave game button
+- When team leader quits a new one is chosen
+- When one team has less than 2 players, the game ends
 
 **🚧 What's still under development?**
-- UX/UI fixes
-- Hazelcast testing
+- Further bugfixes and quality of life changes
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 
