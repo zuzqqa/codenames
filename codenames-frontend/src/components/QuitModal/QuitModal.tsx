@@ -5,8 +5,6 @@ import "./QuitModal.css";
 import Modal from "../Modal/Modal.tsx";
 import TitleModal from "../TitleModal/TitleModal.tsx";
 import closeIcon from "../../assets/icons/close.png";
-import {apiUrl} from "../../config/api.tsx";
-import {useNavigate} from "react-router-dom";
 
 interface QuitModalProps {
     isOpen: boolean;
@@ -22,39 +20,6 @@ const QuitModal: React.FC<QuitModalProps> = ({
                                                  children
 }) => {
     const { t } = useTranslation();
-    const navigate = useNavigate();
-    const [notifications, setNotifications] = React.useState<{ id: string; message: string }[]>([]);
-    const [userQuit, setUserQuit] = React.useState(false);
-    const [userName, setUserName] = React.useState<string | null>(null);
-
-    /**
-     * @returns {string} - The URL of the API.
-     */
-    const generateId = () =>
-        Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
-
-    const disconnectUser = () => {
-        setUserQuit(true);
-        setUserName("Test");
-        const storedGameId = localStorage.getItem("gameId");
-        const userId = localStorage.getItem("userId");
-        if (!storedGameId) return;
-
-        fetch(`${apiUrl}/api/game-session/${storedGameId}/disconnect?userId=${userId}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            credentials: "include",
-          },
-        })
-          .then(() => {
-            localStorage.removeItem("gameId");
-            navigate("/games");
-          })
-          .catch((error) => {
-            console.error("Error disconnecting user:", error);
-          });
-    }
 
     if (!isOpen) return null;
 

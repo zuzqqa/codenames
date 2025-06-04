@@ -348,11 +348,11 @@ public class DefaultGameSessionService implements GameSessionService {
             }
         }
 
-        var gameState = gameSession.getGameState();
+        GameState gameState = gameSession.getGameState();
 
-        var redTeamPlayers = connectedUsers.get(0);
+        List<User> redTeamPlayers = connectedUsers.get(0);
 
-        var blueTeamPlayers = connectedUsers.get(1);
+        List<User> blueTeamPlayers = connectedUsers.get(1);
 
         if (gameState.getRedTeamLeader() != null && gameState.getRedTeamLeader().getId().equals(userId)) {
             gameState.setRedTeamLeader(redTeamPlayers.isEmpty() ? null : redTeamPlayers.get(0));
