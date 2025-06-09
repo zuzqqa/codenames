@@ -21,7 +21,7 @@ jobs:
     - id: 'auth'
       uses: 'google-github-actions/auth@v2'
       with:
-        workload_identity_provider: 'projects/codenames-462421/locations/global/workloadIdentityPools/github-pool/providers/github-provider-fixed'
+        workload_identity_provider: 'projects/70257591993/locations/global/workloadIdentityPools/github-pool-new/providers/github-provider'
         service_account: 'github-cloud-run-deployer@codenames-462421.iam.gserviceaccount.com'
 
     - name: 'Set up gcloud'
