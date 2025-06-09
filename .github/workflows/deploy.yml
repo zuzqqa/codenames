@@ -21,8 +21,8 @@ jobs:
     - id: 'auth'
       uses: 'google-github-actions/auth@v2'
       with:
-        workload_identity_provider: 'projects/35261654330/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
-        service_account: 'github-deployer@codenames-458106.iam.gserviceaccount.com'
+        workload_identity_provider: 'projects/70257591993/locations/global/workloadIdentityPools/github-pool/providers/github-provider-fixed'
+        service_account: 'github-deployer@codenames-462421.iam.gserviceaccount.com'
 
     - name: 'Set up gcloud'
       uses: 'google-github-actions/setup-gcloud@v2'
@@ -32,9 +32,9 @@ jobs:
 
     - name: 'Deploy codenames-backend'
       run: |
-        gcloud builds submit ./codenames-backend --tag gcr.io/codenames-458106/codenames-backend
+        gcloud builds submit ./codenames-backend --tag gcr.io/codenames-462421/codenames-backend
         gcloud run deploy codenames-backend \
-          --image gcr.io/codenames-458106/codenames-backend \
+          --image gcr.io/codenames-462421/codenames-backend \
           --region europe-central2 \
           --platform managed \
           --allow-unauthenticated \
@@ -52,7 +52,7 @@ jobs:
     - name: 'Build Docker image for frontend'
       run: |
         docker build ./codenames-frontend \
-          -t gcr.io/codenames-458106/codenames-frontend \
+          -t gcr.io/codenames-462421/codenames-frontend \
           --build-arg VITE_BACKEND_API_URL=${{ secrets.VITE_BACKEND_API_URL }} \
           --build-arg VITE_SOCKET_IO_SERVER=${{ secrets.VITE_SOCKET_IO_SERVER }} \
           --build-arg VITE_PEERSERVER=${{ secrets.VITE_PEERSERVER }} \
@@ -60,30 +60,30 @@ jobs:
           --build-arg VITE_FRONTEND_URL=${{ secrets.VITE_FRONTEND_URL }}
     
     - name: 'Push Docker image to GCR'
-      run: docker push gcr.io/codenames-458106/codenames-frontend
+      run: docker push gcr.io/codenames-462421/codenames-frontend
     
     - name: 'Deploy frontend to Cloud Run'
       run: |
         gcloud run deploy codenames-frontend \
-          --image gcr.io/codenames-458106/codenames-frontend \
+          --image gcr.io/codenames-462421/codenames-frontend \
           --region europe-central2 \
           --platform managed \
           --allow-unauthenticated
   
     - name: 'Deploy codenames-socket-io-server'
       run: |
-        gcloud builds submit ./codenames-socket-io-server --tag gcr.io/codenames-458106/codenames-socket-io-server
+        gcloud builds submit ./codenames-socket-io-server --tag gcr.io/codenames-462421/codenames-socket-io-server
         gcloud run deploy codenames-socket-io-server \
-          --image gcr.io/codenames-458106/codenames-socket-io-server \
+          --image gcr.io/codenames-462421/codenames-socket-io-server \
           --region europe-central2 \
           --platform managed \
           --allow-unauthenticated
 
     - name: 'Deploy codenames-peerserver'
       run: |
-        gcloud builds submit ./codenames-peerserver --tag gcr.io/codenames-458106/codenames-peerserver
+        gcloud builds submit ./codenames-peerserver --tag gcr.io/codenames-462421/codenames-peerserver
         gcloud run deploy codenames-peerserver \
-          --image gcr.io/codenames-458106/codenames-peerserver \
+          --image gcr.io/codenames-462421/codenames-peerserver \
           --region europe-central2 \
           --platform managed \
           --allow-unauthenticated
