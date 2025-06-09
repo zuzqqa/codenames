@@ -85,5 +85,9 @@
   "invite-friends-text": "Skopiuj link i podziel się nim ze swoimi przyjaciółmi, aby mogli dołączyć do pokoju.",
   "server-connection-error": "Nie można połączyć się z serwerem. Spróbuj ponownie później.",
   "game-name-already-exists": "Gra o takiej nazwie już istnieje.",
-  "game-name-required": "Nazwa gry jest wymagana."
+  "game-name-required": "Nazwa gry jest wymagana.",
+  "user-disconnected": "Użytkownik rozłączył się",
+  "yes": "Tak",
+  "no": "Nie",
+  "leave-title": "Czy chcesz opuścić grę?"
 }
