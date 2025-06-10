@@ -180,7 +180,7 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public List<User> searchActiveUsersByUsername(String username) {
-        return userRepository.findByUsernameContainingAndStatus(username, User.userStatus.ACTIVE);
+        return userRepository.findByUsernameContainingAndStatus(username, User.userStatus.valueOf(String.valueOf(User.userStatus.ACTIVE)));
     }
 
     /**

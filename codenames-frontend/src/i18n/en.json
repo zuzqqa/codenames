@@ -91,5 +91,6 @@
   "user-disconnected": "User disconnected",
   "yes": "Yes",
   "no": "No",
-  "leave-title": "Do you want to leave the game?"
+  "leave-title": "Do you want to leave the game?",
+  "voice-chat": "Voice chat"
 }

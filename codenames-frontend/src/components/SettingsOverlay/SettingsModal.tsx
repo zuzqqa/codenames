@@ -139,9 +139,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
       {/* MessageModal */}
       <MessageModal
         isOpen={isMessageModalOpen}
-        onClose={handleCloseAllModals} // Close settings and message modals when this is closed
+        onClose={handleCloseAllModals} 
         soundFXVolume={soundFXVolume}
-        setIsConfirmationModalOpen={setIsConfirmationModalOpen} // Pass state setter to MessageModal
+        setIsConfirmationModalOpen={setIsConfirmationModalOpen} 
       />
 
       {/* ConfirmationModal */}

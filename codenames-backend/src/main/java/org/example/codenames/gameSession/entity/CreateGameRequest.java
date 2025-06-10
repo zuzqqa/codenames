@@ -26,4 +26,9 @@ public class CreateGameRequest {
      * The language of the words.
      */
     public String language;
+
+    /**
+     * Boolean value indicating weather voice chat is enabled for this game.
+     */
+    public Boolean voiceChatEnabled;
 }

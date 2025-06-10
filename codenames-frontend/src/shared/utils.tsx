@@ -56,6 +56,9 @@ export async function getUserId() {
     const response = await fetch(`${apiUrl}/api/users/get-id`, {
       method: "GET",
       credentials: "include",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
     });
 
     if (!response.ok) {

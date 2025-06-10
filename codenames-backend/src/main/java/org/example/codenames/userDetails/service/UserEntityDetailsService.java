@@ -37,8 +37,11 @@ public class UserEntityDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
-                .map(UserEntityUserDetails::new)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .map(user -> {
+                    return new UserEntityUserDetails(user);
+                })
+                .orElseThrow(() -> {
+                    return new UsernameNotFoundException("User not found");
+                });
     }
-
 }
