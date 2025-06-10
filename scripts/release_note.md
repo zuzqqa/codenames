@@ -1,14 +1,16 @@
-Introduced leaving game fucntion
+Introduced Voice Chat UI Control
 **🔧 What's included in this release?**
-Added leave game button and logic
+Added UI and configuration logic for Voice Chat toggle when creating a game.
 
 Key additions: 
-- Leave game button
-- When team leader quits a new one is chosen
-- When one team has less than 2 players, the game ends
+- Voice Chat toggle available in game setup screen
+- Players can choose to disable Voice Chat at game creation
+- Initial voice chat interface styling implemented
 
 **🚧 What's still under development?**
-- Further bugfixes and quality of life changes
+- Functional improvements to voice chat (connection stability, disconnection handling, etc.)
+- Enhancements to responsiveness and mobile layout for Voice Chat UI
+- Better visual feedback for microphone activity
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 
