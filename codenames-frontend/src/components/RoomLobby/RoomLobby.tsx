@@ -13,7 +13,7 @@ import messageIcon from "../../assets/icons/message.svg";
 import "./RoomLobby.css";
 
 import { apiUrl, frontendUrl, socketUrl } from "../../config/api.tsx";
-import { getUserId } from "../../shared/utils.tsx";
+import {getCookie, getUserId} from "../../shared/utils.tsx";
 import { io } from "socket.io-client";
 
 /**
@@ -271,7 +271,13 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     const storedGameId = localStorage.getItem("gameId");
     if (!storedGameId) return;
 
+    const token = getCookie("authToken");
+
+
     const getIdResponse = await fetch(`${apiUrl}/api/users/get-id`, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
       method: "GET",
       credentials: "include",
     });

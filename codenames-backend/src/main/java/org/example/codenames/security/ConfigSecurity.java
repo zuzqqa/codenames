@@ -68,7 +68,6 @@ public class ConfigSecurity {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable())
-                //.cors().and()     // Opcjonalnie: dodanie obsługi CORS
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
@@ -85,7 +84,6 @@ public class ConfigSecurity {
                                 "api/game-session/**", "api/game-state/**", "api/cards/**"
                         ).permitAll()
                         .requestMatchers("/oauth2/**", "/api/auth/**").permitAll()
-                        .requestMatchers("/api/users/activity").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

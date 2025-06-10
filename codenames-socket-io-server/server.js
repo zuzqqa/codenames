@@ -41,6 +41,11 @@ gameNamespace.on("connection", (socket) => {
     console.log("[GAME] Broadcasting game sessions list");
     gameNamespace.emit("gameSessionsList", gameSessions);
   });
+
+  socket.on("disconnectUser", (userId, gameId) => {
+    console.log(`[GAME] Disconnecting user: ${userId}`);
+    gameNamespace.to(gameId).emit("disconnectUser", userId);
+  });
 });
 
 // --- VOICE CHAT NAMESPACE (/voice) ---

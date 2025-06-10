@@ -235,7 +235,7 @@ public class DefaultUserController implements UserController {
     @GetMapping("/get-id")
     public ResponseEntity<String> getIdByToken(@RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || !token.startsWith("Bearer ")) {
-            return ResponseEntity.ok("null");
+            return ResponseEntity.ok(null);
         }
 
         token = token.substring(7);
@@ -256,7 +256,7 @@ public class DefaultUserController implements UserController {
         if (token == null || !token.startsWith("Bearer ")) {
             return ResponseEntity.ok(false);
         }
-
+        token = token.substring(7);
         String username = jwtService.getUsernameFromToken(token);
         Optional<User> user = userService.getUserByUsername(username);
 
@@ -406,6 +406,10 @@ public class DefaultUserController implements UserController {
      */
     @PostMapping("/activity")
     public ResponseEntity<Void> updateUserActiveStatus(@RequestBody String userId) {
+        if(userId == null || userId.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
         userService.updateUserActiveStatus(userId);
         return ResponseEntity.ok().build();
     }

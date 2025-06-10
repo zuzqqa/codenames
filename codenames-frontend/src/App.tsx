@@ -26,7 +26,8 @@ import LoadingPage from "./views/Loading/LoadingPage";
 import ResetPasswordPage from "./views/ResetPassword/ResetPasswordPage.tsx";
 import ResetPasswordRequestPage from "./views/ResetPassword/ResetPasswordRequestPage.tsx";
 import Invite from "./components/Invite/Invite.tsx";
-import { apiUrl } from "./config/api.tsx"; // Importing API URL
+import { apiUrl } from "./config/api.tsx";
+import {getCookie} from "./shared/utils.tsx"; // Importing API URL
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -100,22 +101,30 @@ const App: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-    setInterval(async () => {
-        if (!isAuthenticated) return;
-        if (!userId) {
-            const getIdResponse = await fetch(apiUrl + "/api/users/get-id", {
-                method: "GET",
-                credentials: "include",
-            });
-            userId = await getIdResponse.text();
-            localStorage.setItem("userId", userId);
-        }
-        fetch(apiUrl + '/api/users/activity', {
-            method: 'POST',
-            body: userId,
-            headers: {'Content-Type': 'application/json'},
-            credentials: "include"
-        });
+  setInterval(async () => {
+      if (!isAuthenticated) return;
+      const token = getCookie("authToken");
+
+      if (!userId || userId == "") {
+          const getIdResponse = await fetch(apiUrl + "/api/users/get-id", {
+              headers: {
+                  "Authorization": `Bearer ${token}`,
+              },
+              method: "GET",
+              credentials: "include",
+          });
+          userId = await getIdResponse.text();
+          localStorage.setItem("userId", userId);
+      }
+      await fetch(apiUrl + '/api/users/activity', {
+          method: 'POST',
+          body: userId,
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+          },
+          credentials: "include"
+      });
     }, 10000);
 
   return (
