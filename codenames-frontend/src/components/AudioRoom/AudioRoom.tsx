@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 
 import Button from "../Button/Button.tsx";
 
-import { apiUrl, peerUrl, socketUrl } from "../../config/api.tsx";
+import { apiUrl, peerUrl, secure, socketUrl } from "../../config/api.tsx";
 
 import callIcon from "../../assets/icons/call.svg";
 import callEndIcon from "../../assets/icons/end-call.svg";
@@ -95,7 +95,6 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
   }>({});
   const micActivityFrameRef = useRef<number | null>(null);
   const [muted, setMuted] = useState(false);
-  const [userVolumes, setUserVolumes] = useState({});
 
   /**
    * Effect to fetch connected users and username when the component mounts.
@@ -207,27 +206,6 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
     };
   }, [iConnected, userStream]);
 
-  const handleVolumeChange = (username: string, volume: number) => {
-  console.log(`Changing volume for ${username} to`, volume);
-
-  setUserVolumes((prevVolumes) => ({
-    ...prevVolumes,
-    [username]: volume,
-  }));
-
-  const audios = audioGridRef.current?.getElementsByTagName("audio");
-  if (audios) {
-    Array.from(audios).forEach((audio) => {
-      const dataUser = audio.getAttribute("data-username");
-      audioGridRef.current?.appendChild(audio);
-      if (dataUser === username) {
-        audio.volume = volume;
-      }
-    });
-  }
-};
-
-
   /**
    * Effect to set up the PeerJS connection and handle incoming/outgoing calls.
    * It listens for user connections and disconnections, and manages the audio streams.
@@ -245,11 +223,11 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
       "-" +
       Date.now().toString(36);
 
-    console.log(peerUrl, "peerUrl");
+    const isHttps = window.location.protocol === "https:";
 
     const peer = new Peer(randomId, {
       host: `${peerUrl}`,
-      secure: false,
+      secure: isHttps,
       debug: 3,
       config: {
         iceServers: [
@@ -267,13 +245,10 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
 
     peer.on("open", (id) => {
       console.log(`[VOICE] PeerJS connected with ID: ${id}`);
-      chatNamespace.emit("join-room", ROOM_ID, id, ownUsername);
+      chatNamespace.emit("join-room", ROOM_ID, id);
 
       peer.on("call", (call) => {
-        const callerUsername = call.metadata?.username || "Nieznany użytkownik";
-
-        console.log(`[VOICE] Incoming call from ${callerUsername} (${call.peer})`);
-
+        console.log(`[VOICE] Incoming call from: ${call.peer}`);
         call.answer(userStream);
 
         const audio = document.createElement("audio");
@@ -287,8 +262,7 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
           audio.autoplay = true;
           audio.muted = false;
           audio.srcObject = remoteStream;
-          audio.setAttribute("data-username", call.peer);
-          
+
           const led = document.getElementById("mic-led");
           if (led) {
             const audioCtx = new AudioContext();
@@ -334,15 +308,11 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
         peers.current[call.peer] = call;
       });
 
-      chatNamespace.on("user-connected", ({ id, username }) => {
+      chatNamespace.on("user-connected", (username) => {
         console.log(`[VOICE] User connected: ${username}`);
         if (username === ownUsername) return;
 
-        const call = peer.call(id, userStream, {
-          metadata: {
-            username: username, 
-          },
-        });
+        const call = peer.call(username, userStream);
 
         const audio = document.createElement("audio");
         audio.controls = true;
@@ -358,10 +328,10 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
           console.log("Audio tracks:", remoteStream.getAudioTracks());
 
           audio.srcObject = remoteStream;
-          audio.setAttribute("data-username", username);
           audio.addEventListener("loadedmetadata", () => {
             audio.play().catch((e) => console.error("Audio play failed:", e));
           });
+          audioGridRef.current?.appendChild(audio);
         });
 
         call.on("close", () => {
@@ -595,36 +565,43 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
       </div>
       <div className="audio-room-users">
         <div className="user-cards">
-        {connectedUsers?.flat().map((user) =>
-          user.username !== ownUsername ? (
-            <div key={user.id} className="user-card">
-              <div className="user-card-left">
-              <div className="user-name">{user.username}</div>
-              <div className="volume-control">
-                <img src={volumeIcon} alt="Volume Icon" className="volume-icon" />
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.01"
-                  value={userVolumes[user.username] || 0.5}
-                  onChange={(e) =>
-                    handleVolumeChange(user.username, parseFloat(e.target.value))
-                  }
-                  className="volume-slider"
+          {connectedUsers?.flat().map((user) =>
+            user.username !== ownUsername ? (
+              <div key={user.id} className="user-card">
+                <div className="user-card-left">
+                  <div className="user-name">{user.username}</div>
+                  <div className="volume-control">
+                    <img
+                      src={volumeIcon}
+                      alt="Volume Icon"
+                      className="volume-icon"
+                    />
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      value={ 0.5}
+                      onChange={() => {
+
+                      }
+                      }
+                      className="volume-slider"
+                    />
+                  </div>
+                </div>
+                <div
+                  className="mic-led"
+                  style={{
+                    backgroundColor:
+                      userMicStates[user.username] && iConnected
+                        ? "green"
+                        : "red",
+                  }}
                 />
               </div>
-              </div>
-              <div
-                className="mic-led"
-                style={{
-                  backgroundColor:
-                    userMicStates[user.username] && iConnected ? "green" : "red",
-                }}
-              />
-            </div>
-          ) : null
-        )}
+            ) : null
+          )}
         </div>
         <div ref={audioGridRef} style={{ display: "none" }} />
       </div>

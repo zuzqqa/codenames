@@ -49,21 +49,21 @@ const chatNamespace = io.of("/voice");
 chatNamespace.on("connection", (socket) => {
   console.log(`[VOICE] Client connected: ${socket.id}`);
 
-  socket.on("join-room", (roomId, id, username) => {
+  socket.on("join-room", (roomId, username) => {
     console.log(`[VOICE] User ${username} joined room: ${roomId}`);
 
     socket.join(roomId);
-    socket.to(roomId).emit("user-connected", { id, username });
+    socket.to(roomId).emit("user-connected", username);
 
-    socket.on("leave-room", (roomId, id) => {
-      console.log(`[VOICE] User ${id} left room: ${roomId}`);
+    socket.on("leave-room", (roomId, username) => {
+      console.log(`[VOICE] User ${username} left room: ${roomId}`);
       socket.leave(roomId);
-      socket.to(roomId).emit("user-disconnected", id);
+      socket.to(roomId).emit("user-disconnected", username);
     });
 
     socket.on("disconnect", () => {
-      console.log(`[VOICE] User ${id} disconnected from room: ${roomId}`);
-      socket.to(roomId).emit("user-disconnected", id);
+      console.log(`[VOICE] User ${username} disconnected from room: ${roomId}`);
+      socket.to(roomId).emit("user-disconnected", username);
     });
 
     socket.on("userMicActivity", ({ username, isSpeaking, roomId }) => {
