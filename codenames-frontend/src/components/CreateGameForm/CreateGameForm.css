@@ -110,79 +110,93 @@ form {
 }
 
 .cr-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
   cursor: pointer;
   margin-bottom: 5px;
   margin-left: 5px;
-  height: 50px;
-  width: 50px;
-  background: #f0e0b5;
-  border-radius: 50%;
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2),
-    -5px -5px 10px rgba(255, 255, 255, 0.55);
+  height: 40px;
+  width: 90px;
 }
 
 .cr-wrapper input[type="checkbox"] ~ .cr-input {
   position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #5a1822;
+  box-shadow: inset 0px 6px 0px 0px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  height: 20px;
-  width: 20px;
-  background: linear-gradient(to top, #2c3e50, #34495e);
-  border-color: #e4c347;
-  border-radius: 3px;
+  transform: translate(-50%,-50%);
+  z-index: 2;
 }
 
-.cr-wrapper input[type="checkbox"] ~ .cr-input::after {
-  content: "";
+.cr-wrapper input[type="checkbox"] ~ .s {
+  width: 35px;
+  height: 32px;
+  background-color: #fafafa;
+  border-radius: 8px;
+  position: relative;
+  top: 2px;
+  left: 2px;
+  box-shadow: 0px 5px 0px 0px #d2d2d2;
+  z-index: 3;
+  margin-left: 0;
+}
+
+.cr-wrapper .s .d {
+  width: 5.5px;
+  height: 6px;
+  background-color: #ebebeb;
+  border-radius: 2.5px;
+  box-shadow: inset 0px 1.5px 0px rgba(0, 0, 0, 0.2);
   position: absolute;
-  display: none;
-  left: 4px;
+}
+
+.cr-wrapper .s .d:nth-child(1) {
+  left: 5.5px;
   top: 4px;
-  width: 12px;
-  height: 12px;
-  transition: background 250ms;
-  background-color: #ffffff;
-  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
 }
-
-.cr-wrapper input:checked ~ .cr-input::after {
-  display: block;
+.cr-wrapper .s .d:nth-child(2) {
+  left: 14.5px;
+  top: 4px;
 }
-
-.cr-wrapper:hover input[type="checkbox"]:not([disabled]) ~ .cr-input,
-.cr-wrapper input[type="checkbox"]:focus ~ .cr-input {
-  background: linear-gradient(to top, #2c3e50, #34495e);
-  border-color: #ffd363;
+.cr-wrapper .s .d:nth-child(3) {
+  left: 23.5px;
+  top: 4px;
+}
+.cr-wrapper .s .d:nth-child(4) {
+  left: 5.5px;
+  top: 13px;
+}
+.cr-wrapper .s .d:nth-child(5) {
+  left: 14.5px;
+  top: 13px;
+}
+.cr-wrapper .s .d:nth-child(6) {
+  left: 23.5px;
+  top: 13px;
+}
+.cr-wrapper .s .d:nth-child(7) {
+  left: 5.5px;
+  top: 23px;
+}
+.cr-wrapper .s .d:nth-child(8) {
+  left: 14.5px;
+  top: 23px;
+}
+.cr-wrapper .s .d:nth-child(9) {
+  left: 23.5px;
+  top: 23px;
 }
 
 .cr-wrapper input[type="checkbox"]:checked ~ .cr-input {
-  background: linear-gradient(to top, #2c3e50, #34495e);
-  border-color: #ffd363;
+  background-color: #2a7541;
 }
 
-.cr-wrapper input[type="checkbox"]:disabled ~ .cr-input {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.cr-wrapper input[type="checkbox"]:disabled ~ span {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.cr-wrapper input[type="checkbox"]:disabled ~ .cr-input::after {
-  background: #ffffff;
-}
-
-.cr-wrapper:hover input[type="checkbox"]:not([disabled]):checked ~ .cr-input,
-.cr-wrapper input[type="checkbox"]:checked:focus ~ .cr-input {
-  background: linear-gradient(to top, #2c3e50, #34495e);
-  border-color: #ffd363;
+.cr-wrapper input[type="checkbox"]:checked ~ .s {
+  margin-left: 51px;
 }
 
 .password-input {
@@ -203,6 +217,12 @@ form {
     -5px -5px 10px rgba(255, 255, 255, 0.45);
   transition: 0.3s ease;
   text-indent: 1px;
+}
+
+#deckLanguage {
+  height: 40px;
+  width: 90px;
+  margin-left: 5px;
 }
 
 .label-inset {

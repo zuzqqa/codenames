@@ -79,6 +79,7 @@ interface GameSession {
   timeForGuessing: string;
   connectedUsers: User[][];
   gameState: GameState;
+  voiceChatEnabled: boolean;
 }
 
 /**
@@ -163,6 +164,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     localStorage.getItem("username") || ""
   );
   const gameSocketRef = useRef<Socket | null>(null);
+  const [voiceChatEnabled, setVoiceChatEnabled] = useState(false);
 
   /**
    * This function toggles the visibility of the overlay.
@@ -453,6 +455,7 @@ const Gameplay: React.FC<GameplayProps> = ({
             : "blue"
         );
         setVotedCards(data.gameState?.cardsVotes || []);
+        setVoiceChatEnabled(data.voiceChatEnabled || false);
       } catch (err) {
         console.error("Failed to load game session", err);
       }
@@ -1064,8 +1067,8 @@ const sendHint = async () => {
         <Button variant="logout" soundFXVolume={soundFXVolume} onClick={toggleQuitModal}>
           <img src={logoutButton} alt="Home" />
         </Button>
-
-        <div className={`custom-overlay ${isOverlayVisible ? "open" : ""}`}>
+        
+        {voiceChatEnabled && (<div className={`custom-overlay ${isOverlayVisible ? "open" : ""}`}>
           <div className="overlay-content">
             <button
               className="close-btn"
@@ -1077,9 +1080,10 @@ const sendHint = async () => {
               <AudioRoom soundFXVolume={soundFXVolume} />
             </div>
           </div>
-        </div>
+        </div>)}
+        
 
-        {!isOverlayVisible && (
+        {voiceChatEnabled && !isOverlayVisible && (
           <Button
             variant="half-circle"
             className="half-circle-btn"

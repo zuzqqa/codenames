@@ -53,7 +53,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      * @param request the request containing the game session information
      * @return the response entity containing the game session id
      */
-    @PostMapping("/create")
+    @PostMapping("/create-game")
     public ResponseEntity<Map<String, String>> createGameSession(@RequestBody CreateGameRequest request) throws JsonProcessingException {
         // Create a new game session
         String gameId = gameSessionService.createGameSession(request);

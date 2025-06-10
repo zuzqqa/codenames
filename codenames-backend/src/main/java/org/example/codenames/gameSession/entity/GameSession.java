@@ -77,4 +77,9 @@ public class GameSession {
      * Voting start time.
      */
     private Long votingStartTime;
+
+    /**
+     * Voice chat.
+     */
+    private Boolean voiceChatEnabled;
 }

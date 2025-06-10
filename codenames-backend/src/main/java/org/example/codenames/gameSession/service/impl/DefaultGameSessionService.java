@@ -91,7 +91,8 @@ public class DefaultGameSessionService implements GameSessionService {
                     add(new ArrayList<>());
                 }},
                 gameState,
-                System.currentTimeMillis()
+                System.currentTimeMillis(),
+                request.getVoiceChatEnabled()
         );
 
         gameSessionRepository.save(newGame);

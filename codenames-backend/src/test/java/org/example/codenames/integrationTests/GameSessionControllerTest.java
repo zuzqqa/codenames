@@ -96,7 +96,7 @@ public class GameSessionControllerTest {
                 }
                 """;
 
-        mvc.perform(post("/api/game-session/create")
+        mvc.perform(post("/api/game-session/create-game")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isOk());
@@ -120,7 +120,7 @@ public class GameSessionControllerTest {
                 }
                 """;
 
-        MvcResult result = mvc.perform(post("/api/game-session/create")
+        MvcResult result = mvc.perform(post("/api/game-session/create-game")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isOk())
@@ -142,7 +142,7 @@ public class GameSessionControllerTest {
             }
             """;
 
-        MvcResult result = mvc.perform(post("/api/game-session/create")
+        MvcResult result = mvc.perform(post("/api/game-session/create-game")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isOk())
@@ -174,7 +174,7 @@ public class GameSessionControllerTest {
             }
             """;
 
-        MvcResult result = mvc.perform(post("/api/game-session/create")
+        MvcResult result = mvc.perform(post("/api/game-session/create-game")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isOk())
@@ -200,7 +200,7 @@ public class GameSessionControllerTest {
             }
             """;
 
-        MvcResult result = mvc.perform(post("/api/game-session/create")
+        MvcResult result = mvc.perform(post("/api/game-session/create-game")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isOk())

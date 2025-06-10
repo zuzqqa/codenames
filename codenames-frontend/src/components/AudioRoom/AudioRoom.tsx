@@ -5,12 +5,13 @@ import Cookies from "js-cookie";
 
 import Button from "../Button/Button.tsx";
 
-import { apiUrl, peerUrl, socketUrl } from "../../config/api.tsx";
+import { apiUrl, peerUrl, secure, socketUrl } from "../../config/api.tsx";
 
 import callIcon from "../../assets/icons/call.svg";
 import callEndIcon from "../../assets/icons/end-call.svg";
 import micIcon from "../../assets/icons/mic.svg";
 import micOffIcon from "../../assets/icons/micOff.svg";
+import volumeIcon from "../../assets/icons/volume.svg";
 
 import "./AudioRoom.css";
 
@@ -222,11 +223,11 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
       "-" +
       Date.now().toString(36);
 
-    console.log(peerUrl, "peerUrl");
+    const isHttps = window.location.protocol === "https:";
 
     const peer = new Peer(randomId, {
       host: `${peerUrl}`,
-      secure: false,
+      secure: isHttps,
       debug: 3,
       config: {
         iceServers: [
@@ -562,30 +563,48 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
           </div>
         </div>
       </div>
-      <div className="audio-room-leds">
-        {connectedUsers?.flat().map((user) =>
-          user.username !== ownUsername ? (
-            <div key={user.id} className="user-led-container">
-              <p>{user.username}</p>
-              <div
-                id={`mic-led-${user.id}`}
-                style={{
-                  width: "20px",
-                  height: "20px",
-                  borderRadius: "50%",
-                  backgroundColor:
-                    userMicStates[user.username] && iConnected
-                      ? "green"
-                      : "red",
-                  marginBottom: "10px",
-                  transition: "background-color 0.3s ease",
-                }}
-              ></div>
-            </div>
-          ) : null
-        )}
+      <div className="audio-room-users">
+        <div className="user-cards">
+          {connectedUsers?.flat().map((user) =>
+            user.username !== ownUsername ? (
+              <div key={user.id} className="user-card">
+                <div className="user-card-left">
+                  <div className="user-name">{user.username}</div>
+                  <div className="volume-control">
+                    <img
+                      src={volumeIcon}
+                      alt="Volume Icon"
+                      className="volume-icon"
+                    />
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      value={ 0.5}
+                      onChange={() => {
+
+                      }
+                      }
+                      className="volume-slider"
+                    />
+                  </div>
+                </div>
+                <div
+                  className="mic-led"
+                  style={{
+                    backgroundColor:
+                      userMicStates[user.username] && iConnected
+                        ? "green"
+                        : "red",
+                  }}
+                />
+              </div>
+            ) : null
+          )}
+        </div>
+        <div ref={audioGridRef} style={{ display: "none" }} />
       </div>
-      <div ref={audioGridRef}></div>
     </div>
   );
 };

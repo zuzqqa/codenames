@@ -1,5 +1,5 @@
-import Cookies from 'js-cookie';
-import { apiUrl } from '../config/api.tsx';
+import Cookies from "js-cookie";
+import { apiUrl } from "../config/api.tsx";
 
 /**
  * Logs out the user by clearing localStorage and removing authentication cookies.
@@ -8,7 +8,7 @@ import { apiUrl } from '../config/api.tsx';
 export const logout = () => {
   localStorage.removeItem("userId");
   localStorage.removeItem("gameId");
-  
+
   Cookies.remove("authToken");
   Cookies.remove("loggedIn");
 
@@ -23,7 +23,7 @@ export const logout = () => {
 export function formatTime(seconds: number) {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
-  
+
   return `${String(minutes).padStart(2, "0")}:${String(
     remainingSeconds
   ).padStart(2, "0")}`;
@@ -38,7 +38,7 @@ export function getCookie(name: string) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
 
-  if (parts.length === 2) return parts.pop()?.split(';').shift() ?? undefined;
+  if (parts.length === 2) return parts.pop()?.split(";").shift() ?? undefined;
 }
 
 /**
@@ -55,9 +55,9 @@ export async function getUserId() {
   try {
     const response = await fetch(`${apiUrl}/api/users/get-id`, {
       method: "GET",
+      credentials: "include",
       headers: {
         "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
       },
     });
 
@@ -72,4 +72,4 @@ export async function getUserId() {
     console.error("Error:", error);
     return null;
   }
-};
+}

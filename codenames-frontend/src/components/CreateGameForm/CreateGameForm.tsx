@@ -1,5 +1,4 @@
-import { ErrorMessage, useFormik } from "formik";
-import * as Yup from "yup";
+import { useFormik } from "formik";
 import Button from "../Button/Button.tsx";
 import backButton from "../../assets/icons/arrow-back.png";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +9,6 @@ import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import React from "react";
 import { apiUrl } from "../../config/api.tsx";
 import { getUserId } from "../../shared/utils.tsx";
-
 
 /**
  * Props for CreateGameForm component.
@@ -33,6 +31,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [isPrivate, setIsPrivate] = useState(false);
+  const [voiceChatEnabled, setVoiceChatEnabled] = useState(false);
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
 
   /**
@@ -45,24 +44,25 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
       playerSlider: 4,
       password: "",
       deckLanguage: "en",
+      voiceChatEnabled: false,
     },
     onSubmit: async (values) => {
       const newErrors: { id: string; message: string }[] = [];
       setErrors(newErrors);
-  
+
       if (!values.gameName) {
         newErrors.push({
           id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
           message: t("game-name-required"),
         });
       }
-    
-      if (isPrivate && formik.values.password === '') {
+
+      if (isPrivate && formik.values.password === "") {
         newErrors.push({
           id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
           message: t("private-lobby-password-error"),
         });
-  
+
         setErrors([...newErrors]);
         return;
       }
@@ -77,25 +77,23 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
         if (newErrors.length > 0) {
           return;
         }
-  
+
         const requestData = {
           gameName: values.gameName,
           maxPlayers: values.playerSlider,
           password: values.password,
           language: values.deckLanguage,
+          voiceChatEnabled: voiceChatEnabled,
         };
-        
-        const response = await fetch(
-          `${apiUrl}/api/game-session/create`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestData),
-          }
-        );
-        
+
+        const response = await fetch(`${apiUrl}/api/game-session/create-game`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestData),
+        });
+
         if (response.ok) {
           const data = await response.json();
           localStorage.setItem("gameId", data.gameId);
@@ -108,7 +106,6 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
       }
     },
   });
-  
 
   /**
    * useEffect hook for handling the automatic removal of error messages after a delay.
@@ -151,7 +148,6 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
     return () => timers.forEach(clearTimeout);
   }, [errors]);
 
-
   /**
    * Handles navigation back and optionally aborts a game session.
    */
@@ -178,7 +174,6 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
       }, 500);
     }
   };
-  
 
   return (
     <>
@@ -231,6 +226,11 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
                 onChange={() => setIsPrivate((prev) => !prev)}
               />
               <div className="cr-input"></div>
+              <div className="s">
+                {[...Array(9)].map((_, i) => (
+                  <div key={i} className="d"></div>
+                ))}
+              </div>
             </label>
             <input
               type="password"
@@ -286,6 +286,22 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
               <option value="en">EN</option>
               <option value="pl">PL</option>
             </select>
+            <label htmlFor="deckLanguage" className="label-inset">
+              {t("voice-chat")}:
+            </label>
+            <label className="cr-wrapper" style={{ gridColumn: "span 1" }}>
+              <input
+                type="checkbox"
+                checked={voiceChatEnabled}
+                onChange={() => setVoiceChatEnabled((prev) => !prev)}
+              />
+              <div className="cr-input"></div>
+              <div className="s">
+                {[...Array(9)].map((_, i) => (
+                  <div key={i} className="d"></div>
+                ))}
+              </div>
+            </label>
           </div>
           {error && <div className="error">{error}</div>}
           <Button type="submit" variant="room" soundFXVolume={soundFXVolume}>

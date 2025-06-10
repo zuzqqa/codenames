@@ -30,7 +30,7 @@
   "end-round": "Koniec rundy",
   "enter-the-message": "Wprowadź wiadomość",
   "game-lobby": "Pokoj gry",
-  "slots": "Liczba graczy:",
+  "slots": "Liczba graczy",
   "duration": "Czas trwania rundy:",
   "hint-duration": "Czas na podpowiedź:",
   "number-of-rounds": "Liczba rund:",
@@ -89,5 +89,6 @@
   "user-disconnected": "Użytkownik rozłączył się",
   "yes": "Tak",
   "no": "Nie",
-  "leave-title": "Czy chcesz opuścić grę?"
+  "leave-title": "Czy chcesz opuścić grę?",
+  "voice-chat": "Czat głosowy"
 }
