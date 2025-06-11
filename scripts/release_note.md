@@ -1,16 +1,12 @@
-Introduced Voice Chat UI Control
+Quitting game bugfix
 **🔧 What's included in this release?**
-Added UI and configuration logic for Voice Chat toggle when creating a game.
+Introduced a bugfix for a rare occuring bug where the game would not end for some players after insufficient number of players remained in the lobby
 
 Key additions: 
-- Voice Chat toggle available in game setup screen
-- Players can choose to disable Voice Chat at game creation
-- Initial voice chat interface styling implemented
+- Bugfix
 
 **🚧 What's still under development?**
-- Functional improvements to voice chat (connection stability, disconnection handling, etc.)
-- Enhancements to responsiveness and mobile layout for Voice Chat UI
-- Better visual feedback for microphone activity
+- Other bugfixes
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 
