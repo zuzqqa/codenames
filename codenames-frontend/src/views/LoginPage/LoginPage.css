@@ -111,3 +111,9 @@
   font-size: 0.72em;
   padding: 0 5px;
 }
+
+.back-button {
+  position: absolute;
+  top: 3%;
+  left: 3%;
+}

@@ -24,6 +24,7 @@ import "../../styles/App.css";
 import "./RegisterPage.css";
 import { apiUrl } from "../../config/api.tsx";
 import { useToast } from "../../components/Toast/ToastContext.tsx";
+import backButtonIcon from "../../assets/icons/arrow-back.png";
 
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -197,6 +198,14 @@ const RegisterPage: React.FC<RegisterProps> = ({
       />
       <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
         <img src={settingsIcon} alt="Settings" />
+      </Button>
+      <Button
+          className="back-button"
+          variant={"circle-back"}
+          onClick={() => navigate("/home")}
+          soundFXVolume={soundFXVolume}
+      >
+        <img src={backButtonIcon} alt="Back" className="btn-arrow-back" />
       </Button>
       {document.cookie
         .split("; ")
