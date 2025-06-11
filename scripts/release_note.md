@@ -1,13 +1,13 @@
-Documentation for methodology
+Added back button to login and register page
 **🔧 What's included in this release?**
-Added documentation for the choice of development methodology
+Enabled going back to home for login and register pages
 
 Key additions: 
-- pdf file
-- latex project
+- back button in login
+- back button in register
 
 **🚧 What's still under development?**
-- Various bugfixes and quality of life changes
+- Bugfixes and quality of life changes
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 
