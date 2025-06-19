@@ -78,8 +78,8 @@ interface GameSession {
   timeForAHint: string;
   timeForGuessing: string;
   connectedUsers: User[][];
-  gameState: GameState;
   voiceChatEnabled: boolean;
+  gameState: GameState;
 }
 
 /**
@@ -164,7 +164,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     localStorage.getItem("username") || ""
   );
   const gameSocketRef = useRef<Socket | null>(null);
-  const [voiceChatEnabled, setVoiceChatEnabled] = useState(false);
+  const [voiceChatEnabled, setVoiceChatEnabled] = useState<boolean>();
 
   /**
    * This function toggles the visibility of the overlay.
@@ -341,7 +341,7 @@ const Gameplay: React.FC<GameplayProps> = ({
    * Effect that triggers the function to fetch user by user id.
    *  when the component is mounted.
    */
-  useEffect(() => {
+  useEffect(() => {    
     const gameSocket = io(`${socketUrl}/game`, {
       transports: ["websocket"],
       reconnectionAttempts: 5,
@@ -455,6 +455,7 @@ const Gameplay: React.FC<GameplayProps> = ({
             : "blue"
         );
         setVotedCards(data.gameState?.cardsVotes || []);
+        console.log("Fetched game session data:", data);
         setVoiceChatEnabled(data.voiceChatEnabled || false);
       } catch (err) {
         console.error("Failed to load game session", err);

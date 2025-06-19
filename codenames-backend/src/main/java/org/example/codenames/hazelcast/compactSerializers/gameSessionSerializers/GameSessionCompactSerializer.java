@@ -30,6 +30,7 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
         writer.writeInt32("maxPlayers", session.getMaxPlayers() != null ? session.getMaxPlayers() : 0);
         writer.writeString("password", session.getPassword());
         writer.writeInt64("votingStartTime", session.getVotingStartTime() != null ? session.getVotingStartTime() : 0L);
+        writer.writeBoolean("voiceChatEnabled", session.getVoiceChatEnabled());
 
         // Flatten List<List<User>> into a single list and store nested sizes
         List<User> flatUsers = new ArrayList<>();
@@ -73,6 +74,7 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
         builder.maxPlayers(reader.readInt32("maxPlayers"));
         builder.password(reader.readString("password"));
         builder.votingStartTime(reader.readInt64("votingStartTime"));
+        builder.voiceChatEnabled(reader.readBoolean("voiceChatEnabled"));
 
         // Reconstruct connectedUsers
         int[] userGroupSizes = reader.readArrayOfInt32("userGroupSizes");

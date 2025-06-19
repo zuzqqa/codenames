@@ -78,6 +78,8 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
     public ResponseEntity<GameSession> getGameSessionFull(@PathVariable String gameId) throws JsonProcessingException {
         GameSession gameSession = gameSessionService.getGameSessionById(UUID.fromString(gameId));
 
+        System.out.println(gameSession.getVoiceChatEnabled());
+
         if (gameSession != null) {
             socketService.sendGameSessionUpdate(UUID.fromString(gameId), gameSession);
 

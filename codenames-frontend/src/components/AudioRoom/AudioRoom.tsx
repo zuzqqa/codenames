@@ -95,7 +95,9 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
   }>({});
   const micActivityFrameRef = useRef<number | null>(null);
   const [muted, setMuted] = useState(false);
-
+  const [userVolumes, setUserVolumes] = useState<{[username: string]: number}>({});
+  const audioElements = useRef<{[username: string]: HTMLAudioElement}>({});
+  
   /**
    * Effect to fetch connected users and username when the component mounts.
    * It retrieves the game ID from local storage and fetches the connected users
@@ -263,6 +265,8 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
           audio.muted = false;
           audio.srcObject = remoteStream;
 
+          audio.volume = userVolumes[call.peer] || 0.5;
+          audioElements.current[call.peer] = audio;
           const led = document.getElementById("mic-led");
           if (led) {
             const audioCtx = new AudioContext();
@@ -297,6 +301,7 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
 
         call.on("close", () => {
           console.log(`[VOICE] Call closed from: ${call.peer}`);
+          delete audioElements.current[call.peer];
           audio.remove();
         });
 
@@ -328,6 +333,10 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
           console.log("Audio tracks:", remoteStream.getAudioTracks());
 
           audio.srcObject = remoteStream;
+          audio.volume = userVolumes[username] || 0.5;
+          audioElements.current[username] = audio;
+          console.log(audioElements.current[username]);
+
           audio.addEventListener("loadedmetadata", () => {
             audio.play().catch((e) => console.error("Audio play failed:", e));
           });
@@ -336,6 +345,7 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
 
         call.on("close", () => {
           console.log(`[VOICE] Call closed with: ${username}`);
+          delete audioElements.current[username];
           audio.remove();
         });
 
@@ -435,6 +445,21 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
       cleanupPeerConnections();
     };
   }, [iConnected, userStream, ownUsername]);
+
+  const changeUserVolume = (username: string, volume: number) => {
+    console.log(userVolumes);
+
+    setUserVolumes(prev => ({
+      ...prev,
+      [username]: volume
+    }));
+    
+    console.log(audioElements.current[username]);
+
+    if (audioElements.current[username]) {
+      audioElements.current[username].volume = volume;
+    }
+  };
 
   /**
    * Toggles the mute state of the user.
@@ -581,13 +606,17 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
                       min="0"
                       max="1"
                       step="0.01"
-                      value={ 0.5}
-                      onChange={() => {
-
+                      value={userVolumes[user.username] || 0.5}
+                      onChange={(e) => {
+                        const volume = parseFloat(e.target.value);
+                        changeUserVolume(user.username, volume);
                       }
                       }
                       className="volume-slider"
                     />
+                    <span className="volume-display">
+                      { Math.round((userVolumes[user.username] || 0.5) * 100)}%
+                    </span>
                   </div>
                 </div>
                 <div
@@ -603,7 +632,7 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
             ) : null
           )}
         </div>
-        <div ref={audioGridRef} style={{ display: "none" }} />
+        <div ref={audioGridRef} className="audio-output-container" style={{ display: "none" }} />
       </div>
     </div>
   );

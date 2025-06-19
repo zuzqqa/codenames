@@ -65,6 +65,7 @@ public class DefaultGameSessionService implements GameSessionService {
      */
     @Override
     public String createGameSession(CreateGameRequest request) {
+        System.out.println("Voice chat: " + request.getVoiceChatEnabled());
         GameState gameState = new GameState();
         gameStateService.generateRandomCardsNames(gameState, request.getLanguage());
         gameStateService.generateRandomCardsColors(gameState);
@@ -96,6 +97,9 @@ public class DefaultGameSessionService implements GameSessionService {
         );
 
         gameSessionRepository.save(newGame);
+
+        System.out.println("Voice chat: " + newGame.getVoiceChatEnabled());
+
         return newGame.getSessionId().toString();
     }
 
