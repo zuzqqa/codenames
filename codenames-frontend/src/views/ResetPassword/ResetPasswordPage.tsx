@@ -26,6 +26,7 @@ import { logout } from "../../shared/utils.tsx";
 import { validatePassword } from "../../utils/validation.tsx";
 import { apiUrl } from "../../config/api.tsx";
 import LoadingPage from "../Loading/LoadingPage.tsx";
+import {useToast} from "../../components/Toast/ToastContext.tsx";
 
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -53,25 +54,14 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
   const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
   const token = params.get("token");
-  const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
   const [tokenExpired, setTokenExpired] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [notifications, setNotifications] = useState<
-    { id: string; message: string }[]
-  >([]);
+  const { addToast } = useToast();
 
   useEffect(() => {
     const validateToken = async () => {
-      const newErrors: { id: string; message: string }[] = [];
-      setErrors([]);
-
       if (!token) {
-        console.error("Token is missing");
-        newErrors.push({
-          id: generateId(),
-          message: "Token is missing",
-        });
-        setErrors([...newErrors]);
+        addToast("Token is missing", "error");
         return;
       }
 
@@ -90,26 +80,16 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
         } else if (response.status === 410) {
           setTokenExpired(true);
         } else {
-          console.error("Unexpected response status:", response.status);
-          newErrors.push({
-            id: generateId(),
-            message: `Unexpected error (Status: ${response.status})`,
-          });
-          setErrors([...newErrors]);
+          addToast(`Unexpected error (Status: ${response.status})`, "error");
         }
       } catch (error) {
-        console.error("Error retrieving token validation status: ", error);
         let errorMessage = "Unknown error";
         if (error instanceof Error) {
           errorMessage = error.message;
         } else if (typeof error === "string") {
           errorMessage = error;
         }
-        newErrors.push({
-          id: generateId(),
-          message: `Connection error: ${errorMessage}`,
-        });
-        setErrors([...newErrors]);
+        addToast(`Connection error: ${errorMessage}`, "error");
       }
     };
 
@@ -163,96 +143,20 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
   }, [musicVolume]);
 
   /**
-   * useEffect hook for handling the automatic removal of error messages after a delay.
-   *
-   * - Adds a fade-out effect to the toast error before removal.
-   * - Removes errors from the state after a timeout.
-   *
-   * @param {Array<{ id: string; message: string }>} errors - Array of error messages with unique IDs.
-   */
-  useEffect(() => {
-    if (errors.length === 0) return;
-
-    const timers: number[] = errors.map((error) => {
-      const toastElement = document.getElementById(error.id);
-
-      if (toastElement) {
-        // Fade out the toast after 8 seconds
-        const fadeOutTimer = setTimeout(() => {
-          toastElement.classList.add("hide");
-        }, 8000);
-
-        // Remove the error from state after 8.5 seconds
-        const removeTimer = setTimeout(() => {
-          setErrors((prevErrors) =>
-            prevErrors.filter((e) => e.id !== error.id)
-          );
-        }, 8500);
-
-        return removeTimer;
-      } else {
-        // Remove error if toast element is not found
-        return setTimeout(() => {
-          setErrors((prevErrors) =>
-            prevErrors.filter((e) => e.id !== error.id)
-          );
-        }, 8000);
-      }
-    });
-
-    return () => timers.forEach(clearTimeout);
-  }, [errors]);
-
-  /**
-   * Handles manual closing of a toast error.
-   *
-   * - Fades out the toast visually before removing it from the state.
-   *
-   * @param {string} id - The unique identifier of the error toast to be closed.
-   */
-  const handleCloseErrorToast = (id: string) => {
-    const toastElement = document.getElementById(id);
-    if (toastElement) {
-      toastElement.classList.add("hide");
-
-      setTimeout(() => {
-        setErrors((prevErrors) =>
-          prevErrors.filter((error) => error.id !== id)
-        );
-      }, 500);
-    }
-  };
-
-  /**
    * Handles the form submission for resetting the password.
    * @param e - The form event triggered on submission.
    */
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const newNotifications: { id: string; message: string }[] = [];
-    const newErrors: { id: string; message: string }[] = [];
 
-    setErrors(newErrors);
-
-    if (!validatePassword(password)) {
-      newErrors.push({
-        id: generateId(),
-        message: t("password-error-message"),
-      });
-
-      setErrors(newErrors);
-
+    if(!validatePassword(password)) {
+      addToast(t("password-error-message"), "error");
       return;
     }
 
     try {
       if (password !== passwordRepeat) {
-        newErrors.push({
-          id: generateId(),
-          message: t("passwords-dont-match"),
-        });
-
-        setErrors([...newErrors]);
+        addToast(t("passwords-dont-match"), "error");
         return;
       }
 
@@ -270,18 +174,10 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
       if (response.ok) {
         navigate("/login");
       } else if (response.status === 400) {
-        newErrors.push({
-          id: generateId(),
-          message: t("invalid-or-expired-token"),
-        });
-
-        setErrors([...newErrors]);
+        addToast(t("invalid-or-expired-token"), "error");
       }
     } catch (error) {
-      alert(
-        "An error occurred during password reset. Please try again later." +
-          error
-      );
+      addToast("Unknown error. Try again later.", "error");
     }
   };
 
@@ -415,30 +311,6 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
           )}
         </div>
       </LoginRegisterContainer>
-      {errors.length > 0 && (
-        <div className="toast-container">
-          {errors.map((error) => (
-            <div id={error.id} key={error.id} className="toast active">
-              <div className="toast-content">
-                <i
-                  className="fa fa-exclamation-circle fa-3x"
-                  style={{ color: "#561723" }}
-                  aria-hidden="true"
-                ></i>
-                <div className="message">
-                  <span className="text text-1">Error</span>
-                  <span className="text text-2">{error.message}</span>
-                </div>
-              </div>
-              <i
-                className="fa-solid fa-xmark close"
-                onClick={() => handleCloseErrorToast(error.id)}
-              ></i>
-              <div className="progress active"></div>
-            </div>
-          ))}
-        </div>
-      )}
     </BackgroundContainer>
   );
 };
