@@ -92,20 +92,6 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
         addToast(`Connection error: ${errorMessage}`, "error");
       }
     };
-
-    const MIN_LOADING_TIME_MS = 1500;
-    const start = Date.now();
-
-    validateToken().finally(() => {
-      const elapsed = Date.now() - start;
-      const remaining = MIN_LOADING_TIME_MS - elapsed;
-
-      if (remaining > 0) {
-        setTimeout(() => setIsLoading(false), remaining);
-      } else {
-        setIsLoading(false);
-      }
-    });
   }, []);
 
   /**
@@ -190,14 +176,7 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
     setVolume(volume);
   };
 
-  return isLoading ? (
-    <LoadingPage
-      duration={1.5}
-      soundFXVolume={soundFXVolume}
-      setVolume={setVolume}
-      setSoundFXVolume={setSoundFXVolume}
-    />
-  ) : (
+  return (
     <BackgroundContainer>
       <GameTitleBar />
       <SettingsModal
