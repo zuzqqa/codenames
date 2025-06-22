@@ -157,7 +157,7 @@ const App: React.FC = () => {
           }
         />
         <Route
-          path="/reset-password*"
+          path="/reset-password/*"
           element={
             <ResetPasswordPage
                 setVolume={setVolume}

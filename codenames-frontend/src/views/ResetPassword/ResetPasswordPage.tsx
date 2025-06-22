@@ -25,7 +25,6 @@ import sadFaceIcon from "../../assets/icons/sad-face.svg";
 import { logout } from "../../shared/utils.tsx";
 import { validatePassword } from "../../utils/validation.tsx";
 import { apiUrl } from "../../config/api.tsx";
-import LoadingPage from "../Loading/LoadingPage.tsx";
 import {useToast} from "../../components/Toast/ToastContext.tsx";
 
 const generateId = () =>
@@ -55,16 +54,15 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
   const params = new URLSearchParams(location.search);
   const token = params.get("token");
   const [tokenExpired, setTokenExpired] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const { addToast } = useToast();
 
   useEffect(() => {
-    const validateToken = async () => {
-      if (!token) {
-        addToast("Token is missing", "error");
-        return;
-      }
+    if (!token) {
+      addToast("Token is missing", "error");
+      return;
+    }
 
+    const validateToken = async () => {
       try {
         const url = `${apiUrl}/api/users/token-validation/${token}`;
         console.log("Calling API at:", url);
@@ -76,8 +74,7 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
           },
         });
 
-        if (response.ok) {
-        } else if (response.status === 410) {
+        if (response.status !== 200) {
           setTokenExpired(true);
         } else {
           addToast(`Unexpected error (Status: ${response.status})`, "error");
@@ -92,6 +89,8 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
         addToast(`Connection error: ${errorMessage}`, "error");
       }
     };
+
+    validateToken();
   }, []);
 
   /**
@@ -201,25 +200,23 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
           <img src={logoutButtonIcon} onClick={logout} alt="Logout" />
         </Button>
       )}
-      <LoginRegisterContainer variant="reset1">
+      <LoginRegisterContainer variant="reset">
         <TitleComponent
-          soundFXVolume={soundFXVolume}
-          customStyle={{
-            fontSize: "calc(3.6rem + 0.2vw)",
-            textAlign: "left",
-            position: "absolute",
-            top: tokenExpired ? "calc(-22rem - 0.2vh)" : "calc(-23rem - 0.2vh)",
-            left: "1.2rem",
-            whiteSpace: "nowrap",
-          }}
-          shadowStyle={{
-            fontSize: "calc(3.6rem + 0.2vw)",
-            textAlign: "left",
-            position: "absolute",
-            top: tokenExpired ? "calc(-22rem - 0.2vh)" : "calc(-23rem - 0.2vh)",
-            left: "1.2rem",
-            whiteSpace: "nowrap",
-          }}
+            soundFXVolume={soundFXVolume}
+            customStyle={{
+
+              textAlign: "left",
+              position: "relative",
+              top: "-2.5rem",
+              whiteSpace: "nowrap"
+            }}
+            shadowStyle={{
+              textAlign: "left",
+              position: "absolute",
+              top: "-2.5rem",
+              whiteSpace: "nowrap"
+            }}
+            variant="reset-title"
         >
           {t("new-password")}
         </TitleComponent>
