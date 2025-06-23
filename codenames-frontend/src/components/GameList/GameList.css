@@ -118,7 +118,10 @@ button.variant-session:hover {
 
 .room-form-label {
   text-align: center;
+  grid-column: 2;
   font-size: 6vh;
+
+  width: 100%;
 
   background-image: linear-gradient(to bottom, #fcf18b, #ffd363);
   background-clip: text;

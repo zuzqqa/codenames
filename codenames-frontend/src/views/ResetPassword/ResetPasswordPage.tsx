@@ -76,8 +76,6 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
 
         if (response.status !== 200) {
           setTokenExpired(true);
-        } else {
-          addToast(`Unexpected error (Status: ${response.status})`, "error");
         }
       } catch (error) {
         let errorMessage = "Unknown error";
