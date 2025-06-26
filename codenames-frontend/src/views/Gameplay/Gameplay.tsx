@@ -363,12 +363,6 @@ const Gameplay: React.FC<GameplayProps> = ({
         );
 
         setGameSessionData(updatedGameSession);
-        if (gameSession?.gameState.blueTeamLeader.id === userId) {
-          setAmIBlueTeamLeader(true);
-        }
-        if (gameSession?.gameState.redTeamLeader.id === userId) {
-          setAmIRedTeamLeader(true);
-        }
       } catch (err) {
         console.error("Error parsing gameSessionsList JSON:", err);
       }
@@ -484,7 +478,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     setHasPlayerDisconnected(false);
     if (
         gameSession?.status !== SessionStatus.FINISHED &&
-        (redTeamPlayers.length < 2 || blueTeamPlayers.length < 2)
+        (redTeamPlayers.length < 2 || blueTeamPlayers.length < 2 || redTeamPlayers.length + blueTeamPlayers.length < 4)
         && (redTeamPlayers.length > 0 && blueTeamPlayers.length > 0)
     ) {
       const winningTeam =
