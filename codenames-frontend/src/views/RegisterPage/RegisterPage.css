@@ -202,3 +202,9 @@
   max-width: 30%;
   background: linear-gradient(to right, transparent, #FFD363, transparent);
 }
+
+.back-button {
+  position: absolute;
+  top: 3%;
+  left: 3%;
+}

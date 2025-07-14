@@ -475,6 +475,47 @@ const Gameplay: React.FC<GameplayProps> = ({
   }, [gameSession?.gameState?.cardsChosen]);
 
   /**
+   * Effect that handles the win/loss depending on the size of a team.
+   * If any team has less than two players and the game is not finished,
+   * it sets the winning team to the other team and navigates to the win/loss page.
+   *
+   * @returns {void}
+   */
+  useEffect(() => {
+    setHasPlayerDisconnected(false);
+    if (
+        gameSession?.status !== SessionStatus.FINISHED &&
+        (redTeamPlayers.length < 2 || blueTeamPlayers.length < 2)
+        && (redTeamPlayers.length > 0 && blueTeamPlayers.length > 0)
+    ) {
+      const winningTeam =
+          redTeamPlayers.length < 2 ? "blue" : "red";
+      setWinningTeam(winningTeam);
+      navigate("/win-loss", {
+        state: { result: winningTeam === myTeam ? "Victory" : "Loss" },
+      });
+    }
+  }, [gameSession, blueTeamPlayers, redTeamPlayers, hasPlayerDisconnected]);
+
+  /**
+   * Effect that checks if the user is a team leader (either blue or red).
+   * If the user is a team leader, it sets the corresponding state variables.
+   *
+   * @returns {void} Updates the `amIBlueTeamLeader` and `amIRedTeamLeader` states.
+   */
+  useEffect(() => {
+    setHasPlayerDisconnected(false);
+    if (
+        gameSession?.gameState?.blueTeamLeader?.id === userId ||
+        gameSession?.gameState?.redTeamLeader?.id === userId
+    ) {
+      setAmIBlueTeamLeader(gameSession?.gameState.blueTeamLeader.id === userId);
+      setAmIRedTeamLeader(gameSession?.gameState.redTeamLeader.id === userId);
+    }
+  }, [gameSession, gameSession?.gameState.redTeamLeader, gameSession?.gameState.blueTeamLeader, hasPlayerDisconnected]);
+
+
+  /**
    * Effect that loads the game session when the component is mounted or when the `storedGameId` changes.
    * If there is no stored game ID, the user is redirected to the "/games" page.
    *
@@ -669,48 +710,6 @@ const Gameplay: React.FC<GameplayProps> = ({
       return () => clearTimeout(timeoutId);
     }
   }, [redTeamScore, blueTeamScore]);
-
-  /**
-   * Effect that handles the win/loss depending on the size of a team.
-   * If any team has less than two players and the game is not finished,
-   * it sets the winning team to the other team and navigates to the win/loss page.
-   *
-   * @returns {void}
-   */
-  useEffect(() => {
-    setHasPlayerDisconnected(false);
-    if (
-      gameSession?.status !== SessionStatus.FINISHED &&
-      (redTeamPlayers.length < 2 || blueTeamPlayers.length < 2)
-        && (redTeamPlayers.length > 0 && blueTeamPlayers.length > 0)
-    ) {
-      const winningTeam =
-        redTeamPlayers.length < 2 ? "blue" : "red";
-      setWinningTeam(winningTeam);
-      navigate("/win-loss", {
-        state: { result: winningTeam === myTeam ? "Victory" : "Loss" },
-      });
-    }
-  }, [gameSession, blueTeamPlayers, redTeamPlayers, hasPlayerDisconnected]);
-
-
-
-  /**
-   * Effect that checks if the user is a team leader (either blue or red).
-   * If the user is a team leader, it sets the corresponding state variables.
-   *
-   * @returns {void} Updates the `amIBlueTeamLeader` and `amIRedTeamLeader` states.
-   */
-  useEffect(() => {
-    setHasPlayerDisconnected(false);
-    if (
-      gameSession?.gameState?.blueTeamLeader?.id === userId ||
-      gameSession?.gameState?.redTeamLeader?.id === userId
-    ) {
-      setAmIBlueTeamLeader(gameSession?.gameState.blueTeamLeader.id === userId);
-      setAmIRedTeamLeader(gameSession?.gameState.redTeamLeader.id === userId);
-    }
-  }, [gameSession, gameSession?.gameState.redTeamLeader, gameSession?.gameState.blueTeamLeader, hasPlayerDisconnected]);
 
   /**
    * Reveals the cards voted by the team based on the `cardsToReveal` state.

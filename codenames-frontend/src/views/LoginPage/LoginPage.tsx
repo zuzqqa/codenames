@@ -182,6 +182,14 @@ const LoginPage: React.FC<LoginProps> = ({
         <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
           <img src={settingsIcon} alt="Settings" />
         </Button>
+          <Button
+              className="back-button"
+              variant={"circle-back"}
+              onClick={() => navigate("/home")}
+              soundFXVolume={soundFXVolume}
+          >
+              <img src={backButtonIcon} alt="Back" className="btn-arrow-back" />
+          </Button>
         {document.cookie
             .split("; ")
             .find((cookie) => cookie.startsWith("loggedIn=")) && (

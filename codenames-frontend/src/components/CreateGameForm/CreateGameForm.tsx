@@ -9,6 +9,7 @@ import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import React from "react";
 import { apiUrl } from "../../config/api.tsx";
 import { getUserId } from "../../shared/utils.tsx";
+import {useToast} from "../Toast/ToastContext.tsx";
 
 /**
  * Props for CreateGameForm component.
@@ -29,10 +30,9 @@ interface CreateGameFormProps {
 const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [error, setError] = useState<string | null>(null);
   const [isPrivate, setIsPrivate] = useState(false);
   const [voiceChatEnabled, setVoiceChatEnabled] = useState(false);
-  const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
+  const { addToast } = useToast();
 
   /**
    * Formik configuration for managing form state and validation.
@@ -47,34 +47,20 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
       voiceChatEnabled: false,
     },
     onSubmit: async (values) => {
-      const newErrors: { id: string; message: string }[] = [];
-      setErrors(newErrors);
-
       if (!values.gameName) {
-        newErrors.push({
-          id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
-          message: t("game-name-required"),
-        });
+        addToast(t("game-name-required"), "error");
+        return;
       }
 
       if (isPrivate && formik.values.password === "") {
-        newErrors.push({
-          id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
-          message: t("private-lobby-password-error"),
-        });
-
-        setErrors([...newErrors]);
+        addToast(t("private-lobby-password-error"), "error");
         return;
       }
       try {
         const getIdResponse = await getUserId();
 
         if (getIdResponse === null) {
-          setError("Failed to fetch ID");
-          return;
-        }
-
-        if (newErrors.length > 0) {
+          addToast("Failed to fetch ID.", "error");
           return;
         }
 
@@ -99,80 +85,19 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
           localStorage.setItem("gameId", data.gameId);
           navigate("/game-lobby");
         } else {
-          setError("Failed to create game session");
+          addToast("Failed to create game session", "error");
         }
       } catch (err) {
-        setError("Network error");
+        addToast("Network error", "error");
       }
     },
   });
-
-  /**
-   * useEffect hook for handling the automatic removal of error messages after a delay.
-   *
-   * - Adds a fade-out effect to the toast error before removal.
-   * - Removes errors from the state after a timeout.
-   *
-   * @param {Array<{ id: string; message: string }>} errors - Array of error messages with unique IDs.
-   */
-  useEffect(() => {
-    if (errors.length === 0) return;
-
-    const timers: number[] = errors.map((error) => {
-      const toastElement = document.getElementById(error.id);
-
-      if (toastElement) {
-        // Fade out the toast after 8 seconds
-        const fadeOutTimer = setTimeout(() => {
-          toastElement.classList.add("hide");
-        }, 8000);
-
-        // Remove the error from state after 8.5 seconds
-        const removeTimer = setTimeout(() => {
-          setErrors((prevErrors) =>
-            prevErrors.filter((e) => e.id !== error.id)
-          );
-        }, 8500);
-
-        return removeTimer;
-      } else {
-        // Remove error if toast element is not found
-        return setTimeout(() => {
-          setErrors((prevErrors) =>
-            prevErrors.filter((e) => e.id !== error.id)
-          );
-        }, 8000);
-      }
-    });
-
-    return () => timers.forEach(clearTimeout);
-  }, [errors]);
 
   /**
    * Handles navigation back and optionally aborts a game session.
    */
   const handleBack = () => {
     navigate("/games");
-  };
-
-  /**
-   * Handles manual closing of a toast error.
-   *
-   * - Fades out the toast visually before removing it from the state.
-   *
-   * @param {string} id - The unique identifier of the error toast to be closed.
-   */
-  const handleCloseErrorToast = (id: string) => {
-    const toastElement = document.getElementById(id);
-    if (toastElement) {
-      toastElement.classList.add("hide");
-
-      setTimeout(() => {
-        setErrors((prevErrors) =>
-          prevErrors.filter((error) => error.id !== id)
-        );
-      }, 500);
-    }
   };
 
   return (
@@ -303,35 +228,10 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
               </div>
             </label>
           </div>
-          {error && <div className="error">{error}</div>}
           <Button type="submit" variant="room" soundFXVolume={soundFXVolume}>
             <span className="button-text">{t("create-game-button")}</span>
           </Button>
         </form>
-        {errors.length > 0 && (
-          <div className="toast-container">
-            {errors.map((error) => (
-              <div id={error.id} key={error.id} className="toast active">
-                <div className="toast-content">
-                  <i
-                    className="fa fa-exclamation-circle fa-3x"
-                    style={{ color: "#561723" }}
-                    aria-hidden="true"
-                  ></i>
-                  <div className="message">
-                    <span className="text text-1">Error</span>
-                    <span className="text text-2">{error.message}</span>
-                  </div>
-                </div>
-                <i
-                  className="fa-solid fa-xmark close"
-                  onClick={() => handleCloseErrorToast(error.id)}
-                ></i>
-                <div className="progress active"></div>
-              </div>
-            ))}
-          </div>
-        )}
       </RoomMenu>
     </>
   );

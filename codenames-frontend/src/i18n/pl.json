@@ -23,6 +23,7 @@
   "PASSWORD": "HASŁO",
   "REPEAT-PASSWORD": "POWTÓRZ HASŁO",
   "password-reset": "Reset hasła",
+  "reset-password-instructions": "Podaj email aby otrzymać link do odzyskania konta.",
   "new-password": "Nowe hasło",
   "create-game-button": "Stworz grę",
   "join-room-button": "Dołącz do gry",
