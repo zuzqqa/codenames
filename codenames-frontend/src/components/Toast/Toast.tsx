@@ -35,8 +35,8 @@ const Toast: React.FC<ToastProps> = ({ id, message, variant }) => {
         <div className="toast active" id={id}>
             <div className="toast-content">
                 <i
-                    className="fa fa-exclamation-circle fa-3x"
-                    style={{ color: "#561723" }}
+                    className={`fa fa-${variant === "error" ? "exclamation-circle" : "info-circle"} fa-3x`}
+                    style={{ color: `${variant === "error" ? "#561723" : "#1B74BB"}`}}
                     aria-hidden="true"
                 ></i>
                 <div className="message">

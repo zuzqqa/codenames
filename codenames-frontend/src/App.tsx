@@ -159,15 +159,11 @@ const App: React.FC = () => {
         <Route
           path="/reset-password/*"
           element={
-              isAuthenticated ? (
-                  <Navigate to="/games" replace />
-              ) : (
-                  <ResetPasswordPage
-                      setVolume={setVolume}
-                      setSoundFXVolume={setSoundFX}
-                      soundFXVolume={soundFXVolume}
-                  />
-              )
+            <ResetPasswordPage
+                setVolume={setVolume}
+                setSoundFXVolume={setSoundFX}
+                soundFXVolume={soundFXVolume}
+            />
           }
         />
         <Route
