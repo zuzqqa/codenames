@@ -1,13 +1,13 @@
-Added back button to login and register page
+Random leaders bugfix
 **🔧 What's included in this release?**
-Enabled going back to home for login and register pages
+Fixed the bug where after a refresh a regular player would become a leader
 
 Key additions: 
-- back button in login
-- back button in register
+- Bugfix
 
 **🚧 What's still under development?**
-- Bugfixes and quality of life changes
+- QoL changes
+- Adjusting the game for different screen sizes
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 
