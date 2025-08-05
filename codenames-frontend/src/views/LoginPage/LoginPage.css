@@ -27,8 +27,6 @@
   font-size: 1.2rem;
   padding: 10px;
   margin-bottom: 0;
-  border: none;
-  border-radius: 17px;
   cursor: pointer;
   align-self: center; 
   margin-top: 1%; 
@@ -100,7 +98,6 @@
   text-decoration: none; 
   transition: border-bottom 0.1s ease; 
   margin-bottom: 1.2rem;
-
 }
 
 .login-register-link:hover {
