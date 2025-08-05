@@ -50,6 +50,7 @@
   border-color: #fcf18b;
   background-image: linear-gradient(to top, #22303b, #0b1319);
 }
+
 .btn-circle-profile {
   border-radius: 50%;
   width: 2.5rem;
@@ -87,8 +88,10 @@
 .btn-room {
   background: linear-gradient(360deg, #12501e 0%, #478b35 88.89%);
   min-width: 12rem;
-  border-radius: 17px;
   margin: 1rem 1rem;
+
+  border-width: 0.0625rem;
+  border-color: #fcf18b;
 }
 
 .btn-session {
@@ -157,6 +160,7 @@
   width: 100%;
   border: none;
 }
+
 .btn-logout {
   border-radius: 50%;
   width: 2.5rem;
