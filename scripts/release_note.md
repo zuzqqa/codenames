@@ -1,4 +1,4 @@
-Standarized menu buttons
+Standardized menu buttons
 **🔧 What's included in this release?**
 Standardize menu buttons styling and update their border radius for consistent appearance.
 
