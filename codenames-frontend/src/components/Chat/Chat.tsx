@@ -136,6 +136,13 @@ const Chat: React.FC = () => {
   };
 
   /**
+   * Scrolls the chat messages to the bottom smoothly.
+   */
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  /**
    * Automatically scrolls to the bottom of the chat messages when new messages are added.
    */
   useEffect(() => {
@@ -153,21 +160,25 @@ const Chat: React.FC = () => {
 
   /**
    * Handles input blur event to reset the focused state.
+   * Adds a slight delay before scrolling to the bottom to ensure the input is not focused.
    */
   const handleInputBlur = () => {
     setIsInputFocused(false);
+    setTimeout(() => {
+      scrollToBottom();
+    }, 300);
   };
 
   return (
     <div className={`chat-container ${isInputFocused ? "focused" : ""}`}>
-      <div className="messages">
+      <div className={`messages`}>
         {messages.map((msg, index) => (
           <div key={index} className={`message ${msg.type}`}>
             <div className="div-sender">{msg.sender}</div>
             {msg.text}
           </div>
         ))}
-        <div ref={messagesEndRef} />
+        <div ref={messagesEndRef} className={!isInputFocused ? "spacer-end" : ""} />
       </div>
       <input
         type="text"
