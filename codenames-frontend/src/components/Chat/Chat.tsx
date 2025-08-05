@@ -174,7 +174,7 @@ const Chat: React.FC = () => {
 
   return (
     <div className={`chat-container ${isInputFocused ? "focused" : ""}`}>
-      <div className={`messages`}>
+      <div className="messages">
         {messages.map((msg, index) => (
           <div key={index} className={`message ${msg.type}`}>
             <div className="div-sender">{msg.sender}</div>
