@@ -6,6 +6,9 @@ import "./Chat.css";
 import { useCookies } from "react-cookie";
 import { apiUrl, socketUrl } from "../../config/api.tsx";
 
+// Delay in milliseconds before scrolling to the bottom of the chat messages
+const SCROLL_DELAY_MS = 300
+
 /**
  * Defines the message type structure.
  */
@@ -166,7 +169,7 @@ const Chat: React.FC = () => {
     setIsInputFocused(false);
     setTimeout(() => {
       scrollToBottom();
-    }, 300);
+    }, SCROLL_DELAY_MS);
   };
 
   return (
