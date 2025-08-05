@@ -26,8 +26,6 @@
 
 .register-form button {
   font-size: 1.2rem;
-  border: none;
-  border-radius: 17px;
   cursor: pointer;
   align-self: center; /* Align the button to the right */
   margin-top: 1%; /* Add some spacing above the button */
