@@ -1,9 +1,12 @@
-Standardized menu buttons
+Chat scroll & size improvements
 **🔧 What's included in this release?**
-Standardize menu buttons styling and update their border radius for consistent appearance.
+Implemented chat UX improvements by ensuring auto-scroll to the latest message on blur and adjusting message container height to fit content dynamically.
 
 Key additions: 
-- Standardization, consistency, maintainability
+- Scroll resets after focus loss
+- Adjusted message bubble sizing
+- Incoming message color updated
+- Refined message container spacing
 
 **🚧 What's still under development?**
 - Adjust modals size

@@ -1,9 +1,9 @@
 .chat-container {
   position: absolute;
-  left: 2%;
+  left: 5%;
   bottom: 20%;
   width: 15vw;
-  height: 20vh;
+  height: 6em;
   background-image: linear-gradient(to top, #21272b, #353e44);
   border-radius: 10px;
   border-style: outset;
@@ -17,6 +17,7 @@
   overflow-y: auto; /* vertical scrolling */
   overflow-x: hidden; /* horizontal scrolling */
   padding: 0.5rem;
+  padding-top: 0;
   transition: height 0.4s ease, opacity 0.4s ease;
   scrollbar-width: thin;
   scrollbar-color: #f0d8b6 #353e44;
@@ -24,7 +25,6 @@
 
 .messages {
   width: 100%;
-  flex-grow: 1;
   overflow-y: auto;
   padding: 0.5rem;
   display: flex;
@@ -33,8 +33,8 @@
 }
 
 .message {
-  max-width: 80%;
-  padding: 0.4rem;
+  max-width: 90%;
+  padding: 0.5rem 0.7rem;
   border-radius: 10px;
   font-size: calc(0.4rem + 0.5vw);
 }
@@ -70,7 +70,7 @@
 
 .message.incoming {
   align-self: flex-start;
-  background-color: #7a8084;
+  background-color: #686b6d;
   color: #f0e9d2;
   text-align: left;
 }
@@ -80,4 +80,8 @@
   background-clip: text;
   -webkit-background-clip: text;
   background-image: linear-gradient(to top, #af8824, #ffd769);
+}
+
+.spacer-end {
+  padding: 1px;
 }

@@ -6,6 +6,9 @@ import "./Chat.css";
 import { useCookies } from "react-cookie";
 import { apiUrl, socketUrl } from "../../config/api.tsx";
 
+// Delay in milliseconds before scrolling to the bottom of the chat messages
+const SCROLL_DELAY_MS = 300
+
 /**
  * Defines the message type structure.
  */
@@ -136,6 +139,13 @@ const Chat: React.FC = () => {
   };
 
   /**
+   * Scrolls the chat messages to the bottom smoothly.
+   */
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  /**
    * Automatically scrolls to the bottom of the chat messages when new messages are added.
    */
   useEffect(() => {
@@ -153,9 +163,13 @@ const Chat: React.FC = () => {
 
   /**
    * Handles input blur event to reset the focused state.
+   * Adds a slight delay before scrolling to the bottom to ensure the input is not focused.
    */
   const handleInputBlur = () => {
     setIsInputFocused(false);
+    setTimeout(() => {
+      scrollToBottom();
+    }, SCROLL_DELAY_MS);
   };
 
   return (
@@ -167,7 +181,7 @@ const Chat: React.FC = () => {
             {msg.text}
           </div>
         ))}
-        <div ref={messagesEndRef} />
+        <div ref={messagesEndRef} className={!isInputFocused ? "spacer-end" : ""} />
       </div>
       <input
         type="text"
