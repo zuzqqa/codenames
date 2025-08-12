@@ -1,19 +1,16 @@
-Chat scroll & size improvements
+🎮 Alpha Release – Early version of the game
 **🔧 What's included in this release?**
-Implemented chat UX improvements by ensuring auto-scroll to the latest message on blur and adjusting message container height to fit content dynamically.
+The issue of unintentional cleanup of used guest accounts should be resolved. Moreover, in this version the victory-loss screen is displayed to correct team
 
 Key additions: 
-- Scroll resets after focus loss
-- Adjusted message bubble sizing
-- Incoming message color updated
-- Refined message container spacing
+- Guest cleanup fix
+- Victory-loss view is correctly distrubuted among players
+- The assassin card now eliminates the correct team
 
 **🚧 What's still under development?**
-- Adjust modals size
-- Create game view adjustments
-- Refactor invite link isle
-- Game lobby view proportions
-- and many more
+- Application bugs
+- UI Responsiveness
+- Code optimization
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 

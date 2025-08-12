@@ -242,7 +242,6 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      */
     @GetMapping("/{id}/change-turn")
     public ResponseEntity<?> changeTurn(@PathVariable UUID id) throws JsonProcessingException {
-        System.out.println("changeTurn called with id: " + id);
 
         // Change the turn
         gameStateService.changeTurn(id);
