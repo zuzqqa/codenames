@@ -1230,13 +1230,16 @@ const sendHint = async () => {
                 className="codename-card-container"
                 onClick={toggleBlackCardVisibility}
               >
-                <span className="codename-card-text">
-                  {(gameSession?.gameState.hint || "HINT") +
-                    " " +
-                    (gameSession?.gameState.hintNumber === "0"
-                      ? ""
-                      : gameSession?.gameState.hintNumber)}
+                <div className="codename-card-text">
+                <span>
+                  {(gameSession?.gameState.hint || "HINT")}
                 </span>
+                <span>
+                  {(gameSession?.gameState.hintNumber === "0"
+                  ? ""
+                  : gameSession?.gameState.hintNumber)}
+                </span>
+                </div>
                 <img className="codename-card" src={cardBlackImg} />
               </div>
             </div>
@@ -1249,12 +1252,12 @@ const sendHint = async () => {
               src={cardBlackImg}
               alt="Black Card"
             />
-            <Button className="close-button" variant="transparent" soundFXVolume={soundFXVolume}>
-                <i
-                    className="fa-solid fa-xmark close"
-                    onClick={() => setIsCardVisible(false)}
-                ></i>
-            </Button>
+            {/* <Button className="close-button" variant="transparent" soundFXVolume={soundFXVolume}>
+              <i
+                className="fa-solid fa-xmark close"
+                onClick={() => setIsCardVisible(false)}
+              ></i>
+            </Button> */}
             <div className="codename-input-container">
               <input
                 type="text"
@@ -1267,35 +1270,81 @@ const sendHint = async () => {
                   whosTurn !== myTeam
                 }
               />
-              <input
-                type="range"
-                min={1}
-                max={whosTurn === "blue" ? 8 - blueTeamScore : 9 - redTeamScore}
-                className="codename-slider"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(+e.target.value)}
-                disabled={
-                  (!amIRedTeamLeader && !amIBlueTeamLeader) ||
-                  whosTurn !== myTeam
-                }
-              />
-              <span className="slider-value">{cardNumber}</span>
-            </div>
-            <Button variant="transparent" soundFXVolume={soundFXVolume} className="confirm-button">
-                <i
-                    className="fa-solid fa-check confirm" style={{ color: "white" }}
-                    onClick={() => {
-                    if (validateCardText(cardText)) {
-                        sendHint();
-                        setIsCardVisible(false);
-                        setCardText("");
-                        setCardNumber(1);
-                    }
-                    }}
-                ></i>
+
+              <div className="number-controls">
+                <button
+                  onClick={() => setCardNumber((prev) => Math.max(1, prev - 1))}
+                  disabled={
+                    (!amIRedTeamLeader && !amIBlueTeamLeader) ||
+                    whosTurn !== myTeam ||
+                    cardNumber <= 1
+                  }
+                >
+                  -
+                </button>
+
+                <span className="hint-number">{cardNumber}</span>
+
+                <button
+                  onClick={() =>
+                    setCardNumber((prev) =>
+                      Math.min(
+                        whosTurn === "blue" ? 8 - blueTeamScore : 9 - redTeamScore,
+                        prev + 1
+                      )
+                    )
+                  }
+                  disabled={
+                    (!amIRedTeamLeader && !amIBlueTeamLeader) ||
+                    whosTurn !== myTeam ||
+                    cardNumber >= (whosTurn === "blue" ? 8 - blueTeamScore : 9 - redTeamScore)
+                  }
+                >
+                  +
+                </button>
+              </div>
+                          <div className="cancel-confirm-buttons">
+            <Button
+                // type="submit"
+                variant="primary"
+                soundFXVolume={soundFXVolume}
+                onClick={() => {
+                  if (validateCardText(cardText)) {
+                    sendHint();
+                    setIsCardVisible(false);
+                    setCardText("");
+                    setCardNumber(1);
+                  }
+                }}
+              >
+                <span className="button-text">{t("confirm-button")}</span>
             </Button>
+            <Button
+              // type="submit"
+              variant="primary"
+              soundFXVolume={soundFXVolume}
+              onClick={() => setIsCardVisible(false)}
+              >
+                <span className="button-text">{t("cancel-button")}</span>
+            </Button>
+            </div>
+            </div>
+            {/* <Button variant="transparent" soundFXVolume={soundFXVolume} className="confirm-button">
+              <i
+                className="fa-solid fa-check confirm" style={{ color: "white" }}
+                onClick={() => {
+                  if (validateCardText(cardText)) {
+                    sendHint();
+                    setIsCardVisible(false);
+                    setCardText("");
+                    setCardNumber(1);
+                  }
+                }}
+              ></i>
+            </Button> */}
           </div>
         )}
+
         {errors.length > 0 && (
           <div className="toast-container">
             {errors.map((error) => (
