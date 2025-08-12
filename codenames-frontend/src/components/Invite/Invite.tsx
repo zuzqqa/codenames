@@ -18,7 +18,7 @@ const Invite: React.FC<InviteProps> = () => {
         console.log(gameId);
         if (gameId) {
             localStorage.setItem("gameId", gameId);
-            navigate("/games");
+            navigate("/loading");
         }
     }, [gameId]);
 
