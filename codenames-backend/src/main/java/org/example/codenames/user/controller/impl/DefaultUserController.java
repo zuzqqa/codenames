@@ -274,7 +274,6 @@ public class DefaultUserController implements UserController {
         String username = userService.generateUniqueUsername();
 
         User guest = User.builder()
-                .id(UUID.randomUUID().toString())
                 .username(username)
                 .password("")
                 .roles("ROLE_GUEST")
