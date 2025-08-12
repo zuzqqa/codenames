@@ -90,16 +90,10 @@ const App: React.FC = () => {
 
     window.addEventListener("click", handleFirstInteraction); // Add event listener for first user interaction
 
-    // Cleanup event listener when the component unmounts or the effect reruns
     return () => {
       window.removeEventListener("click", handleFirstInteraction);
     };
-  }, []); // Empty dependency array ensures this effect runs only once on mount
-
-  // If authentication status is still null (loading), show a loading indicator
-  if (isAuthenticated === null) {
-    return <div>Loading...</div>;
-  }
+  }, []); 
 
   setInterval(async () => {
       if (!isAuthenticated) return;
