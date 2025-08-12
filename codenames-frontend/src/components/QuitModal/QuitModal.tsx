@@ -25,9 +25,9 @@ const QuitModal: React.FC<QuitModalProps> = ({
 
     return (
         <div>
-            <Modal isOpen={isOpen} onClose={onClose}>
+            <Modal isOpen={isOpen} onClose={onClose} variant="small">
                 <div className="quit-modal-title">
-                    <TitleModal>{ t('leave-title') }</TitleModal>
+                    <TitleModal variant="tiny">{ t('leave-title') }</TitleModal>
                 </div>
                 <div className="quit-modal-container">
                     <Button variant="circle" soundFXVolume={soundFXVolume} onClick={onClose}>

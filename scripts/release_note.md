@@ -1,14 +1,13 @@
-Hint card adjustments
+modals size adjustments
 **🔧 What's included in this release?**
-in this release are included hint card aadjustments
+modals size adjustments
 
 Key additions: 
-- hint card adjustments
-- hint card adjustments
-- hint card adjustments
+- settings modal size adjustment
+- leave game modal size adjustment
 
 **🚧 What's still under development?**
-- nothing, hint card is adjusted :)
+- -
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 
