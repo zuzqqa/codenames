@@ -1,14 +1,14 @@
-Hint card adjustments
+email, username and password validation
 **🔧 What's included in this release?**
-in this release are included hint card aadjustments
+email, username and password validation
 
 Key additions: 
-- hint card adjustments
-- hint card adjustments
-- hint card adjustments
+- email validation
+- username validation
+- password validation
 
 **🚧 What's still under development?**
-- nothing, hint card is adjusted :)
+- all done
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 

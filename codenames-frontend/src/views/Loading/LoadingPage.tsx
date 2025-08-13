@@ -65,9 +65,9 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ soundFXVolume, duration }) =>
           <SubtitleComponent variant="start">
             Your mission begins now
           </SubtitleComponent>
-        </div>
-        <div className="progressContainer">
-          <div id="progressBar"></div>
+          <div className="progressContainer">
+            <div id="progressBar"></div>
+          </div>
         </div>
       </div>
     </BackgroundContainer>

@@ -1,7 +1,8 @@
 .progressContainer {
   position: absolute;
-  bottom: 22%;
-  width: 20%;
+  bottom: -55%;
+  width: 60%;
+  left: 20%;
   background-color: #ffd363;
   border-radius: 17px;
 }
