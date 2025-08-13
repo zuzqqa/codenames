@@ -1,14 +1,12 @@
-Hint card adjustments
+fixed responsiveness for loading bar
 **🔧 What's included in this release?**
-in this release are included hint card aadjustments
+I fixed the responsiveness for the loading bar
 
 Key additions: 
-- hint card adjustments
-- hint card adjustments
-- hint card adjustments
+- loading bar is responsive now
 
 **🚧 What's still under development?**
-- nothing, hint card is adjusted :)
+- all done[6~
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 
