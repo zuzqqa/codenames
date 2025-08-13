@@ -9,11 +9,10 @@ import backButton from "../../assets/icons/arrow-back.png";
 import linkIcon from "../../assets/icons/link.svg";
 import messageIcon from "../../assets/icons/message.svg";
 
-
 import "./RoomLobby.css";
 
 import { apiUrl, frontendUrl, socketUrl } from "../../config/api.tsx";
-import {getCookie, getUserId} from "../../shared/utils.tsx";
+import { getCookie, getUserId } from "../../shared/utils.tsx";
 import { io } from "socket.io-client";
 
 /**
@@ -273,10 +272,9 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
 
     const token = getCookie("authToken");
 
-
     const getIdResponse = await fetch(`${apiUrl}/api/users/get-id`, {
       headers: {
-        "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
       method: "GET",
       credentials: "include",
@@ -489,47 +487,47 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                   : 0}
                 /{gameSession.maxPlayers}
               </div>
-                <div className="lobby-link-switch">
-                  <img
-                    src={linkIcon}
-                    alt="Link"
-                    className="link-icon"
-                    onClick={handleLobbyLinkIsleUnroll}
+              <div className="lobby-link-switch">
+                <img
+                  src={linkIcon}
+                  alt="Link"
+                  className="link-icon"
+                  onClick={handleLobbyLinkIsleUnroll}
+                />
+              </div>
+              {/*<Button*/}
+              {/*    variant={"primary-1"}*/}
+              {/*    soundFXVolume={soundFXVolume}*/}
+              {/*    className="link-btn"*/}
+              {/*    onClick={generateLobbyLink}*/}
+              {/*>*/}
+              {/*  <span className="button-text">Link</span>*/}
+              {/*</Button>*/}
+              <div
+                className={`lobby-link-isle ${
+                  isLinkIsleExpanded ? "expanded" : ""
+                }`}
+              >
+                <img src={messageIcon} alt="Link" className="isle-image" />
+                <p className="isle-title">{t("invite-friends")}</p>
+                <p className="isle-text">{t("invite-friends-text")}</p>
+                <p className="isle-fields">
+                  <input
+                    type="text"
+                    className="lobby-link-textbox"
+                    value={exampleLink}
+                    readOnly
                   />
-                </div>
-                                {/*<Button*/}
-                {/*    variant={"primary-1"}*/}
-                {/*    soundFXVolume={soundFXVolume}*/}
-                {/*    className="link-btn"*/}
-                {/*    onClick={generateLobbyLink}*/}
-                {/*>*/}
-                {/*  <span className="button-text">Link</span>*/}
-                {/*</Button>*/}
-                <div
-                  className={`lobby-link-isle ${
-                    isLinkIsleExpanded ? "expanded" : ""
-                  }`}
-                >
-                  <img src={messageIcon} alt="Link" className="isle-image" />
-                  <p className="isle-title">{t("invite-friends")}</p>
-                  <p className="isle-text">{t("invite-friends-text")}</p>
-                  <p className="isle-fields">
-                    <input 
-                      type="text"
-                      className="lobby-link-textbox"
-                      value={exampleLink}
-                      readOnly
-                    />
-                    <Button
-                      variant={"primary-1"}
-                      soundFXVolume={soundFXVolume}
-                      className="link-btn"
-                      onClick={generateLobbyLink}
-                    >
-                      <span className="button-text">{t("copy")}</span>
-                    </Button>
-                  </p>
-                </div>
+                  <Button
+                    variant={"primary-1"}
+                    soundFXVolume={soundFXVolume}
+                    className="link-btn"
+                    onClick={generateLobbyLink}
+                  >
+                    <span className="button-text">{t("copy")}</span>
+                  </Button>
+                </p>
+              </div>
               <div className="lobby-players">
                 {/*{(isJoined) ? (
                 <Button
@@ -569,7 +567,9 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                           alt="Player"
                           className="player-icon"
                         />
-                        <span className="player-username">{player.username}</span>
+                        <span className="player-username">
+                          {player.username}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -592,7 +592,9 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                           alt="Player"
                           className="player-icon"
                         />
-                        {player.username}
+                        <span className="player-username">
+                          {player.username}
+                        </span>
                       </div>
                     ))}
                   </div>
