@@ -118,51 +118,70 @@ const RegisterPage: React.FC<RegisterProps> = ({
    *
    * @param {FormEvent<HTMLFormElement>} e - The form event triggered on submit.
    */
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
 
-    e.preventDefault();
-    if(!email || !login || !password) {
-      if (!email) {
-        addToast(t("email-error-message"), "error");
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const usernameRegex = /^[A-Za-z0-9]+$/;
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+={}[\]|:;"'<>,.?/~`]).{8,}$/;
+
+  if (!email || !login || !password) {
+    if (!email) addToast(t("email-error-message"), "error");
+    if (!login) addToast(t("username-error-message"), "error");
+    if (!password) addToast(t("password-error-message"), "error");
+    return;
+  }
+
+  if (!emailRegex.test(email)) {
+    addToast("Invalid email. Use format: example@domain.com.", "error");
+    return;
+  }
+
+  if (!usernameRegex.test(login)) {
+    addToast("Username can only contain letters and numbers.", "error");
+    return;
+  }
+
+  if (!passwordRegex.test(password)) {
+    addToast(
+      "Password must be 8+ chars, with upper, lower, number & special char.",
+      "error"
+    );
+    return;
+  }
+
+  const userData = { email, username: login, password, roles: "USER" };
+
+  try {
+    const response = await fetch(
+      `${apiUrl}/api/users?language=${
+        localStorage.getItem("i18nextLng") || "en"
+      }`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+        credentials: "include",
       }
-      if (!login) {
-        addToast(t("username-error-message"), "error");
+    );
+
+    if (response.ok) {
+      addToast(t("activation-link-sent"), "notification");
+    } else {
+      const errorData = await response.json();
+
+      if (errorData.error === "Username already exists.") {
+        addToast(t("username-exists-error"), "error");
+      } else if (errorData.error === "E-mail already exists.") {
+        addToast(t("e-mail-exists-error"), "error");
       }
-      if (!password) {
-        addToast(t("password-error-message"), "error");
-      }
-      return;
     }
+  } catch (error) {
+    addToast(t("network-error"), "error");
+  }
+};
 
-    const userData = { email, username: login, password, roles: "USER" };
-    try {
-      const response = await fetch(
-        `${apiUrl}/api/users?language=${
-          localStorage.getItem("i18nextLng") || "en"
-        }`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(userData),
-          credentials: "include",
-        }
-      );
-
-      if (response.ok) {
-        addToast(t("activation-link-sent"), "notification");
-      } else {
-        const errorData = await response.json();
-
-        if (errorData.error === "Username already exists.") {
-          addToast(t("username-exists-error"), "error");
-        } else if (errorData.error === "E-mail already exists.") {
-          addToast(t("e-mail-exists-error"), "error");
-        }
-      }
-    } catch (error) {
-      addToast(t("network-error"), "error");
-    }
-  };
 
   /**
    * Toggles the settings modal visibility.

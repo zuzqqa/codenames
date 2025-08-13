@@ -1,12 +1,14 @@
-fixed responsiveness for loading bar
+email, username and password validation
 **🔧 What's included in this release?**
-I fixed the responsiveness for the loading bar
+email, username and password validation
 
 Key additions: 
-- loading bar is responsive now
+- email validation
+- username validation
+- password validation
 
 **🚧 What's still under development?**
-- all done[6~
+- all done
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 
