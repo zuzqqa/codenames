@@ -228,6 +228,33 @@ button {
   border-color: #f0d8b6;
   border-width: 1px;
   box-sizing: border-box;
+}
+
+/* .codename-card-container{
+  transition: transform 0.3s ease;
+
+}
+
+.codename-card-container.can-hover:hover{
+  transform: translate(0, -10%) scale(1.1);
+    cursor: pointer;
+
+} */
+
+@keyframes slow-pulse {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(0, 0) scale(1.07);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+.codename-card-container.pulsing {
+  animation: slow-pulse 1.5s ease-in-out infinite;
   cursor: pointer;
 }
 
@@ -245,7 +272,6 @@ button {
   font-size: calc(0.3rem + 1.4vh);
   text-transform: uppercase;
   letter-spacing: 2px;
-  cursor: pointer;
 }
 
 .card-black-overlay {
@@ -383,31 +409,6 @@ button {
   margin-top: calc(0.7rem + 2vw);
   gap: 1vw;
   animation: scaleUp 0.5s ease-out forwards;
-}
-
-.number-controls button {
-  background: transparent;
-  color: #f9e9d1;
-  border: 2px solid #C1BBAF;
-  border-radius: 50%;
-  width: 2.5vw;
-  height: 2.5vw;
-  font-size: calc(0.4rem + 1.4vw);
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
-  font-family: "MyCustomFont", sans-serif;
-  text-align: center;
-}
-
-.number-controls button:hover:not(:disabled) {
-  background: rgba(226, 213, 192, 0.2);
-  transform: scale(1.1);
-}
-
-.number-controls button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
 }
 
 .number-controls .hint-number {

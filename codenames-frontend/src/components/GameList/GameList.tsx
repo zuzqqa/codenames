@@ -227,41 +227,6 @@ const GameList: React.FC<GameListProps> = ({
 
   return (
     <>
-      {isSearchVisible && (
-        <div
-          className={`search-bar ${isAnimating ? "search-bar-animating" : ""}`}
-        >
-          <img
-            src={searchBarIcon}
-            alt="searchbar"
-            className="search-bar-background"
-          />
-          <div className="search-bar-container">
-            <div
-              className={`search-input-container ${
-                isAnimating ? "search-bar-visible" : ""
-              }`}
-            >
-              <input
-                className="input-field"
-                type="text"
-                value={searchTerm}
-                onChange={handleSearch}
-                placeholder="Type to search..."
-              />
-            </div>
-            <img
-              src={searchIcon}
-              alt="search"
-              className={`search-icon ${
-                isAnimating ? "search-bar-visible" : ""
-              }`}
-              onClick={toggleSearch}
-            />
-          </div>
-        </div>
-      )}
-
       <RoomMenu>
         <Button
           className="back-button"
@@ -271,16 +236,16 @@ const GameList: React.FC<GameListProps> = ({
         >
           <img src={backButtonIcon} alt="Back" className="btn-arrow-back" />
         </Button>
-
-        <Button
-          className="search-button"
-          variant={"search"}
-          onClick={toggleSearch}
-          soundFXVolume={soundFXVolume}
-        >
-          <img src={searchButtonIcon} alt="Search" />
-        </Button>
         <span className="room-form-label">{t("join-room-button")}</span>
+
+        <div className="simple-search-bar">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+        </div>
 
         <div
           className="list-container"

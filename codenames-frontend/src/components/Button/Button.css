@@ -242,3 +242,29 @@
   align-items: center;
   justify-content: center;
 }
+
+.btn-number-stepper {
+  background: transparent;
+  color: #f9e9d1;
+  border: 2px solid #C1BBAF;
+  border-radius: 50%;
+  width: 2.5vw;
+  height: 2.5vw;
+  font-size: calc(0.4rem + 1.4vw);
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  font-family: "MyCustomFont", sans-serif;
+  text-align: center;
+  padding: 0;
+}
+
+.btn-number-stepper:hover:not(:disabled) {
+  background: rgba(226, 213, 192, 0.2);
+  transform: scale(1.1);
+}
+
+.btn-number-stepper:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

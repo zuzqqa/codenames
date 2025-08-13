@@ -21,7 +21,10 @@ import { logout } from "../../shared/utils.tsx";
 import { useNavigate, useLocation, createCookie } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { apiUrl } from "../../config/api.tsx";
+import { secure } from "../../config/api.tsx";
 import {useToast} from "../../components/Toast/ToastContext.tsx";
+import { createGuestUser } from "../Home/Home.tsx";
+
 
 const generateId = () =>
     Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -290,25 +293,8 @@ const LoginPage: React.FC<LoginProps> = ({
             </a>
             <a
                 className="login-register-link guest-link"
-                onClick={async () => {
-                  try {
-                    const response = await fetch(
-                        `${apiUrl}/api/users/createGuest`,
-                        {
-                          method: "POST",
-                          credentials: "include",
-                        }
-                    );
-
-                    if (response.ok) {
-                      window.location.href = "/loading";
-                    } else {
-                      console.error("Failed to create guest account");
-                    }
-                  } catch (error) {
-                    console.error("Error creating guest account:", error);
-                  }
-                }}          >
+                onClick={() => createGuestUser(apiUrl, secure)}         
+                >
               {t("or-continue-as-guset")}
             </a>
           </div>
