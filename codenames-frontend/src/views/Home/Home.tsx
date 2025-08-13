@@ -19,6 +19,30 @@ import Cookies from "js-cookie"; // Import js-cookie for cookie handling
 import { apiUrl } from "../../config/api.tsx";
 import { secure } from "../../config/api.tsx";
 
+export async function createGuestUser(apiUrl, secure) {
+  console.log(apiUrl);
+  try {
+    const response = await fetch(`${apiUrl}/api/users/create-guest`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      document.cookie = `authToken=${data.token}; max-age=36000; path=/; ${secure}`;
+      document.cookie = `loggedIn=true; max-age=36000; path=/; ${secure}`;
+      window.location.href = "/loading";
+    } else {
+      console.error("Unexpected response format");
+    }
+  } catch (error) {
+    console.error("Error creating guest account:", error);
+  }
+}
+
 /**
  * Props type definition for the Home component.
  */
@@ -152,36 +176,7 @@ const Home: React.FC<HomeProps> = ({
               <div className="second-column">
                 <Button
                   variant="primary"
-                  onClick={async () => {
-                    console.log(apiUrl);
-                    try {
-                      const response = await fetch(
-                        `${apiUrl}/api/users/create-guest`,
-                        {
-                          method: "POST",
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                        }
-                      );
-
-                      const data = await response.json();
-
-                      try {
-                        if (response.ok) {
-                          document.cookie = `authToken=${data.token}; max-age=36000; path=/; ${ secure }`;
-                          document.cookie = `loggedIn=true; max-age=36000; path=/; ${ secure }`;
-                          window.location.href = "/loading";
-                        } else {
-                          console.error("Unexpected response format");
-                        }
-                      } catch (error) {
-                        
-                      }
-                    } catch (error) {
-                      console.error("Error creating guest account:", error);
-                    }
-                  }}
+                  onClick={() => createGuestUser(apiUrl, secure)}
                   soundFXVolume={soundFXVolume}
                 >
                   <span className="button-text">
