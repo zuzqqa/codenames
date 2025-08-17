@@ -1,13 +1,13 @@
-modals size adjustments
+Modals size adjustments
 **🔧 What's included in this release?**
-modals size adjustments
+Modals size adjustments
 
 Key additions: 
-- settings modal size adjustment
-- leave game modal size adjustment
+- Settings modal size adjustment
+- Leave game modal size adjustment
 
 **🚧 What's still under development?**
-- -
+- Further improvements
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 
