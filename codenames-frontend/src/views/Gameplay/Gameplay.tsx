@@ -152,6 +152,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     const [winningTeam, setWinningTeam] = useState<string>("blue");
     const [selectedCards, setSelectedCards] = useState<number[]>([]);
     const [cardsToReveal, setCardsToReveal] = useState<number[]>([]);
+    const amIChoosingHint = (amIRedTeamLeader || amIBlueTeamLeader) && (whosTurn == myTeam);
     const {addToast} = useToast();
     const clickAudio = new Audio(cardSound);
     const [votedCards, setVotedCards] = useState<number[]>([]);
@@ -163,14 +164,6 @@ const Gameplay: React.FC<GameplayProps> = ({
     );
     const gameSocketRef = useRef<Socket | null>(null);
     const [voiceChatEnabled, setVoiceChatEnabled] = useState(false);
-
-    /**
-     * This function toggles the visibility of the overlay.
-     */
-    const toggleOverlay = () => {
-        setIsOverlayVisible(!isOverlayVisible);
-    };
-    const amIChoosingHint = (amIRedTeamLeader || amIBlueTeamLeader) && (whosTurn == myTeam);
 
     /**
      * This function toggles the visibility of the overlay.
@@ -1261,31 +1254,6 @@ const Gameplay: React.FC<GameplayProps> = ({
                 }}
               ></i>
             </Button> */}
-                    </div>
-                )}
-
-                {errors.length > 0 && (
-                    <div className="toast-container">
-                        {errors.map((error) => (
-                            <div id={error.id} key={error.id} className="toast active">
-                                <div className="toast-content">
-                                    <i
-                                        className="fa fa-exclamation-circle fa-3x"
-                                        style={{color: "#561723"}}
-                                        aria-hidden="true"
-                                    ></i>
-                                    <div className="message">
-                                        <span className="text text-1">Error</span>
-                                        <span className="text text-2">{error.message}</span>
-                                    </div>
-                                </div>
-                                <i
-                                    className="fa-solid fa-xmark close"
-                                    onClick={() => handleCloseErrorToast(error.id)}
-                                ></i>
-                                <div className="progress active"></div>
-                            </div>
-                        ))}
                     </div>
                 )}
                 {ownUsername && (
