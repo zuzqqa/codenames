@@ -15,9 +15,9 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element, isAuthenticated })
   }
 
   // If the user is not authenticated, redirect them to the home page ("/")
-  if (!isAuthenticated) {
+  /*if (!isAuthenticated) {
     return <Navigate to="/" replace />; // Redirect to the homepage
-  }
+  }*/
 
   // If the user is authenticated, render the requested element (protected route)
   return element;

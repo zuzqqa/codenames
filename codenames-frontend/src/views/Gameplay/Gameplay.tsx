@@ -166,6 +166,8 @@ const Gameplay: React.FC<GameplayProps> = ({
   const gameSocketRef = useRef<Socket | null>(null);
   const [voiceChatEnabled, setVoiceChatEnabled] = useState(false);
 
+  const amIChoosingHint = (amIRedTeamLeader || amIBlueTeamLeader) && (whosTurn == myTeam);
+
   /**
    * This function toggles the visibility of the overlay.
    */
@@ -399,7 +401,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   const toggleBlackCardVisibility = () => {
     clickAudio.volume = soundFXVolume / 100;
     clickAudio.play();
-    setIsCardVisible(true);
+    if (amIChoosingHint) setIsCardVisible(true);
   };
 
   useEffect(() => {
@@ -1103,11 +1105,11 @@ const sendHint = async () => {
             onClose={toggleQuitModal}
             soundFXVolume={soundFXVolume}
         >
-          <Button variant="primary" soundFXVolume={soundFXVolume} onClick={disconnectUser} className="yes-button">
-            {t("yes")}
+          <Button variant="primary-2" soundFXVolume={soundFXVolume} onClick={disconnectUser} className="yes-button">
+            <span>{t("yes")}</span>
           </Button>
-          <Button variant="primary" soundFXVolume={soundFXVolume} onClick={toggleQuitModal} className="no-button">
-            {t("no")}
+          <Button variant="primary-2" soundFXVolume={soundFXVolume} onClick={toggleQuitModal} className="no-button">
+            <span>{t("no")}</span>
           </Button>
         </QuitModal>
 
@@ -1227,7 +1229,7 @@ const sendHint = async () => {
             <div className="item">
               <img className="card-stack" src={cardsStackImg} />
               <div
-                className="codename-card-container"
+                className={`codename-card-container ${amIChoosingHint ? "pulsing" : ""}`}
                 onClick={toggleBlackCardVisibility}
               >
                 <div className="codename-card-text">
@@ -1272,7 +1274,9 @@ const sendHint = async () => {
               />
 
               <div className="number-controls">
-                <button
+                <Button
+                  variant="number-stepper"
+                  soundFXVolume={soundFXVolume}
                   onClick={() => setCardNumber((prev) => Math.max(1, prev - 1))}
                   disabled={
                     (!amIRedTeamLeader && !amIBlueTeamLeader) ||
@@ -1281,11 +1285,13 @@ const sendHint = async () => {
                   }
                 >
                   -
-                </button>
+                </Button>
 
                 <span className="hint-number">{cardNumber}</span>
 
-                <button
+                <Button
+                  variant="number-stepper"
+                  soundFXVolume={soundFXVolume}
                   onClick={() =>
                     setCardNumber((prev) =>
                       Math.min(
@@ -1301,9 +1307,9 @@ const sendHint = async () => {
                   }
                 >
                   +
-                </button>
+                </Button>
               </div>
-                          <div className="cancel-confirm-buttons">
+            <div className="cancel-confirm-buttons">
             <Button
                 // type="submit"
                 variant="primary"

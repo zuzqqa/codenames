@@ -1,14 +1,14 @@
-email, username and password validation
+Email, username and password validation
 **🔧 What's included in this release?**
 email, username and password validation
 
 Key additions: 
-- email validation
-- username validation
-- password validation
+- Email validation
+- Username validation
+- Password validation
 
 **🚧 What's still under development?**
-- all done
+- Further adjustments
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 
