@@ -476,6 +476,9 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
           <img src={backButton} alt="Back" className="btn-arrow-back" />
         </Button>
         <span className="room-form-label">{t("game-lobby")}</span>
+        <div className="room-lobby-divider">
+          <span className="room-lobby-divider-title">Codenames</span>
+        </div>
         <div className="background" style={{ gridColumn: "2", gridRow: "2" }}>
           {gameSession && (
             <div className="content">
@@ -495,14 +498,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                   onClick={handleLobbyLinkIsleUnroll}
                 />
               </div>
-              {/*<Button*/}
-              {/*    variant={"primary-1"}*/}
-              {/*    soundFXVolume={soundFXVolume}*/}
-              {/*    className="link-btn"*/}
-              {/*    onClick={generateLobbyLink}*/}
-              {/*>*/}
-              {/*  <span className="button-text">Link</span>*/}
-              {/*</Button>*/}
               <div
                 className={`lobby-link-isle ${
                   isLinkIsleExpanded ? "expanded" : ""
@@ -529,16 +524,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                 </p>
               </div>
               <div className="lobby-players">
-                {/*{(isJoined) ? (
-                <Button
-                    variant={"primary-1"}
-                    soundFXVolume={soundFXVolume}
-                    className="leave-btn"
-                    onClick={removePlayerFromTeam}
-                >
-                    <span className="button-text">{t("leave")}</span>
-                </Button>
-                ) : ("")}*/}
                 <Button
                   variant={"room"}
                   soundFXVolume={soundFXVolume}

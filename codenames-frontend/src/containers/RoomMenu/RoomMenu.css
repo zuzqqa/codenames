@@ -3,21 +3,14 @@
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  height: clamp(480px, 75vh, 820px);
-  width: clamp(650px, 45vw, 560px);
+  height: 60%;
+  width: 25%;
   border-radius: 17px;
   box-shadow: inset 9.91px 9.91px 15px #2c2c2c, inset -9.91px -9.91px 15px #3d3d3d;
   z-index: 1;
   display: grid;
   grid-template-columns: 5% 90% 5%;
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: 20% 80%;
   margin-top: 7vh;
   position: relative;
-}
-
-@media (min-height: 1080px) {
-  .room-menu-container {
-    height: clamp(480px, 58vh, 820px);
-    width: clamp(650px, 29vw, 560px);
-  }
 }

@@ -4,9 +4,9 @@ form {
   align-items: center;
   justify-content: center;
   width: 90%;
-  height: 90%;
-  margin: auto;
-  padding: 0.8rem;
+  height: 95%;
+  margin: 0 auto;
+  padding: 0 0.8rem;
 }
 
 .form-content {
@@ -17,19 +17,19 @@ form {
   align-items: center;
   justify-content: center;
   background: linear-gradient(360deg, #f0e0b5 0%, #eed8b0 88.89%);
-  box-shadow: inset 9.91px 9.91px 15px #807f7f, inset -9.91px -9.91px 15px #898888;
   border-radius: 27px;
   padding: 1.5rem;
   padding-top: 2rem;
   padding-bottom: 2rem;
   width: 90%;
+  height: 100%;
   margin: auto;
   margin-bottom: 0.2em;
   margin-top: 0;
   min-height: 50px;
   font-size: calc(0.23rem + 1vw);
   letter-spacing: 1px;
-  color: #5b544e;
+  color: #363534;
 }
 
 #playerSlider {
@@ -38,8 +38,8 @@ form {
   border-radius: 5px;
   margin-top: 1px;
   font-size: 1.3rem;
-  background-color: #eed8b0; 
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
+  background-color: #eed8b0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   border-radius: 27px;
 }
 
@@ -62,12 +62,11 @@ form {
   font-size: calc(0.1rem + 1vw);
   font-family: "Wellfleet", serif;
   color: #5b544e;
-  background-color: #f0e0b5;
+  background-color: #eeddaf;
   border: none;
   border-radius: 12px;
   outline: none;
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2),
-    -5px -5px 10px rgba(255, 255, 255, 0.55);
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2), -5px -5px 10px rgba(0, 0, 0, 0.2);
   transition: 0.3s ease;
   text-indent: 1px;
 }
@@ -79,7 +78,8 @@ form {
 
 #gameName::placeholder {
   color: #5b544e;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2), -1px -1px 2px rgba(255, 255, 255, 0.7);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2),
+    -1px -1px 2px rgba(255, 255, 255, 0.7);
   opacity: 0.3;
 }
 
@@ -93,110 +93,8 @@ form {
 }
 
 .back-button {
-  margin-left: -10px;
-  margin-top: -10px;
-}
-
-.cr-wrapper *,
-.cr-wrapper *::before,
-.cr-wrapper *::after {
-  box-sizing: content-box !important;
-}
-
-.cr-wrapper input {
-  position: absolute;
-  z-index: -1;
-  opacity: 0;
-}
-
-.cr-wrapper {
-  position: relative;
-  cursor: pointer;
-  margin-bottom: 5px;
-  margin-left: 5px;
-  height: 40px;
-  width: 90px;
-}
-
-.cr-wrapper input[type="checkbox"] ~ .cr-input {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: #5a1822;
-  box-shadow: inset 0px 6px 0px 0px rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-  z-index: 2;
-}
-
-.cr-wrapper input[type="checkbox"] ~ .s {
-  width: 35px;
-  height: 32px;
-  background-color: #fafafa;
-  border-radius: 8px;
-  position: relative;
-  top: 2px;
-  left: 2px;
-  box-shadow: 0px 5px 0px 0px #d2d2d2;
-  z-index: 3;
-  margin-left: 0;
-}
-
-.cr-wrapper .s .d {
-  width: 5.5px;
-  height: 6px;
-  background-color: #ebebeb;
-  border-radius: 2.5px;
-  box-shadow: inset 0px 1.5px 0px rgba(0, 0, 0, 0.2);
-  position: absolute;
-}
-
-.cr-wrapper .s .d:nth-child(1) {
-  left: 5.5px;
-  top: 4px;
-}
-.cr-wrapper .s .d:nth-child(2) {
-  left: 14.5px;
-  top: 4px;
-}
-.cr-wrapper .s .d:nth-child(3) {
-  left: 23.5px;
-  top: 4px;
-}
-.cr-wrapper .s .d:nth-child(4) {
-  left: 5.5px;
-  top: 13px;
-}
-.cr-wrapper .s .d:nth-child(5) {
-  left: 14.5px;
-  top: 13px;
-}
-.cr-wrapper .s .d:nth-child(6) {
-  left: 23.5px;
-  top: 13px;
-}
-.cr-wrapper .s .d:nth-child(7) {
-  left: 5.5px;
-  top: 23px;
-}
-.cr-wrapper .s .d:nth-child(8) {
-  left: 14.5px;
-  top: 23px;
-}
-.cr-wrapper .s .d:nth-child(9) {
-  left: 23.5px;
-  top: 23px;
-}
-
-.cr-wrapper input[type="checkbox"]:checked ~ .cr-input {
-  background-color: #2a7541;
-}
-
-.cr-wrapper input[type="checkbox"]:checked ~ .s {
-  margin-left: 51px;
+  margin-left: -40px;
+  margin-top: -30px;
 }
 
 .password-input {
@@ -220,19 +118,50 @@ form {
 }
 
 #deckLanguage {
-  height: 40px;
-  width: 90px;
+  width: 70%;
   margin-left: 5px;
 }
 
 .label-inset {
   font-size: calc(0.3rem + 1vw);
   color: #5b544e;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2), -1px -1px 2px rgba(255, 255, 255, 0.7);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2),
+    -1px -1px 2px rgba(255, 255, 255, 0.7);
 }
 
 .password-input::placeholder {
   color: #5b544e;
   opacity: 0.3;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2), -1px -1px 2px rgba(255, 255, 255, 0.7);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2),
+    -1px -1px 2px rgba(255, 255, 255, 0.7);
+}
+
+.room-form-divider {
+  width: 35%;
+  height: 10%;
+  border-radius: 1.6875rem 1.6875rem 0 0;
+  background-color: #eed8b0;
+  margin: -20px auto 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.room-form-divider-title {
+  font-size: calc(0.2rem + 0.8vw);
+  color: #f0e1b8;
+  font-weight: bold;
+  text-transform: uppercase;
+
+  text-shadow: -2px -2px 5px rgba(7, 6, 6, 0.4), 2px 2px 5px rgba(7, 6, 6, 0.4);
+
+  background-color: #eed8b0;
+  margin: 12px 0 0 0;
+}
+
+.custom-checkbox img {
+  width: 25%;
+  height: 25%;
 }

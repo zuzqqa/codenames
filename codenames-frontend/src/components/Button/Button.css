@@ -40,8 +40,8 @@
 
 .btn-circle {
   border-radius: 50%;
-  width: 2.5rem;
-  height: 2.7rem;
+  width: 3.2rem;
+  height: 3.2rem;
   position: absolute;
   top: 2%;
   right: 2%;
@@ -72,8 +72,8 @@
 
 .btn-circle-back {
   border-radius: 50%;
-  width: 2.5rem;
-  height: 2.7rem;
+  width: 3.2rem;
+  height: 3.2rem;
   align-items: center;
   border-width: 0.125rem;
   border-color: #fcf18b;
@@ -182,8 +182,8 @@
 
 .btn-logout {
   border-radius: 50%;
-  width: 2.5rem;
-  height: 2.7rem;
+  width: 3.2rem;
+  height: 3.2rem;
   position: absolute;
   top: 2%;
   left: 2%;

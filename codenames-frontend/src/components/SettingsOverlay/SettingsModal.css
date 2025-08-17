@@ -14,7 +14,7 @@
 
 .settings-overlay-container {
   padding-top: 3%;
-  width: 65%;
+  width: 75%;
   margin: auto;
   height: 60%;
 }
@@ -191,7 +191,7 @@ input[type="range"]:focus::-ms-fill-upper {
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
-  padding: 0.23em;
+  padding: 0.15em 0.23em;
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
