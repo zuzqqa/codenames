@@ -202,7 +202,6 @@ public class DefaultUserController implements UserController {
             return ResponseEntity.ok(new AuthResponse(token));
 
         } catch (BadCredentialsException ex) {
-            System.out.println(authRequest.getPassword());
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(new AuthResponse("Invalid username or password."));
@@ -274,7 +273,6 @@ public class DefaultUserController implements UserController {
         String username = userService.generateUniqueUsername();
 
         User guest = User.builder()
-                .id(UUID.randomUUID().toString())
                 .username(username)
                 .password("")
                 .roles("ROLE_GUEST")

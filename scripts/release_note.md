@@ -1,14 +1,16 @@
-Email, username and password validation
+Fix guest account cleanup & correct victory screen display
 **🔧 What's included in this release?**
-email, username and password validation
+The issue of unintentional cleanup of used guest accounts should be resolved. Moreover, in this version the victory-loss screen is displayed to correct team
 
 Key additions: 
-- Email validation
-- Username validation
-- Password validation
+- Guest cleanup fix
+- Victory-loss view is correctly distrubuted among players
+- The assassin card now eliminates the correct team
 
 **🚧 What's still under development?**
-- Further adjustments
+- Application bugs
+- UI Responsiveness
+- Code optimization
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 

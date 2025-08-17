@@ -194,7 +194,7 @@ public class DefaultGameStateService implements GameStateService {
                 return;
             }
         } else if(gameState.getCardsColors()[cardIndex] == 3){
-            if (gameState.getTeamTurn() == 1) {
+            if (gameState.getTeamTurn() == 0) {
                 gameState.setBlueTeamScore(100);
             } else {
                 gameState.setRedTeamScore(100);
