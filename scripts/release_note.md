@@ -1,9 +1,10 @@
-Invite link
+Modals size adjustments
 **🔧 What's included in this release?**
-Bugfix for link invitation
+Modals size adjustments
 
 Key additions: 
-- Bugfix
+- Settings modal size adjustment
+- Leave game modal size adjustment
 
 **🚧 What's still under development?**
 - Further improvements

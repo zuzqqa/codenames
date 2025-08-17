@@ -7,7 +7,7 @@ import {ReactNode} from "react";
  */
 interface TitleModalProps {
   children: ReactNode; // Accepts valid React child elements like string, JSX, etc.
-  variant?: "default" | "small";
+  variant?: "default" | "small" | "tiny";
 }
 
 /**
