@@ -1,12 +1,11 @@
-Search bar adjustments
+Email, username and password validation
 **🔧 What's included in this release?**
-Search bar adjustments and other bugfixes
+email, username and password validation
 
 Key additions: 
-- Deleted old ugly search bar
-- Implemented brand new, simple, minimalist, elegant search bar
-- Added hint card pulsing animation
-- Fixed or-continue-as-guest link in login and register page
+- Email validation
+- Username validation
+- Password validation
 
 **🚧 What's still under development?**
 - Further adjustments
