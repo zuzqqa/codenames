@@ -1,4 +1,4 @@
-🎮 Alpha Release – Early version of the game
+Fix guest account cleanup & correct victory screen display
 **🔧 What's included in this release?**
 The issue of unintentional cleanup of used guest accounts should be resolved. Moreover, in this version the victory-loss screen is displayed to correct team
 
