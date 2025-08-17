@@ -1105,11 +1105,11 @@ const sendHint = async () => {
             onClose={toggleQuitModal}
             soundFXVolume={soundFXVolume}
         >
-          <Button variant="primary" soundFXVolume={soundFXVolume} onClick={disconnectUser} className="yes-button">
-            {t("yes")}
+          <Button variant="primary-2" soundFXVolume={soundFXVolume} onClick={disconnectUser} className="yes-button">
+            <span>{t("yes")}</span>
           </Button>
-          <Button variant="primary" soundFXVolume={soundFXVolume} onClick={toggleQuitModal} className="no-button">
-            {t("no")}
+          <Button variant="primary-2" soundFXVolume={soundFXVolume} onClick={toggleQuitModal} className="no-button">
+            <span>{t("no")}</span>
           </Button>
         </QuitModal>
 

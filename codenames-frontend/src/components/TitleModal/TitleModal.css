@@ -28,10 +28,6 @@
   -ms-user-select: none;
 }
 
-.title-modal-small{
-  font-size: calc(1.7rem + 1vw);
-}
-
 .title-shadow-modal {
   width: 100%;
   margin: 0;
@@ -59,6 +55,18 @@
   -ms-user-select: none;
 }
 
+.title-modal-small{
+  font-size: calc(1.7rem + 1vw);
+}
+
 .title-shadow-modal-small{
   font-size: calc(1.7rem + 1vw);
+}
+
+.title-modal-tiny{
+    font-size: calc(1.6rem + 0.8vw);
+}
+
+.title-shadow-modal-tiny{
+    font-size: calc(1.6rem + 0.8vw);
 }

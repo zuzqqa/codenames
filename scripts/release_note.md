@@ -3,13 +3,13 @@ Search bar adjustments
 Search bar adjustments and other bugfixes
 
 Key additions: 
-- deleted old ugly search bar
-- implemented brand new, simple, minimalist, elegant search bar
-- added hint card pulsing animation
-- fixed or-continue-as-guest link in login and register page
+- Deleted old ugly search bar
+- Implemented brand new, simple, minimalist, elegant search bar
+- Added hint card pulsing animation
+- Fixed or-continue-as-guest link in login and register page
 
 **🚧 What's still under development?**
-- all done
+- Further adjustments
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 
