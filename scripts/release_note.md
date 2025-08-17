@@ -1,14 +1,12 @@
-Hint card adjustments
+Invite link
 **🔧 What's included in this release?**
-in this release are included hint card aadjustments
+Bugfix for link invitation
 
 Key additions: 
-- hint card adjustments
-- hint card adjustments
-- hint card adjustments
+- Bugfix
 
 **🚧 What's still under development?**
-- nothing, hint card is adjusted :)
+- Further improvements
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 
