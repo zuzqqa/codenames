@@ -152,6 +152,25 @@
   color: transparent;
 }
 
+.btn-primary-2 {
+  background-image: linear-gradient(to top, #561723, #8d2736);
+  border-radius: 17px;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  font-size: calc(0.6rem + 0.3vw);
+  padding: calc(0.3rem + 0.1vw) 1rem;
+  min-width: 6rem;
+}
+
+.btn-primary-2 span {
+  padding: 0.1rem;
+  position: relative;
+  z-index: 2;
+  background-clip: text;
+  -webkit-background-clip: text;
+  background-image: linear-gradient(to right, #fff7ab, #dab274);
+  color: transparent;
+}
+
 .btn-join-team {
   background: linear-gradient(to top, #ccbf9a, #dccfaa);
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
@@ -241,4 +260,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.btn-number-stepper {
+  background: transparent;
+  color: #f9e9d1;
+  border: 2px solid #C1BBAF;
+  border-radius: 50%;
+  width: 2.5vw;
+  height: 2.5vw;
+  font-size: calc(0.4rem + 1.4vw);
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  font-family: "MyCustomFont", sans-serif;
+  text-align: center;
+  padding: 0;
+}
+
+.btn-number-stepper:hover:not(:disabled) {
+  background: rgba(226, 213, 192, 0.2);
+  transform: scale(1.1);
+}
+
+.btn-number-stepper:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }

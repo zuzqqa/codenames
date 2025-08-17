@@ -69,7 +69,7 @@ export async function getUserId() {
     const userId = await response.text();
     return userId !== "null" ? userId : null;
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Error while getting user:", error);
     return null;
   }
 }

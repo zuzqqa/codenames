@@ -228,10 +228,40 @@ button {
   border-color: #f0d8b6;
   border-width: 1px;
   box-sizing: border-box;
+}
+
+/* .codename-card-container{
+  transition: transform 0.3s ease;
+
+}
+
+.codename-card-container.can-hover:hover{
+  transform: translate(0, -10%) scale(1.1);
+    cursor: pointer;
+
+} */
+
+@keyframes slow-pulse {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(0, 0) scale(1.07);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+.codename-card-container.pulsing {
+  animation: slow-pulse 1.5s ease-in-out infinite;
   cursor: pointer;
 }
 
 .codename-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -239,10 +269,9 @@ button {
   z-index: 3;
   color: #f9e9d1;
   font-weight: 300;
-  font-size: calc(0.5rem + 1vw);
+  font-size: calc(0.3rem + 1.4vh);
   text-transform: uppercase;
   letter-spacing: 2px;
-  cursor: pointer;
 }
 
 .card-black-overlay {
@@ -260,29 +289,11 @@ button {
   animation: fadeIn 0.2s ease-out;
 }
 
-.close-button {
+.cancel-confirm-buttons{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   position: absolute;
-  width: 2.5rem;
-  height: 2.5rem;
-  background-color: transparent;
-  border: none;
-  color: #f9e9d1;
-  font-size: calc(0.4rem + 2vw);
-  cursor: pointer;
-  opacity: 0.5;
-  animation: scaleButton 0.5s ease-out forwards;
-}
-
-.confirm-button {
-  position: absolute;
-  width: 2.5rem;
-  height: 2.5rem;
-  background-color: transparent;
-  border: none;
-  color: #f9e9d1;
-  font-size: calc(0.4rem + 2vw);
-  cursor: pointer;
-  opacity: 0.3;
   animation: exitButton 0.5s ease-out forwards;
 }
 
@@ -319,8 +330,8 @@ button {
     left: 50%;
   }
   to {
-    transform: scale(0.4);
-    top: 33.75%;
+    transform: scale(1);
+    top: 57%;
     left: 35.10%;
   }
 }
@@ -328,20 +339,21 @@ button {
 @keyframes exitButton {
   from {
     transform: scale(0);
-    top: 50%;
-    left: 49.10%;
+    bottom: -100%;
+    left: 50;
+    
   }
   to {
-    transform: scale(0.8);
-    top: 57%;
-    left: 49.10%;
+    transform: scale(1);
+    bottom: -130%;
+    left: 50;
   }
 }
 
 .codename-input-container {
   position: fixed;
   display: flex;
-  flex-direction: column; /* Stack input and slider */
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 25%;
@@ -352,66 +364,30 @@ button {
 .codename-input {
   flex: 1;
   position: fixed;
-  top: 48%;
+  top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
   transform-origin: center;
   width: 20vw;
+  padding: 15px;
   background-color: transparent;
   color: #f9e9d1;
-  font-size: calc(0.4rem + 2vw);
+  font-size: calc(0.2rem + 1.4vw);
   font-weight: 300;
   text-transform: uppercase;
   text-align: center;
-  border: none;
+  border: solid #C1BBAF 2px;
+  border-radius: 15px;
   outline: none;
   animation: inputScaleUp 0.5s ease-out forwards;
+  font-family: "MyCustomFont", sans-serif;
 }
 
-.codename-input-container .codename-slider {
-  width: 80%;
-  margin-top: 35px;
-  -webkit-appearance: none !important;
-  appearance: none !important;
-  background: #605e5e !important;
-  height: 2px !important;
-  border-radius: 2px !important;
-  outline: none !important;
-  opacity: 0.9 !important;
-  transition: opacity 0.2s !important;
-  animation: scaleUp 0.5s ease-out forwards;
+.codename-input::placeholder {
+  font-size: calc(0.2rem + 1.4vw);
 }
-
-.codename-input-container .codename-slider:hover {
-  opacity: 1 !important;
-}
-
-.codename-input-container .codename-slider::-webkit-slider-runnable-track {
-  width: 100% !important;
-  height: 2px !important;
-  background: #605e5e !important;
-  border: #000000;
-}
-
-.codename-input-container .codename-slider::-webkit-slider-thumb {
-  -webkit-appearance: none !important;
-  appearance: none !important;
-  width: 12px !important;
-  height: 12px !important;
-  background: #f9e9d1 !important;
-  border-radius: 50% !important;
-  cursor: pointer !important;
-  margin-top: -5px !important;
-}
-
-.slider-value {
-  font-size: 1.2rem;
-  color: #f9e9d1;
-  margin-top: 5px;
-  margin-right: 12px;
-  animation: scaleUp 0.5s ease-out forwards;
-  font-family: "Arial", sans-serif;
-  font-weight: bold;
+.codename-input:focus::placeholder {
+  color: transparent;
 }
 
 @keyframes inputScaleUp {
@@ -425,9 +401,25 @@ button {
   }
 }
 
-.codename-input:focus::placeholder {
-  color: transparent;
+
+.number-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: calc(0.7rem + 2vw);
+  gap: 1vw;
+  animation: scaleUp 0.5s ease-out forwards;
 }
+
+.number-controls .hint-number {
+  font-size: calc(0.3rem + 1.5vw);
+  font-weight: bold;
+  color: #f9e9d1;
+  font-family: "MyCustomFont", sans-serif;
+  min-width: 3vw;
+  text-align: center;
+}
+
 
 .below.timer {
   top: 1.4em;

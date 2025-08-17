@@ -15,7 +15,7 @@ interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
     children: ReactNode;
-    variant?: "default" | "large";
+    variant?: "default" | "large" | "small";
 }
 
 /**

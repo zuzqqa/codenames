@@ -170,6 +170,14 @@ const Gameplay: React.FC<GameplayProps> = ({
     const toggleOverlay = () => {
         setIsOverlayVisible(!isOverlayVisible);
     };
+    const amIChoosingHint = (amIRedTeamLeader || amIBlueTeamLeader) && (whosTurn == myTeam);
+
+    /**
+     * This function toggles the visibility of the overlay.
+     */
+    const toggleOverlay = () => {
+        setIsOverlayVisible(!isOverlayVisible);
+    };
 
     /**
      * This function toggles the visibility of the settings modal.
@@ -396,7 +404,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     const toggleBlackCardVisibility = () => {
         clickAudio.volume = soundFXVolume / 100;
         clickAudio.play();
-        setIsCardVisible(true);
+        if (amIChoosingHint) setIsCardVisible(true);
     };
 
     useEffect(() => {
@@ -1008,13 +1016,13 @@ const Gameplay: React.FC<GameplayProps> = ({
                     onClose={toggleQuitModal}
                     soundFXVolume={soundFXVolume}
                 >
-                    <Button variant="primary" soundFXVolume={soundFXVolume} onClick={disconnectUser}
+                    <Button variant="primary-2" soundFXVolume={soundFXVolume} onClick={disconnectUser}
                             className="yes-button">
-                        {t("yes")}
+                        <span>{t("yes")}</span>
                     </Button>
-                    <Button variant="primary" soundFXVolume={soundFXVolume} onClick={toggleQuitModal}
+                    <Button variant="primary-2" soundFXVolume={soundFXVolume} onClick={toggleQuitModal}
                             className="no-button">
-                        {t("no")}
+                        <span>{t("no")}</span>
                     </Button>
                 </QuitModal>
 
@@ -1134,16 +1142,19 @@ const Gameplay: React.FC<GameplayProps> = ({
                         <div className="item">
                             <img className="card-stack" src={cardsStackImg}/>
                             <div
-                                className="codename-card-container"
+                                className={`codename-card-container ${amIChoosingHint ? "pulsing" : ""}`}
                                 onClick={toggleBlackCardVisibility}
                             >
-                <span className="codename-card-text">
-                  {(gameSession?.gameState.hint || "HINT") +
-                      " " +
-                      (gameSession?.gameState.hintNumber === "0"
-                          ? ""
-                          : gameSession?.gameState.hintNumber)}
+                                <div className="codename-card-text">
+                <span>
+                  {(gameSession?.gameState.hint || "HINT")}
                 </span>
+                                    <span>
+                  {(gameSession?.gameState.hintNumber === "0"
+                      ? ""
+                      : gameSession?.gameState.hintNumber)}
+                </span>
+                                </div>
                                 <img className="codename-card" src={cardBlackImg}/>
                             </div>
                         </div>
@@ -1156,12 +1167,12 @@ const Gameplay: React.FC<GameplayProps> = ({
                             src={cardBlackImg}
                             alt="Black Card"
                         />
-                        <Button className="close-button" variant="transparent" soundFXVolume={soundFXVolume}>
-                            <i
-                                className="fa-solid fa-xmark close"
-                                onClick={() => setIsCardVisible(false)}
-                            ></i>
-                        </Button>
+                        {/* <Button className="close-button" variant="transparent" soundFXVolume={soundFXVolume}>
+              <i
+                className="fa-solid fa-xmark close"
+                onClick={() => setIsCardVisible(false)}
+              ></i>
+            </Button> */}
                         <div className="codename-input-container">
                             <input
                                 type="text"
@@ -1174,33 +1185,107 @@ const Gameplay: React.FC<GameplayProps> = ({
                                     whosTurn !== myTeam
                                 }
                             />
-                            <input
-                                type="range"
-                                min={1}
-                                max={whosTurn === "blue" ? 8 - blueTeamScore : 9 - redTeamScore}
-                                className="codename-slider"
-                                value={cardNumber}
-                                onChange={(e) => setCardNumber(+e.target.value)}
-                                disabled={
-                                    (!amIRedTeamLeader && !amIBlueTeamLeader) ||
-                                    whosTurn !== myTeam
-                                }
-                            />
-                            <span className="slider-value">{cardNumber}</span>
-                        </div>
-                        <Button variant="transparent" soundFXVolume={soundFXVolume} className="confirm-button">
-                            <i
-                                className="fa-solid fa-check confirm" style={{color: "white"}}
-                                onClick={() => {
-                                    if (validateCardText(cardText)) {
-                                        sendHint();
-                                        setIsCardVisible(false);
-                                        setCardText("");
-                                        setCardNumber(1);
+
+                            <div className="number-controls">
+                                <Button
+                                    variant="number-stepper"
+                                    soundFXVolume={soundFXVolume}
+                                    onClick={() => setCardNumber((prev) => Math.max(1, prev - 1))}
+                                    disabled={
+                                        (!amIRedTeamLeader && !amIBlueTeamLeader) ||
+                                        whosTurn !== myTeam ||
+                                        cardNumber <= 1
                                     }
-                                }}
-                            ></i>
-                        </Button>
+                                >
+                                    -
+                                </Button>
+
+                                <span className="hint-number">{cardNumber}</span>
+
+                                <Button
+                                    variant="number-stepper"
+                                    soundFXVolume={soundFXVolume}
+                                    onClick={() =>
+                                        setCardNumber((prev) =>
+                                            Math.min(
+                                                whosTurn === "blue" ? 8 - blueTeamScore : 9 - redTeamScore,
+                                                prev + 1
+                                            )
+                                        )
+                                    }
+                                    disabled={
+                                        (!amIRedTeamLeader && !amIBlueTeamLeader) ||
+                                        whosTurn !== myTeam ||
+                                        cardNumber >= (whosTurn === "blue" ? 8 - blueTeamScore : 9 - redTeamScore)
+                                    }
+                                >
+                                    +
+                                </Button>
+                            </div>
+                            <div className="cancel-confirm-buttons">
+                                <Button
+                                    // type="submit"
+                                    variant="primary"
+                                    soundFXVolume={soundFXVolume}
+                                    onClick={() => {
+                                        if (validateCardText(cardText)) {
+                                            sendHint();
+                                            setIsCardVisible(false);
+                                            setCardText("");
+                                            setCardNumber(1);
+                                        }
+                                    }}
+                                >
+                                    <span className="button-text">{t("confirm-button")}</span>
+                                </Button>
+                                <Button
+                                    // type="submit"
+                                    variant="primary"
+                                    soundFXVolume={soundFXVolume}
+                                    onClick={() => setIsCardVisible(false)}
+                                >
+                                    <span className="button-text">{t("cancel-button")}</span>
+                                </Button>
+                            </div>
+                        </div>
+                        {/* <Button variant="transparent" soundFXVolume={soundFXVolume} className="confirm-button">
+              <i
+                className="fa-solid fa-check confirm" style={{ color: "white" }}
+                onClick={() => {
+                  if (validateCardText(cardText)) {
+                    sendHint();
+                    setIsCardVisible(false);
+                    setCardText("");
+                    setCardNumber(1);
+                  }
+                }}
+              ></i>
+            </Button> */}
+                    </div>
+                )}
+
+                {errors.length > 0 && (
+                    <div className="toast-container">
+                        {errors.map((error) => (
+                            <div id={error.id} key={error.id} className="toast active">
+                                <div className="toast-content">
+                                    <i
+                                        className="fa fa-exclamation-circle fa-3x"
+                                        style={{color: "#561723"}}
+                                        aria-hidden="true"
+                                    ></i>
+                                    <div className="message">
+                                        <span className="text text-1">Error</span>
+                                        <span className="text text-2">{error.message}</span>
+                                    </div>
+                                </div>
+                                <i
+                                    className="fa-solid fa-xmark close"
+                                    onClick={() => handleCloseErrorToast(error.id)}
+                                ></i>
+                                <div className="progress active"></div>
+                            </div>
+                        ))}
                     </div>
                 )}
                 {ownUsername && (
