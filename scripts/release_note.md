@@ -1,11 +1,12 @@
-Fix guest account cleanup & correct victory screen display
+Refactor Create Game and Room Lobby views
 **🔧 What's included in this release?**
-The issue of unintentional cleanup of used guest accounts should be resolved. Moreover, in this version the victory-loss screen is displayed to correct team
+This update improves and adjusts the views for Create Game and Room Lobby to enhance clarity and user experience.
 
 Key additions: 
-- Guest cleanup fix
-- Victory-loss view is correctly distrubuted among players
-- The assassin card now eliminates the correct team
+- Updated layout of Create Game view for better clarity
+- Adjusted design of Room Lobby view
+- Improved overall alignment and spacing in both views
+- Unified styling to keep consistency with the rest of the app
 
 **🚧 What's still under development?**
 - Application bugs

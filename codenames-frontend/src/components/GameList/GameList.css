@@ -1,4 +1,4 @@
-.list-background{
+.list-background {
   background-color: #0e1724;
   opacity: 30%;
   height: 75%;
@@ -87,7 +87,7 @@ button.variant-session:hover {
 
 /* Custom Scrollbar */
 .list-container::-webkit-scrollbar {
-  width: 18px; /* Width of the scrollbar */
+  width: 18px;
 }
 
 .list-container::-webkit-scrollbar-track {
@@ -97,13 +97,13 @@ button.variant-session:hover {
 }
 
 .list-container::-webkit-scrollbar-thumb {
-  background: #650a0a; /* Gold thumb color */
+  background: #650a0a;
   border-radius: 7px;
   box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 .list-container::-webkit-scrollbar-thumb:hover {
-  background: #720c0c; /* Lighter gold on hover */
+  background: #720c0c;
 }
 
 .room-form-label {
@@ -136,7 +136,7 @@ button.variant-session:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 19; 
+  z-index: 19;
 }
 
 .pass-overlay {
@@ -166,7 +166,7 @@ button.variant-session:hover {
   padding-bottom: 0;
 }
 
-.sbmit{
+.sbmit {
   width: 8rem;
   border-radius: 27px;
   margin: auto;
@@ -178,12 +178,6 @@ button.variant-session:hover {
   margin-right: 0.5rem;
   grid-row: span 2;
 }
-
-
-
-
-
-
 
 .simple-search-bar {
   grid-area: 2 / 2;

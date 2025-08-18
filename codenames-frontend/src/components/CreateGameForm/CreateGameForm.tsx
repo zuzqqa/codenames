@@ -3,13 +3,15 @@ import Button from "../Button/Button.tsx";
 import backButton from "../../assets/icons/arrow-back.png";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./CreateGameForm.css";
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import React from "react";
 import { apiUrl } from "../../config/api.tsx";
 import { getUserId } from "../../shared/utils.tsx";
-import {useToast} from "../Toast/ToastContext.tsx";
+import { useToast } from "../Toast/ToastContext.tsx";
+import checkmarkIconEmpty from "../../assets/icons/checkbox-empty.png";
+import checkmarkIcon from "../../assets/icons/checkbox.png";
 
 /**
  * Props for CreateGameForm component.
@@ -43,7 +45,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
       gameName: "",
       playerSlider: 4,
       password: "",
-      deckLanguage: "en",
+      deckLanguage: "pl",
       voiceChatEnabled: false,
     },
     onSubmit: async (values) => {
@@ -116,6 +118,9 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
           onSubmit={formik.handleSubmit}
           style={{ gridColumn: "2", gridRow: "2" }}
         >
+          <div className="room-form-divider">
+            <span className="room-form-divider-title">Codenames</span>
+          </div>
           <div
             className={"form-content"}
             style={{
@@ -142,21 +147,11 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
               }}
               className="label-inset"
             >
-              {t("private-lobby")}:
+              {t("private-lobby")}?
             </label>
-            <label className="cr-wrapper" style={{ gridColumn: "span 1" }}>
-              <input
-                type="checkbox"
-                checked={isPrivate}
-                onChange={() => setIsPrivate((prev) => !prev)}
-              />
-              <div className="cr-input"></div>
-              <div className="s">
-                {[...Array(9)].map((_, i) => (
-                  <div key={i} className="d"></div>
-                ))}
-              </div>
-            </label>
+            <div className="custom-checkbox">
+              {!isPrivate ? <img src={checkmarkIconEmpty} alt="Checkmark" onClick={() => setIsPrivate((prev) => !prev)}/> :  <img src={checkmarkIcon} alt="Checkmark" onClick={() => setIsPrivate((prev) => !prev)}/>}
+            </div>
             <input
               type="password"
               placeholder={t("PASSWORD")}
@@ -208,26 +203,16 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
               value={formik.values.deckLanguage}
               className="input-box"
             >
-              <option value="en">EN</option>
               <option value="pl">PL</option>
+              <option value="en">EN</option>
             </select>
             <label htmlFor="deckLanguage" className="label-inset">
-              {t("voice-chat")}:
+              {t("voice-chat")}?
             </label>
-            <label className="cr-wrapper" style={{ gridColumn: "span 1" }}>
-              <input
-                type="checkbox"
-                checked={voiceChatEnabled}
-                onChange={() => setVoiceChatEnabled((prev) => !prev)}
-              />
-              <div className="cr-input"></div>
-              <div className="s">
-                {[...Array(9)].map((_, i) => (
-                  <div key={i} className="d"></div>
-                ))}
-              </div>
-            </label>
-          </div>
+           <div className="custom-checkbox">
+              {!voiceChatEnabled ? <img src={checkmarkIconEmpty} alt="Checkmark" onClick={() => setVoiceChatEnabled((prev) => !prev)}/> :  <img src={checkmarkIcon} alt="Checkmark" onClick={() => setVoiceChatEnabled((prev) => !prev)}/>}
+            </div>
+            </div>
           <Button type="submit" variant="room" soundFXVolume={soundFXVolume}>
             <span className="button-text">{t("create-game-button")}</span>
           </Button>
