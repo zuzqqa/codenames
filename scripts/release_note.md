@@ -9,7 +9,9 @@ Key additions:
 - Unified styling to keep consistency with the rest of the app
 
 **🚧 What's still under development?**
-- Further adjustments
+- Application bugs
+- UI Responsiveness
+- Code optimization
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 

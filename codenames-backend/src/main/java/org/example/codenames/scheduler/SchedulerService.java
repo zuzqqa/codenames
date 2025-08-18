@@ -3,12 +3,13 @@ package org.example.codenames.scheduler;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
+import lombok.extern.slf4j.Slf4j;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -17,6 +18,7 @@ import java.util.Set;
  * SchedulerService is responsible for managing scheduled tasks.
  */
 @Service
+@Slf4j
 public class SchedulerService {
 
     /**
@@ -55,6 +57,7 @@ public class SchedulerService {
     @Scheduled(fixedRateString = "${codenames.scheduled.users-cleanup}")
     public void cleanUserCollection() {
 
+        log.info("Running scheduled task to clean up user collection.");
         Set<String> activityKeys = activityMap.keySet();
 
         List<User> allGuests = userRepository.findByRolesContaining("GUEST");
@@ -65,6 +68,7 @@ public class SchedulerService {
             String userId = user.getId();
 
             if (!activityKeys.contains(userId)) {
+                log.warn("Deleting inactive guest user: {}", user.getUsername());
                 userRepository.deleteById(userId);
             }
         }
