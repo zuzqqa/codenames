@@ -263,7 +263,7 @@ button {
 .banner-container {
   position: absolute;
   top: 15%;
-  right: 8%;
+  right: 4%;
 }
 
 .banner-container img {
@@ -272,6 +272,10 @@ button {
 
 .shelf {
   height: 14vh;
+}
+
+.codename-item{
+  transform: translate(15%, 0);
 }
 
 .card-stack {
@@ -292,17 +296,6 @@ button {
   border-width: 1px;
   box-sizing: border-box;
 }
-
-/* .codename-card-container{
-  transition: transform 0.3s ease;
-
-}
-
-.codename-card-container.can-hover:hover{
-  transform: translate(0, -10%) scale(1.1);
-    cursor: pointer;
-
-} */
 
 @keyframes slow-pulse {
   0% {

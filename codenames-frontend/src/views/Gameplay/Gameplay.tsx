@@ -140,7 +140,9 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [flipStates, setFlipStates] = useState<boolean[]>(
     new Array(25).fill(false)
   );
-  const [hoverStates, setHoverStates] = useState({});
+  const [hoverStates, setHoverStates] = useState<{
+    [key: number]: "enter" | "leave" | undefined;
+  }>({});
   const [amIRedTeamLeader, setAmIRedTeamLeader] = useState(false);
   const [amIBlueTeamLeader, setAmIBlueTeamLeader] = useState(false);
   const [amICurrentLeader, setAmICurrentLeader] = useState(false);
@@ -1084,7 +1086,6 @@ const Gameplay: React.FC<GameplayProps> = ({
           <img src={getBanner()} />
         </div>
 
-        <Chat />
         <div className="content-container">
           <div className="timer-container">
             {/* <div className="horizontal-gold-bar"></div>
@@ -1183,7 +1184,7 @@ const Gameplay: React.FC<GameplayProps> = ({
           </div>
           <div className="bottom-section">
             <div className="item">
-              <img className="shelf" src={shelfImg} />
+              <Chat />
             </div>
             <div className="item">
               <Button
@@ -1214,7 +1215,7 @@ const Gameplay: React.FC<GameplayProps> = ({
               </Button>
               <div className="horizontal-gold-bar" />
             </div>
-            <div className="item">
+            <div className="item codename-item">
               <img className="card-stack" src={cardsStackImg} />
               <div
                 className={`codename-card-container ${
