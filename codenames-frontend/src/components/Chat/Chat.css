@@ -1,9 +1,9 @@
 .chat-container {
   position: absolute;
-  left: 5%;
-  bottom: 20%;
+  left: 10%;
+  bottom: 50%;
   width: 15vw;
-  height: 6em;
+  height: 27vh;
   background-image: linear-gradient(to top, #21272b, #353e44);
   border-radius: 10px;
   border-style: outset;
@@ -21,6 +21,11 @@
   transition: height 0.4s ease, opacity 0.4s ease;
   scrollbar-width: thin;
   scrollbar-color: #f0d8b6 #353e44;
+}
+
+.chat-container.focused {
+  height: 45vh;
+  opacity: 90%;
 }
 
 .messages {
@@ -44,11 +49,6 @@
   background-color: #42474a;
   color: #fff3e2;
   text-align: right;
-}
-
-.chat-container.focused {
-  height: 40vh;
-  opacity: 90%;
 }
 
 .message-input {
