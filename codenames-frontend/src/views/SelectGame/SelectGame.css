@@ -42,9 +42,9 @@
 
 .logged-in-user {
   position: fixed;
-  bottom: 10px;
-  left: 10px;
-  font-size: 0.8rem;
+  bottom: 1.5%;
+  left: 2.5%;
+  font-size: 1rem;
   z-index: 1000;
   letter-spacing: 1px;
 }
