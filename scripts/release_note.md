@@ -1,12 +1,9 @@
 Refactor Create Game and Room Lobby views
 **🔧 What's included in this release?**
-This update improves and adjusts the views for Create Game and Room Lobby to enhance clarity and user experience.
+Minor fix for scheduled jobs in the backend.
 
 Key additions: 
-- Updated layout of Create Game view for better clarity
-- Adjusted design of Room Lobby view
-- Improved overall alignment and spacing in both views
-- Unified styling to keep consistency with the rest of the app
+- Changed set time values to cron format.
 
 **🚧 What's still under development?**
 - Application bugs
