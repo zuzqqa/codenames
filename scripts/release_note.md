@@ -1,14 +1,15 @@
-Refactor Create Game and Room Lobby views
+Gameplay adjustments
 **🔧 What's included in this release?**
-Minor fix for scheduled jobs in the backend.
+I adjusted gameplay view
 
 Key additions: 
-- Changed set time values to cron format.
+- card flip on mouse enter
+- removed card shelf
+- increased chat size
 
 **🚧 What's still under development?**
-- Application bugs
-- UI Responsiveness
-- Code optimization
+- chat is ugly idk
+- furthure improvements
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 
