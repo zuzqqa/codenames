@@ -1,11 +1,9 @@
 Gameplay adjustments
 **🔧 What's included in this release?**
-I adjusted gameplay view
+Minor fix for scheduled jobs in the backend.
 
 Key additions: 
-- card flip on mouse enter
-- removed card shelf
-- increased chat size
+- Changed set time values to cron format.
 
 **🚧 What's still under development?**
 - chat is ugly idk
