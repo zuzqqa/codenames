@@ -109,7 +109,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
   >([]);
   const [lobbyLink, setLobbyLink] = useState<string>("");
   const [isLinkIsleExpanded, setIsLinkIsleExpanded] = useState(false);
-  const exampleLink = `${frontendUrl}/invite/${localStorage.getItem("gameId")}`;
+  const exampleLink = `${frontendUrl}/invite/${sessionStorage.getItem("gameId")}`;
 
   /**
    * Handles manual closing of a toast error.
@@ -135,7 +135,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
    * Initializes the WebSocket connection and fetches the game session data.
    */
   useEffect(() => {
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
 
     if (storedGameId) {
       fetch(`${apiUrl}/api/game-session/${storedGameId}`)
@@ -204,7 +204,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     }
 
     // Fetch player ID, then add to red team via REST API
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
     if (!storedGameId) return;
 
     const userId = await getUserId();
@@ -237,7 +237,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     }
 
     // Fetch player ID, then add to blue team via REST API
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
     if (!storedGameId) return;
 
     const userId = await getUserId();
@@ -267,7 +267,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
    */
   const removePlayerFromTeam = async () => {
     setIsJoined(false);
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
     if (!storedGameId) return;
 
     const token = getCookie("authToken");
@@ -299,7 +299,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
    * Removes the current player from the game session.
    */
   const removePlayer = async () => {
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
     if (!storedGameId) return;
 
     const userId = await getUserId();
@@ -321,7 +321,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       console.error("Error removing player", error);
     }
 
-    localStorage.removeItem("gameId");
+    sessionStorage.removeItem("gameId");
     navigate("/games");
   };
 
@@ -332,7 +332,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     const newErrors: { id: string; message: string }[] = [];
     setErrors(newErrors);
 
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
     if (!storedGameId) return;
 
     if (redTeamPlayers.length < 2 || redTeamPlayers.length < 2) {
@@ -361,7 +361,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
    * Generates a lobby link and copies it to the clipboard.
    */
   const generateLobbyLink = () => {
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
     if (!storedGameId) return;
 
     const tempLobbyLink = `${frontendUrl}/invite/${storedGameId}`;

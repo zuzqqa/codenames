@@ -128,7 +128,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [isCardVisible, setIsCardVisible] = useState(false);
   const [cardText, setCardText] = useState("");
   const [cardNumber, setCardNumber] = useState(1);
-  const storedGameId = localStorage.getItem("gameId");
+  const storedGameId = sessionStorage.getItem("gameId");
   const [gameSession, setGameSession] = useState<GameSession>();
   const [gameSessionData, setGameSessionData] = useState<GameSession>();
   const [redTeamPlayers, setRedTeamPlayers] = useState<User[]>([]);
@@ -258,7 +258,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     cardIndex: number,
     isAddingVote: boolean
   ) => {
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
     if (!storedGameId) return;
 
     try {
@@ -292,7 +292,7 @@ const Gameplay: React.FC<GameplayProps> = ({
    * @param {number} cardIndex - The index of the selected card.
    */
   const revealCard = (cardIndex: number) => {
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
     if (!storedGameId) return;
 
     try {
@@ -864,7 +864,7 @@ const Gameplay: React.FC<GameplayProps> = ({
       return;
     }
 
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
 
     // Dla change-turn
     console.log("Calling change-turn with gameId:", storedGameId);
@@ -891,7 +891,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   const sendHint = async () => {
     if (!cardText.trim()) return;
 
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
 
     if (!amIRedTeamLeader && !amIBlueTeamLeader) return;
 
@@ -930,7 +930,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   };
 
   const disconnectUser = () => {
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
     if (gameSocketRef.current) {
       gameSocketRef.current.emit("disconnectUser", userId, storedGameId);
     }
@@ -948,7 +948,7 @@ const Gameplay: React.FC<GameplayProps> = ({
       }
     )
       .then(() => {
-        localStorage.removeItem("gameId");
+        sessionStorage.removeItem("gameId");
         navigate("/games");
       })
       .catch((error) => {

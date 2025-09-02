@@ -35,8 +35,8 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ soundFXVolume, duration }) =>
   useEffect(() => {
     const defaultDuration = 3; // Default duration in seconds
     const effectiveDuration = duration ?? defaultDuration;
-    const endpoint = localStorage.getItem("userId") ? "/game-lobby" : "/";
     const timer = setTimeout(() => {
+      const endpoint = localStorage.getItem("userId") ? "/game-lobby" : "/";
       navigate(endpoint); // Navigate to "/" after the progress bar is full
     }, effectiveDuration * 1000); // Convert seconds to milliseconds
 

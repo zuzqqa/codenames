@@ -84,7 +84,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
 
         if (response.ok) {
           const data = await response.json();
-          localStorage.setItem("gameId", data.gameId);
+          sessionStorage.setItem("gameId", data.gameId);
           navigate("/game-lobby");
         } else {
           addToast("Failed to create game session", "error");
