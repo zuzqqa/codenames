@@ -1,10 +1,10 @@
 Fixed invite link and entering the website into the noneexistant lobby
 **🔧 What's included in this release?**
-Fixes and QoL changes
+Socket IO fix for Firefox browser
 
 Key additions: 
-- Moving gameId to session storage
-- Fixing invite link
+- Added "polling" option for Socket IO to improve compatibility with Firefox browser
+- Enabled "polling" in Socket IO connection settings
 
 **🚧 What's still under development?**
 - Further improvements and QoL changes
