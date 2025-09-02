@@ -1,13 +1,12 @@
-Fixed invite link and entering the website into the noneexistant lobby
+🎮 Alpha Release – Early version of the game
 **🔧 What's included in this release?**
-Fixes and QoL changes
+Modified hint number display in gameplay
 
 Key additions: 
-- Moving gameId to session storage
-- Fixing invite link
+- added `initialHintNumber` to `GameState`
 
 **🚧 What's still under development?**
-- Further improvements and QoL changes
+- QoL updates
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 
