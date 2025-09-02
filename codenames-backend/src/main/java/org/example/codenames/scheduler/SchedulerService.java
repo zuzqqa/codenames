@@ -54,14 +54,14 @@ public class SchedulerService {
      * This task runs every 10 minutes.
      * It checks the activity map for active users and deletes any guest users that are not present in the activity map.
      */
-    @Scheduled(fixedRateString = "${codenames.scheduled.users-cleanup}")
+    @Scheduled(cron = "@midnight")
     public void cleanUserCollection() {
 
         log.info("Running scheduled task to clean up user collection.");
         Set<String> activityKeys = activityMap.keySet();
 
         List<User> allGuests = userRepository.findByRolesContaining("GUEST");
-        if(allGuests == null || allGuests.isEmpty()) {
+        if (allGuests == null || allGuests.isEmpty()) {
             return;
         }
         for (User user : allGuests) {
@@ -80,19 +80,18 @@ public class SchedulerService {
      * Firstly it deletes any inactive users from the game sessions.
      * Next it checks the game session map for active game sessions and deletes any game sessions that have no connected users.
      */
-    @Scheduled(fixedRateString = "${codenames.scheduled.games-cleanup}")
+    @Scheduled(cron = "0 */15 * * * *")
     public void cleanGameSessionCollection() {
-        Set<String> gameSessionKeys = gameSessionMap.keySet();
         Set<String> activityKeys = activityMap.keySet();
         List<GameSession> allGameSessions = gameSessionMap.values().stream().toList();
-        if(allGameSessions.isEmpty()) {
+        if (allGameSessions.isEmpty()) {
             return;
         }
 
         for (GameSession gameSession : allGameSessions) {
             gameSession.getConnectedUsers().get(0).removeIf(user -> !activityKeys.contains(user.getId()));
             gameSession.getConnectedUsers().get(1).removeIf(user -> !activityKeys.contains(user.getId()));
-            if(gameSession.getConnectedUsers().get(0).isEmpty() && gameSession.getConnectedUsers().get(1).isEmpty()) {
+            if (gameSession.getConnectedUsers().get(0).isEmpty() && gameSession.getConnectedUsers().get(1).isEmpty()) {
                 gameSessionMap.delete(gameSession.getSessionId());
             }
         }
