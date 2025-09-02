@@ -125,7 +125,7 @@ const App: React.FC = () => {
           },
           credentials: "include"
       });
-    }, 1000);
+    }, 1000 * 60 * 15);
 
   return (
     <Router>
