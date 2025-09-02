@@ -1,15 +1,13 @@
-Gameplay adjustments
+Fixed invite link and entering the website into the noneexistant lobby
 **🔧 What's included in this release?**
-I adjusted gameplay view
+Fixes and QoL changes
 
 Key additions: 
-- card flip on mouse enter
-- removed card shelf
-- increased chat size
+- Moving gameId to session storage
+- Fixing invite link
 
 **🚧 What's still under development?**
-- chat is ugly idk
-- furthure improvements
+- Further improvements and QoL changes
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 
