@@ -40,9 +40,8 @@ public class SchedulerService {
 
     /**
      * Constructor for SchedulerService.
-     *
      * @param hazelcastInstance the Hazelcast instance used for distributed data storage
-     * @param userRepository    the user repository used for CRUD operations
+     * @param userRepository the user repository used for CRUD operations
      */
     public SchedulerService(HazelcastInstance hazelcastInstance, UserRepository userRepository) {
         this.activityMap = hazelcastInstance.getMap("activeUsers");

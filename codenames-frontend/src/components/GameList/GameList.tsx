@@ -182,7 +182,7 @@ const GameList: React.FC<GameListProps> = ({
       setSelectedSessionId(sessionId);
       setIsPasswordOverlayOpen(true);
     } else {
-      localStorage.setItem("gameId", sessionId);
+      sessionStorage.setItem("gameId", sessionId);
       navigate("/game-lobby");
     }
   };
@@ -208,7 +208,7 @@ const GameList: React.FC<GameListProps> = ({
     const result = await response.json();
 
     if (result) {
-      localStorage.setItem("gameId", selectedSessionId);
+      sessionStorage.setItem("gameId", selectedSessionId);
       navigate("/game-lobby");
     } else {
       newErrors.push({

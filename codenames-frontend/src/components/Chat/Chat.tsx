@@ -58,7 +58,7 @@ const Chat: React.FC = () => {
    * Initializes the game ID from local storage when the component mounts.
    */
   useEffect(() => {
-    setGameId(localStorage.getItem("gameId") || "");
+    setGameId(sessionStorage.getItem("gameId") || "");
   }, []);
 
   /**
