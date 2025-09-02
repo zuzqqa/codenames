@@ -203,6 +203,7 @@ public class DefaultGameStateService implements GameStateService {
 
         if (gameState.getHintNumber() == -1 || (gameState.getCardsColors()[cardIndex] == 0)) {
             gameState.setHintNumber(0);
+            gameState.setInitialHintNumber("0");
             this.toogleTurn(gameSession);
         }
 

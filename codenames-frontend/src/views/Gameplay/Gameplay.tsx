@@ -92,6 +92,7 @@ interface GameState {
   teamTurn: number;
   hint: string;
   hintNumber: string;
+  initialHintNumber: string;
   cards: string[];
   cardsColors: number[];
   cardsChosen: number[];
@@ -858,6 +859,7 @@ const Gameplay: React.FC<GameplayProps> = ({
       if (isHintTime && gameSession?.gameState?.hintNumber === "0") {
         if (gameSession && gameSession.gameState) {
           gameSession.gameState.hintNumber = String(cardNumber);
+          gameSession.gameState.initialHintNumber = "0";
         }
       }
 
@@ -896,13 +898,14 @@ const Gameplay: React.FC<GameplayProps> = ({
     if (!amIRedTeamLeader && !amIBlueTeamLeader) return;
 
     try {
+      console.log(JSON.stringify({ hint: cardText, hintNumber: cardNumber, initialHintNumber: cardNumber }));
       await fetch(`${apiUrl}/api/game-session/${storedGameId}/send-hint`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           credentials: "include",
         },
-        body: JSON.stringify({ hint: cardText, hintNumber: cardNumber }),
+        body: JSON.stringify({ hint: cardText, hintNumber: cardNumber, initialHintNumber: cardNumber }),
       });
 
       setCardText("");
@@ -1228,7 +1231,7 @@ const Gameplay: React.FC<GameplayProps> = ({
                   <span>
                     {gameSession?.gameState.hintNumber === "0"
                       ? ""
-                      : gameSession?.gameState.hintNumber}
+                      : gameSession?.gameState.hintNumber + '/' + gameSession?.gameState.initialHintNumber}
                   </span>
                 </div>
                 <img className="codename-card" src={cardBlackImg} />
@@ -1308,6 +1311,14 @@ const Gameplay: React.FC<GameplayProps> = ({
                   // type="submit"
                   variant="primary"
                   soundFXVolume={soundFXVolume}
+                  onClick={() => setIsCardVisible(false)}
+                >
+                  <span className="button-text">{t("cancel-button")}</span>
+                </Button>
+                <Button
+                  // type="submit"
+                  variant="primary"
+                  soundFXVolume={soundFXVolume}
                   onClick={() => {
                     if (validateCardText(cardText)) {
                       sendHint();
@@ -1318,14 +1329,6 @@ const Gameplay: React.FC<GameplayProps> = ({
                   }}
                 >
                   <span className="button-text">{t("confirm-button")}</span>
-                </Button>
-                <Button
-                  // type="submit"
-                  variant="primary"
-                  soundFXVolume={soundFXVolume}
-                  onClick={() => setIsCardVisible(false)}
-                >
-                  <span className="button-text">{t("cancel-button")}</span>
                 </Button>
               </div>
             </div>
