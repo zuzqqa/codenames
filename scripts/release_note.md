@@ -1,12 +1,12 @@
-🎮 Alpha Release – Early version of the game
+Google authentication fix
 **🔧 What's included in this release?**
-Modified hint number display in gameplay
+This release introduces new authentication option.
 
 Key additions: 
-- added `initialHintNumber` to `GameState`
+- Brand new google authentication button variant.
 
 **🚧 What's still under development?**
-- QoL updates
+- Minor fixes.
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 

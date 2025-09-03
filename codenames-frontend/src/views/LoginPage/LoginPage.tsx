@@ -22,12 +22,12 @@ import { useNavigate, useLocation, createCookie } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { apiUrl } from "../../config/api.tsx";
 import { secure } from "../../config/api.tsx";
-import {useToast} from "../../components/Toast/ToastContext.tsx";
+import { useToast } from "../../components/Toast/ToastContext.tsx";
 import { createGuestUser } from "../Home/Home.tsx";
-
+import GoogleLoginButton from "../../components/GoogleAuthentication/GoogleLoginButton.tsx";
 
 const generateId = () =>
-    Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+  Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 
 /**
  * Props type definition for the LoginPage component.
@@ -45,10 +45,10 @@ interface LoginProps {
  * @returns {JSX.Element} The rendered LoginPage component.
  */
 const LoginPage: React.FC<LoginProps> = ({
-                                           setVolume,
-                                           soundFXVolume,
-                                           setSoundFXVolume,
-                                         }) => {
+  setVolume,
+  soundFXVolume,
+  setSoundFXVolume,
+}) => {
   const [login, setLogin] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [musicVolume, setMusicVolume] = useState(() => {
@@ -118,16 +118,13 @@ const LoginPage: React.FC<LoginProps> = ({
 
     const userData = { username: login, password };
 
-    const response = await fetch(
-        `${apiUrl}/api/users/authenticate`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(userData),
-        }
-    );
+    const response = await fetch(`${apiUrl}/api/users/authenticate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    });
 
     let data;
     try {
@@ -172,134 +169,125 @@ const LoginPage: React.FC<LoginProps> = ({
   };
 
   return (
-      <BackgroundContainer>
-        <GameTitleBar />
-        <SettingsModal
-            isOpen={isSettingsOpen}
-            onClose={toggleSettings}
-            musicVolume={musicVolume}
-            soundFXVolume={soundFXVolume}
-            setMusicVolume={updateMusicVolume}
-            setSoundFXVolume={setSoundFXVolume}
-        />
-        <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
-          <img src={settingsIcon} alt="Settings" />
+    <BackgroundContainer>
+      <GameTitleBar />
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={toggleSettings}
+        musicVolume={musicVolume}
+        soundFXVolume={soundFXVolume}
+        setMusicVolume={updateMusicVolume}
+        setSoundFXVolume={setSoundFXVolume}
+      />
+      <Button
+        variant="circle"
+        soundFXVolume={soundFXVolume}
+        onClick={toggleSettings}
+      >
+        <img src={settingsIcon} alt="Settings" />
+      </Button>
+      <Button
+        className="back-button"
+        variant={"circle-back"}
+        onClick={() => navigate("/home")}
+        soundFXVolume={soundFXVolume}
+      >
+        <img src={backButtonIcon} alt="Back" className="btn-arrow-back" />
+      </Button>
+      {document.cookie
+        .split("; ")
+        .find((cookie) => cookie.startsWith("loggedIn=")) && (
+        <Button variant="logout" soundFXVolume={soundFXVolume}>
+          <img src={logoutButton} onClick={logout} alt="Logout" />
         </Button>
-          <Button
-              className="back-button"
-              variant={"circle-back"}
-              onClick={() => navigate("/home")}
-              soundFXVolume={soundFXVolume}
-          >
-              <img src={backButtonIcon} alt="Back" className="btn-arrow-back" />
-          </Button>
-        {document.cookie
-            .split("; ")
-            .find((cookie) => cookie.startsWith("loggedIn=")) && (
-            <Button variant="logout" soundFXVolume={soundFXVolume}>
-              <img src={logoutButton} onClick={logout} alt="Logout" />
-            </Button>
-        )}
-        <LoginRegisterContainer variant="login">
-          <TitleComponent
-              soundFXVolume={soundFXVolume}
-              customStyle={{
-                fontSize: "calc(3.6rem + 0.2vw)",
-                textAlign: "left",
-                position: "absolute",
-                top: "calc(-27rem - 1vh)",
-                left: "1.2rem"
-              }}
-              shadowStyle={{
-                fontSize: "calc(3.6rem + 0.2vw)",
-                textAlign: "left",
-                position: "absolute",
-                top: "calc(-27rem - 1vh)",
-                left: "1.2rem"
-              }}
-          >
-            {t("login-button-text")}
-          </TitleComponent>
-          <div className="login-form-container">
-            <form className="login-form" onSubmit={handleSubmit}>
-              <FormInput
-                  type="text"
-                  placeholder="LOGIN"
-                  value={login}
-                  onChange={handleLoginChange}
-              />
-              <FormInput
-                  type="text"
-                  placeholder={t("PASSWORD")}
-                  value={
-                    !isPasswordVisible ? "●".repeat(password.length) : password
-                  }
-                  onChange={handlePasswordChange}
-                  button={
-                    <Button
-                        variant="eye"
-                        soundFXVolume={soundFXVolume}
-                        onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                    >
-                      <img
-                          src={isPasswordVisible ? eyeSlashIcon : eyeIcon}
-                          alt={isPasswordVisible ? "Hide password" : "Show password"}
-                      />
-                    </Button>
-                  }
-              />
-              <div
-                  className="reset-password"
-              >
-                <a
-                    className="reset-password-link"
-                    onClick={() => navigate("/send-reset-password")}
-                >
-                  {t("forgot-password-text")}
-                </a>
-              </div>
-              <Button
-                  type="submit"
-                  variant="primary"
+      )}
+      <LoginRegisterContainer variant="login">
+        <TitleComponent
+          soundFXVolume={soundFXVolume}
+          customStyle={{
+            fontSize: "calc(3.6rem + 0.2vw)",
+            textAlign: "left",
+            position: "absolute",
+            top: "calc(-27rem - 1vh)",
+            left: "1.2rem",
+          }}
+          shadowStyle={{
+            fontSize: "calc(3.6rem + 0.2vw)",
+            textAlign: "left",
+            position: "absolute",
+            top: "calc(-27rem - 1vh)",
+            left: "1.2rem",
+          }}
+        >
+          {t("login-button-text")}
+        </TitleComponent>
+        <div className="login-form-container">
+          <form className="login-form" onSubmit={handleSubmit}>
+            <FormInput
+              type="text"
+              placeholder="LOGIN"
+              value={login}
+              onChange={handleLoginChange}
+            />
+            <FormInput
+              type="text"
+              placeholder={t("PASSWORD")}
+              value={
+                !isPasswordVisible ? "●".repeat(password.length) : password
+              }
+              onChange={handlePasswordChange}
+              button={
+                <Button
+                  variant="eye"
                   soundFXVolume={soundFXVolume}
-              >
-                <span className="button-text">{t("submit-button")}</span>
-              </Button>
-            </form>
-            <div className="or-container">
-              <div className="gold-line"></div>
-              <span className="or-text">{t("or")}</span>
-              <div className="gold-line"></div>
-            </div>
-            <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-              <div className="google-container">
-                <GoogleLogin
-                    locale="en"
-                    onSuccess={() => {
-                      window.location.href =
-                          `${apiUrl}/oauth2/authorization/google`;
-                    }}
-                    onError={() => {
-                      console.log("Google login failed");
-                    }}
-                />
-              </div>
-            </GoogleOAuthProvider>
-            <a
-                className="login-register-link"
-                onClick={() => navigate("/register")}
-            >
-              {t("dont-have-an-account")}
-            </a>
-            <a
-                className="login-register-link guest-link"
-                onClick={() => createGuestUser(apiUrl, secure)}         
+                  onClick={() => setIsPasswordVisible(!isPasswordVisible)}
                 >
-              {t("or-continue-as-guset")}
-            </a>
+                  <img
+                    src={isPasswordVisible ? eyeSlashIcon : eyeIcon}
+                    alt={isPasswordVisible ? "Hide password" : "Show password"}
+                  />
+                </Button>
+              }
+            />
+            <div className="reset-password">
+              <a
+                className="reset-password-link"
+                onClick={() => navigate("/send-reset-password")}
+              >
+                {t("forgot-password-text")}
+              </a>
+            </div>
+            <Button
+              type="submit"
+              variant="primary"
+              soundFXVolume={soundFXVolume}
+            >
+              <span className="button-text">{t("submit-button")}</span>
+            </Button>
+          </form>
+          <div className="or-container">
+            <div className="gold-line"></div>
+            <span className="or-text">{t("or")}</span>
+            <div className="gold-line"></div>
           </div>
-        </LoginRegisterContainer>
-      </BackgroundContainer>
+          <div className="google-container">
+            <GoogleLoginButton soundFXVolume={soundFXVolume} />
+          </div>
+          <a
+            className="login-register-link"
+            onClick={() => navigate("/register")}
+          >
+            {t("dont-have-an-account")}
+          </a>
+          <a
+            className="login-register-link guest-link"
+            onClick={() => createGuestUser(apiUrl, secure)}
+          >
+            {t("or-continue-as-guset")}
+          </a>
+        </div>
+      </LoginRegisterContainer>
+    </BackgroundContainer>
   );
 };
 
