@@ -103,16 +103,28 @@ const App: React.FC = () => {
   }
 
   setInterval(async () => {
-    if (!isAuthenticated) return;
-    const token = getCookie("authToken");
+      if (!isAuthenticated) return;
+      const token = getCookie("authToken");
 
-    if (!userId || userId == "") {
-      const getIdResponse = await fetch(apiUrl + "/api/users/get-id", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        method: "GET",
-        credentials: "include",
+      if (!userId || userId == "") {
+          const getIdResponse = await fetch(apiUrl + "/api/users/get-id", {
+              headers: {
+                  "Authorization": `Bearer ${token}`,
+              },
+              method: "GET",
+              credentials: "include",
+          });
+          userId = await getIdResponse.text();
+          localStorage.setItem("userId", userId);
+      }
+      await fetch(apiUrl + '/api/users/activity', {
+          method: 'POST',
+          body: userId,
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+          },
+          credentials: "include"
       });
     }, 1000 * 60 * 15);
 
@@ -314,3 +326,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+
