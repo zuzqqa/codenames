@@ -92,6 +92,7 @@ interface GameState {
   teamTurn: number;
   hint: string;
   hintNumber: string;
+  initialHintNumber: string;
   cards: string[];
   cardsColors: number[];
   cardsChosen: number[];
@@ -128,7 +129,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [isCardVisible, setIsCardVisible] = useState(false);
   const [cardText, setCardText] = useState("");
   const [cardNumber, setCardNumber] = useState(1);
-  const storedGameId = localStorage.getItem("gameId");
+  const storedGameId = sessionStorage.getItem("gameId");
   const [gameSession, setGameSession] = useState<GameSession>();
   const [gameSessionData, setGameSessionData] = useState<GameSession>();
   const [redTeamPlayers, setRedTeamPlayers] = useState<User[]>([]);
@@ -258,7 +259,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     cardIndex: number,
     isAddingVote: boolean
   ) => {
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
     if (!storedGameId) return;
 
     try {
@@ -292,7 +293,7 @@ const Gameplay: React.FC<GameplayProps> = ({
    * @param {number} cardIndex - The index of the selected card.
    */
   const revealCard = (cardIndex: number) => {
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
     if (!storedGameId) return;
 
     try {
@@ -363,7 +364,7 @@ const Gameplay: React.FC<GameplayProps> = ({
    */
   useEffect(() => {
     const gameSocket = io(`${socketUrl}/game`, {
-      transports: ["websocket"],
+      transports: ["websocket", "polling"],
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
     });
@@ -858,13 +859,14 @@ const Gameplay: React.FC<GameplayProps> = ({
       if (isHintTime && gameSession?.gameState?.hintNumber === "0") {
         if (gameSession && gameSession.gameState) {
           gameSession.gameState.hintNumber = String(cardNumber);
+          gameSession.gameState.initialHintNumber = "0";
         }
       }
 
       return;
     }
 
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
 
     // Dla change-turn
     console.log("Calling change-turn with gameId:", storedGameId);
@@ -891,18 +893,19 @@ const Gameplay: React.FC<GameplayProps> = ({
   const sendHint = async () => {
     if (!cardText.trim()) return;
 
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
 
     if (!amIRedTeamLeader && !amIBlueTeamLeader) return;
 
     try {
+      console.log(JSON.stringify({ hint: cardText, hintNumber: cardNumber, initialHintNumber: cardNumber }));
       await fetch(`${apiUrl}/api/game-session/${storedGameId}/send-hint`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           credentials: "include",
         },
-        body: JSON.stringify({ hint: cardText, hintNumber: cardNumber }),
+        body: JSON.stringify({ hint: cardText, hintNumber: cardNumber, initialHintNumber: cardNumber }),
       });
 
       setCardText("");
@@ -930,7 +933,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   };
 
   const disconnectUser = () => {
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
     if (gameSocketRef.current) {
       gameSocketRef.current.emit("disconnectUser", userId, storedGameId);
     }
@@ -948,7 +951,7 @@ const Gameplay: React.FC<GameplayProps> = ({
       }
     )
       .then(() => {
-        localStorage.removeItem("gameId");
+        sessionStorage.removeItem("gameId");
         navigate("/games");
       })
       .catch((error) => {
@@ -1228,7 +1231,7 @@ const Gameplay: React.FC<GameplayProps> = ({
                   <span>
                     {gameSession?.gameState.hintNumber === "0"
                       ? ""
-                      : gameSession?.gameState.hintNumber}
+                      : gameSession?.gameState.hintNumber + '/' + gameSession?.gameState.initialHintNumber}
                   </span>
                 </div>
                 <img className="codename-card" src={cardBlackImg} />
@@ -1308,6 +1311,14 @@ const Gameplay: React.FC<GameplayProps> = ({
                   // type="submit"
                   variant="primary"
                   soundFXVolume={soundFXVolume}
+                  onClick={() => setIsCardVisible(false)}
+                >
+                  <span className="button-text">{t("cancel-button")}</span>
+                </Button>
+                <Button
+                  // type="submit"
+                  variant="primary"
+                  soundFXVolume={soundFXVolume}
                   onClick={() => {
                     if (validateCardText(cardText)) {
                       sendHint();
@@ -1318,14 +1329,6 @@ const Gameplay: React.FC<GameplayProps> = ({
                   }}
                 >
                   <span className="button-text">{t("confirm-button")}</span>
-                </Button>
-                <Button
-                  // type="submit"
-                  variant="primary"
-                  soundFXVolume={soundFXVolume}
-                  onClick={() => setIsCardVisible(false)}
-                >
-                  <span className="button-text">{t("cancel-button")}</span>
                 </Button>
               </div>
             </div>

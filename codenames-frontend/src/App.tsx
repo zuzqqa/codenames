@@ -114,19 +114,7 @@ const App: React.FC = () => {
         method: "GET",
         credentials: "include",
       });
-      userId = await getIdResponse.text();
-      localStorage.setItem("userId", userId);
-    }
-    await fetch(apiUrl + "/api/users/activity", {
-      method: "POST",
-      body: userId,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: "include",
-    });
-  }, 1000);
+    }, 1000 * 60 * 15);
 
   return (
     <Router>

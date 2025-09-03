@@ -3,7 +3,7 @@ Google authentication fix
 This release introduces new authentication option.
 
 Key additions: 
-- Brand new google button variant.[D[D[D[D[D[D[D[D[D[D[D[D[D[D[Dauthentication button variant.
+- Brand new google authentication button variant.
 
 **🚧 What's still under development?**
 - Minor fixes.

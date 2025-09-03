@@ -98,7 +98,7 @@ const Home: React.FC<HomeProps> = ({
   useEffect(() => {
     const loggedIn = Cookies.get("loggedIn"); // Retrieve the cookie value
 
-    if (localStorage.getItem("gameId") && loggedIn === "true") {
+    if (sessionStorage.getItem("gameId") && loggedIn === "true") {
       // If a game ID exists in localStorage and the user is logged in, navigate to the loading page
       navigate("/game-lobby");
     }

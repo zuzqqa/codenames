@@ -127,7 +127,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
   }, [musicVolume]);
   
   useEffect(() => {
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
 
     if (timeLeft <= 0) {
       endPool();
@@ -165,7 +165,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     }, 1000);
 
     const gameSocket = io(`${socketUrl}/game`, {
-      transports: ["websocket"],
+      transports: ["websocket", "polling"],
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
     });
@@ -238,7 +238,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
    * @async
    */
   const endPool = async () => {
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
 
     if (storedGameId) {
       await fetch(
@@ -281,7 +281,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
    * @async
    */
   const send_vote = async () => {
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
 
     if (storedGameId && selectedPlayer) {
       const voteRequest = {

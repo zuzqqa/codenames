@@ -9,10 +9,10 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "codenames-socket-io-server": "file:",
     "express": "^5.1.0",
     "socket.io": "^4.8.1"
-  }
+  },
+  "description": ""
 }

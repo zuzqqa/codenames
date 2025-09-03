@@ -7,7 +7,7 @@ import { apiUrl } from "../config/api.tsx";
  */
 export const logout = () => {
   localStorage.removeItem("userId");
-  localStorage.removeItem("gameId");
+  sessionStorage.removeItem("gameId");
 
   Cookies.remove("authToken");
   Cookies.remove("loggedIn");

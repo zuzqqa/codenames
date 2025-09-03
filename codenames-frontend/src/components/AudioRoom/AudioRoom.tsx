@@ -46,7 +46,7 @@ interface UserRoomLobbyDTO {
  * @returns A unique game ID from local storage or generates a new one if it doesn't exist.
  */
 const getGameIDFromLocalStorage = () => {
-  return localStorage.getItem("gameId");
+  return sessionStorage.getItem("gameId");
 };
 
 /**
@@ -60,7 +60,7 @@ const ROOM_ID = getGameIDFromLocalStorage();
  * @returns A Socket.IO connection to the server.
  */
 const chatNamespace = io(`${socketUrl}/voice`, {
-  transports: ["websocket"],
+  transports: ["websocket", "polling"],
   reconnectionAttempts: 5,
   reconnectionDelay: 1000,
 });
@@ -103,7 +103,7 @@ const AudioRoom: React.FC<AudioRoomProps> = ({ soundFXVolume }) => {
    * @returns {void}
    */
   useEffect(() => {
-    const storedGameId = localStorage.getItem("gameId");
+    const storedGameId = sessionStorage.getItem("gameId");
     const token = Cookies.get("authToken");
     if (storedGameId) {
       fetch(`${apiUrl}/api/game-session/${storedGameId}/get-connected-users`)

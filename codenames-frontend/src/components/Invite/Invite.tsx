@@ -17,7 +17,7 @@ const Invite: React.FC<InviteProps> = () => {
     useEffect(() => {
         console.log(gameId);
         if (gameId) {
-            localStorage.setItem("gameId", gameId);
+            sessionStorage.setItem("gameId", gameId);
             navigate("/loading");
         }
     }, [gameId]);
