@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import lombok.ToString;
 import org.example.codenames.user.entity.User;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@ToString
 public class GameState {
     /**
      * Blue team leader
@@ -74,6 +76,11 @@ public class GameState {
      * Hint number
      */
     private int hintNumber = 1;
+
+    /**
+     * Initial hint number
+     */
+    private String initialHintNumber = "1";
 
     /**
      * Is hint turn

@@ -40,6 +40,7 @@ public class GameStateCompactSerializer implements CompactSerializer<GameState> 
 
         writer.writeString("hint", gs.getHint());
         writer.writeInt32("hintNumber", gs.getHintNumber());
+        writer.writeString("initialHintNumber", gs.getInitialHintNumber());
         writer.writeBoolean("isHintTurn", gs.isHintTurn());
         writer.writeBoolean("isGuessingTurn", gs.isGuessingTurn());
     }
@@ -67,6 +68,7 @@ public class GameStateCompactSerializer implements CompactSerializer<GameState> 
 
         gs.setHint(reader.readString("hint"));
         gs.setHintNumber(reader.readInt32("hintNumber"));
+        gs.setInitialHintNumber(reader.readString("initialHintNumber"));
         gs.setHintTurn(reader.readBoolean("isHintTurn"));
         gs.setGuessingTurn(reader.readBoolean("isGuessingTurn"));
 
