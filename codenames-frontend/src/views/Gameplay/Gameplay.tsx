@@ -363,7 +363,7 @@ const Gameplay: React.FC<GameplayProps> = ({
    */
   useEffect(() => {
     const gameSocket = io(`${socketUrl}/game`, {
-      transports: ["websocket"],
+      transports: ["websocket", "polling"],
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
     });
