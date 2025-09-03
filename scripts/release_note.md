@@ -1,15 +1,12 @@
-Gameplay adjustments
+Google authentication fix
 **🔧 What's included in this release?**
-I adjusted gameplay view
+This release introduces new authentication option.
 
 Key additions: 
-- card flip on mouse enter
-- removed card shelf
-- increased chat size
+- Brand new google button variant.[D[D[D[D[D[D[D[D[D[D[D[D[D[D[Dauthentication button variant.
 
 **🚧 What's still under development?**
-- chat is ugly idk
-- furthure improvements
+- Minor fixes.
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 

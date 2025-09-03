@@ -27,7 +27,8 @@ import ResetPasswordPage from "./views/ResetPassword/ResetPasswordPage.tsx";
 import ResetPasswordRequestPage from "./views/ResetPassword/ResetPasswordRequestPage.tsx";
 import Invite from "./components/Invite/Invite.tsx";
 import { apiUrl } from "./config/api.tsx";
-import {getCookie} from "./shared/utils.tsx"; // Importing API URL
+import { getCookie } from "./shared/utils.tsx"; // Importing API URL
+import AuthCallback from "./shared/authCallback.tsx";
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -102,30 +103,30 @@ const App: React.FC = () => {
   }
 
   setInterval(async () => {
-      if (!isAuthenticated) return;
-      const token = getCookie("authToken");
+    if (!isAuthenticated) return;
+    const token = getCookie("authToken");
 
-      if (!userId || userId == "") {
-          const getIdResponse = await fetch(apiUrl + "/api/users/get-id", {
-              headers: {
-                  "Authorization": `Bearer ${token}`,
-              },
-              method: "GET",
-              credentials: "include",
-          });
-          userId = await getIdResponse.text();
-          localStorage.setItem("userId", userId);
-      }
-      await fetch(apiUrl + '/api/users/activity', {
-          method: 'POST',
-          body: userId,
-          headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-          },
-          credentials: "include"
+    if (!userId || userId == "") {
+      const getIdResponse = await fetch(apiUrl + "/api/users/get-id", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        method: "GET",
+        credentials: "include",
       });
-    }, 1000);
+      userId = await getIdResponse.text();
+      localStorage.setItem("userId", userId);
+    }
+    await fetch(apiUrl + "/api/users/activity", {
+      method: "POST",
+      body: userId,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: "include",
+    });
+  }, 1000);
 
   return (
     <Router>
@@ -160,24 +161,24 @@ const App: React.FC = () => {
           path="/reset-password/*"
           element={
             <ResetPasswordPage
-                setVolume={setVolume}
-                setSoundFXVolume={setSoundFX}
-                soundFXVolume={soundFXVolume}
+              setVolume={setVolume}
+              setSoundFXVolume={setSoundFX}
+              soundFXVolume={soundFXVolume}
             />
           }
         />
         <Route
           path="/send-reset-password"
           element={
-              isAuthenticated ? (
-                  <Navigate to="/games" replace />
-              ) : (
-                  <ResetPasswordRequestPage
-                      setVolume={setVolume}
-                      setSoundFXVolume={setSoundFX}
-                      soundFXVolume={soundFXVolume}
-                  />
-              )
+            isAuthenticated ? (
+              <Navigate to="/games" replace />
+            ) : (
+              <ResetPasswordRequestPage
+                setVolume={setVolume}
+                setSoundFXVolume={setSoundFX}
+                soundFXVolume={soundFXVolume}
+              />
+            )
           }
         />
         <Route
@@ -297,12 +298,7 @@ const App: React.FC = () => {
             />
           }
         />
-        <Route
-          path="/invite/:gameId"
-          element={
-            <Invite/>
-          }
-        />
+        <Route path="/invite/:gameId" element={<Invite />} />
         {/* Fallback route */}
         <Route
           path="*"
@@ -312,6 +308,16 @@ const App: React.FC = () => {
             ) : (
               <Navigate to="/" replace />
             )
+          }
+        />
+        <Route
+          path="/auth/callback"
+          element={
+            <AuthCallback
+              setVolume={setVolume}
+              setSoundFXVolume={setSoundFX}
+              soundFXVolume={soundFXVolume}
+            />
           }
         />
       </Routes>

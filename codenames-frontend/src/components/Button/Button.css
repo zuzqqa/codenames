@@ -265,7 +265,7 @@
 .btn-number-stepper {
   background: transparent;
   color: #f9e9d1;
-  border: 2px solid #C1BBAF;
+  border: 2px solid #c1bbaf;
   border-radius: 50%;
   width: 2.5vw;
   height: 2.5vw;
@@ -286,4 +286,17 @@
 .btn-number-stepper:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.btn-google {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  border-width: 0.125rem;
+  border-color: #fcf18b;
+  background-image: linear-gradient(to top, #22303b, #0b1319);
 }
