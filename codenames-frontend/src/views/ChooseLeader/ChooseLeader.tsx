@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Hook for programmatic navigation
 import { useTranslation } from "react-i18next"; // Hook for translations
-import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
 
 import BackgroundContainer from "../../containers/Background/Background";
 
@@ -20,6 +18,7 @@ import { formatTime } from "../../shared/utils";
 import { apiUrl, socketUrl } from "../../config/api.tsx";
 import { getUserId } from "../../shared/utils.tsx";
 import { io } from "socket.io-client";
+import UsernameContainer from "../../containers/UsernameContainer/UsernameContainer.tsx";
 
 /**
  * Props for the ChooseLeader component.
@@ -108,16 +107,20 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
   const [musicVolume, setMusicVolume] = useState(() => {
     const savedVolume = localStorage.getItem("musicVolume");
     return savedVolume ? parseFloat(savedVolume) : 50;
-  });  
+  });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
-  const [selectedPlayer, setSelectedPlayer] = useState<UserRoomLobbyDTO | null>(null);
+  const [selectedPlayer, setSelectedPlayer] = useState<UserRoomLobbyDTO | null>(
+    null
+  );
   const timeForVoting = 10; // Time for voting in seconds
   const [votingStartTime, setVotingStartTime] = useState<number>(Date.now()); // Voting start time
   const [timeLeft, setTimeLeft] = useState(timeForVoting); // Timer state (2 minutes = 120 seconds)
   const navigate = useNavigate(); // Hook for navigation
   const { t } = useTranslation(); // Hook for translations
   const [redTeamPlayers, setRedTeamPlayers] = useState<UserRoomLobbyDTO[]>([]);
-  const [blueTeamPlayers, setBlueTeamPlayers] = useState<UserRoomLobbyDTO[]>([]);
+  const [blueTeamPlayers, setBlueTeamPlayers] = useState<UserRoomLobbyDTO[]>(
+    []
+  );
   const [myTeam, setMyTeam] = useState<string | null>(null);
   const [isVoteCasted, setIsVoteCasted] = useState<boolean>(false);
   const [userId, setUserId] = useState<string | null>();
@@ -125,7 +128,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
   useEffect(() => {
     localStorage.setItem("musicVolume", musicVolume.toString());
   }, [musicVolume]);
-  
+
   useEffect(() => {
     const storedGameId = sessionStorage.getItem("gameId");
 
@@ -176,32 +179,31 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
       }
     });
 
-    gameSocket.on(
-      "gameSessionUpdate",
-      (updatedGameSessionJson: string) => {
-        try {
-          const updatedGameSession: GameSessionRoomLobbyDTO = JSON.parse(updatedGameSessionJson);
-          
-          if(updatedGameSession.connectedUsers) {
-            setRedTeamPlayers(updatedGameSession.connectedUsers[0] || []);
-            setBlueTeamPlayers(updatedGameSession.connectedUsers[1] || []);
-          }
+    gameSocket.on("gameSessionUpdate", (updatedGameSessionJson: string) => {
+      try {
+        const updatedGameSession: GameSessionRoomLobbyDTO = JSON.parse(
+          updatedGameSessionJson
+        );
 
-          if (updatedGameSession.status === "LEADER_SELECTION") {
-            navigate("/choose-leader");
-          }
-        } catch (err) {
-          console.error("Error parsing gameSessionsList JSON:", err);
+        if (updatedGameSession.connectedUsers) {
+          setRedTeamPlayers(updatedGameSession.connectedUsers[0] || []);
+          setBlueTeamPlayers(updatedGameSession.connectedUsers[1] || []);
         }
+
+        if (updatedGameSession.status === "LEADER_SELECTION") {
+          navigate("/choose-leader");
+        }
+      } catch (err) {
+        console.error("Error parsing gameSessionsList JSON:", err);
       }
-    );
+    });
 
     gameSocket.on("connect_error", (error) => {
       console.error("Game socket connection error:", error);
     });
 
     return () => {
-      clearInterval(timer); 
+      clearInterval(timer);
       gameSocket.disconnect();
     };
   }, [timeLeft, navigate]);
@@ -311,7 +313,11 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     <>
       <BackgroundContainer>
         <GameTitleBar />
-        <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
+        <Button
+          variant="circle"
+          soundFXVolume={soundFXVolume}
+          onClick={toggleSettings}
+        >
           <img src={settingsIcon} alt="Settings" />
         </Button>
         <SettingsModal
@@ -320,8 +326,8 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
           musicVolume={musicVolume}
           soundFXVolume={soundFXVolume}
           setMusicVolume={(volume) => {
-            setMusicVolume(volume); 
-            setVolume(volume / 100); 
+            setMusicVolume(volume);
+            setVolume(volume / 100);
           }}
           setSoundFXVolume={setSoundFXVolume}
         />
@@ -416,6 +422,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
             </div>
           </div>
         </div>
+        <UsernameContainer />
       </BackgroundContainer>
     </>
   );

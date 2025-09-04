@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react"; // Hook for managing component state
 import { io } from "socket.io-client";
-import { useTranslation } from "react-i18next"; // Hook for translations
 
 import BackgroundContainer from "../../containers/Background/Background";
 
@@ -15,6 +14,7 @@ import logoutButton from "../../assets/icons/logout.svg";
 
 import { getCookie, logout } from "../../shared/utils.tsx";
 import { apiUrl, socketUrl } from "../../config/api.tsx";
+import UsernameContainer from "../../containers/UsernameContainer/UsernameContainer.tsx";
 
 /**
  * Props type definition for the JoinGame component.
@@ -89,10 +89,7 @@ const JoinGame: React.FC<JoinGameProps> = ({
     []
   );
   const [isGuest, setIsGuest] = useState<boolean | null>(null);
-  const [username, setUsername] = useState<string | null>(null);
 
-  const { t } = useTranslation(); // Hook for translations
-  
   useEffect(() => {
     localStorage.setItem("musicVolume", musicVolume.toString());
   }, [musicVolume]);
@@ -173,30 +170,6 @@ const JoinGame: React.FC<JoinGameProps> = ({
     fetchGuestStatus();
   }, []);
 
-    useEffect(() => {
-      const fetchUsername = async () => {
-        try {
-          const response = await fetch(`${apiUrl}/api/users/get-username`, {
-            method: "GET",
-            credentials: "include"
-          });
-  
-          if (response.ok) {
-            const text = await response.text();
-            if (text !== "null") {
-              setUsername(text);
-            }
-          } else {
-            console.error("Failed to fetch username");
-          }
-        } catch (error) {
-          console.error("Error fetching username", error);
-        }
-      };
-  
-      fetchUsername();
-    }, []);
-
   /**
    * Fetches all available game sessions from the backend.
    * Only sessions in the "CREATED" state are stored.
@@ -229,7 +202,11 @@ const JoinGame: React.FC<JoinGameProps> = ({
   return (
     <>
       <BackgroundContainer>
-        <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
+        <Button
+          variant="circle"
+          soundFXVolume={soundFXVolume}
+          onClick={toggleSettings}
+        >
           <img src={settingsIcon} alt="Settings" />
         </Button>
 
@@ -240,7 +217,7 @@ const JoinGame: React.FC<JoinGameProps> = ({
           soundFXVolume={soundFXVolume}
           setMusicVolume={(volume) => {
             setMusicVolume(volume);
-            setVolume(volume / 100); 
+            setVolume(volume / 100);
           }}
           setSoundFXVolume={setSoundFXVolume}
         />
@@ -271,11 +248,7 @@ const JoinGame: React.FC<JoinGameProps> = ({
             setFilteredSessions={setFilteredGames}
           />
         </>
-        {username && (
-          <div className="logged-in-user gold-text">
-            { t('logged-in-as') } {username}
-          </div>
-        )}
+        <UsernameContainer />
       </BackgroundContainer>
     </>
   );

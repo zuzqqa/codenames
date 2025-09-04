@@ -43,7 +43,6 @@ export async function createGuestUser(apiUrl: string, secure: string) {
   }
 }
 
-
 /**
  * Props type definition for the Home component.
  */
@@ -106,7 +105,6 @@ const Home: React.FC<HomeProps> = ({
     // Ensure 'loggedIn' is true
     if (loggedIn === "true") {
       navigate("/games"); // Redirect to /games if logged in
-
     }
   }, [navigate]);
 
@@ -133,10 +131,8 @@ const Home: React.FC<HomeProps> = ({
           setSoundFXVolume={setSoundFXVolume}
         />
 
-        {/* Render content based on game state */}
         {isGameStarted ? (
           <>
-            {/* Settings button */}
             <Button variant="circle" soundFXVolume={soundFXVolume}>
               <img
                 src={settingsIcon}
@@ -145,7 +141,6 @@ const Home: React.FC<HomeProps> = ({
                 className="settings-icon"
               />
             </Button>
-            {/* Game content when started */}
             <TitleComponent soundFXVolume={soundFXVolume}>
               Codenames
             </TitleComponent>
@@ -154,7 +149,6 @@ const Home: React.FC<HomeProps> = ({
               {t("home-subtitle")}
             </SubtitleComponent>
             <MenuContainer>
-              {/* Menu for login and registration */}
               <div className="first-column">
                 <div className="row1">
                   <Button
@@ -211,15 +205,18 @@ const Home: React.FC<HomeProps> = ({
                   Your mission begins now
                 </SubtitleComponent>
                 <div className="start-button">
-                {/* Start game button */}
-                <Button
-                  variant="primary"
-                  onClick={startGame}
-                  soundFXVolume={soundFXVolume}
-                >
-                  <span className="button-text"> {t("play-button-text")}</span>
-                </Button>
-              </div>
+                  {/* Start game button */}
+                  <Button
+                    variant="primary"
+                    onClick={startGame}
+                    soundFXVolume={soundFXVolume}
+                  >
+                    <span className="button-text">
+                      {" "}
+                      {t("play-button-text")}
+                    </span>
+                  </Button>
+                </div>
               </div>
             </div>
           </>
