@@ -37,14 +37,5 @@
   margin: auto;
   z-index: 3;
 
-  background-image: linear-gradient(to right, #dab274, #745f3e);
-}
-
-.logged-in-user {
-  position: fixed;
-  bottom: 1.5%;
-  left: 2.5%;
-  font-size: 1rem;
-  z-index: 1000;
-  letter-spacing: 1px;
+  background-image: linear-gradient(to right, #5e4c32, #745f3e);
 }

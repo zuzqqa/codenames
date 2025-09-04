@@ -1,10 +1,10 @@
 .list-background {
   background-color: #0e1724;
   opacity: 30%;
-  height: 75%;
+  height: 80%;
   margin-top: 9%;
   border-radius: 17px;
-  width: 77.6%;
+  width: 80%;
   position: absolute;
   left: 50%;
   transform: translate(-53.22%, 0);
@@ -24,7 +24,7 @@
 }
 
 .list-content {
-  margin: 0 auto;
+  margin: 2% auto;
   overflow: hidden;
   list-style: none;
   display: flex;
@@ -33,7 +33,7 @@
   border-radius: 17px;
   background: linear-gradient(360deg, #f0e0b5 0%, #eed8b0 88.89%);
   box-shadow: inset 0 20px 30px rgba(0, 0, 0, 0.3);
-  width: 97%;
+  width: 95%;
 }
 
 .list-container li {
@@ -62,7 +62,6 @@ button.variant-session:hover {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }
 
-/* Room info container */
 .room-info {
   display: grid;
   grid-template-columns: 80% 20%;
@@ -85,7 +84,6 @@ button.variant-session:hover {
   grid-row: 2;
 }
 
-/* Custom Scrollbar */
 .list-container::-webkit-scrollbar {
   width: 18px;
 }
@@ -181,12 +179,12 @@ button.variant-session:hover {
 
 .simple-search-bar {
   grid-area: 2 / 2;
-  width: 72%;
+  width: 70%;
   max-width: 600px;
   margin: 0 auto;
   position: absolute;
   left: 50%;
-  transform: translate(-57%, 0);
+  transform: translate(-59%, -30%);
 }
 
 .simple-search-bar input {

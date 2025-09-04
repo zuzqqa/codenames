@@ -7,7 +7,6 @@
   background-size: cover;
   background-position: center;
 
-  /* Flexbox for centering content */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -16,19 +15,19 @@
 
 .first-column {
   display: grid;
-  grid-template-rows: 0.8fr 0.8fr; /* Two rows of equal height */
-  grid-row: 2 / span 2; /* Spans rows in the grid */
+  grid-template-rows: 0.8fr 0.8fr; 
+  grid-row: 2 / span 2; 
 }
 
 .row1,
 .row2 {
-  display: flex; /* Flexbox for centering items */
+  display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .row2 {
-  padding-top: 1rem; /* Add space above the second row */
+  padding-top: 1rem; 
 }
 
 .second-column {
@@ -43,15 +42,14 @@
 
 .gold-bar {
   grid-column: 2;
-  grid-row: 1 / span 4; /* Spans all rows */
+  grid-row: 1 / span 4; 
 
   height: 62.7%;
   width: 2px;
   margin: auto;
   z-index: 3;
 
-  /* Gold gradient effect */
-  background-image: linear-gradient(to right, #dab274, #745f3e);
+  background-image: linear-gradient(to right, #5e4c32, #745f3e);
 }
 
 .start-container {

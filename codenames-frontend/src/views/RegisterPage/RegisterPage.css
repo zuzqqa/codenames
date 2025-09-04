@@ -176,12 +176,12 @@
   background-color: #1B74BB !important;
 }
 
-.or-container {
+.or-container-register {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  margin-top: 15px;
+  margin-top: 0;
 }
 
 .or-text {
@@ -199,10 +199,4 @@
   height: 2px;
   max-width: 30%;
   background: linear-gradient(to right, transparent, #FFD363, transparent);
-}
-
-.back-button {
-  position: absolute;
-  top: 3%;
-  left: 3%;
 }

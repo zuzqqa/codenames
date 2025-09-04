@@ -20,6 +20,7 @@ import "./SelectGame.css";
 import { getCookie, logout } from "../../shared/utils.tsx";
 import logoutButton from "../../assets/icons/logout.svg";
 import { apiUrl } from "../../config/api.tsx";
+import UsernameContainer from "../../containers/UsernameContainer/UsernameContainer.tsx";
 
 /**
  * Props for the SelectGame component.
@@ -52,7 +53,6 @@ const SelectGame: React.FC<SelectGameProps> = ({
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // State to track if settings modal is open
   const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
   const [isGuest, setIsGuest] = useState<boolean | null>(null);
-  const [username, setUsername] = useState<string | null>(null);
 
   const { t } = useTranslation(); // Hook for translations
 
@@ -83,7 +83,6 @@ const SelectGame: React.FC<SelectGameProps> = ({
     localStorage.setItem("musicVolume", musicVolume.toString());
   }, [musicVolume]);
 
-
   useEffect(() => {
     const fetchGuestStatus = async () => {
       const token = getCookie("authToken");
@@ -96,7 +95,7 @@ const SelectGame: React.FC<SelectGameProps> = ({
         const response = await fetch(`${apiUrl}/api/users/is-guest`, {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         });
@@ -115,35 +114,15 @@ const SelectGame: React.FC<SelectGameProps> = ({
     fetchGuestStatus();
   }, []);
 
-  useEffect(() => {
-    const fetchUsername = async () => {
-      try {
-        const response = await fetch(`${apiUrl}/api/users/get-username`, {
-          method: "GET",
-          credentials: "include"
-        });
-
-        if (response.ok) {
-          const text = await response.text();
-          if (text !== "null") {
-            setUsername(text);
-          }
-        } else {
-          console.error("Failed to fetch username");
-        }
-      } catch (error) {
-        console.error("Error fetching username", error);
-      }
-    };
-
-    fetchUsername();
-  }, []);
-
   return (
     <>
       <BackgroundContainer>
         {/* Settings button */}
-        <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
+        <Button
+          variant="circle"
+          soundFXVolume={soundFXVolume}
+          onClick={toggleSettings}
+        >
           <img src={settingsIcon} alt="Settings" />
         </Button>
         {/* Profile button */}
@@ -203,11 +182,7 @@ const SelectGame: React.FC<SelectGameProps> = ({
             </Button>
           </div>
         </MenuContainer>
-        {username && (
-          <div className="logged-in-user gold-text">
-            { t('logged-in-as') } {username}
-          </div>
-        )}
+        <UsernameContainer />
       </BackgroundContainer>
     </>
   );

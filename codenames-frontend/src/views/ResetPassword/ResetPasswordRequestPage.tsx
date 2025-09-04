@@ -30,7 +30,7 @@ const generateId = () =>
 
 /**
  * ResetPasswordRequestProps defines the properties for the ResetPasswordRequestPage component.
- */ 
+ */
 interface ResetPasswordRequestProps {
   setVolume: (volume: number) => void;
   soundFXVolume: number;
@@ -78,16 +78,13 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
     setIsLoading(true);
     console.log(apiUrl);
     console.log(import.meta.env.VITE_BACKEND_API_URL);
-    
+
     try {
-      const response = await fetch(
-        `${apiUrl}/api/email/reset-password`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        }
-      );
+      const response = await fetch(`${apiUrl}/api/email/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
 
       if (response.status == 200) {
         setIsLoading(false);
@@ -98,7 +95,10 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
         return;
       }
     } catch (error) {
-      addToast("An error occurred while sending reset email. Please try again later.", "error");
+      addToast(
+        "An error occurred while sending reset email. Please try again later.",
+        "error"
+      );
       setIsLoading(false);
       return;
     }
@@ -131,7 +131,11 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
         setMusicVolume={updateMusicVolume}
         setSoundFXVolume={setSoundFXVolume}
       />
-      <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
+      <Button
+        variant="circle"
+        soundFXVolume={soundFXVolume}
+        onClick={toggleSettings}
+      >
         <img src={settingsIcon} alt="Settings" />
       </Button>
       {document.cookie
@@ -143,21 +147,22 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
       )}
       <LoginRegisterContainer variant="reset">
         <TitleComponent
-            soundFXVolume={soundFXVolume}
-            customStyle={{
-
-              textAlign: "left",
-              position: "relative",
-              top: "-5vh",
-              whiteSpace: "nowrap"
-            }}
-            shadowStyle={{
-              textAlign: "left",
-              position: "absolute",
-              top: "-5vh",
-              whiteSpace: "nowrap"
-            }}
-            variant="reset-title"
+          soundFXVolume={soundFXVolume}
+          customStyle={{
+            fontSize: "calc(3.6rem + 0.2vw)",
+            textAlign: "left",
+            position: "absolute",
+            top: "calc(-2rem - 1vh)",
+            left: "-1rem",
+          }}
+          shadowStyle={{
+            fontSize: "calc(3.6rem + 0.2vw)",
+            textAlign: "left",
+            position: "absolute",
+            top: "calc(-2rem - 1vh)",
+            left: "-1rem",
+          }}
+          variant="reset-title"
         >
           {t("password-reset")}
         </TitleComponent>
@@ -165,9 +170,9 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
           <div className="reset-password-image">
             <div className="icon-circle">
               <img
-                  src={lockIcon}
-                  className="lock-icon no-select"
-                  alt="Lock Icon"
+                src={lockIcon}
+                className="lock-icon no-select"
+                alt="Lock Icon"
               />
             </div>
           </div>
@@ -176,27 +181,27 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
           </div>
           <form className="reset-password-form" onSubmit={handleSubmit}>
             <FormInput
-                type="text"
-                placeholder="E-MAIL"
-                value={email}
-                onChange={handleEmailChange}
+              type="text"
+              placeholder="E-MAIL"
+              value={email}
+              onChange={handleEmailChange}
             />
             {isLoading ? (
-                <div className="loading-spinner">
-                  <img
-                      src={spinnerIcon}
-                      alt="Loading..."
-                      className="spinner-image"
-                  />
-                </div>
+              <div className="loading-spinner">
+                <img
+                  src={spinnerIcon}
+                  alt="Loading..."
+                  className="spinner-image"
+                />
+              </div>
             ) : (
-                <Button
-                    type="submit"
-                    variant="primary"
-                    soundFXVolume={soundFXVolume}
-                >
-                  <span className="button-text">{t("submit-button")}</span>
-                </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                soundFXVolume={soundFXVolume}
+              >
+                <span className="button-text">{t("submit-button")}</span>
+              </Button>
             )}
           </form>
         </div>

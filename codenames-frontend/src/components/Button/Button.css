@@ -88,8 +88,7 @@
 .btn-room {
   background: linear-gradient(360deg, #12501e 0%, #478b35 88.89%);
   min-width: 12rem;
-  margin: 1rem 1rem;
-
+  margin-bottom: 2rem;
   border-width: 0.0625rem;
   border-color: #fcf18b;
 }

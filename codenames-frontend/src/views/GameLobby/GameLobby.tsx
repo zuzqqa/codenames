@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 
 import Button from "../../components/Button/Button";
 import BackgroundContainer from "../../containers/Background/Background";
@@ -8,7 +7,7 @@ import GameTitleBar from "../../components/GameTitleBar/GameTitleBar";
 import RoomLobby from "../../components/RoomLobby/RoomLobby";
 
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
-import { apiUrl } from "../../config/api.tsx";
+import UsernameContainer from "../../containers/UsernameContainer/UsernameContainer.tsx";
 
 /**
  * Props interface for GameLobby component.
@@ -41,8 +40,6 @@ const GameLobby: React.FC<GameLobbyProps> = ({
     return savedVolume ? parseFloat(savedVolume) : 50;
   });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
-  const [username, setUsername] = useState<string | null>(null);
-  const { t } = useTranslation();
 
   /**
    * Toggles the settings modal visibility.
@@ -54,30 +51,6 @@ const GameLobby: React.FC<GameLobbyProps> = ({
   useEffect(() => {
     localStorage.setItem("musicVolume", musicVolume.toString());
   }, [musicVolume]);
-
-  useEffect(() => {
-    const fetchUsername = async () => {
-      try {
-        const response = await fetch(`${apiUrl}/api/users/get-username`, {
-          method: "GET",
-          credentials: "include"
-        });
-
-        if (response.ok) {
-          const text = await response.text();
-          if (text !== "null") {
-            setUsername(text);
-          }
-        } else {
-          console.error("Failed to fetch username");
-        }
-      } catch (error) {
-        console.error("Error fetching username", error);
-      }
-    };
-
-    fetchUsername();
-  }, []);
 
   return (
     <>
@@ -101,12 +74,8 @@ const GameLobby: React.FC<GameLobbyProps> = ({
         <>
           <GameTitleBar></GameTitleBar>
           <RoomLobby soundFXVolume={soundFXVolume} />
+          <UsernameContainer />
         </>
-        {username && (
-          <div className="logged-in-user gold-text">
-            { t('logged-in-as') } {username}
-          </div>
-        )}
       </BackgroundContainer>
     </>
   );

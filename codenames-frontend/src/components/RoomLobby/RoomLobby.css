@@ -1,9 +1,9 @@
 .background {
   background: linear-gradient(360deg, #f0e0b5 0%, #eed8b0 88.89%);
-  padding: 0 2.3rem;
+  padding: 0 1.3rem;
   padding-top: 0;
   height: 90%;
-  width: 75%;
+  width: 85%;
   border-radius: 27px;
   font-size: calc(0.4rem + 0.6vw);
   color: #5b544e;
@@ -70,14 +70,32 @@
 }
 
 .lobby-link-switch {
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  padding: 5%;
+  width: 4rem;
+  background: linear-gradient(360deg, #f0e0b5 0%, #eed8b0 88.89%);
   grid-row: 1;
   grid-column: 2;
-  transform: translate(40%, 130%);
+  transform: translate(130%, 80%);
   cursor: pointer;
+  border-radius: 0 17px 17px 0;
+  transition: transform 0.2s ease, opacity 0.3s ease;
+}
+
+.lobby-link-switch:active {
+  transform: translate(130%, 80%) scale(0.95); /* small press-down effect */
+}
+
+.lobby-link-switch.disable {
+  display: none;
 }
 
 .link-icon {
-  height: calc(1rem + 0.8vw);
+  padding: 0.5rem;
+  height: 2rem;
+  width: 2rem;
 }
 
 .lobby-link-isle {
@@ -224,6 +242,14 @@
   width: 100%;
 }
 
+.btn-blue {
+  background: linear-gradient(360deg, #062f5180 0%, #19577880 89.89%);
+}
+
+.btn-red {
+  background: linear-gradient(360deg, #56172380 0%, #8d273680 89.89%);
+}
+
 .player-icon {
   height: 80%;
   padding: 5px;
@@ -280,11 +306,11 @@
 .room-lobby-divider {
   grid-row: 2;
   grid-column: 2;
-  width: 30%;
-  height: 8%;
+  width: 32%;
+  height: 10%;
   border-radius: 1.6875rem 1.6875rem 0 0;
   background-color: #eed8b0;
-  margin: -30px auto 0 auto;
+  margin: -25px auto 0 auto;
 
   display: flex;
   align-items: center;

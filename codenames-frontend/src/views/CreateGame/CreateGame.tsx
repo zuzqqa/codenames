@@ -18,6 +18,7 @@ import "./CreateGame.css";
 
 import { getCookie, logout } from "../../shared/utils.tsx";
 import { apiUrl } from "../../config/api.tsx";
+import UsernameContainer from "../../containers/UsernameContainer/UsernameContainer.tsx";
 
 /**
  * Props interface for CreateGame component.
@@ -50,7 +51,7 @@ const CreateGame: React.FC<CreateGameProps> = ({
   const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
   const [isGuest, setIsGuest] = useState<boolean | null>(null);
   const [username, setUsername] = useState<string | null>(null);
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
 
   /**
    * Effect to fetch guest status from the server.
@@ -68,7 +69,7 @@ const CreateGame: React.FC<CreateGameProps> = ({
         const response = await fetch(`${apiUrl}/api/users/is-guest`, {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         });
@@ -104,7 +105,11 @@ const CreateGame: React.FC<CreateGameProps> = ({
   return (
     <>
       <BackgroundContainer>
-        <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
+        <Button
+          variant="circle"
+          soundFXVolume={soundFXVolume}
+          onClick={toggleSettings}
+        >
           <img src={settingsIcon} alt="Settings" />
         </Button>
         {isGuest === false && (
@@ -116,7 +121,11 @@ const CreateGame: React.FC<CreateGameProps> = ({
         {document.cookie
           .split("; ")
           .find((cookie) => cookie.startsWith("loggedIn=")) && (
-          <Button variant="logout" soundFXVolume={soundFXVolume} onClick={logout}>
+          <Button
+            variant="logout"
+            soundFXVolume={soundFXVolume}
+            onClick={logout}
+          >
             <img src={logoutButton} alt="Logout" />
           </Button>
         )}
@@ -127,8 +136,8 @@ const CreateGame: React.FC<CreateGameProps> = ({
           musicVolume={musicVolume}
           soundFXVolume={soundFXVolume}
           setMusicVolume={(volume) => {
-            setMusicVolume(volume); 
-            setVolume(volume / 100); 
+            setMusicVolume(volume);
+            setVolume(volume / 100);
           }}
           setSoundFXVolume={setSoundFXVolume}
         />
@@ -141,11 +150,7 @@ const CreateGame: React.FC<CreateGameProps> = ({
           <GameTitleBar></GameTitleBar>
           <CreateGameForm soundFXVolume={soundFXVolume} />
         </>
-        {username && (
-          <div className="logged-in-user gold-text">
-            { t('logged-in-as') } {username}
-          </div>
-        )}
+        <UsernameContainer />
       </BackgroundContainer>
     </>
   );

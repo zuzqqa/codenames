@@ -205,18 +205,18 @@ const LoginPage: React.FC<LoginProps> = ({
         <TitleComponent
           soundFXVolume={soundFXVolume}
           customStyle={{
-            fontSize: "calc(3.6rem + 0.2vw)",
+            fontSize: "calc(5.6rem + 0.2vw)",
             textAlign: "left",
             position: "absolute",
-            top: "calc(-27rem - 1vh)",
-            left: "1.2rem",
+            top: "calc(-28rem - 1vh)",
+            left: "-1rem",
           }}
           shadowStyle={{
-            fontSize: "calc(3.6rem + 0.2vw)",
+            fontSize: "calc(5.6rem + 0.2vw)",
             textAlign: "left",
             position: "absolute",
-            top: "calc(-27rem - 1vh)",
-            left: "1.2rem",
+            top: "calc(-28rem - 1vh)",
+            left: "-1rem",
           }}
         >
           {t("login-button-text")}
