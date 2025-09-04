@@ -115,10 +115,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
   const exampleLink = `${frontendUrl}/invite/${sessionStorage.getItem(
     "gameId"
   )}`;
-  const [ownUsername, setOwnUsername] = useState(
-    localStorage.getItem("username") || ""
-  );
-  const [userId, setUserId] = useState<string | null>();
 
   /**
    * Handles manual closing of a toast error.
@@ -203,48 +199,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       gameSocket.disconnect();
     };
   }, [navigate]);
-
-  useEffect(() => {
-    fetchUserId();
-
-    const token = Cookies.get("authToken");
-
-    if (token) {
-      fetch(`${apiUrl}/api/users/get-username`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((response) => response.text())
-        .then((name) => {
-          if (name !== "null") {
-            setOwnUsername(name);
-          }
-        })
-        .catch((err) => console.error("Failed to fetch username", err));
-    } else {
-      console.warn("No auth token found");
-    }
-  }, []);
-
-  /**
-   * Fetches the user ID from local storage and sets it in the state.
-   * @returns {void} Fetches the user ID from local storage and sets it in the state.
-   */
-  const fetchUserId = async () => {
-    try {
-      const id = await getUserId();
-
-      if (id === null) {
-        return;
-      }
-      localStorage.setItem("userId", id);
-      setUserId(id);
-    } catch (error) {
-      console.error("Error fetching user ID", error);
-    }
-  };
 
   /**
    * Adds the current player to the red team.
