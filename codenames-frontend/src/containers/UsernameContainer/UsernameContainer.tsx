@@ -14,7 +14,6 @@ import "../UsernameContainer/UsernameContainer.css";
  */
 const UsernameContainer: React.FC = () => {
   const [ownUsername, setOwnUsername] = React.useState<string | null>(null);
-  const [userId, setUserId] = React.useState<string | null>(null);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -53,7 +52,6 @@ const UsernameContainer: React.FC = () => {
         return;
       }
       localStorage.setItem("userId", id);
-      setUserId(id);
     } catch (error) {
       console.error("Error fetching user ID", error);
     }
