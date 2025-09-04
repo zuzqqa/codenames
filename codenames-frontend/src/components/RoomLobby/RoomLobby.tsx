@@ -14,7 +14,6 @@ import "./RoomLobby.css";
 import { apiUrl, frontendUrl, socketUrl } from "../../config/api.tsx";
 import { getCookie, getUserId } from "../../shared/utils.tsx";
 import { io } from "socket.io-client";
-import Cookies from "js-cookie";
 
 /**
  * @returns {string} - The URL of the API.
