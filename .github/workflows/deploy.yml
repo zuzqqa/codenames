@@ -25,7 +25,11 @@ jobs:
 
     - name: 'Set up gcloud'
       uses: 'google-github-actions/setup-gcloud@v2'
-
+      
+    - name: 'Configure gcloud to impersonate service account'
+      run: |
+        gcloud config set auth/impersonate_service_account cr-runtime@codenames-471620.iam.gserviceaccount.com
+    
     - name: 'Create env.yaml'
       run: echo "$BACKEND_ENV_YAML" > env.yaml
 
