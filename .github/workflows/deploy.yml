@@ -7,22 +7,21 @@ on:
 env:
   BACKEND_ENV_YAML: ${{ secrets.BACKEND_ENV_YAML }}
 
+permissions:
+  contents: 'read'
+  id-token: 'write'
+
 jobs:
   deploy:
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
 
     - id: 'auth'
       uses: 'google-github-actions/auth@v2'
       with:
-        workload_identity_provider: 'projects/304675911648/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
-        service_account: 'github-cloud-run-deployer@codenames-game-462422.iam.gserviceaccount.com'
+        workload_identity_provider: 'projects/524815217558/locations/global/workloadIdentityPools/github/providers/github-actions'
+        service_account: 'github-deployer@codenames-471620.iam.gserviceaccount.com'
 
     - name: 'Set up gcloud'
       uses: 'google-github-actions/setup-gcloud@v2'
@@ -32,27 +31,22 @@ jobs:
 
     - name: 'Deploy codenames-backend to Google Cloud Run'
       run: |
-        gcloud builds submit ./codenames-backend --tag gcr.io/codenames-game-462422/codenames-backend
+        gcloud builds submit ./codenames-backend --tag europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-backend
         gcloud run deploy codenames-backend \
-          --image gcr.io/codenames-game-462422/codenames-backend \
+          --image europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-backend \
           --region europe-central2 \
           --platform managed \
+          --service-account cr-runtime@codenames-471620.iam.gserviceaccount.com \
           --allow-unauthenticated \
           --env-vars-file env.yaml
 
     - name: 'Remove env.yaml'
       run: rm env.yaml
 
-    - name: 'Prepare Dockerfile for frontend'
-      run: cp ./codenames-frontend/Dockerfile.prod ./codenames-frontend/Dockerfile
-      
-    - name: 'Authenticate Docker with GCR'
-      run: gcloud auth configure-docker
-
     - name: 'Build Docker image for frontend'
       run: |
-        docker build ./codenames-frontend \
-          -t gcr.io/codenames-game-462422/codenames-frontend \
+        docker build -f ./codenames-frontend/Dockerfile.prod ./codenames-frontend \
+          -t europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-frontend:latest \
           --build-arg VITE_BACKEND_API_URL=${{ secrets.VITE_BACKEND_API_URL }} \
           --build-arg VITE_SOCKET_IO_SERVER=${{ secrets.VITE_SOCKET_IO_SERVER }} \
           --build-arg VITE_PEERSERVER=${{ secrets.VITE_PEERSERVER }} \
@@ -60,30 +54,33 @@ jobs:
           --build-arg VITE_FRONTEND_URL=${{ secrets.VITE_FRONTEND_URL }}
     
     - name: 'Push Docker image to GCR'
-      run: docker push gcr.io/codenames-game-462422/codenames-frontend
-    
+      run: docker push europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-frontend:latest
+
     - name: 'Deploy codenames-frontend to Google Cloud Run'
       run: |
         gcloud run deploy codenames-frontend \
-          --image gcr.io/codenames-game-462422/codenames-frontend \
+          --image europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-frontend:latest \
           --region europe-central2 \
           --platform managed \
+          --service-account cr-runtime@codenames-471620.iam.gserviceaccount.com \
           --allow-unauthenticated
   
     - name: 'Deploy codenames-socket-io-server to Google Cloud Run'
       run: |
-        gcloud builds submit ./codenames-socket-io-server --tag gcr.io/codenames-game-462422/codenames-socket-io-server
+        gcloud builds submit ./codenames-socket-io-server --tag europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-socket-io-server
         gcloud run deploy codenames-socket-io-server \
-          --image gcr.io/codenames-game-462422/codenames-socket-io-server \
+          --image europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-socket-io-server \
           --region europe-central2 \
           --platform managed \
+          --service-account cr-runtime@codenames-471620.iam.gserviceaccount.com \          
           --allow-unauthenticated
 
     - name: 'Deploy codenames-peerserver to Google Cloud Run'
       run: |
-        gcloud builds submit ./codenames-peerserver --tag gcr.io/codenames-game-462422/codenames-peerserver
+        gcloud builds submit ./codenames-peerserver --tag europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-peerserver
         gcloud run deploy codenames-peerserver \
-          --image gcr.io/codenames-game-462422/codenames-peerserver \
+          --image europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-peerserver \
           --region europe-central2 \
           --platform managed \
+          --service-account cr-runtime@codenames-471620.iam.gserviceaccount.com \
           --allow-unauthenticated

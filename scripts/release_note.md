@@ -1,16 +1,12 @@
-UI fixes
+Relevants update needed because of the switching of the Google Cloud account
 **🔧 What's included in this release?**
-This release introduces improved UI layout.
+Deploy pipeline update
 
-Key additions: 
-- Refactored almost every view.
-- Created custom component to display username, when the user is logged in.
+Key additions:
+- Deploy pipeline update 
 
 **🚧 What's still under development?**
-- Choose Leader view redesign.
-- Some validation regarding RoomLobby.
-- Additional UI fixes.
-- Voice chat.
+- UI fixes
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 

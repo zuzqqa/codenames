@@ -7,8 +7,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: [
-      "https://codenames-frontend-304675911648.europe-central2.run.app",
-      "https://codenames-backend-304675911648.europe-central2.run.app",
+      "https://codenames-frontend-524815217558.europe-central2.run.app",
+      "https://codenames-backend-524815217558.europe-central2.run.app",
       "http://localhost:5173",
       "http://localhost:8080",
     ],
