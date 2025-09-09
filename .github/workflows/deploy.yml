@@ -31,7 +31,7 @@ jobs:
 
     - name: 'Deploy codenames-backend to Google Cloud Run'
       run: |
-        gcloud builds submit ./codenames-backend --tag europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-backend
+        gcloud builds submit ./codenames-backend --tag europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-backend --impersonate-service-account=cr-runtime@codenames-471620.iam.gserviceaccount.com
         gcloud run deploy codenames-backend \
           --image europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-backend \
           --region europe-central2 \
