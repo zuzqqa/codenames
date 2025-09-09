@@ -250,18 +250,18 @@ const RegisterPage: React.FC<RegisterProps> = ({
         <TitleComponent
           soundFXVolume={soundFXVolume}
           customStyle={{
-            fontSize: "calc(3.6rem + 0.2vw)",
+            fontSize: "calc(5.6rem + 0.2vw)",
             textAlign: "left",
             position: "absolute",
-            top: "calc(-28.8rem - 1vh)",
-            left: "1.2rem",
+            top: "calc(-30.6rem - 1vh)",
+            left: "-1rem",
           }}
           shadowStyle={{
-            fontSize: "calc(3.6rem + 0.2vw)",
+            fontSize: "calc(5.6rem + 0.2vw)",
             textAlign: "left",
             position: "absolute",
-            top: "calc(-28.8rem - 1vh)",
-            left: "1.2rem",
+            top: "calc(-30.6rem - 1vh)",
+            left: "-1rem",
           }}
         >
           {t("register-button-text")}
@@ -308,7 +308,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
               <span className="button-text">{t("submit-button")}</span>
             </Button>
           </form>
-          <div className="or-container">
+          <div className="or-container-register">
             <div className="gold-line"></div>
             <span className="or-text">{t("or")}</span>
             <div className="gold-line"></div>

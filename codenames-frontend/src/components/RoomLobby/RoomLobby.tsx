@@ -103,13 +103,17 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     []
   );
   const [isJoined, setIsJoined] = useState(false);
+  const [isJoinedRed, setIsJoinedRed] = useState(false);
+  const [isJoinedBlue, setIsJoinedBlue] = useState(false);
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
   const [notifications, setNotifications] = useState<
     { id: string; message: string }[]
   >([]);
   const [lobbyLink, setLobbyLink] = useState<string>("");
   const [isLinkIsleExpanded, setIsLinkIsleExpanded] = useState(false);
-  const exampleLink = `${frontendUrl}/invite/${sessionStorage.getItem("gameId")}`;
+  const exampleLink = `${frontendUrl}/invite/${sessionStorage.getItem(
+    "gameId"
+  )}`;
 
   /**
    * Handles manual closing of a toast error.
@@ -223,6 +227,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
 
     if (response.ok) {
       setIsJoined(true);
+      setIsJoinedRed(true);
     } else {
       console.error("Failed to add player to red team");
     }
@@ -256,6 +261,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
 
     if (response.ok) {
       setIsJoined(true);
+      setIsJoinedBlue(true);
     } else {
       console.error("Failed to add player to blue team");
     }
@@ -266,7 +272,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
    * @param {number} teamIndex - The index of the team to remove the player from (0 for red, 1 for blue).
    */
   const removePlayerFromTeam = async () => {
-    setIsJoined(false);
     const storedGameId = sessionStorage.getItem("gameId");
     if (!storedGameId) return;
 
@@ -290,6 +295,10 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       if (!response.ok) {
         console.error("Failed to remove player from team");
       }
+      setIsJoined(false);
+
+      if (isJoinedRed) setIsJoinedRed(false);
+      else if (isJoinedBlue) setIsJoinedBlue(false);
     } catch (error) {
       console.error("Error removing player from team", error);
     }
@@ -299,26 +308,8 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
    * Removes the current player from the game session.
    */
   const removePlayer = async () => {
-    const storedGameId = sessionStorage.getItem("gameId");
-    if (!storedGameId) return;
-
-    const userId = await getUserId();
-
-    if (userId === null) {
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `${apiUrl}/api/game-session/${storedGameId}/disconnect?userId=${userId}`,
-        { method: "DELETE", credentials: "include" }
-      );
-
-      if (!response.ok) {
-        console.error("Failed to remove player");
-      }
-    } catch (error) {
-      console.error("Error removing player", error);
+    if (isJoined) {
+      removePlayerFromTeam();
     }
 
     sessionStorage.removeItem("gameId");
@@ -328,7 +319,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
   /**
    * Starts the game session.
    */
-  const start_game = async () => {
+  const startGame = async () => {
     const newErrors: { id: string; message: string }[] = [];
     setErrors(newErrors);
 
@@ -490,7 +481,13 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                   : 0}
                 /{gameSession.maxPlayers}
               </div>
-              <div className="lobby-link-switch">
+              <div
+                className={
+                  isLinkIsleExpanded
+                    ? "lobby-link-switch disable"
+                    : "lobby-link-switch"
+                }
+              >
                 <img
                   src={linkIcon}
                   alt="Link"
@@ -500,8 +497,9 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
               </div>
               <div
                 className={`lobby-link-isle ${
-                  isLinkIsleExpanded ? "expanded" : ""
+                  isLinkIsleExpanded ? "disable" : "expanded"
                 }`}
+                onClick={handleLobbyLinkIsleUnroll}
               >
                 <img src={messageIcon} alt="Link" className="isle-image" />
                 <p className="isle-title">{t("invite-friends")}</p>
@@ -528,19 +526,21 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                   variant={"room"}
                   soundFXVolume={soundFXVolume}
                   className="room-btn"
-                  onClick={start_game}
+                  onClick={startGame}
                 >
                   <span className="button-text">Start</span>
                 </Button>
                 <div className="players-container">
                   <div className="team">
                     <Button
-                      className="join-button"
+                      className="join-button btn-red"
                       variant={"join-team"}
                       soundFXVolume={soundFXVolume}
-                      onClick={addPlayerToRedTeam}
+                      onClick={
+                        isJoinedRed ? removePlayerFromTeam : addPlayerToRedTeam
+                      }
                     >
-                      +
+                      {isJoinedRed ? "-" : "+"}
                     </Button>
                     {redTeamPlayers.map((player, index) => (
                       <div
@@ -560,12 +560,16 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                   </div>
                   <div className="team">
                     <Button
-                      className="join-button"
+                      className="join-button btn-blue"
                       variant={"join-team"}
                       soundFXVolume={soundFXVolume}
-                      onClick={addPlayerToBlueTeam}
+                      onClick={
+                        isJoinedBlue
+                          ? removePlayerFromTeam
+                          : addPlayerToBlueTeam
+                      }
                     >
-                      +
+                      {isJoinedBlue ? "-" : "+"}
                     </Button>
                     {blueTeamPlayers.map((player, index) => (
                       <div
