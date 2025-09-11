@@ -32,6 +32,9 @@ jobs:
     
     - name: 'Create env.yaml'
       run: echo "$BACKEND_ENV_YAML" > env.yaml
+      
+    - name: 'Set gcloud project'
+      run: gcloud config set project codenames-471620
 
     - name: 'Deploy codenames-backend to Google Cloud Run'
       run: |
