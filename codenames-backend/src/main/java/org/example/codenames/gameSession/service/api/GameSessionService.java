@@ -2,9 +2,11 @@ package org.example.codenames.gameSession.service.api;
 
 import org.example.codenames.gameSession.entity.CreateGameRequest;
 import org.example.codenames.gameSession.entity.GameSession;
+import org.example.codenames.gameSession.entity.dto.LeaderVoteState;
 import org.example.codenames.user.entity.User;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -36,5 +38,7 @@ public interface GameSessionService {
     void revealCard(UUID gameId, String cardIndex);
 
     boolean isPlayerInSession(UUID gameId, String userId);
+
+    Optional<LeaderVoteState> getLeaderVoteState(UUID gameId);
 }
 

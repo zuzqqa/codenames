@@ -2,6 +2,7 @@ package org.example.codenames.gameSession.service.impl;
 
 import org.example.codenames.gameSession.entity.CreateGameRequest;
 import org.example.codenames.gameSession.entity.GameSession;
+import org.example.codenames.gameSession.entity.dto.LeaderVoteState;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.gameState.entity.GameState;
@@ -81,7 +82,7 @@ public class DefaultGameSessionService implements GameSessionService {
                 UUID.randomUUID(),
                 request.getGameName(),
                 request.getMaxPlayers(),
-                request.getPassword().isEmpty() ? "" :passwordEncoder.encode(request.getPassword()),
+                request.getPassword().isEmpty() ? "" : passwordEncoder.encode(request.getPassword()),
                 new ArrayList<>() {{
                     add(new ArrayList<>());
                     add(new ArrayList<>());
@@ -399,6 +400,32 @@ public class DefaultGameSessionService implements GameSessionService {
         }
 
         return false;
+    }
+
+    @Override
+    public Optional<LeaderVoteState> getLeaderVoteState(UUID gameId) {
+
+        Optional<GameSession> gameSession = gameSessionRepository.findBySessionId(gameId);
+
+        if (gameSession.isEmpty()) {
+            return Optional.empty();
+        }
+        GameSession session = gameSession.get();
+
+        int totalVotes = session.getVotes().stream()
+                .flatMap(List::stream)
+                .mapToInt(Integer::intValue)
+                .sum();
+
+        int totalUsers = session.getConnectedUsers().stream()
+                .mapToInt(List::size)
+                .sum();
+
+        boolean everyoneVoted = totalVotes == totalUsers;
+
+        LeaderVoteState state = LeaderVoteState.builder().voteState(everyoneVoted).build();
+
+        return Optional.of(state);
     }
 }
 
