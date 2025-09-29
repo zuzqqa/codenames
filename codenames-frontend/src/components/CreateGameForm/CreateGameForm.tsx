@@ -150,7 +150,19 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
               {t("private-lobby")}?
             </label>
             <div className="custom-checkbox">
-              {!isPrivate ? <img src={checkmarkIconEmpty} alt="Checkmark" onClick={() => setIsPrivate((prev) => !prev)}/> :  <img src={checkmarkIcon} alt="Checkmark" onClick={() => setIsPrivate((prev) => !prev)}/>}
+              {!isPrivate ? (
+                <img
+                  src={checkmarkIconEmpty}
+                  alt="Checkmark"
+                  onClick={() => setIsPrivate((prev) => !prev)}
+                />
+              ) : (
+                <img
+                  src={checkmarkIcon}
+                  alt="Checkmark"
+                  onClick={() => setIsPrivate((prev) => !prev)}
+                />
+              )}
             </div>
             <input
               type="password"
@@ -209,10 +221,22 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
             <label htmlFor="deckLanguage" className="label-inset">
               {t("voice-chat")}?
             </label>
-           <div className="custom-checkbox">
-              {!voiceChatEnabled ? <img src={checkmarkIconEmpty} alt="Checkmark" onClick={() => setVoiceChatEnabled((prev) => !prev)}/> :  <img src={checkmarkIcon} alt="Checkmark" onClick={() => setVoiceChatEnabled((prev) => !prev)}/>}
+            <div className="custom-checkbox">
+              {!voiceChatEnabled ? (
+                <img
+                  src={checkmarkIconEmpty}
+                  alt="Checkmark"
+                  onClick={() => setVoiceChatEnabled((prev) => !prev)}
+                />
+              ) : (
+                <img
+                  src={checkmarkIcon}
+                  alt="Checkmark"
+                  onClick={() => setVoiceChatEnabled((prev) => !prev)}
+                />
+              )}
             </div>
-            </div>
+          </div>
           <Button type="submit" variant="room" soundFXVolume={soundFXVolume}>
             <span className="button-text">{t("create-game-button")}</span>
           </Button>

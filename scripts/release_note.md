@@ -1,13 +1,12 @@
-Fixed invite link and entering the website into the noneexistant lobby
+Relevants update needed because of the switching of the Google Cloud account
 **🔧 What's included in this release?**
-Fixes and QoL changes
+Deploy pipeline update
 
-Key additions: 
-- Moving gameId to session storage
-- Fixing invite link
+Key additions:
+- Deploy pipeline update 
 
 **🚧 What's still under development?**
-- Further improvements and QoL changes
+- UI fixes
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 

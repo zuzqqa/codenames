@@ -68,7 +68,7 @@ const Chat: React.FC = () => {
     if (!playerName || !gameId) return;
 
     const chatSocket = io(`${socketUrl}/chat`, {
-      transports: ["websocket"],
+      transports: ["websocket", "polling"],
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
     });

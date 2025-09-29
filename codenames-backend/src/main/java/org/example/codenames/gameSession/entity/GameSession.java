@@ -20,6 +20,7 @@ import jakarta.persistence.GeneratedValue;
 @Getter
 @Setter
 @Builder
+@ToString
 public class GameSession {
     /**
      * Enum for session status.

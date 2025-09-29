@@ -12,7 +12,6 @@ import bannerBlueLeader from "../../assets/images/banner-blue-leader.png";
 import bannerRed from "../../assets/images/banner-red.png";
 import bannerRedLeader from "../../assets/images/banner-red-leader.png";
 import settingsIcon from "../../assets/icons/settings.png";
-import shelfImg from "../../assets/images/shelf.png";
 import cardsStackImg from "../../assets/images/cards-stack.png";
 import cardWhiteImg from "../../assets/images/card-white.png";
 import cardBlackImg from "../../assets/images/card-black.png";
@@ -92,6 +91,7 @@ interface GameState {
   teamTurn: number;
   hint: string;
   hintNumber: string;
+  initialHintNumber: string;
   cards: string[];
   cardsColors: number[];
   cardsChosen: number[];
@@ -363,7 +363,7 @@ const Gameplay: React.FC<GameplayProps> = ({
    */
   useEffect(() => {
     const gameSocket = io(`${socketUrl}/game`, {
-      transports: ["websocket"],
+      transports: ["websocket", "polling"],
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
     });
@@ -858,6 +858,7 @@ const Gameplay: React.FC<GameplayProps> = ({
       if (isHintTime && gameSession?.gameState?.hintNumber === "0") {
         if (gameSession && gameSession.gameState) {
           gameSession.gameState.hintNumber = String(cardNumber);
+          gameSession.gameState.initialHintNumber = "0";
         }
       }
 
@@ -896,13 +897,24 @@ const Gameplay: React.FC<GameplayProps> = ({
     if (!amIRedTeamLeader && !amIBlueTeamLeader) return;
 
     try {
+      console.log(
+        JSON.stringify({
+          hint: cardText,
+          hintNumber: cardNumber,
+          initialHintNumber: cardNumber,
+        })
+      );
       await fetch(`${apiUrl}/api/game-session/${storedGameId}/send-hint`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           credentials: "include",
         },
-        body: JSON.stringify({ hint: cardText, hintNumber: cardNumber }),
+        body: JSON.stringify({
+          hint: cardText,
+          hintNumber: cardNumber,
+          initialHintNumber: cardNumber,
+        }),
       });
 
       setCardText("");
@@ -1228,7 +1240,9 @@ const Gameplay: React.FC<GameplayProps> = ({
                   <span>
                     {gameSession?.gameState.hintNumber === "0"
                       ? ""
-                      : gameSession?.gameState.hintNumber}
+                      : gameSession?.gameState.hintNumber +
+                        "/" +
+                        gameSession?.gameState.initialHintNumber}
                   </span>
                 </div>
                 <img className="codename-card" src={cardBlackImg} />
@@ -1308,6 +1322,14 @@ const Gameplay: React.FC<GameplayProps> = ({
                   // type="submit"
                   variant="primary"
                   soundFXVolume={soundFXVolume}
+                  onClick={() => setIsCardVisible(false)}
+                >
+                  <span className="button-text">{t("cancel-button")}</span>
+                </Button>
+                <Button
+                  // type="submit"
+                  variant="primary"
+                  soundFXVolume={soundFXVolume}
                   onClick={() => {
                     if (validateCardText(cardText)) {
                       sendHint();
@@ -1318,14 +1340,6 @@ const Gameplay: React.FC<GameplayProps> = ({
                   }}
                 >
                   <span className="button-text">{t("confirm-button")}</span>
-                </Button>
-                <Button
-                  // type="submit"
-                  variant="primary"
-                  soundFXVolume={soundFXVolume}
-                  onClick={() => setIsCardVisible(false)}
-                >
-                  <span className="button-text">{t("cancel-button")}</span>
                 </Button>
               </div>
             </div>

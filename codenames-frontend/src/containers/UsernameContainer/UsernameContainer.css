@@ -1,0 +1,8 @@
+.logged-in-user {
+  position: fixed;
+  bottom: 1.5%;
+  left: 1.5%;
+  font-size: 1rem;
+  z-index: 1000;
+  letter-spacing: 1px;
+}

@@ -16,4 +16,9 @@ public class HintRequest {
      * Number of words
      */
     private int hintNumber;
+
+    /**
+     * Number of words
+     */
+    private String initialHintNumber;
 }

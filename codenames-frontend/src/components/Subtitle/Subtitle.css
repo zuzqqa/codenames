@@ -2,7 +2,7 @@
   position: absolute;
   text-align: center;
   width: 100%;
-  margin-bottom: clamp(11rem, 22vh, 28rem);
+  margin-bottom: 9.4%;
   z-index: 2;
 }
 
