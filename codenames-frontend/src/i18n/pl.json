@@ -48,7 +48,7 @@
   "leader-choosing-hint": "Lider wybiera podpowiedz",
   "opposing-team-hint": "Podpowiedz drużyny przeciwnej",
   "voting-time": "Zagłosuj na najbardziej prawdopodobne karty.",
-  "select-cards": "Wybierz jedną kartę, która ma zostać odwrócona.",
+  "select-cards": "Wybierz jedną kartę, ktora ma zostać odwrocona.",
   "opposing-team-guessing": "Zgaduje drużyna przeciwna",
   "email-error-message": "Nieprawidłowy email. Użyj formatu: przykład@domena.com.",
   "username-error-message": "Nazwa użytkownika może zawierać tylko litery i cyfry.",
@@ -91,5 +91,8 @@
   "yes": "Tak",
   "no": "Nie",
   "leave-title": "Czy chcesz opuścić grę?",
-  "voice-chat": "Czat głosowy"
+  "voice-chat": "Czat głosowy",
+  "tutorial-title": "Samouczek",
+  "prev": "Wstecz",
+  "next": "Dalej"
 }

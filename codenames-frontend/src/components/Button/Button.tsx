@@ -14,7 +14,7 @@ interface ButtonProps {
     type?: "button" | "submit" | "reset";
     /** Button variant for styles (default is "primary") */
     variant?: "primary" | "primary-1" | "primary-2" | "room" | "circle"| "circle-profile" | "circle-back" | "session" | "help" | "eye" | "eye2" 
-    | "logout" | "search" | "join-team" | "small" | "edit" | "navy-blue" | "transparent" | "half-circle" | "number-stepper"; // Button variant for styles (default is "primary")
+    | "logout" | "search" | "join-team" | "small" | "edit" | "navy-blue" | "transparent" | "half-circle" | "number-stepper" | "tutorial"; // Button variant for styles (default is "primary")
     /** Disabled state (default is false) */
     disabled?: boolean; 
     /** Sound volume for the click effect */

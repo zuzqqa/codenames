@@ -1,0 +1,46 @@
+.tutorial-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.tutorial-overlay-container {
+    padding-top: 3%;
+    width: 85%;
+    margin: auto;
+    height: 78%;
+    border-radius: 15px;
+}
+
+.tutorial-modal-p {
+    position: absolute;
+    z-index: 2;
+}
+
+.tutorial-modal-p-shadow {
+    position: absolute;
+    z-index: 1;
+    padding-left: 2px;
+
+    text-shadow: 10px 10px 8px rgba(0, 0, 0, 1);
+}
+
+.paging-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+    color: #fcf18b;
+}
+
+.paging-controls .btn {
+    color: #fcf18b;
+}

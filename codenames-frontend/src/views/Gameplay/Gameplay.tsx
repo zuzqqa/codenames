@@ -9,8 +9,10 @@ import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 
 import bannerBlue from "../../assets/images/banner-blue.png";
 import bannerBlueLeader from "../../assets/images/banner-blue-leader.png";
+import bannerBlueGuesser from "../../assets/images/banner-blue-guesser.png";
 import bannerRed from "../../assets/images/banner-red.png";
 import bannerRedLeader from "../../assets/images/banner-red-leader.png";
+import bannerRedGuesser from "../../assets/images/banner-red-guesser.png";
 import settingsIcon from "../../assets/icons/settings.png";
 import shelfImg from "../../assets/images/shelf.png";
 import cardsStackImg from "../../assets/images/cards-stack.png";
@@ -37,6 +39,7 @@ import { io, Socket } from "socket.io-client";
 import { getUserId } from "../../shared/utils.tsx";
 import Cookies from "js-cookie";
 import QuitModal from "../../components/QuitModal/QuitModal.tsx";
+import TutorialModal from "../../components/TutorialModal/TutorialModal.tsx";
 
 /**
  * Represents properties for controlling gameplay-related settings, such as volume levels.
@@ -123,6 +126,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     return savedVolume ? parseFloat(savedVolume) : 50;
   });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [isQuitModalOpen, setIsQuitModalOpen] = useState(false);
   const { t } = useTranslation();
   const [isCardVisible, setIsCardVisible] = useState(false);
@@ -185,6 +189,13 @@ const Gameplay: React.FC<GameplayProps> = ({
   };
 
   /**
+   * This function toggles the visibility of the tutorial modal.
+   */
+  const toggleTutorial = () => {
+    setIsTutorialOpen(!isTutorialOpen);
+  };
+
+  /**
    * This function toggles the visibility of the quit modal.
    */
   const toggleQuitModal = () => {
@@ -216,7 +227,13 @@ const Gameplay: React.FC<GameplayProps> = ({
       return bannerBlueLeader;
     } else if (amIRedTeamLeader) {
       return bannerRedLeader;
-    } else {
+    } else if (myTeam === "blue" && amICurrentLeader) {
+        return bannerBlueGuesser;
+    }
+    else if (myTeam === "red" && amICurrentLeader) {
+        return bannerRedGuesser;
+    }
+    else {
       return myTeam === "blue" ? bannerBlue : bannerRed;
     }
   };
@@ -1002,6 +1019,13 @@ const Gameplay: React.FC<GameplayProps> = ({
         </span>
 
         <Button
+            variant="tutorial"
+            soundFXVolume={soundFXVolume}
+            onClick={toggleTutorial}
+        >
+          ?
+        </Button>
+        <Button
           variant="circle"
           soundFXVolume={soundFXVolume}
           onClick={toggleSettings}
@@ -1055,6 +1079,11 @@ const Gameplay: React.FC<GameplayProps> = ({
           }}
           setSoundFXVolume={setSoundFXVolume}
         />
+        <TutorialModal
+            isOpen={isTutorialOpen}
+            onClose={toggleTutorial}
+            soundFXVolume={soundFXVolume}
+        />
         <QuitModal
           isOpen={isQuitModalOpen}
           onClose={toggleQuitModal}
@@ -1082,9 +1111,15 @@ const Gameplay: React.FC<GameplayProps> = ({
         <img className="polygon2" src={polygon2Img} />
         <div className="timer points-red">{redTeamScore} / 9</div>
         <div className="timer points-blue">{blueTeamScore} / 8</div>
-        <div className="banner-container">
-          <img src={getBanner()} />
-        </div>
+        {amICurrentLeader ? (
+            <div className="banner-container-2">
+              <img src={getBanner()} />
+            </div>
+            ) : (
+            <div className="banner-container">
+              <img src={getBanner()} />
+            </div>
+        )}
 
         <div className="content-container">
           <div className="timer-container">
