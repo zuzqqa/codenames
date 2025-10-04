@@ -6,6 +6,7 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.entity.dto.GameSessionJoinGameDTO;
 import org.example.codenames.gameSession.entity.dto.GameSessionRoomLobbyDTO;
@@ -18,6 +19,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class DefaultSocketService implements SocketService {
 
@@ -70,6 +72,7 @@ public class DefaultSocketService implements SocketService {
 
     @Override
     public void sendGameSessionUpdate(UUID gameId, GameSession gameSession) throws JsonProcessingException {
+        log.info(gameSession.getGameState().toString());
         if (socket.connected()) {
             String gameSessionJson = objectMapper.writeValueAsString(gameSession);
             socket.emit("gameSessionData", gameId.toString(), gameSessionJson);

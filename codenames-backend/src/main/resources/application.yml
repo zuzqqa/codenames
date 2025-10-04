@@ -7,3 +7,5 @@ spring:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: profile, email
+
+            redirect-uri: "https://codenames-backend-304675911648.europe-central2.run.app/login/oauth2/code/google"

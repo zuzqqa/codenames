@@ -27,7 +27,8 @@ import ResetPasswordPage from "./views/ResetPassword/ResetPasswordPage.tsx";
 import ResetPasswordRequestPage from "./views/ResetPassword/ResetPasswordRequestPage.tsx";
 import Invite from "./components/Invite/Invite.tsx";
 import { apiUrl } from "./config/api.tsx";
-import {getCookie} from "./shared/utils.tsx"; // Importing API URL
+import { getCookie } from "./shared/utils.tsx"; // Importing API URL
+import AuthCallback from "./shared/authCallback.tsx";
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -125,7 +126,7 @@ const App: React.FC = () => {
           },
           credentials: "include"
       });
-    }, 1000);
+    }, 1000 * 60 * 15);
 
   return (
     <Router>
@@ -160,24 +161,24 @@ const App: React.FC = () => {
           path="/reset-password/*"
           element={
             <ResetPasswordPage
-                setVolume={setVolume}
-                setSoundFXVolume={setSoundFX}
-                soundFXVolume={soundFXVolume}
+              setVolume={setVolume}
+              setSoundFXVolume={setSoundFX}
+              soundFXVolume={soundFXVolume}
             />
           }
         />
         <Route
           path="/send-reset-password"
           element={
-              isAuthenticated ? (
-                  <Navigate to="/games" replace />
-              ) : (
-                  <ResetPasswordRequestPage
-                      setVolume={setVolume}
-                      setSoundFXVolume={setSoundFX}
-                      soundFXVolume={soundFXVolume}
-                  />
-              )
+            isAuthenticated ? (
+              <Navigate to="/games" replace />
+            ) : (
+              <ResetPasswordRequestPage
+                setVolume={setVolume}
+                setSoundFXVolume={setSoundFX}
+                soundFXVolume={soundFXVolume}
+              />
+            )
           }
         />
         <Route
@@ -297,12 +298,7 @@ const App: React.FC = () => {
             />
           }
         />
-        <Route
-          path="/invite/:gameId"
-          element={
-            <Invite/>
-          }
-        />
+        <Route path="/invite/:gameId" element={<Invite />} />
         {/* Fallback route */}
         <Route
           path="*"
@@ -314,9 +310,20 @@ const App: React.FC = () => {
             )
           }
         />
+        <Route
+          path="/auth/callback"
+          element={
+            <AuthCallback
+              setVolume={setVolume}
+              setSoundFXVolume={setSoundFX}
+              soundFXVolume={soundFXVolume}
+            />
+          }
+        />
       </Routes>
     </Router>
   );
 };
 
 export default App;
+

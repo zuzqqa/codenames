@@ -161,13 +161,7 @@ public class ConfigSecurity {
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType("application/json");
     
-            String jsonResponse = String.format(
-            "{\"message\":\"success\", \"token\":\"%s\"}",
-            token
-            );
-
-            response.getWriter().write(jsonResponse);
-            response.getWriter().flush();
+            response.sendRedirect(frontendUrl + "/auth/callback?token=" + token);
             }
             catch (Exception e){
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
