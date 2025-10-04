@@ -25,7 +25,7 @@ import sadFaceIcon from "../../assets/icons/sad-face.svg";
 import { logout } from "../../shared/utils.tsx";
 import { validatePassword } from "../../utils/validation.tsx";
 import { apiUrl } from "../../config/api.tsx";
-import {useToast} from "../../components/Toast/ToastContext.tsx";
+import { useToast } from "../../components/Toast/ToastContext.tsx";
 
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -132,7 +132,7 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if(!validatePassword(password)) {
+    if (!validatePassword(password)) {
       addToast(t("password-error-message"), "error");
       return;
     }
@@ -200,21 +200,22 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
       )}
       <LoginRegisterContainer variant="reset">
         <TitleComponent
-            soundFXVolume={soundFXVolume}
-            customStyle={{
-
-              textAlign: "left",
-              position: "relative",
-              top: "-2.5rem",
-              whiteSpace: "nowrap"
-            }}
-            shadowStyle={{
-              textAlign: "left",
-              position: "absolute",
-              top: "-2.5rem",
-              whiteSpace: "nowrap"
-            }}
-            variant="reset-title"
+          soundFXVolume={soundFXVolume}
+          customStyle={{
+            fontSize: "calc(3.6rem + 0.2vw)",
+            textAlign: "left",
+            position: "absolute",
+            top: "calc(-2rem - 1vh)",
+            left: "-1rem",
+          }}
+          shadowStyle={{
+            fontSize: "calc(3.6rem + 0.2vw)",
+            textAlign: "left",
+            position: "absolute",
+            top: "calc(-2rem - 1vh)",
+            left: "-1rem",
+          }}
+          variant="reset-title"
         >
           {t("new-password")}
         </TitleComponent>
@@ -241,7 +242,7 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
               .
             </p>
           ) : (
-            <form className="page-r" onSubmit={handleSubmit}>
+            <form className="reset-password-form" onSubmit={handleSubmit}>
               <FormInput
                 type="text"
                 placeholder={t("PASSWORD")}

@@ -223,6 +223,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         // Set the hint for the game session
         gameState.setHint(hintRequest.getHint());
         gameState.setHintNumber(hintRequest.getHintNumber());
+        gameState.setInitialHintNumber(hintRequest.getInitialHintNumber());
 
         gameSessionRepository.save(gameSession);
 
