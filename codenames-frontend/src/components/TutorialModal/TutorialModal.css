@@ -21,9 +21,8 @@
     position: relative;
     width: 100%;
     margin: auto;
-    height: 75%;
+    height: 70%;
     border-radius: 15px;
-    overflow: hidden;
 }
 
 .tutorial-overlay-container img {
@@ -32,9 +31,8 @@
     max-height: 100%;
     margin: auto;
     object-fit: contain;
-    /* Fade edges using a radial gradient mask */
-    mask-image: radial-gradient(circle, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%);
-    -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 75%, rgba(0,0,0,0) 100%);
+    border: 1px solid #fcf18b;
+    border-radius: 17px;
 }
 
 .tutorial-modal-p {
