@@ -293,7 +293,7 @@
   height: 3.2rem;
   position: absolute;
   top: 2%;
-  right: 5.5%;
+  right: 6rem;
 
   border-width: 0.125rem;
   border-color: #fcf18b;
@@ -314,4 +314,10 @@
   border-width: 0.125rem;
   border-color: #fcf18b;
   background-image: linear-gradient(to top, #22303b, #0b1319);
+}
+
+@media (max-width: 900px) {
+  .btn-tutorial {
+    right: 4.3rem;
+  }
 }
