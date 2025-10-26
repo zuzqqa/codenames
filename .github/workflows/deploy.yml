@@ -70,7 +70,7 @@ jobs:
           --image europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-frontend:latest \
           --region europe-central2 \
           --platform managed \
-          --service-account projects/codenames-471620/serviceAccounts/cr-runtime@codenames-471620.iam.gserviceaccount.com \
+          --service-account cr-runtime@codenames-471620.iam.gserviceaccount.com \
           --allow-unauthenticated
   
     - name: 'Deploy codenames-socket-io-server to Google Cloud Run'
@@ -85,7 +85,7 @@ jobs:
           --image europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-socket-io-server \
           --region europe-central2 \
           --platform managed \
-          --service-account projects/codenames-471620/serviceAccounts/cr-runtime@codenames-471620.iam.gserviceaccount.com \          
+          --service-account cr-runtime@codenames-471620.iam.gserviceaccount.com \          
           --allow-unauthenticated
 
     - name: 'Deploy codenames-peerserver to Google Cloud Run'
@@ -100,5 +100,5 @@ jobs:
           --image europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-peerserver \
           --region europe-central2 \
           --platform managed \
-          --service-account projects/codenames-471620/serviceAccounts/cr-runtime@codenames-471620.iam.gserviceaccount.com \
+          --service-account cr-runtime@codenames-471620.iam.gserviceaccount.com \
           --allow-unauthenticated
