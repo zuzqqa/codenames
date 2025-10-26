@@ -34,12 +34,7 @@ jobs:
 
     - name: 'Deploy codenames-backend to Google Cloud Run'
       run: |
-        echo "Files gcloud will upload for backend (respecting .gcloudignore/.gitignore):"
-        gcloud meta list-files-for-upload ./codenames-backend | sed 's/^/  /' | head -n 200
-
-        gcloud meta list-files-for-upload ./codenames-backend | grep -E '(^|/)[Dd]ockerfile$' || echo "::error ::Dockerfile excluded by ignore rules"
-
-        gcloud builds submit ./codenames-backend 
+        gcloud builds submit ./codenames-backend \
           --tag europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-backend \
           --service-account=projects/codenames-471620/serviceAccounts/cr-runtime@codenames-471620.iam.gserviceaccount.com
           
@@ -78,7 +73,7 @@ jobs:
   
     - name: 'Deploy codenames-socket-io-server to Google Cloud Run'
       run: |
-        gcloud builds submit ./codenames-socket-io-server 
+        gcloud builds submit ./codenames-socket-io-server \
           --tag europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-socket-io-server \
           --service-account=projects/codenames-471620/serviceAccounts/cr-runtime@codenames-471620.iam.gserviceaccount.com
         
@@ -91,7 +86,7 @@ jobs:
 
     - name: 'Deploy codenames-peerserver to Google Cloud Run'
       run: |
-        gcloud builds submit ./codenames-peerserver 
+        gcloud builds submit ./codenames-peerserver \
           --tag europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-peerserver  \
           --service-account=projects/codenames-471620/serviceAccounts/cr-runtime@codenames-471620.iam.gserviceaccount.com
           
