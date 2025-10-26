@@ -35,12 +35,15 @@ jobs:
 
     - name: 'Deploy codenames-backend to Google Cloud Run'
       run: |
-        gcloud builds submit ./codenames-backend --tag europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-backend
+        gcloud builds submit ./codenames-backend 
+          --tag europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-backend \
+          --service-account=projects/codenames-471620/serviceAccounts/cr-runtime@codenames-471620.iam.gserviceaccount.com
+          
         gcloud run deploy codenames-backend \
           --image europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-backend \
           --region europe-central2 \
           --platform managed \
-          --service-account cr-runtime@codenames-471620.iam.gserviceaccount.com \
+          --service-account projects/codenames-471620/serviceAccounts/cr-runtime@codenames-471620.iam.gserviceaccount.com \
           --allow-unauthenticated \
           --env-vars-file env.yaml
 
@@ -66,25 +69,31 @@ jobs:
           --image europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-frontend:latest \
           --region europe-central2 \
           --platform managed \
-          --service-account cr-runtime@codenames-471620.iam.gserviceaccount.com \
+          --service-account projects/codenames-471620/serviceAccounts/cr-runtime@codenames-471620.iam.gserviceaccount.com \
           --allow-unauthenticated
   
     - name: 'Deploy codenames-socket-io-server to Google Cloud Run'
       run: |
-        gcloud builds submit ./codenames-socket-io-server --tag europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-socket-io-server
+        gcloud builds submit ./codenames-socket-io-server 
+          --tag europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-socket-io-server \
+          --service-account=projects/codenames-471620/serviceAccounts/cr-runtime@codenames-471620.iam.gserviceaccount.com
+        
         gcloud run deploy codenames-socket-io-server \
           --image europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-socket-io-server \
           --region europe-central2 \
           --platform managed \
-          --service-account cr-runtime@codenames-471620.iam.gserviceaccount.com \          
+          --service-account projects/codenames-471620/serviceAccounts/cr-runtime@codenames-471620.iam.gserviceaccount.com \          
           --allow-unauthenticated
 
     - name: 'Deploy codenames-peerserver to Google Cloud Run'
       run: |
-        gcloud builds submit ./codenames-peerserver --tag europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-peerserver
+        gcloud builds submit ./codenames-peerserver 
+          --tag europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-peerserver  \
+          --service-account=projects/codenames-471620/serviceAccounts/cr-runtime@codenames-471620.iam.gserviceaccount.com
+          
         gcloud run deploy codenames-peerserver \
           --image europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-peerserver \
           --region europe-central2 \
           --platform managed \
-          --service-account cr-runtime@codenames-471620.iam.gserviceaccount.com \
+          --service-account projects/codenames-471620/serviceAccounts/cr-runtime@codenames-471620.iam.gserviceaccount.com \
           --allow-unauthenticated
