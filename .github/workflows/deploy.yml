@@ -36,8 +36,10 @@ jobs:
       run: |
         gcloud builds submit ./codenames-backend \
           --tag europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-backend \
-          --service-account=projects/codenames-471620/serviceAccounts/cr-runtime@codenames-471620.iam.gserviceaccount.com
-          
+          --service-account=projects/codenames-471620/serviceAccounts/cr-runtime@codenames-471620.iam.gserviceaccount.com \
+          --gcs-log-dir=gs://codenames-471620-eu2-cloudbuild-logs/logs \
+          --region=europe-central2
+
         gcloud run deploy codenames-backend \
           --image europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-backend \
           --region europe-central2 \
@@ -75,8 +77,10 @@ jobs:
       run: |
         gcloud builds submit ./codenames-socket-io-server \
           --tag europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-socket-io-server \
-          --service-account=projects/codenames-471620/serviceAccounts/cr-runtime@codenames-471620.iam.gserviceaccount.com
-        
+          --service-account=projects/codenames-471620/serviceAccounts/cr-runtime@codenames-471620.iam.gserviceaccount.com \
+          --gcs-log-dir=gs://codenames-471620-eu2-cloudbuild-logs/logs \
+          --region=europe-central2
+   
         gcloud run deploy codenames-socket-io-server \
           --image europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-socket-io-server \
           --region europe-central2 \
@@ -88,7 +92,9 @@ jobs:
       run: |
         gcloud builds submit ./codenames-peerserver \
           --tag europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-peerserver  \
-          --service-account=projects/codenames-471620/serviceAccounts/cr-runtime@codenames-471620.iam.gserviceaccount.com
+          --service-account=projects/codenames-471620/serviceAccounts/cr-runtime@codenames-471620.iam.gserviceaccount.com \
+          --gcs-log-dir=gs://codenames-471620-eu2-cloudbuild-logs/logs \
+          --region=europe-central2
           
         gcloud run deploy codenames-peerserver \
           --image europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-peerserver \
