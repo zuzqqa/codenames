@@ -51,6 +51,10 @@ jobs:
     - name: 'Remove env.yaml'
       run: rm env.yaml
 
+    - name: 'Configure Docker auth for Artifact Registry'
+      run: |
+        gcloud auth configure-docker europe-central2-docker.pkg.dev --quiet
+    
     - name: 'Build Docker image for frontend'
       run: |
         docker build -f ./codenames-frontend/Dockerfile.prod ./codenames-frontend \
