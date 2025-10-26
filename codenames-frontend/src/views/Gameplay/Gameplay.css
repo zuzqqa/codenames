@@ -266,6 +266,16 @@ button {
   right: 4%;
 }
 
+.banner-container-2 {
+  position: absolute;
+  top: -5%;
+  right: -7.5%;
+}
+
+.banner-container-2 img {
+  height: 48vw;
+}
+
 .banner-container img {
   width: 9vw;
 }

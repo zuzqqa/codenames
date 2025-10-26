@@ -34,6 +34,7 @@ interface ButtonProps {
     | "transparent"
     | "half-circle"
     | "number-stepper"
+    | "tutorial"
     | "google"; // Button variant for styles (default is "primary")
   /** Disabled state (default is false) */
   disabled?: boolean;
@@ -44,6 +45,7 @@ interface ButtonProps {
   /** Additional custom class names */
   className?: string;
   style?: React.CSSProperties;
+
 }
 
 /**
