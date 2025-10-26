@@ -16,16 +16,64 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-
     - id: 'auth'
       uses: 'google-github-actions/auth@v2'
       with:
         workload_identity_provider: 'projects/524815217558/locations/global/workloadIdentityPools/github/providers/github-actions'
         service_account: 'github-deployer@codenames-471620.iam.gserviceaccount.com'
-
+  
     - name: 'Set up gcloud'
       uses: 'google-github-actions/setup-gcloud@v2'
       
+      # After "actions/checkout@v3" and auth/setup-gcloud
+    - name: 'Debug: show workspace and gcloud'
+      run: |
+        pwd
+        echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
+        gcloud --version
+    
+    # ---- Backend checks ----
+    - name: 'Debug: verify backend Dockerfile is present'
+      run: |
+        echo "Listing repo root:"
+        ls -la
+        echo "Listing ./codenames-backend:"
+        ls -la ./codenames-backend || true
+        echo "Find any Dockerfile under codenames-backend:"
+        find ./codenames-backend -maxdepth 2 -type f -iname 'Dockerfile*' -printf '%p\n' || true
+        echo "If present, show first lines:"
+        test -f ./codenames-backend/Dockerfile && head -n 50 ./codenames-backend/Dockerfile || echo "No standard Dockerfile"
+        echo "Show .dockerignore if exists:"
+        test -f ./.dockerignore && { echo "Root .dockerignore:"; cat ./.dockerignore; } || echo "No root .dockerignore"
+        test -f ./codenames-backend/.dockerignore && { echo "Service .dockerignore:"; cat ./codenames-backend/.dockerignore; } || echo "No service .dockerignore"
+        echo "Fail job if Dockerfile missing:"
+        test -f ./codenames-backend/Dockerfile || { echo "::error ::Missing ./codenames-backend/Dockerfile"; exit 1; }
+    
+    - name: 'Debug: try a local docker build (no push)'
+      run: |
+        docker version
+        docker build -f ./codenames-backend/Dockerfile ./codenames-backend -t backend:debug --no-cache --progress=plain
+    
+    # Optional: see what Cloud Build will upload as the source tarball
+    - name: 'Debug: inspect source tarball content (what gcloud uploads)'
+      run: |
+        tar -czf /tmp/backend-src.tgz -C ./codenames-backend .
+        echo "Top of source tar:"
+        tar -tzf /tmp/backend-src.tgz | head -n 200 | sed 's/^/  /'
+        echo "Ensure Dockerfile is in tar:"
+        tar -tzf /tmp/backend-src.tgz | grep -i '^Dockerfile$' || { echo "::warning ::Dockerfile not found in tar"; }
+    
+    # ---- Repeat for the other services if helpful ----
+    - name: 'Debug: verify socket-io Dockerfile is present'
+      run: |
+        ls -la ./codenames-socket-io-server || true
+        find ./codenames-socket-io-server -maxdepth 2 -type f -iname 'Dockerfile*' -printf '%p\n' || true
+    
+    - name: 'Debug: verify peerserver Dockerfile is present'
+      run: |
+        ls -la ./codenames-peerserver || true
+        find ./codenames-peerserver -maxdepth 2 -type f -iname 'Dockerfile*' -printf '%p\n' || true
+
     - name: 'Configure gcloud to impersonate service account'
       run: |
         gcloud config set auth/impersonate_service_account cr-runtime@codenames-471620.iam.gserviceaccount.com
