@@ -89,7 +89,7 @@ jobs:
           --image europe-central2-docker.pkg.dev/codenames-471620/codenames/codenames-socket-io-server \
           --region europe-central2 \
           --platform managed \
-          --service-account cr-runtime@codenames-471620.iam.gserviceaccount.com \          
+          --service-account cr-runtime@codenames-471620.iam.gserviceaccount.com \
           --allow-unauthenticated
 
     - name: 'Deploy codenames-peerserver to Google Cloud Run'
