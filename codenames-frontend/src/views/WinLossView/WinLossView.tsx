@@ -9,6 +9,9 @@ import "../../styles/App.css";
 import "../Home/Home.css";
 import "./WinLossView.css";
 
+import victorySound from "../../assets/sounds/victory.wav";
+import defeatSound from "../../assets/sounds/defeat.wav";
+
 /**
  * The `WinLossView` component displays a victory or defeat message and automatically redirects
  * the user to the home page after a timeout. It also clears stored chat messages on mount.
@@ -22,11 +25,24 @@ const WinLossView: React.FC = () => {
   const location = useLocation();
   const { result } = location.state || {};
   const resultText = result === "Victory" ? t("Victory") : t("Defeat");
+  const victoryAudio = new Audio(victorySound);
+  const defeatAudio = new Audio(defeatSound);
+
 
   if (!result) {
     navigate("/");
     return null;
   }
+
+  useEffect(() =>{
+        if (result == "Victory"){
+        victoryAudio.play();
+      }
+      else {
+        defeatAudio.play();
+      }
+    }
+  )
 
   /**
    * Sets a timeout to navigate back to the home page after 15 seconds.
@@ -35,7 +51,7 @@ const WinLossView: React.FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigate("/");
-    }, 15000);
+    }, 10000);
 
     return () => clearTimeout(timer);
   }, [navigate]);

@@ -19,7 +19,9 @@ import cardRedImg from "../../assets/images/card-red.jpg";
 import cardBlueImg from "../../assets/images/card-blue.jpg";
 import polygon1Img from "../../assets/images/Polygon1.png";
 import polygon2Img from "../../assets/images/Polygon2.png";
-import cardSound from "../../assets/sounds/card-filp.mp3";
+import cardSound from "../../assets/sounds/card-flip.mp3";
+import textAppearSound from "../../assets/sounds/clean-whoosh.mp3";
+import blackCardSound from "../../assets/sounds/epic-hit.mp3";
 import votingLabel from "../../assets/images/medieval-label.png";
 import closeIcon from "../../assets/icons/close.png";
 import micGoldIcon from "../../assets/icons/mic-gold.svg";
@@ -158,7 +160,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   const amIChoosingHint =
     (amIRedTeamLeader || amIBlueTeamLeader) && whosTurn == myTeam && isHintTime;
   const { addToast } = useToast();
-  const clickAudio = new Audio(cardSound);
+  const cardSoundAudio = new Audio(cardSound);
   const [votedCards, setVotedCards] = useState<number[]>([]);
   const [userId, setUserId] = useState<string | null>();
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
@@ -168,7 +170,9 @@ const Gameplay: React.FC<GameplayProps> = ({
   );
   const gameSocketRef = useRef<Socket | null>(null);
   const [voiceChatEnabled, setVoiceChatEnabled] = useState(false);
-  const audioRef = useRef(new Audio(cardSound));
+  const textAppearSoundAudioRef = useRef(new Audio(textAppearSound));
+  const blackCardSoundAudioRef = useRef(new Audio(blackCardSound));
+
 
   /**
    * This function toggles the visibility of the overlay.
@@ -194,16 +198,29 @@ const Gameplay: React.FC<GameplayProps> = ({
   /**
    * This function plays card flip sound on mouse enter and leave.
    */
-  const playCardSound = () => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.play();
+  const playTextAppearSound = () => {
+    if (textAppearSoundAudioRef.current) {
+      textAppearSoundAudioRef.current.currentTime = 0;
+      textAppearSoundAudioRef.current.play();
+    }
+  };
+
+    const playBlackCardSound = () => {
+    if (blackCardSoundAudioRef.current) {
+      blackCardSoundAudioRef.current.currentTime = 0;
+      blackCardSoundAudioRef.current.play();
     }
   };
 
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = Math.min(Math.max(soundFXVolume, 0), 1);
+    if (textAppearSoundAudioRef.current) {
+      textAppearSoundAudioRef.current.volume = Math.min(Math.max(soundFXVolume, 0), 1);
+    }
+  }, [soundFXVolume]);
+
+  useEffect(() => {
+    if (blackCardSoundAudioRef.current) {
+      blackCardSoundAudioRef.current.volume = Math.min(Math.max(soundFXVolume, 0), 1);
     }
   }, [soundFXVolume]);
 
@@ -229,6 +246,7 @@ const Gameplay: React.FC<GameplayProps> = ({
    * @param {number} index - The index of the card being selected.
    */
   const handleCardSelection = (index: number) => {
+
     if (flipStates[index]) return;
 
     if (amIRedTeamLeader || amIBlueTeamLeader) return;
@@ -245,6 +263,14 @@ const Gameplay: React.FC<GameplayProps> = ({
           ? [...prevSelectedCards, index]
           : prevSelectedCards.filter((c) => c !== index)
       );
+    }
+
+    if (gameSession?.gameState.cardsColors[index] === 3) {
+      playBlackCardSound();
+    }
+    else {
+      cardSoundAudio.volume = soundFXVolume / 100;
+      cardSoundAudio.play();
     }
   };
 
@@ -416,8 +442,8 @@ const Gameplay: React.FC<GameplayProps> = ({
    * Adjusts the volume and plays a click sound.
    */
   const toggleBlackCardVisibility = () => {
-    clickAudio.volume = soundFXVolume / 100;
-    clickAudio.play();
+    cardSoundAudio.volume = soundFXVolume / 100;
+    cardSoundAudio.play();
     if (amIChoosingHint) setIsCardVisible(true);
   };
 
@@ -712,7 +738,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         navigate("/win-loss", {
           state: { result: winner === myTeam ? "Victory" : "Loss" },
         });
-      }, 3000);
+      }, 7000);
 
       return () => clearTimeout(timeoutId);
     }
@@ -1123,7 +1149,7 @@ const Gameplay: React.FC<GameplayProps> = ({
                           ...prev,
                           [index]: "enter",
                         }));
-                        playCardSound();
+                        playTextAppearSound();
                       }
                     : undefined
                 }
@@ -1134,15 +1160,21 @@ const Gameplay: React.FC<GameplayProps> = ({
                           ...prev,
                           [index]: "leave",
                         }));
-                        playCardSound();
                       }
                     : undefined
                 }
               >
                 <img
-                  className={`card ${flipStates[index] ? "flip" : ""} ${
-                    hoverStates[index] === "enter" ? "flip-enter" : ""
-                  } ${hoverStates[index] === "leave" ? "flip-leave" : ""}`}
+                  className={`card 
+                    ${
+                      flipStates[index] &&
+                      gameSession?.gameState.cardsColors[index] === 3
+                        ? "flip-black"
+                        : flipStates[index]
+                        ? "flip"
+                        : ""
+                    }
+                  `}
                   src={
                     amIRedTeamLeader || amIBlueTeamLeader
                       ? (() => {
@@ -1174,19 +1206,26 @@ const Gameplay: React.FC<GameplayProps> = ({
                   </div>
                 )}
 
-                {(!flipStates[index] || hoverStates[index] === "enter") && (
+                {(!flipStates[index] ||
+                  hoverStates[index] === "enter" ||
+                  hoverStates[index] === "leave") && (
                   <span
                     className={`card-text ${
                       gameSession?.gameState.cardsColors[index] != 0 &&
                       (amIRedTeamLeader ||
                         amIBlueTeamLeader ||
-                        hoverStates[index] === "enter")
+                        hoverStates[index] === "enter" ||
+                        hoverStates[index] === "leave")
                         ? "gold-text"
                         : ""
                     }
                     ${
-                      hoverStates[index] === "enter" ? "text-animate-in" : ""
-                    } `}
+                      hoverStates[index] === "enter"
+                        ? "text-animate-in"
+                        : hoverStates[index] === "leave"
+                        ? "text-animate-out"
+                        : ""
+                    }`}
                   >
                     {gameSession?.gameState.cards[index]}
                   </span>
