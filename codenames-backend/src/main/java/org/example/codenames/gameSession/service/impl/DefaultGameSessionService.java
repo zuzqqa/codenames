@@ -402,9 +402,13 @@ public class DefaultGameSessionService implements GameSessionService {
         return false;
     }
 
+    /**
+     * Get leader vote state.
+     * @param gameId
+     * @return leader vote state if game with given param exists
+     */
     @Override
     public Optional<LeaderVoteState> getLeaderVoteState(UUID gameId) {
-
         Optional<GameSession> gameSession = gameSessionRepository.findBySessionId(gameId);
 
         if (gameSession.isEmpty()) {

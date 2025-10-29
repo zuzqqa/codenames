@@ -10,6 +10,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class LeaderVoteState {
-
     private boolean voteState;
 }

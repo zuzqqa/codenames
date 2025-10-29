@@ -315,10 +315,14 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         return ResponseEntity.ok(voteRequest.getVotedUserId());
     }
 
+    /**
+     * Get the current vote state for leader selection
+     * @param gameId
+     * @return the leader vote state
+     */
     @Override
     @GetMapping("/{gameId}/vote-state")
     public ResponseEntity<LeaderVoteState> getVoteState(@PathVariable UUID gameId) {
-
         var response = gameSessionService.getLeaderVoteState(gameId);
         return response.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
