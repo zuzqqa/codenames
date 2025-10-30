@@ -516,15 +516,6 @@ button {
   transform: rotate(1deg);
 }
 
-.audio-room {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 @keyframes hit {
   0% {
     transform: rotate(30deg) scale(1);

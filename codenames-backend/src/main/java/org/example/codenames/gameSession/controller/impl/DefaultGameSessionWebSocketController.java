@@ -2,6 +2,7 @@ package org.example.codenames.gameSession.controller.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
+import org.example.codenames.discord.service.impl.DiscordGuildService;
 import org.example.codenames.gameSession.controller.api.GameSessionWebSocketController;
 import org.example.codenames.gameSession.entity.CreateGameRequest;
 import org.example.codenames.gameSession.entity.GameSession;
@@ -49,7 +50,27 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
     private final SocketService socketService;
 
     /**
+     *
+     */
+    private final DiscordGuildService discordGuildService;
+
+    public static void clearVotes(GameSession gameSession, GameSessionRepository gameSessionRepository) {
+        List<Integer> zeroVotes = new ArrayList<>();
+        int numberOfCards = gameSession.getGameState().getCards().length;
+
+        for (int i = 0; i < numberOfCards; i++) {
+            zeroVotes.add(0);
+        }
+
+        gameSession.getGameState().getCardsVotes().clear();
+        gameSession.getGameState().setCardsVotes(zeroVotes);
+
+        gameSessionRepository.save(gameSession);
+    }
+
+    /**
      * Create a new game session
+     *
      * @param request the request containing the game session information
      * @return the response entity containing the game session id
      */
@@ -89,8 +110,9 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
     /**
      * Connect a player to a game session
-     * @param gameId the game session id
-     * @param userId the user id
+     *
+     * @param gameId    the game session id
+     * @param userId    the user id
      * @param teamIndex the team index
      * @return the response entity
      */
@@ -100,8 +122,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
         try {
             teamIndexInt = Integer.parseInt(teamIndex);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(400).body(null);
         }
 
@@ -118,13 +139,14 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
             } else {
                 return ResponseEntity.status(409).build();
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(500).build();
         }
     }
 
     /**
      * Disconnect a player from a game session
+     *
      * @param gameId the game session id
      * @param userId the user id
      * @return the response entity
@@ -151,6 +173,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
     /**
      * Start the game
+     *
      * @param gameId the game session id
      * @return the response entity
      */
@@ -170,11 +193,14 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         socketService.sendGameSessionUpdate(gameId, toRoomLobbyDTO(gameSessionRepository.findBySessionId(gameId)));
         socketService.sendGameSessionsList(toJoinGameDTOList(gameSessionService.getAllGameSessions()));
 
+        discordGuildService.createVoiceChannel(gameSession.getGameName(), gameSession.getMaxPlayers());
+
         return ResponseEntity.ok().build();
     }
 
     /**
      * Finish the game
+     *
      * @param gameId the game session id
      * @return the response entity
      */
@@ -189,11 +215,14 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
         socketService.sendGameSessionUpdate(gameId, toRoomLobbyDTO(gameSessionRepository.findBySessionId(gameId)));
 
+        discordGuildService.deleteChannel(gameSession.getGameName());
+
         return ResponseEntity.ok().build();
     }
 
     /**
      * Get game sessions
+     *
      * @return the response entity containing the list of game sessions
      */
     @GetMapping("/all")
@@ -210,7 +239,8 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
     /**
      * Send hints to the players
-     * @param gameId the game session id
+     *
+     * @param gameId      the game session id
      * @param hintRequest the hint request containing the hint information
      * @return the response entity
      */
@@ -229,7 +259,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
         Optional<GameSession> optionalSession = gameSessionRepository.findBySessionId(gameId);
 
-        if(optionalSession.isPresent()) {
+        if (optionalSession.isPresent()) {
             socketService.sendGameSessionUpdate(gameId, optionalSession.get());
         }
 
@@ -238,6 +268,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
     /**
      * Change the turn
+     *
      * @param id the game session id
      * @return the response entity
      */
@@ -258,25 +289,11 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         return ResponseEntity.ok("Turn changed");
     }
 
-    public static void clearVotes(GameSession gameSession, GameSessionRepository gameSessionRepository) {
-        List<Integer> zeroVotes = new ArrayList<>();
-        int numberOfCards = gameSession.getGameState().getCards().length;
-
-        for (int i = 0; i < numberOfCards; i++) {
-            zeroVotes.add(0);
-        }
-
-        gameSession.getGameState().getCardsVotes().clear();
-        gameSession.getGameState().setCardsVotes(zeroVotes);
-
-        gameSessionRepository.save(gameSession);
-    }
-
     /**
      * Reveal card chosen by the currentSelectionLeader
-     * @param gameId the id of the game session
-     * @param cardIndex index of the card to be revealed
      *
+     * @param gameId    the id of the game session
+     * @param cardIndex index of the card to be revealed
      * @return response entity
      */
     @Override
@@ -295,9 +312,9 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
     /**
      * Submit a vote for a leader
-     * @param gameId the id of the game session
-     * @param voteRequest the vote request containing the user id and the id of the user that was voted on
      *
+     * @param gameId      the id of the game session
+     * @param voteRequest the vote request containing the user id and the id of the user that was voted on
      * @return the id of the user that was voted on
      */
     @Override
@@ -310,7 +327,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
                 new IllegalArgumentException("Game with an ID of " + gameId + " does not exist."));
 
         socketService.sendGameSessionUpdate(gameId, gameSession);
-        
+
         return ResponseEntity.ok(voteRequest.getVotedUserId());
     }
 }

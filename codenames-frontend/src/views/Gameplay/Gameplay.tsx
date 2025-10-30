@@ -30,7 +30,6 @@ import "./Gameplay.css";
 import Chat from "../../components/Chat/Chat.tsx";
 
 import { useNavigate } from "react-router-dom";
-import AudioRoom from "../../components/AudioRoom/AudioRoom.tsx";
 import { apiUrl, socketUrl } from "../../config/api.tsx";
 import { io, Socket } from "socket.io-client";
 import { getUserId } from "../../shared/utils.tsx";
@@ -76,7 +75,6 @@ interface GameSession {
   timeForGuessing: string;
   connectedUsers: User[][];
   gameState: GameState;
-  voiceChatEnabled: boolean;
 }
 
 /**
@@ -167,7 +165,6 @@ const Gameplay: React.FC<GameplayProps> = ({
     localStorage.getItem("username") || ""
   );
   const gameSocketRef = useRef<Socket | null>(null);
-  const [voiceChatEnabled, setVoiceChatEnabled] = useState(false);
   const audioRef = useRef(new Audio(cardSound));
 
   /**
@@ -468,7 +465,6 @@ const Gameplay: React.FC<GameplayProps> = ({
             : "blue"
         );
         setVotedCards(data.gameState?.cardsVotes || []);
-        setVoiceChatEnabled(data.voiceChatEnabled || false);
       } catch (err) {
         console.error("Failed to load game session", err);
       }
@@ -1028,33 +1024,6 @@ const Gameplay: React.FC<GameplayProps> = ({
         >
           <img src={logoutButton} alt="Home" />
         </Button>
-
-        {voiceChatEnabled && (
-          <div className={`custom-overlay ${isOverlayVisible ? "open" : ""}`}>
-            <div className="overlay-content">
-              <button
-                className="close-btn"
-                onClick={() => setIsOverlayVisible(false)}
-              >
-                <img src={closeIcon}></img>
-              </button>
-              <div className="audio-room">
-                <AudioRoom soundFXVolume={soundFXVolume} />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {voiceChatEnabled && !isOverlayVisible && (
-          <Button
-            variant="half-circle"
-            className="half-circle-btn"
-            soundFXVolume={soundFXVolume}
-            onClick={() => setIsOverlayVisible(true)}
-          >
-            <img className="mic-icon" src={micGoldIcon} alt="Microphone" />
-          </Button>
-        )}
 
         <SettingsModal
           isOpen={isSettingsOpen}

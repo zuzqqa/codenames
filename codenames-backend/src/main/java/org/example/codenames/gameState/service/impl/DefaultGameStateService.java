@@ -8,7 +8,6 @@ import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameState.entity.CardsVoteRequest;
 import org.example.codenames.gameState.entity.GameState;
 import org.example.codenames.gameState.service.api.GameStateService;
-
 import org.example.codenames.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,13 +45,35 @@ public class DefaultGameStateService implements GameStateService {
     /**
      * Constructs a new DefaultGameStateService.
      *
-     * @param cardRepository the repository for cards
+     * @param cardRepository        the repository for cards
      * @param gameSessionRepository the repository for game sessions
      */
     @Autowired
     public DefaultGameStateService(CardRepository cardRepository, GameSessionRepository gameSessionRepository) {
         this.cardRepository = cardRepository;
         this.gameSessionRepository = gameSessionRepository;
+    }
+
+    /**
+     * Selects a new leader to select cards this round.
+     *
+     * @param gameSession    the game session
+     * @param connectedUsers the connected users to the game session
+     * @return the new leader
+     */
+    private static User getNewLeader(GameSession gameSession, List<List<User>> connectedUsers) {
+        int currentTeamIndex = gameSession.getGameState().getTeamTurn();
+
+        List<User> currentTeamPlayers = connectedUsers.get(currentTeamIndex);
+
+        List<User> availablePlayers = new ArrayList<>(currentTeamPlayers);
+
+        availablePlayers.remove(gameSession.getGameState().getRedTeamLeader());
+        availablePlayers.remove(gameSession.getGameState().getBlueTeamLeader());
+
+        Random rand = new Random();
+
+        return availablePlayers.get(rand.nextInt(availablePlayers.size()));
     }
 
     /**
@@ -88,9 +109,8 @@ public class DefaultGameStateService implements GameStateService {
     /**
      * Returns the card name in the specified language.
      *
-     * @param card the card
+     * @param card     the card
      * @param language the language
-     *
      * @return the card name in the specified language
      */
     @Override
@@ -134,7 +154,7 @@ public class DefaultGameStateService implements GameStateService {
     /**
      * Updates vote counts for selected card.
      *
-     * @param gameId the game session ID
+     * @param gameId      the game session ID
      * @param voteRequest the entity containing the cardIndex and whether the vote is an addition.
      */
     @Override
@@ -164,20 +184,20 @@ public class DefaultGameStateService implements GameStateService {
      * Determines which cards have been chosen based on votes.
      *
      * @param gameSession the current game session
-     * @param cardIndex the index of the card that was chosen
+     * @param cardIndex   the index of the card that was chosen
      */
     @Override
     public void cardsChosen(GameSession gameSession, int cardIndex) {
         GameState gameState = gameSession.getGameState();
 
-        if(gameState.getCardsChosen() == null){
+        if (gameState.getCardsChosen() == null) {
             gameState.setCardsChosen(new ArrayList<>());
         }
 
         gameState.getCardsChosen().add(cardIndex);
         gameState.setHintNumber(Math.max(-1, gameState.getHintNumber() - 1));
 
-        if(gameState.getCardsColors()[cardIndex] == 1){
+        if (gameState.getCardsColors()[cardIndex] == 1) {
             gameState.setRedTeamScore(gameState.getRedTeamScore() + 1);
 
             if (gameState.getTeamTurn() != 0) {
@@ -185,7 +205,7 @@ public class DefaultGameStateService implements GameStateService {
                 gameSessionRepository.save(gameSession);
                 return;
             }
-        } else if(gameState.getCardsColors()[cardIndex] == 2){
+        } else if (gameState.getCardsColors()[cardIndex] == 2) {
             gameState.setBlueTeamScore(gameState.getBlueTeamScore() + 1);
 
             if (gameState.getTeamTurn() != 1) {
@@ -193,7 +213,7 @@ public class DefaultGameStateService implements GameStateService {
                 gameSessionRepository.save(gameSession);
                 return;
             }
-        } else if(gameState.getCardsColors()[cardIndex] == 3){
+        } else if (gameState.getCardsColors()[cardIndex] == 3) {
             if (gameState.getTeamTurn() == 0) {
                 gameState.setBlueTeamScore(100);
             } else {
@@ -277,30 +297,7 @@ public class DefaultGameStateService implements GameStateService {
         User newLeader = getNewLeader(gameSession, connectedUsers);
 
         gameSession.getGameState().setCurrentSelectionLeader(newLeader);
-      
+
         gameSessionRepository.save(gameSession);
-    }
-
-    /**
-     * Selects a new leader to select cards this round.
-     *
-     * @param gameSession the game session
-     * @param connectedUsers the connected users to the game session
-     *
-     * @return the new leader
-     */
-    private static User getNewLeader(GameSession gameSession, List<List<User>> connectedUsers) {
-        int currentTeamIndex = gameSession.getGameState().getTeamTurn();
-
-        List<User> currentTeamPlayers = connectedUsers.get(currentTeamIndex);
-
-        List<User> availablePlayers = new ArrayList<>(currentTeamPlayers);
-
-        availablePlayers.remove(gameSession.getGameState().getRedTeamLeader());
-        availablePlayers.remove(gameSession.getGameState().getBlueTeamLeader());
-
-        Random rand = new Random();
-
-        return availablePlayers.get(rand.nextInt(availablePlayers.size()));
     }
 }

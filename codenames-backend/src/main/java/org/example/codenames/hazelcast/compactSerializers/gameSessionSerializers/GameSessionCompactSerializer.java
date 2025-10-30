@@ -1,14 +1,15 @@
 package org.example.codenames.hazelcast.compactSerializers.gameSessionSerializers;
 
 import com.hazelcast.nio.serialization.compact.CompactReader;
-import com.hazelcast.nio.serialization.compact.CompactWriter;
 import com.hazelcast.nio.serialization.compact.CompactSerializer;
-
+import com.hazelcast.nio.serialization.compact.CompactWriter;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.entity.GameSession.sessionStatus;
 import org.example.codenames.user.entity.User;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class GameSessionCompactSerializer implements CompactSerializer<GameSession> {
 

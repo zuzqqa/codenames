@@ -13,11 +13,18 @@ services:
         - MONGO_URI=${MONGO_URI}
         - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
         - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+        - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
+        - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
+        - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
+        - DISCORD_GUILD_ID=${DISCORD_GUILD_ID}
+        - DISCORD_CATEGORY_ID=${DISCORD_CATEGORY_ID}
       volumes:
         - ./codenames-backend:/opt/codenames-backend
       networks:
         - codenames-network
+  sockets:
 
+ 
   frontend:
     build:
       context: ./codenames-frontend
@@ -32,8 +39,7 @@ services:
     depends_on:
       - backend
     networks:
-        - codenames-network
-        
+        - codenames-network 
 networks:
     codenames-network:
         driver: bridge

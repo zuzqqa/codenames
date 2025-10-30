@@ -5,7 +5,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -51,8 +50,8 @@ public class JwtService {
     /**
      * Extracts a specific claim from the given JWT token using the provided claims resolver function.
      *
-     * @param <T> the type of the claim
-     * @param token the JWT token
+     * @param <T>            the type of the claim
+     * @param token          the JWT token
      * @param claimsResolver function to extract the specific claim
      * @return the extracted claim
      */
@@ -88,7 +87,7 @@ public class JwtService {
     /**
      * Validates the given JWT token against the provided user details.
      *
-     * @param token the JWT token
+     * @param token       the JWT token
      * @param userDetails the user details to validate against
      * @return true if the token is valid, false otherwise
      */
@@ -111,7 +110,7 @@ public class JwtService {
     /**
      * Creates a JWT token with the given claims and username.
      *
-     * @param claims additional claims to include in the token
+     * @param claims   additional claims to include in the token
      * @param username the username for which to create the token
      * @return the created JWT token
      */

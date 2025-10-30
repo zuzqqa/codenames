@@ -4,14 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.socket.client.IO;
 import io.socket.client.Socket;
-
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.entity.dto.GameSessionJoinGameDTO;
 import org.example.codenames.gameSession.entity.dto.GameSessionRoomLobbyDTO;
 import org.example.codenames.socket.service.api.SocketService;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -23,9 +21,9 @@ import java.util.UUID;
 @Service
 public class DefaultSocketService implements SocketService {
 
-    private Socket socket;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final String socketServerUrl;
+    private Socket socket;
 
     public DefaultSocketService(@Value("${socketServer.url}") String socketServerUrl) {
         this.socketServerUrl = socketServerUrl;

@@ -3,11 +3,9 @@ package org.example.codenames.email.service.impl;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
-
-import org.example.codenames.tokens.accountActivationToken.service.api.AccountActivationTokenService;
 import org.example.codenames.email.entity.EmailRequest;
 import org.example.codenames.email.service.api.EmailService;
-
+import org.example.codenames.tokens.accountActivationToken.service.api.AccountActivationTokenService;
 import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetServiceToken;
 import org.example.codenames.util.ResourceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,25 +25,21 @@ import java.nio.charset.StandardCharsets;
  */
 @Service
 public class DefaultEmailService implements EmailService {
-    @Value("${frontend.url:http://localhost:5173}")
-    private String frontendUrl;
-
-    @Value("${backend.url:http://localhost:8080}")
-    private String backendUrl;
-
     /**
      * Service for sending emails through JavaMail.
      */
     private final JavaMailSender mailSender;
-
-
     private final PasswordResetServiceToken passwordResetServiceToken;
-
     private final AccountActivationTokenService accountActivationTokenService;
+    @Value("${frontend.url:http://localhost:5173}")
+    private String frontendUrl;
+    @Value("${backend.url:http://localhost:8080}")
+    private String backendUrl;
+
     /**
      * Constructs a DefaultEmailService with the specified JavaMailSender and passwordResetService.
      *
-     * @param mailSender the JavaMailSender instance for sending emails
+     * @param mailSender                the JavaMailSender instance for sending emails
      * @param passwordResetServiceToken the PasswordResetService instance for managing password reset
      */
     @Autowired
@@ -91,15 +85,15 @@ public class DefaultEmailService implements EmailService {
 
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage,
-                                                            MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-                                                            StandardCharsets.UTF_8.name());
+                    MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                    StandardCharsets.UTF_8.name());
 
             helper.setTo(userEmail);
             helper.setSubject(languageCode.equals("pl") ? "Potwierdzenie" : "Confirmation Email");
             helper.setText(htmlContent, true);
 
             mailSender.send(mimeMessage);
-        } catch (IOException ex){
+        } catch (IOException ex) {
             throw new MessagingException("Could not read email template", ex);
         }
     }
@@ -109,8 +103,8 @@ public class DefaultEmailService implements EmailService {
      * The e-mail template is selected based on the provided language parameter.
      *
      * @param userEmail the recipient's email address
-     * @param request the HTTP request containing additional context (such as IP address) for the password reset operation
-     * @param language the language preference ("pl" for Polish, defaults to English)
+     * @param request   the HTTP request containing additional context (such as IP address) for the password reset operation
+     * @param language  the language preference ("pl" for Polish, defaults to English)
      * @throws MessagingException if an error occurs while creating or sending the email
      */
     public void sendResetPasswordEmail(String userEmail, HttpServletRequest request, String language) throws MessagingException {
@@ -128,8 +122,8 @@ public class DefaultEmailService implements EmailService {
 
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage,
-                                                            MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-                                                            StandardCharsets.UTF_8.name());
+                    MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                    StandardCharsets.UTF_8.name());
 
             String token = passwordResetServiceToken.createResetToken(userEmail, request);
             String resetLink = frontendUrl + "/reset-password?token=" + token;
@@ -140,7 +134,7 @@ public class DefaultEmailService implements EmailService {
             helper.setText(htmlContent, true);
 
             mailSender.send(mimeMessage);
-        } catch (IOException ex){
+        } catch (IOException ex) {
             throw new MessagingException("Could not read email template", ex);
         }
     }
@@ -164,15 +158,15 @@ public class DefaultEmailService implements EmailService {
 
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage,
-                                                            MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-                                                            StandardCharsets.UTF_8.name());
+                    MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                    StandardCharsets.UTF_8.name());
 
             helper.setTo(userEmail);
             helper.setSubject(languageCode.equals("pl") ? "Aktywacja konta" : "Account activation");
             helper.setText(htmlContent, true);
 
             mailSender.send(mimeMessage);
-        } catch (IOException ex){
+        } catch (IOException ex) {
             throw new MessagingException("Could not read email template", ex);
         }
     }

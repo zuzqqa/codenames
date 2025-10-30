@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * Data Transfer Object for Friend Requests.
- * This class is used to transfer friend request data between the server and client. 
+ * This class is used to transfer friend request data between the server and client.
  */
 @Data
 @Builder

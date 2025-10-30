@@ -1,20 +1,13 @@
-# Użyj obrazu z Node.js
-FROM node:16
-
-# Ustaw katalog roboczy
-WORKDIR /usr/src/app
-
-# Skopiuj package.json i package-lock.json (jeśli używasz)
+# syntax=docker/dockerfile:1
+FROM node:20-alpine AS deps
+WORKDIR /app
 COPY package*.json ./
+RUN npm ci --omit=dev
 
-# Zainstaluj zależności
-RUN npm install
-
-# Skopiuj resztę plików aplikacji
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Otwórz port 8080
-EXPOSE 8080
-
-# Uruchom aplikację
+EXPOSE 3000
 CMD ["node", "server.js"]

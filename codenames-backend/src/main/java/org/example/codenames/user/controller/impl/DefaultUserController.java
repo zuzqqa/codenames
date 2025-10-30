@@ -1,29 +1,23 @@
 package org.example.codenames.user.controller.impl;
 
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import lombok.RequiredArgsConstructor;
-
 import org.example.codenames.email.service.api.EmailService;
 import org.example.codenames.jwt.JwtService;
 import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetServiceToken;
-import org.example.codenames.user.entity.dto.FriendRequestsDTO;
+import org.example.codenames.user.controller.api.UserController;
 import org.example.codenames.user.entity.PasswordResetRequest;
 import org.example.codenames.user.entity.User;
-import org.example.codenames.user.controller.api.UserController;
+import org.example.codenames.user.entity.dto.FriendRequestsDTO;
 import org.example.codenames.user.service.api.UserService;
 import org.example.codenames.userDetails.auth.AuthRequest;
-
 import org.example.codenames.userDetails.auth.AuthResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -33,10 +27,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
-
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -49,30 +39,26 @@ import java.util.*;
 public class DefaultUserController implements UserController {
     private final EmailService emailService;
     private final PasswordResetServiceToken passwordResetServiceToken;
-    @Value("${frontend.url:http://localhost:5173}")
-    private String frontendUrl;
-
-    @Value("${backend.url:http://localhost:8080}")
-    private String backendUrl;
     /**
      * Service for managing actions on user's account.
      */
     private final UserService userService;
-
     /**
      * Authentication manager used for handling user authentication and verifying credentials.
      */
     private final AuthenticationManager authenticationManager;
-
     /**
      * Service responsible for handling JWT operations such as token generation, validation, and extraction of claims.
      */
     private final JwtService jwtService;
-
     /**
      * Service for sending emails through JavaMail.
      */
     private final JavaMailSender mailSender;
+    @Value("${frontend.url:http://localhost:5173}")
+    private String frontendUrl;
+    @Value("${backend.url:http://localhost:8080}")
+    private String backendUrl;
 
     /**
      * Creates a new user and generates an authentication token.
@@ -157,7 +143,7 @@ public class DefaultUserController implements UserController {
     /**
      * Updates a user by their ID.
      *
-     * @param id the ID of the user
+     * @param id          the ID of the user
      * @param updatedUser the updated user information
      * @return ResponseEntity containing the updated user or 404 if not found
      */
@@ -283,7 +269,7 @@ public class DefaultUserController implements UserController {
 
         String token = jwtService.generateToken(guest.getUsername());
         String jsonResponse = String.format("{\"message\": \"success\", \"token\": \"%s\"}", token);
-        
+
         return ResponseEntity.ok(jsonResponse);
     }
 
@@ -303,7 +289,7 @@ public class DefaultUserController implements UserController {
      * Sends a friend request from one user to another.
      *
      * @param receiverUsername the username of the user receiving the request
-     * @param senderUsername the username of the user sending the request
+     * @param senderUsername   the username of the user sending the request
      * @return ResponseEntity with status 200 OK
      */
     @PostMapping("/send-request/{receiverUsername}")
@@ -315,7 +301,7 @@ public class DefaultUserController implements UserController {
     /**
      * Declines a friend request sent by another user.
      *
-     * @param senderUsername the username of the user who sent the request
+     * @param senderUsername   the username of the user who sent the request
      * @param receiverUsername the username of the user declining the request
      * @return ResponseEntity with status 200 OK
      */
@@ -328,7 +314,7 @@ public class DefaultUserController implements UserController {
     /**
      * Accepts a friend request sent by another user.
      *
-     * @param senderUsername the username of the user who sent the request
+     * @param senderUsername   the username of the user who sent the request
      * @param receiverUsername the username of the user accepting the request
      * @return ResponseEntity with status 200 OK
      */
@@ -342,7 +328,7 @@ public class DefaultUserController implements UserController {
      * Removes a friend from the user's friend list.
      *
      * @param friendUsername the username of the friend to remove
-     * @param userUsername the username of the user initiating the removal
+     * @param userUsername   the username of the user initiating the removal
      * @return ResponseEntity with status 200 OK
      */
     @DeleteMapping("/remove-friend/{friendUsername}")
@@ -364,10 +350,10 @@ public class DefaultUserController implements UserController {
             User u = user.get();
 
             FriendRequestsDTO dto = FriendRequestsDTO.builder()
-                                                     .friends(u.getFriends())
-                                                     .sentRequests(u.getSentRequests())
-                                                     .receivedRequests(u.getReceivedRequests())
-                                                     .build();
+                    .friends(u.getFriends())
+                    .sentRequests(u.getSentRequests())
+                    .receivedRequests(u.getReceivedRequests())
+                    .build();
 
             return ResponseEntity.ok(dto);
         } else {
@@ -378,8 +364,8 @@ public class DefaultUserController implements UserController {
     /**
      * Resets user password based on the token and new password provided.
      *
-     * @param token the reset token provided by the user.
-     * @param request the HTTP request containing additional context (such as IP address) for the password reset operation.
+     * @param token                the reset token provided by the user.
+     * @param request              the HTTP request containing additional context (such as IP address) for the password reset operation.
      * @param passwordResetRequest the entity containing new password.
      * @return ResponseEntity with status 200 OK if password change was successful or 400 BAD REQUEST otherwise
      */
@@ -404,7 +390,7 @@ public class DefaultUserController implements UserController {
      */
     @PostMapping("/activity")
     public ResponseEntity<Void> updateUserActiveStatus(@RequestBody String userId) {
-        if(userId == null || userId.isEmpty()) {
+        if (userId == null || userId.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
 

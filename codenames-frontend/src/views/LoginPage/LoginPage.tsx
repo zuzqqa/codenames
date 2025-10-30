@@ -18,8 +18,7 @@ import backButtonIcon from "../../assets/icons/arrow-back.png";
 
 import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister.tsx";
 import { logout } from "../../shared/utils.tsx";
-import { useNavigate, useLocation, createCookie } from "react-router-dom";
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import { useNavigate, useLocation } from "react-router-dom";
 import { apiUrl } from "../../config/api.tsx";
 import { secure } from "../../config/api.tsx";
 import { useToast } from "../../components/Toast/ToastContext.tsx";

@@ -43,9 +43,9 @@ public class DefaultGameSessionController implements GameSessionController {
     /**
      * Constructor for the DefaultGameSessionController class
      *
-     * @param gameSessionService The GameSessionService instance used to interact with the game session repository
+     * @param gameSessionService    The GameSessionService instance used to interact with the game session repository
      * @param gameSessionRepository The GameSessionRepository instance used to interact with the game session database
-     * @param gameStateService The GameStateService instance used to interact with the game session repository
+     * @param gameStateService      The GameStateService instance used to interact with the game session repository
      */
     @Autowired
     public DefaultGameSessionController(GameSessionService gameSessionService, GameSessionRepository gameSessionRepository, GameStateService gameStateService) {
@@ -75,7 +75,6 @@ public class DefaultGameSessionController implements GameSessionController {
      * Get states of cards in the game session
      *
      * @param gameId The id of the game session to retrieve
-     *
      * @return The states of cards in the game session
      */
     @GetMapping("/{gameId}/cards")
@@ -87,7 +86,6 @@ public class DefaultGameSessionController implements GameSessionController {
      * Get the colors of cards in the game session
      *
      * @param gameId The id of the game session to retrieve
-     *
      * @return The colors of cards in the game session
      */
     @GetMapping("/{gameId}/cards-colors")
@@ -99,7 +97,6 @@ public class DefaultGameSessionController implements GameSessionController {
      * Get the votes for leaders
      *
      * @param gameId The id of the game session
-     *
      * @return The votes for leaders
      */
     @GetMapping("/{gameId}/assign-leaders")
@@ -123,9 +120,8 @@ public class DefaultGameSessionController implements GameSessionController {
     /**
      * Get users assigned to a team
      *
-     * @param gameId The id of the game session
+     * @param gameId    The id of the game session
      * @param teamIndex The index of the team
-     *
      * @return The votes for leaders
      */
     @GetMapping("/{gameId}/team")
@@ -136,8 +132,7 @@ public class DefaultGameSessionController implements GameSessionController {
         // Parse team index
         try {
             teamIndexInt = Integer.parseInt(teamIndex);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(400).body(null);
         }
 
@@ -161,9 +156,8 @@ public class DefaultGameSessionController implements GameSessionController {
     /**
      * Authenticates password for a session.
      *
-     * @param gameId   the id of the game session
+     * @param gameId          the id of the game session
      * @param enteredPassword password given by user
-     *
      * @return True if password is correct, false otherwise
      */
     @PostMapping("/{gameId}/authenticate-password/{enteredPassword}")

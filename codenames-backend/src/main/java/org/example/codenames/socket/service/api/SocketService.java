@@ -1,7 +1,6 @@
 package org.example.codenames.socket.service.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.entity.dto.GameSessionJoinGameDTO;
 import org.example.codenames.gameSession.entity.dto.GameSessionRoomLobbyDTO;
