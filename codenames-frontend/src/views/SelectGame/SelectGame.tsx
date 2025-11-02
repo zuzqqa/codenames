@@ -1,7 +1,6 @@
-import { useNavigate } from "react-router-dom"; // Importing the navigate hook from React Router
-import { useTranslation } from "react-i18next"; // Importing the useTranslation hook from react-i18next
-import React, { useState, useEffect } from "react"; // Hook for managing component state
-
+import {useNavigate} from "react-router-dom"; // Importing the navigate hook from React Router
+import {useTranslation} from "react-i18next"; // Importing the useTranslation hook from react-i18next
+import React, {useEffect, useState} from "react"; // Hook for managing component state
 import BackgroundContainer from "../../containers/Background/Background";
 import MenuContainer from "../../containers/Menu/Menu";
 
@@ -9,17 +8,15 @@ import TitleComponent from "../../components/Title/Title";
 import SubtitleComponent from "../../components/Subtitle/Subtitle";
 import CharactersComponent from "../../components/Characters/Characters";
 import Button from "../../components/Button/Button";
-import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
+import {useModal} from "../../providers/ModalProvider";
 
 import settingsIcon from "../../assets/icons/settings.png";
-import ProfileModal from "../../components/UserProfileOverlay/ProfileModal";
 import profileIcon from "../../assets/icons/profile.png";
 
 import "../../styles/App.css";
 import "./SelectGame.css";
-import { getCookie, logout } from "../../shared/utils.tsx";
+import {logout} from "../../shared/utils.tsx";
 import logoutButton from "../../assets/icons/logout.svg";
-import { apiUrl } from "../../config/api.tsx";
 import UsernameContainer from "../../containers/UsernameContainer/UsernameContainer.tsx";
 
 /**
@@ -27,12 +24,10 @@ import UsernameContainer from "../../containers/UsernameContainer/UsernameContai
  * @typedef {Object} SelectGameProps
  * @property {function(number): void} setVolume - Function to set the global volume.
  * @property {number} soundFXVolume - Current sound effect volume level.
- * @property {function(number): void} setSoundFXVolume - Function to set the sound effect volume.
  */
 interface SelectGameProps {
   setVolume: (volume: number) => void;
   soundFXVolume: number;
-  setSoundFXVolume: (volume: number) => void;
 }
 
 /**
@@ -41,18 +36,12 @@ interface SelectGameProps {
  * @param {SelectGameProps} props - Component properties.
  * @returns {JSX.Element} The rendered SelectGame component.
  */
-const SelectGame: React.FC<SelectGameProps> = ({
-  setVolume,
-  soundFXVolume,
-  setSoundFXVolume,
-}) => {
+const SelectGame: React.FC<SelectGameProps> = ({ soundFXVolume }) => {
   const [musicVolume, setMusicVolume] = useState(() => {
     const savedVolume = localStorage.getItem("musicVolume");
     return savedVolume ? parseFloat(savedVolume) : 50;
   });
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // State to track if settings modal is open
-  const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
-  const [isGuest, setIsGuest] = useState<boolean | null>(null);
+  const { openSettings, openProfile, canOpenProfile } = useModal();
 
   const { t } = useTranslation(); // Hook for translations
 
@@ -62,57 +51,16 @@ const SelectGame: React.FC<SelectGameProps> = ({
    * Toggles the settings modal visibility.
    */
   const toggleSettings = () => {
-    setIsSettingsOpen(!isSettingsOpen);
+    openSettings();
   };
 
   const toggleProfile = () => {
-    setIsProfileOpen(!isProfileOpen);
-  };
-
-  /**
-   * Updates the music volume both locally and globally.
-   *
-   * @param {number} volume - The new music volume level.
-   */
-  const updateMusicVolume = (volume: number) => {
-    setMusicVolume(volume);
-    setVolume(volume); // Update global volume
+    openProfile();
   };
 
   useEffect(() => {
     localStorage.setItem("musicVolume", musicVolume.toString());
   }, [musicVolume]);
-
-  useEffect(() => {
-    const fetchGuestStatus = async () => {
-      const token = getCookie("authToken");
-
-      if (!token) {
-        return;
-      }
-
-      try {
-        const response = await fetch(`${apiUrl}/api/users/is-guest`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (response.ok) {
-          const guestStatus = await response.json();
-          setIsGuest(guestStatus);
-        } else {
-          console.error("Failed to retrieve guest status.");
-        }
-      } catch (error) {
-        console.error("Error retrieving guest status: ", error);
-      }
-    };
-
-    fetchGuestStatus();
-  }, []);
 
   return (
     <>
@@ -126,7 +74,7 @@ const SelectGame: React.FC<SelectGameProps> = ({
           <img src={settingsIcon} alt="Settings" />
         </Button>
         {/* Profile button */}
-        {isGuest === false && (
+        {canOpenProfile && (
           <Button variant="circle-profile" soundFXVolume={soundFXVolume}>
             <img src={profileIcon} onClick={toggleProfile} alt="Profile" />
           </Button>
@@ -139,21 +87,7 @@ const SelectGame: React.FC<SelectGameProps> = ({
             <img src={logoutButton} onClick={logout} alt="Logout" />
           </Button>
         )}
-        {/* Settings modal */}
-        <SettingsModal
-          isOpen={isSettingsOpen}
-          onClose={toggleSettings}
-          musicVolume={musicVolume}
-          soundFXVolume={soundFXVolume}
-          setMusicVolume={updateMusicVolume}
-          setSoundFXVolume={setSoundFXVolume}
-        />
-        {/* Profie modal */}
-        <ProfileModal
-          isOpen={isProfileOpen}
-          onClose={toggleProfile}
-          soundFXVolume={soundFXVolume}
-        />
+        {/* Settings/Profile modals are rendered by ModalProvider */}
         {/* Main content of the SelectGame page */}
         <TitleComponent soundFXVolume={soundFXVolume}>Codenames</TitleComponent>
         <CharactersComponent /> {/* Renders the characters component */}

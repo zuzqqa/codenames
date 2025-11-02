@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 import BackgroundContainer from "../../containers/Background/Background";
 import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister.tsx";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar.tsx";
-import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
+import { useModal } from "../../providers/ModalProvider";
+
 import Button from "../../components/Button/Button.tsx";
 import FormInput from "../../components/FormInput/FormInput.tsx";
 import TitleComponent from "../../components/Title/Title.tsx";
@@ -45,15 +46,14 @@ interface ResetPasswordRequestProps {
 const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
   setVolume,
   soundFXVolume,
-  setSoundFXVolume,
 }) => {
   const [email, setEmail] = useState<string>("");
   const [musicVolume, setMusicVolume] = useState(soundFXVolume); // Music volume level
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const { addToast } = useToast();
+  const { openSettings } = useModal();
 
   /**
    * Handles the change event for the email input field.
@@ -107,9 +107,7 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
   /**
    * Toggles the visibility of the settings modal.
    */
-  const toggleSettings = () => {
-    setIsSettingsOpen(!isSettingsOpen);
-  };
+  const toggleSettings = () => openSettings();
 
   /**
    * Updates the music volume level.
@@ -123,14 +121,6 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
   return (
     <BackgroundContainer>
       <GameTitleBar />
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={toggleSettings}
-        musicVolume={musicVolume}
-        soundFXVolume={soundFXVolume}
-        setMusicVolume={updateMusicVolume}
-        setSoundFXVolume={setSoundFXVolume}
-      />
       <Button
         variant="circle"
         soundFXVolume={soundFXVolume}

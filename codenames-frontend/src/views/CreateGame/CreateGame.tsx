@@ -6,8 +6,8 @@ import BackgroundContainer from "../../containers/Background/Background";
 import Button from "../../components/Button/Button";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar";
 import CreateGameForm from "../../components/CreateGameForm/CreateGameForm";
-import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
-import ProfileModal from "../../components/UserProfileOverlay/ProfileModal";
+import { useModal } from "../../providers/ModalProvider";
+
 import profileIcon from "../../assets/icons/profile.png";
 import settingsIcon from "../../assets/icons/settings.png";
 import logoutButton from "../../assets/icons/logout.svg";
@@ -30,7 +30,6 @@ import UsernameContainer from "../../containers/UsernameContainer/UsernameContai
 interface CreateGameProps {
   setVolume: (volume: number) => void;
   soundFXVolume: number;
-  setSoundFXVolume: (volume: number) => void;
 }
 
 /**
@@ -41,17 +40,10 @@ interface CreateGameProps {
  * @param {CreateGameProps} props - Component properties
  * @returns {JSX.Element} The rendered CreateGame component
  */
-const CreateGame: React.FC<CreateGameProps> = ({
-  setVolume,
-  soundFXVolume,
-  setSoundFXVolume,
-}) => {
+const CreateGame: React.FC<CreateGameProps> = ({ soundFXVolume }) => {
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
-  const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
+  const { openSettings, openProfile, canOpenProfile } = useModal();
   const [isGuest, setIsGuest] = useState<boolean | null>(null);
-  const [username, setUsername] = useState<string | null>(null);
-  const { t } = useTranslation();
 
   /**
    * Effect to fetch guest status from the server.
@@ -91,16 +83,12 @@ const CreateGame: React.FC<CreateGameProps> = ({
   /**
    * Toggles the settings modal visibility.
    */
-  const toggleSettings = () => {
-    setIsSettingsOpen(!isSettingsOpen);
-  };
+  const toggleSettings = () => openSettings();
 
   /**
    * Toggles the profile modal visibility.
    */
-  const toggleProfile = () => {
-    setIsProfileOpen(!isProfileOpen);
-  };
+  const toggleProfile = () => openProfile();
 
   return (
     <>
@@ -112,7 +100,7 @@ const CreateGame: React.FC<CreateGameProps> = ({
         >
           <img src={settingsIcon} alt="Settings" />
         </Button>
-        {isGuest === false && (
+        {canOpenProfile && (
           <Button variant="circle-profile" soundFXVolume={soundFXVolume}>
             <img src={profileIcon} onClick={toggleProfile} alt="Profile" />
           </Button>
@@ -129,23 +117,7 @@ const CreateGame: React.FC<CreateGameProps> = ({
             <img src={logoutButton} alt="Logout" />
           </Button>
         )}
-
-        <SettingsModal
-          isOpen={isSettingsOpen}
-          onClose={toggleSettings}
-          musicVolume={musicVolume}
-          soundFXVolume={soundFXVolume}
-          setMusicVolume={(volume) => {
-            setMusicVolume(volume);
-            setVolume(volume / 100);
-          }}
-          setSoundFXVolume={setSoundFXVolume}
-        />
-        <ProfileModal
-          isOpen={isProfileOpen}
-          onClose={toggleProfile}
-          soundFXVolume={soundFXVolume}
-        />
+        {/* Modals are provided globally by ModalProvider */}
         <>
           <GameTitleBar></GameTitleBar>
           <CreateGameForm soundFXVolume={soundFXVolume} />

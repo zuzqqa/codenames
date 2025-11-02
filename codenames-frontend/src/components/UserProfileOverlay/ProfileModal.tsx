@@ -20,10 +20,10 @@ import TitleModal from "../TitleModal/TitleModal";
 
 import Button from "../Button/Button";
 
-import useFriendRequestsWebSocket from "./useFriendRequestsSocketIO.tsx";
+import useFriendRequestsSocketIO from "./useFriendRequestsSocketIO.tsx";
 
 import "./ProfileModal.css";
-
+import defaultProfilePic from "../../assets/images/profile-pic.png";
 import {apiUrl} from "../../config/api.tsx";
 import {getUserId} from "../../shared/utils.tsx";
 import {useToast} from "../Toast/ToastContext.tsx";
@@ -68,6 +68,13 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ soundFXVolume, isOpen, onCl
     const [searchResults, setSearchResults] = useState<UserList>({users: []});
     const [activeTab, setActiveTab] = useState<"friends" | "invitations" | "search">("friends");
 
+    // pass initial lists from currentUser into the hook via memoized object
+    const initialFriendState = currentUser ? {
+        friends: currentUser.friends ?? [],
+        sentRequests: currentUser.sentRequests ?? [],
+        receivedRequests: currentUser.receivedRequests ?? [],
+    } : undefined;
+
     const {
         friends,
         sentRequests,
@@ -77,7 +84,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ soundFXVolume, isOpen, onCl
         acceptFriendRequest,
         declineFriendRequest,
         undoFriendRequest,
-    } = useFriendRequestsWebSocket(currentUser?.username || "");
+    } = useFriendRequestsSocketIO(currentUser?.username || "", initialFriendState);
 
     const tabIcons = {
         friends: {default: friendsIcon, picked: friendsIconPicked},
@@ -105,6 +112,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ soundFXVolume, isOpen, onCl
                 if (userResponse.ok) {
                     const userData: User = await userResponse.json();
                     setCurrentUser(userData);
+                    // Initialize edited fields when user is loaded
+                    setEditedUsername(userData.username ?? "");
+                    setEditedEmail(userData.email ?? "");
+                    setEditedDescription(userData.description ?? "");
                     const picIndex = availableProfilePics.indexOf(userData.profilePic);
                     setProfilePicIndex(picIndex !== -1 ? picIndex : 0);
 
@@ -127,7 +138,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ soundFXVolume, isOpen, onCl
                 );
             setProfilePic(image.default);
         } catch (error) {
-            setProfilePic("../../assets/images/profile-pic-default.png");
+            setProfilePic(defaultProfilePic);
         }
     };
 
@@ -245,10 +256,20 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ soundFXVolume, isOpen, onCl
                                     </p>
                                 </div>
                                 <div className="sec-col">
-                                    <p className="gold-text">
-                                        {t("email")}:{" "}
-                                        {currentUser ? currentUser.email : t("unknown user")}
-                                    </p>
+                                    <label className="gold-text">{t("username")}:<br/></label>
+                                    <input
+                                        className="gold-text"
+                                        value={editedUsername}
+                                        onChange={(e) => setEditedUsername(e.target.value)}
+                                    />
+
+                                    <label className="gold-text">{t("email")}:<br/></label>
+                                    <input
+                                        className="gold-text"
+                                        value={editedEmail}
+                                        onChange={(e) => setEditedEmail(e.target.value)}
+                                    />
+
                                     <div>
                                         <label className="gold-text">
                                             {t("description")}:<br/>

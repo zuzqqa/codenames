@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useToast } from "../../components/Toast/ToastContext.tsx";
+import { useModal } from "../../providers/ModalProvider";
 
 import BackgroundContainer from "../../containers/Background/Background";
 
 import Button from "../../components/Button/Button";
-import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
+import QuitModal from "../../components/QuitModal/QuitModal.tsx";
 
 import bannerBlue from "../../assets/images/banner-blue.png";
 import bannerBlueLeader from "../../assets/images/banner-blue-leader.png";
@@ -35,15 +36,12 @@ import { apiUrl, socketUrl } from "../../config/api.tsx";
 import { io, Socket } from "socket.io-client";
 import { getUserId } from "../../shared/utils.tsx";
 import Cookies from "js-cookie";
-import QuitModal from "../../components/QuitModal/QuitModal.tsx";
 
 /**
  * Represents properties for controlling gameplay-related settings, such as volume levels.
  */
 interface GameplayProps {
-  setVolume: (volume: number) => void;
   soundFXVolume: number;
-  setSoundFXVolume: (volume: number) => void;
 }
 
 /**
@@ -113,16 +111,12 @@ const generateId = () =>
  * @param {function(number): void} props.setSoundFXVolume - Function to update the sound effects volume.
  *  * @returns {JSX.Element} The rendered GameLobby component
  */
-const Gameplay: React.FC<GameplayProps> = ({
-  setVolume,
-  soundFXVolume,
-  setSoundFXVolume,
-}) => {
+const Gameplay: React.FC<GameplayProps> = ({ soundFXVolume }) => {
+  const { openSettings } = useModal();
   const [musicVolume, setMusicVolume] = useState(() => {
     const savedVolume = localStorage.getItem("musicVolume");
     return savedVolume ? parseFloat(savedVolume) : 50;
   });
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isQuitModalOpen, setIsQuitModalOpen] = useState(false);
   const { t } = useTranslation();
   const [isCardVisible, setIsCardVisible] = useState(false);
@@ -175,13 +169,6 @@ const Gameplay: React.FC<GameplayProps> = ({
    */
   const toggleOverlay = () => {
     setIsOverlayVisible(!isOverlayVisible);
-  };
-
-  /**
-   * This function toggles the visibility of the settings modal.
-   */
-  const toggleSettings = () => {
-    setIsSettingsOpen(!isSettingsOpen);
   };
 
   /**
@@ -1012,7 +999,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         <Button
           variant="circle"
           soundFXVolume={soundFXVolume}
-          onClick={toggleSettings}
+          onClick={openSettings}
         >
           <img src={settingsIcon} alt="Settings" />
         </Button>
@@ -1052,17 +1039,6 @@ const Gameplay: React.FC<GameplayProps> = ({
           </Button>
         )}
 
-        <SettingsModal
-          isOpen={isSettingsOpen}
-          onClose={toggleSettings}
-          musicVolume={musicVolume}
-          soundFXVolume={soundFXVolume}
-          setMusicVolume={(volume) => {
-            setMusicVolume(volume); // Update local music volume
-            setVolume(volume / 100); // Update global volume
-          }}
-          setSoundFXVolume={setSoundFXVolume}
-        />
         <QuitModal
           isOpen={isQuitModalOpen}
           onClose={toggleQuitModal}

@@ -9,7 +9,7 @@ import Button from "../../components/Button/Button";
 import FormInput from "../../components/FormInput/FormInput";
 import TitleComponent from "../../components/Title/Title";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar.tsx";
-import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
+import { useModal } from "../../providers/ModalProvider";
 import settingsIcon from "../../assets/icons/settings.png";
 import eyeIcon from "../../assets/icons/eye.svg";
 import eyeSlashIcon from "../../assets/icons/eye-slash.svg";
@@ -18,16 +18,12 @@ import backButtonIcon from "../../assets/icons/arrow-back.png";
 
 import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister.tsx";
 import { logout } from "../../shared/utils.tsx";
-import { useNavigate, useLocation, createCookie } from "react-router-dom";
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import { useNavigate, useLocation } from "react-router-dom";
 import { apiUrl } from "../../config/api.tsx";
 import { secure } from "../../config/api.tsx";
 import { useToast } from "../../components/Toast/ToastContext.tsx";
 import { createGuestUser } from "../Home/Home.tsx";
 import GoogleLoginButton from "../../components/GoogleAuthentication/GoogleLoginButton.tsx";
-
-const generateId = () =>
-  Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 
 /**
  * Props type definition for the LoginPage component.
@@ -35,7 +31,6 @@ const generateId = () =>
 interface LoginProps {
   setVolume: (volume: number) => void;
   soundFXVolume: number;
-  setSoundFXVolume: (volume: number) => void;
 }
 
 /**
@@ -44,25 +39,17 @@ interface LoginProps {
  * @param {LoginProps} props - Component props.
  * @returns {JSX.Element} The rendered LoginPage component.
  */
-const LoginPage: React.FC<LoginProps> = ({
-  setVolume,
-  soundFXVolume,
-  setSoundFXVolume,
-}) => {
+const LoginPage: React.FC<LoginProps> = ({ soundFXVolume }) => {
   const [login, setLogin] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [musicVolume, setMusicVolume] = useState(() => {
-    const savedVolume = localStorage.getItem("musicVolume");
-    return savedVolume ? parseFloat(savedVolume) : 50;
-  });
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
+  const { openSettings } = useModal();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { addToast } = useToast();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const isActivated = searchParams.get("activated") === "true";
+  // activation flag not used in this view
   const username = searchParams.get("username");
 
   /**
@@ -89,10 +76,6 @@ const LoginPage: React.FC<LoginProps> = ({
       setPassword(password.slice(0, -1)); // Handle backspace
     }
   };
-
-  useEffect(() => {
-    localStorage.setItem("musicVolume", musicVolume.toString());
-  }, [musicVolume]);
 
   /**
    * Updates the `login` state whenever `username` changes.
@@ -154,31 +137,11 @@ const LoginPage: React.FC<LoginProps> = ({
   /**
    * Toggles the visibility of the settings modal.
    */
-  const toggleSettings = () => {
-    setIsSettingsOpen(!isSettingsOpen);
-  };
-
-  /**
-   * Updates the music volume both locally and globally.
-   *
-   * @param {number} volume - New volume level.
-   */
-  const updateMusicVolume = (volume: number) => {
-    setMusicVolume(volume);
-    setVolume(volume); // Update global volume
-  };
+  const toggleSettings = () => openSettings();
 
   return (
     <BackgroundContainer>
       <GameTitleBar />
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={toggleSettings}
-        musicVolume={musicVolume}
-        soundFXVolume={soundFXVolume}
-        setMusicVolume={updateMusicVolume}
-        setSoundFXVolume={setSoundFXVolume}
-      />
       <Button
         variant="circle"
         soundFXVolume={soundFXVolume}

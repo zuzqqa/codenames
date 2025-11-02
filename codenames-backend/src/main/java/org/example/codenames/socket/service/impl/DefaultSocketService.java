@@ -116,4 +116,16 @@ public class DefaultSocketService implements SocketService {
             System.err.println("[SOCKET] Socket niepołączony – nie wysłano friendRequest");
         }
     }
+
+    @Override
+    public void emitRemoveFriendEvent(String removerUsername, String removedUsername) throws JsonProcessingException {
+        if (profileSocket.connected()) {
+            log.info("Emitting removeFriend from {} to {}", removerUsername, removedUsername);
+            Map<String, String> payload = Map.of("user", removerUsername, "friend", removedUsername);
+            // emit the removeFriend event to socket server; server will forward friendRemoved to the removed user's room
+            profileSocket.emit("removeFriend", objectMapper.writeValueAsString(payload));
+        } else {
+            System.err.println("[SOCKET] Socket niepołączony – nie wysłano removeFriend");
+        }
+    }
 }

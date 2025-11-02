@@ -21,4 +21,6 @@ public interface SocketService {
     void emitFriendRequestDeclineEvent(String receiverUsername, String senderUsername) throws JsonProcessingException;
 
     void emitFriendRequestAcceptEvent(String receiverUsername, String senderUsername) throws JsonProcessingException;
+
+    void emitRemoveFriendEvent(String removerUsername, String removedUsername) throws JsonProcessingException;
 }

@@ -5,7 +5,6 @@ import BackgroundContainer from "../../containers/Background/Background";
 
 import Button from "../../components/Button/Button";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar";
-import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 
 import settingsIcon from "../../assets/icons/settings.png";
 import compassImg from "../../assets/images/compass.png";
@@ -18,6 +17,7 @@ import {apiUrl, socketUrl} from "../../config/api.tsx";
 import {getUserId} from "../../shared/utils.tsx";
 import {io} from "socket.io-client";
 import UsernameContainer from "../../containers/UsernameContainer/UsernameContainer.tsx";
+import {useModal} from "../../providers/ModalProvider.tsx";
 
 /**
  * Props for the ChooseLeader component.
@@ -98,16 +98,13 @@ interface GameSessionRoomLobbyDTO {
  * @param {ChooseLeaderProps} props - The component props.
  * @returns {JSX.Element} The ChooseLeader component.
  */
-const ChooseLeader: React.FC<ChooseLeaderProps> = ({
-                                                       setVolume,
-                                                       soundFXVolume,
-                                                       setSoundFXVolume,
-                                                   }) => {
+const ChooseLeader: React.FC<ChooseLeaderProps> = ({ soundFXVolume }) => {
     const [musicVolume, setMusicVolume] = useState(() => {
         const savedVolume = localStorage.getItem("musicVolume");
         return savedVolume ? parseFloat(savedVolume) : 50;
     });
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
+    const { openSettings } = useModal();
+
     const [selectedPlayer, setSelectedPlayer] = useState<UserRoomLobbyDTO | null>(
         null
     );
@@ -259,13 +256,6 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     };
 
     /**
-     * Toggles the settings modal visibility.
-     */
-    const toggleSettings = () => {
-        setIsSettingsOpen(!isSettingsOpen);
-    };
-
-    /**
      * Handles the player selection for voting.
      * @param {User} player - The selected player.
      */
@@ -311,21 +301,10 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
                 <Button
                     variant="circle"
                     soundFXVolume={soundFXVolume}
-                    onClick={toggleSettings}
+                    onClick={() => openSettings()}
                 >
                     <img src={settingsIcon} alt="Settings"/>
                 </Button>
-                <SettingsModal
-                    isOpen={isSettingsOpen}
-                    onClose={toggleSettings}
-                    musicVolume={musicVolume}
-                    soundFXVolume={soundFXVolume}
-                    setMusicVolume={(volume) => {
-                        setMusicVolume(volume);
-                        setVolume(volume / 100);
-                    }}
-                    setSoundFXVolume={setSoundFXVolume}
-                />
                 <div className="content-container flex-start">
                     <div className="timer-container">
                         <div className="horizontal-gold-bar"></div>

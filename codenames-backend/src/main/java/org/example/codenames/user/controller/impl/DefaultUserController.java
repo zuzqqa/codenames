@@ -324,7 +324,8 @@ public class DefaultUserController implements UserController {
     public ResponseEntity<Void> sendFriendRequest(@PathVariable String receiverUsername, @RequestParam String senderUsername) {
         userService.sendFriendRequest(senderUsername, receiverUsername);
         try {
-            socketService.emitFriendRequestEvent(receiverUsername, senderUsername);
+            // emit with (sender, receiver) ordering so payload contains {from: sender, to: receiver}
+            socketService.emitFriendRequestEvent(senderUsername, receiverUsername);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to emit friend request event", e);
         }
@@ -342,7 +343,8 @@ public class DefaultUserController implements UserController {
     public ResponseEntity<Void> declineFriendRequest(@PathVariable String senderUsername, @RequestParam String receiverUsername) {
         userService.declineFriendRequest(receiverUsername, senderUsername);
         try {
-            socketService.emitFriendRequestDeclineEvent(receiverUsername, senderUsername);
+            // emit decline with (sender, receiver) ordering
+            socketService.emitFriendRequestDeclineEvent(senderUsername, receiverUsername);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to emit friend request decline event", e);
         }
@@ -360,7 +362,8 @@ public class DefaultUserController implements UserController {
     public ResponseEntity<Void> acceptFriendRequest(@PathVariable String senderUsername, @RequestParam String receiverUsername) {
         userService.acceptFriendRequest(receiverUsername, senderUsername);
         try {
-            socketService.emitFriendRequestAcceptEvent(receiverUsername, senderUsername);
+            // emit accept with (sender, receiver) ordering
+            socketService.emitFriendRequestAcceptEvent(senderUsername, receiverUsername);
         } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -377,6 +380,13 @@ public class DefaultUserController implements UserController {
     @DeleteMapping("/remove-friend/{friendUsername}")
     public ResponseEntity<Void> removeFriend(@PathVariable String friendUsername, @RequestParam String userUsername) {
         userService.removeFriend(userUsername, friendUsername);
+        try {
+            // notify the removed user about being removed
+            socketService.emitRemoveFriendEvent(userUsername, friendUsername);
+        } catch (JsonProcessingException e) {
+            // log but don't fail the request
+            throw new RuntimeException("Failed to emit friend removed event", e);
+        }
         return ResponseEntity.ok().build();
     }
 

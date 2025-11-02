@@ -1,8 +1,7 @@
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 
 import BackgroundContainer from "../../containers/Background/Background.tsx";
 import Button from "../../components/Button/Button.tsx";
@@ -10,7 +9,7 @@ import FormInput from "../../components/FormInput/FormInput.tsx";
 import TitleComponent from "../../components/Title/Title.tsx";
 import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister.tsx";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar.tsx";
-import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
+import { useModal } from "../../providers/ModalProvider";
 
 import settingsIcon from "../../assets/icons/settings.png";
 import eyeIcon from "../../assets/icons/eye.svg";
@@ -19,22 +18,11 @@ import logoutButton from "../../assets/icons/logout.svg";
 import backButtonIcon from "../../assets/icons/arrow-back.png";
 
 import { logout } from "../../shared/utils.tsx";
-import {
-  validateEmail,
-  validateUsername,
-  validatePassword,
-} from "../../utils/validation.tsx";
-
-import "../../styles/App.css";
-import "./RegisterPage.css";
-import { apiUrl, frontendUrl } from "../../config/api.tsx";
+import { apiUrl } from "../../config/api.tsx";
 import { secure } from "../../config/api.tsx";
 import { useToast } from "../../components/Toast/ToastContext.tsx";
 import { createGuestUser } from "../Home/Home.tsx";
 import GoogleLoginButton from "../../components/GoogleAuthentication/GoogleLoginButton.tsx";
-
-const generateId = () =>
-  Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 
 /**
  *
@@ -45,9 +33,7 @@ const generateId = () =>
  * @property {function(number): void} setSoundFXVolume - Function to set the sound effects volume.
  */
 interface RegisterProps {
-  setVolume: (volume: number) => void;
   soundFXVolume: number;
-  setSoundFXVolume: (volume: number) => void;
 }
 
 /**
@@ -56,26 +42,15 @@ interface RegisterProps {
  * @param {RegisterProps} props - Component properties.
  * @returns {JSX.Element} The rendered RegisterPage component.
  */
-const RegisterPage: React.FC<RegisterProps> = ({
-  setVolume,
-  soundFXVolume,
-  setSoundFXVolume,
-}) => {
+const RegisterPage: React.FC<RegisterProps> = ({ soundFXVolume }) => {
   const [email, setEmail] = useState<string>("");
   const [login, setLogin] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [musicVolume, setMusicVolume] = useState(() => {
-    const savedVolume = localStorage.getItem("musicVolume");
-    return savedVolume ? parseFloat(savedVolume) : 50;
-  });
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
+  const { openSettings } = useModal();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate(); // Hook for navigation
   const { addToast } = useToast();
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const isActivated = searchParams.get("activated") === "false";
 
   /**
    * Handles email input change.
@@ -110,10 +85,6 @@ const RegisterPage: React.FC<RegisterProps> = ({
       setPassword(password.slice(0, -1)); // Handle backspace
     }
   };
-
-  useEffect(() => {
-    localStorage.setItem("musicVolume", musicVolume.toString());
-  }, [musicVolume]);
 
   /**
    * Handles form submission for user registration.
@@ -192,9 +163,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
   /**
    * Toggles the settings modal visibility.
    */
-  const toggleSettings = () => {
-    setIsSettingsOpen(!isSettingsOpen);
-  };
+  const toggleSettings = () => openSettings();
 
   // Redirect user to /games if already logged in
   useEffect(() => {
@@ -210,17 +179,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
   return (
     <BackgroundContainer>
       <GameTitleBar />
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={toggleSettings}
-        musicVolume={musicVolume}
-        soundFXVolume={soundFXVolume}
-        setMusicVolume={(volume) => {
-          setMusicVolume(volume); // Update local music volume
-          setVolume(volume / 100); // Update global volume
-        }}
-        setSoundFXVolume={setSoundFXVolume}
-      />
+      {/* Settings modal provided by ModalProvider */}
       <Button
         variant="circle"
         soundFXVolume={soundFXVolume}

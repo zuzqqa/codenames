@@ -212,6 +212,7 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public void sendFriendRequest(String senderUsername, String receiverUsername) {
+        log.info("I am sending a friend request from {} to {}", senderUsername, receiverUsername);
         if (senderUsername.equals(receiverUsername)) {
             throw new RuntimeException("You cannot send a friend request to yourself");
         }
@@ -238,6 +239,7 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public void acceptFriendRequest(String receiverUsername, String senderUsername) {
+        log.info("I am accepting a friend request from {} to {}", senderUsername, receiverUsername);
         User sender = userRepository.findByUsername(senderUsername)
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
         User receiver = userRepository.findByUsername(receiverUsername)
@@ -263,6 +265,7 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public void declineFriendRequest(String receiverUsername, String senderUsername) {
+        log.info("I am declining a friend request from {} to {}", senderUsername, receiverUsername);
         User sender = userRepository.findByUsername(senderUsername)
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
         User receiver = userRepository.findByUsername(receiverUsername)
@@ -283,6 +286,7 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public void removeFriend(String user1Username, String user2Username) {
+        log.info("Removing friendship between {} and {}", user1Username, user2Username);
         User user1 = userRepository.findByUsername(user1Username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         User user2 = userRepository.findByUsername(user2Username)

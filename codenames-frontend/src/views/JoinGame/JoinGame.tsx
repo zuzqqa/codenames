@@ -6,8 +6,8 @@ import BackgroundContainer from "../../containers/Background/Background";
 import Button from "../../components/Button/Button";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar";
 import GameList from "../../components/GameList/GameList";
-import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
-import ProfileModal from "../../components/UserProfileOverlay/ProfileModal";
+import { useModal } from "../../providers/ModalProvider";
+
 import profileIcon from "../../assets/icons/profile.png";
 import settingsIcon from "../../assets/icons/settings.png";
 import logoutButton from "../../assets/icons/logout.svg";
@@ -72,16 +72,13 @@ interface GameSessionJoinGameDTO {
  * @returns {JSX.Element} The rendered JoinGame component.
  */
 const JoinGame: React.FC<JoinGameProps> = ({
-  setVolume,
   soundFXVolume,
-  setSoundFXVolume,
 }) => {
   const [musicVolume, setMusicVolume] = useState(() => {
     const savedVolume = localStorage.getItem("musicVolume");
     return savedVolume ? parseFloat(savedVolume) : 50;
   });
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
-  const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
+  const { openSettings, openProfile, canOpenProfile } = useModal();
   const [gameSessions, setGameSessions] = useState<GameSessionJoinGameDTO[]>(
     []
   );
@@ -192,13 +189,9 @@ const JoinGame: React.FC<JoinGameProps> = ({
   /**
    * Toggles the visibility of the settings modal.
    */
-  const toggleSettings = () => {
-    setIsSettingsOpen(!isSettingsOpen);
-  };
+  const toggleSettings = () => openSettings();
 
-  const toggleProfile = () => {
-    setIsProfileOpen(!isProfileOpen);
-  };
+  const toggleProfile = () => openProfile();
   return (
     <>
       <BackgroundContainer>
@@ -210,27 +203,14 @@ const JoinGame: React.FC<JoinGameProps> = ({
           <img src={settingsIcon} alt="Settings" />
         </Button>
 
-        <SettingsModal
-          isOpen={isSettingsOpen}
-          onClose={toggleSettings}
-          musicVolume={musicVolume}
-          soundFXVolume={soundFXVolume}
-          setMusicVolume={(volume) => {
-            setMusicVolume(volume);
-            setVolume(volume / 100);
-          }}
-          setSoundFXVolume={setSoundFXVolume}
-        />
-        {isGuest === false && (
+        {/* Settings/Profile modals are rendered by ModalProvider */}
+        {canOpenProfile && (
           <Button variant="circle-profile" soundFXVolume={soundFXVolume}>
             <img src={profileIcon} onClick={toggleProfile} alt="Profile" />
           </Button>
         )}
-        <ProfileModal
-          isOpen={isProfileOpen}
-          onClose={toggleProfile}
-          soundFXVolume={soundFXVolume}
-        />
+        {/* Profile modal rendered in ModalProvider */}
+
         {document.cookie
           .split("; ")
           .find((cookie) => cookie.startsWith("loggedIn=")) && (

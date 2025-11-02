@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
-import Button from "../Button/Button.tsx";
+import Button from "../../components/Button/Button";
+import defaultProfilePic from "../../assets/images/profile-pic.png";
 
 import backButton from "../../assets/icons/arrow-back.png";
 import linkIcon from "../../assets/icons/link.svg";
@@ -551,6 +552,9 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                           src={`/images/profile-pic-${player.profilePic}.png`}
                           alt="Player"
                           className="player-icon"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = defaultProfilePic;
+                          }}
                         />
                         <span className="player-username">
                           {player.username}
@@ -580,6 +584,9 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                           src={`/images/profile-pic-${player.profilePic}.png`}
                           alt="Player"
                           className="player-icon"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = defaultProfilePic;
+                          }}
                         />
                         <span className="player-username">
                           {player.username}
