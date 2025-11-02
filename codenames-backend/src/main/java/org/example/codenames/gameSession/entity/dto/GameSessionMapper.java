@@ -5,7 +5,7 @@ import org.example.codenames.gameSession.entity.GameSession;
 import java.util.List;
 import java.util.Optional;
 
-import static org.example.codenames.user.entity.dto.UserMapper.toRoomLobbyDTOList;
+import static org.example.codenames.user.entity.mapper.UserMapper.toRoomLobbyDTOList;
 
 /**
  * Mapper class for converting GameSession entities to various DTOs.

@@ -392,11 +392,7 @@ const Gameplay: React.FC<GameplayProps> = ({
       console.log("User disconnected:", userId);
       setHasPlayerDisconnected(true);
       try {
-        const newError = {
-          id: generateId(),
-          message: t("user-disconnected"),
-        };
-        addToast(newError.message, "error");
+        addToast(t("user-disconnected"), "error");
       } catch (err) {
         console.error("Error parsing gameSessionsList JSON:", err);
       }

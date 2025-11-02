@@ -7,6 +7,7 @@ import org.example.codenames.gameSession.entity.CreateGameRequest;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.entity.HintRequest;
 import org.example.codenames.gameSession.entity.VoteRequest;
+import org.example.codenames.gameSession.entity.dto.GameSessionMapper;
 import org.example.codenames.gameSession.entity.dto.LeaderVoteState;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
@@ -64,7 +65,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         response.put("gameId", gameId);
 
         // Send the game session to all clients
-        socketService.sendGameSessionsList(toJoinGameDTOList(gameSessionService.getAllGameSessions()));
+        socketService.sendGameSessionsList(GameSessionMapper.toJoinGameDTOList(gameSessionService.getAllGameSessions()));
 
         return ResponseEntity.ok(response);
     }

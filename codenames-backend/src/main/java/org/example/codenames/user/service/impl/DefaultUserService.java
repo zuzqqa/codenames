@@ -6,10 +6,14 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import jakarta.servlet.http.HttpServletRequest;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.codenames.tokens.passwordResetToken.entity.PasswordResetToken;
 import org.example.codenames.tokens.passwordResetToken.repository.api.PasswordResetTokenRepository;
 import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetServiceToken;
 import org.example.codenames.user.entity.User;
+import org.example.codenames.user.entity.dto.GetFriendDataResponse;
+import org.example.codenames.user.entity.dto.GetUserResponse;
+import org.example.codenames.user.entity.mapper.UserMapper;
 import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.api.UserService;
 
@@ -28,6 +32,7 @@ import java.util.Optional;
  * Default implementation of the {@link UserService} interface.
  */
 @Service
+@Slf4j
 public class DefaultUserService implements UserService {
     /**
      * The user repository.
@@ -155,7 +160,7 @@ public class DefaultUserService implements UserService {
      * @param updatedUser the updated user
      * @return the updated user, if found
      */
-    public Optional<User> updateUser(String id, User updatedUser) {
+    public Optional<GetUserResponse> updateUser(String id, User updatedUser) {
         return Optional.ofNullable(userRepository.findById(id)
                 .map(user -> {
                     user.setUsername(updatedUser.getUsername());
@@ -167,7 +172,7 @@ public class DefaultUserService implements UserService {
                     if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
                         user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
                     }
-                    return userRepository.save(user);
+                    return UserMapper.toGetUserResponse(userRepository.save(user));
                 })
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + id)));
     }
@@ -180,7 +185,23 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public List<User> searchActiveUsersByUsername(String username) {
-        return userRepository.findByUsernameContainingAndStatus(username, User.userStatus.valueOf(String.valueOf(User.userStatus.ACTIVE)));
+        return userRepository.findByUsernameContainingAndStatusAndIsGuest(username, User.userStatus.valueOf(String.valueOf(User.userStatus.ACTIVE)), false);
+    }
+
+    @Override
+    public GetFriendDataResponse getFriendData(String username) {
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isPresent()) {
+            User u = user.get();
+            return GetFriendDataResponse.builder()
+                    .friends(u.getFriends())
+                    .receivedRequests(u.getReceivedRequests())
+                    .sentRequests(u.getSentRequests())
+                    .build();
+        } else {
+            log.warn("User not found when trying to get friend data for username: {}", username);
+            return null;
+        }
     }
 
     /**

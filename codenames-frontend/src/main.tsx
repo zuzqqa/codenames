@@ -11,7 +11,9 @@ createRoot(document.getElementById('root')!).render(
   //   <App />
   // </StrictMode>
     <ToastProvider>
-        <App />
-        <ToastContainer />
+        <ProfileSocketProvider>
+            <App />
+            <ToastContainer />
+        </ProfileSocketProvider>
     </ToastProvider>
 )

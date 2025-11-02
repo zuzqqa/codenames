@@ -15,4 +15,10 @@ public interface SocketService {
     void sendGameSessionsList(List<GameSessionJoinGameDTO> gameSessions) throws JsonProcessingException;
 
     void sendGameSessionUpdate(UUID gameId, GameSession gameSession) throws JsonProcessingException;
+
+    void emitFriendRequestEvent(String receiverUsername, String senderUsername) throws JsonProcessingException;
+
+    void emitFriendRequestDeclineEvent(String receiverUsername, String senderUsername) throws JsonProcessingException;
+
+    void emitFriendRequestAcceptEvent(String receiverUsername, String senderUsername) throws JsonProcessingException;
 }
