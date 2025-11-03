@@ -8,6 +8,7 @@ import org.example.codenames.gameSession.entity.CreateGameRequest;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.entity.HintRequest;
 import org.example.codenames.gameSession.entity.VoteRequest;
+import org.example.codenames.gameSession.entity.dto.LeaderVoteState;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.gameState.entity.GameState;
@@ -351,5 +352,17 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         socketService.sendGameSessionUpdate(gameId, gameSession);
 
         return ResponseEntity.ok(voteRequest.getVotedUserId());
+    }
+
+    /**
+     * Get the current vote state for leader selection
+     * @param gameId
+     * @return the leader vote state
+     */
+    @Override
+    @GetMapping("/{gameId}/vote-state")
+    public ResponseEntity<LeaderVoteState> getVoteState(@PathVariable UUID gameId) {
+        var response = gameSessionService.getLeaderVoteState(gameId);
+        return response.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

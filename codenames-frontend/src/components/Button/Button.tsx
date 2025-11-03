@@ -30,8 +30,9 @@ interface ButtonProps {
     | "transparent"
     | "half-circle"
     | "number-stepper"
-    | "google"
-    | "discord";
+    | "discord"
+    | "tutorial"
+    | "google"; 
   disabled?: boolean;
   soundFXVolume: number;
   onChange?: () => void;
