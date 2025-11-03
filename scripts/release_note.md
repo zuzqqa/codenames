@@ -1,13 +1,13 @@
-Relevants update needed because of the switching of the Google Cloud account
+Added tutorial
 **🔧 What's included in this release?**
-Choose leader logic changes
+Introduced tutorial for new players
 
-Key additions:
-- Changed underlying logic for choosing a leader
+Key additions: 
+- Polish tutorial
+- English tutorial
 
 **🚧 What's still under development?**
-- UI fixes
-- UI change for choosing a leader
+- Further QoL changes and improvements
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 

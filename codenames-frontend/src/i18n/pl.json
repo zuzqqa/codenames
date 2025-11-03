@@ -91,5 +91,8 @@
   "yes": "Tak",
   "no": "Nie",
   "leave-title": "Czy chcesz opuścić grę?",
-  "voice-chat": "Czat głosowy"
+  "voice-chat": "Czat głosowy",
+  "tutorial-title": "Samouczek",
+  "prev": "Wstecz",
+  "next": "Dalej"
 }
