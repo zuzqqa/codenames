@@ -5,7 +5,6 @@ import JoinGame from "./JoinGame";
 import { io } from "socket.io-client";
 import * as utils from "../../shared/utils.tsx";
 
-const mockIo = vi.fn();
 const mockOn = vi.fn();
 const mockDisconnect = vi.fn();
 
@@ -43,7 +42,7 @@ vi.mock("../../components/GameTitleBar/GameTitleBar.tsx", () => ({
 }));
 
 vi.mock("../../components/GameList/GameList.tsx", () => ({
-  default: ({ gameSessions, filteredSessions }: any) => (
+  default: ({ filteredSessions }: any) => (
     <div data-testid="game-list">
       {filteredSessions.map((session: any) => (
         <div key={session.sessionId}>{session.gameName}</div>

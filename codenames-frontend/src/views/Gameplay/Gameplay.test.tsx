@@ -48,11 +48,20 @@ vi.mock("js-cookie", () => ({
 }));
 
 vi.mock("../../containers/Background/Background", () => ({
-  default: ({ children }: any) => <div>{children}</div>,
+  default: ({ children }: React.PropsWithChildren<object>) => (
+    <div>{children}</div>
+  ),
 }));
 
 vi.mock("../../components/Button/Button", () => ({
-  default: ({ children, onClick, className, disabled }: any) => (
+  default: ({
+    children,
+    onClick,
+    className,
+    disabled,
+  }: React.PropsWithChildren<
+    React.ButtonHTMLAttributes<HTMLButtonElement>
+  >) => (
     <button onClick={onClick} className={className} disabled={disabled}>
       {children}
     </button>
@@ -60,12 +69,18 @@ vi.mock("../../components/Button/Button", () => ({
 }));
 
 vi.mock("../../components/SettingsOverlay/SettingsModal", () => ({
-  default: ({ isOpen }: any) => (isOpen ? <div>Settings Modal</div> : null),
+  default: ({ isOpen }: { isOpen: boolean }) =>
+    isOpen ? <div>Settings Modal</div> : null,
 }));
 
 vi.mock("../../components/QuitModal/QuitModal", () => ({
-  default: ({ isOpen, children }: any) =>
-    isOpen ? <div>Quit Modal {children}</div> : null,
+  default: ({
+    isOpen,
+    children,
+  }: {
+    isOpen: boolean;
+    children?: React.ReactNode;
+  }) => (isOpen ? <div>Quit Modal {children}</div> : null),
 }));
 
 vi.mock("../../components/Chat/Chat.tsx", () => ({
@@ -157,7 +172,7 @@ describe("Gameplay", () => {
         ok: true,
         json: () => Promise.resolve({}),
       });
-    }) as any;
+    }) as unknown as typeof fetch;
 
     Storage.prototype.getItem = vi.fn((key) => {
       if (key === "gameId") return "game-123";
@@ -175,7 +190,7 @@ describe("Gameplay", () => {
       currentTime = 0;
     }
 
-    globalThis.Audio = AudioMock as any;
+    globalThis.Audio = AudioMock as unknown as typeof Audio;
   });
 
   it("renders game board with cards", async () => {
@@ -379,7 +394,7 @@ describe("Gameplay", () => {
         });
       }
       return Promise.resolve({ ok: true });
-    }) as any;
+    }) as unknown as typeof fetch;
 
     const user = userEvent.setup();
     render(
@@ -661,7 +676,7 @@ describe("Gameplay", () => {
         });
       }
       return Promise.resolve({ ok: true });
-    }) as any;
+    }) as unknown as typeof fetch;
 
     const user = userEvent.setup();
     render(
@@ -806,7 +821,7 @@ describe("Gameplay", () => {
         });
       }
       return Promise.resolve({ ok: true });
-    }) as any;
+    }) as unknown as typeof fetch;
 
     render(
       <Gameplay
@@ -862,7 +877,7 @@ describe("Gameplay", () => {
         });
       }
       return Promise.resolve({ ok: true });
-    }) as any;
+    }) as unknown as typeof fetch;
 
     render(
       <Gameplay
@@ -1006,7 +1021,7 @@ describe("Gameplay", () => {
         return Promise.resolve({ ok: true });
       }
       return Promise.resolve({ ok: true });
-    }) as any;
+    }) as unknown as typeof fetch;
 
     const user = userEvent.setup();
     render(

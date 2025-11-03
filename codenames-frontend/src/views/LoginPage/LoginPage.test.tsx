@@ -1,6 +1,6 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import LoginPage from "./LoginPage";
 
 const mockNavigate = vi.fn();
@@ -36,7 +36,7 @@ vi.mock("../../shared/utils.tsx", () => ({
 }));
 
 vi.mock("../../components/GoogleAuthentication/GoogleLoginButton.tsx", () => ({
-  default: ({ soundFXVolume }: any) => <div>Google Login Button</div>,
+  default: () => <div>Google Login Button</div>,
 }));
 
 vi.mock("../../containers/Background/Background", () => ({
