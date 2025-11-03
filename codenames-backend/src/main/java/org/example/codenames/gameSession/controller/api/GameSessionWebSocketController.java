@@ -36,4 +36,6 @@ public interface GameSessionWebSocketController {
     ResponseEntity<?> revealCard(@PathVariable UUID gameId, @RequestBody String cardIndex) throws JsonProcessingException;
 
     ResponseEntity<?> submitVote(@PathVariable UUID id, @RequestBody VoteRequest voteRequest) throws JsonProcessingException;
+
+    ResponseEntity<?> getVoteState(@PathVariable UUID gameId);
 }
