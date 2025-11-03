@@ -7,7 +7,7 @@ import { useCookies } from "react-cookie";
 import { apiUrl, socketUrl } from "../../config/api.tsx";
 
 // Delay in milliseconds before scrolling to the bottom of the chat messages
-const SCROLL_DELAY_MS = 300
+const SCROLL_DELAY_MS = 300;
 
 /**
  * Defines the message type structure.
@@ -24,13 +24,14 @@ interface Message {
  * Connects to a WebSocket server, manages messages, and handles UI interactions.
  */
 const Chat: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]); // Stores chat messages
-  const [messageText, setMessageText] = useState(""); // Stores user input text
-  const messagesEndRef = useRef<HTMLDivElement>(null); // Reference for automatic scrolling
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [messageText, setMessageText] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<Socket | null>(null);
-  const [playerName, setPlayerName] = useState<string | null>(null); // Stores the player's name
-  const [cookies] = useCookies(["authToken"]); // Handles authentication token
-  const [gameId, setGameId] = useState(""); // Stores the game ID
+  const [playerName, setPlayerName] = useState<string | null>(null);
+  const [cookies] = useCookies(["authToken"]);
+  const [gameId, setGameId] = useState("");
+  const [animationDisabled, setAnimationDisabled] = useState(false);
 
   /**
    * Fetches the player's username based on the authentication token.
@@ -76,7 +77,6 @@ const Chat: React.FC = () => {
     socketRef.current = chatSocket;
 
     chatSocket.on("connect", () => {
-      console.log("Connected to /chat:", chatSocket.id);
       chatSocket.emit("joinGame", gameId);
     });
 
@@ -106,7 +106,9 @@ const Chat: React.FC = () => {
   useEffect(() => {
     const savedMessages = localStorage.getItem("chatMessages");
     if (savedMessages) {
-      const gameMessages = JSON.parse(savedMessages).filter((msg: Message) => msg.gameID === gameId);
+      const gameMessages = JSON.parse(savedMessages).filter(
+        (msg: Message) => msg.gameID === gameId
+      );
       setMessages(gameMessages);
     }
   }, [gameId]);
@@ -159,6 +161,7 @@ const Chat: React.FC = () => {
    */
   const handleInputFocus = () => {
     setIsInputFocused(true);
+    setAnimationDisabled(true);
   };
 
   /**
@@ -173,15 +176,49 @@ const Chat: React.FC = () => {
   };
 
   return (
-    <div className={`chat-container ${isInputFocused ? "focused" : ""}`}>
+    <div
+      className={`chat-container 
+        ${isInputFocused ? "focused" : ""} 
+        ${animationDisabled ? "no-gold-animation" : ""}
+      `}
+    >
       <div className="messages">
-        {messages.map((msg, index) => (
-          <div key={index} className={`message ${msg.type}`}>
-            <div className="div-sender">{msg.sender}</div>
-            {msg.text}
-          </div>
-        ))}
-        <div ref={messagesEndRef} className={!isInputFocused ? "spacer-end" : ""} />
+        {messages.map((msg, index) => {
+          const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+          const formattedText = msg.text.split(urlRegex).map((part, i) => {
+            if (urlRegex.test(part)) {
+              return (
+                <a
+                  key={i}
+                  href={part}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="message-link"
+                >
+                  {part}
+                </a>
+              );
+            }
+            return part;
+          });
+
+          return (
+            <div
+              key={index}
+              className={`message ${msg.type} ${
+                msg.sender === "admin" ? "admin" : ""
+              }`}
+            >
+              <div className="div-sender">{msg.sender}</div>
+              <div className="message-text">{formattedText}</div>
+            </div>
+          );
+        })}
+        <div
+          ref={messagesEndRef}
+          className={!isInputFocused ? "spacer-end" : ""}
+        />
       </div>
       <input
         type="text"

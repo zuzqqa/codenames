@@ -17,6 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static org.example.codenames.gameSession.entity.dto.GameSessionMapper.toJoinGameDTOList;
 import static org.example.codenames.gameSession.entity.dto.GameSessionMapper.toRoomLobbyDTO;
@@ -50,10 +53,16 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
     private final SocketService socketService;
 
     /**
-     *
+     * The DiscordGuildService instance used to interact with the Discord guild
      */
     private final DiscordGuildService discordGuildService;
 
+    /**
+     * Clear all votes in the game session
+     *
+     * @param gameSession          the game session
+     * @param gameSessionRepository the game session repository
+     */
     public static void clearVotes(GameSession gameSession, GameSessionRepository gameSessionRepository) {
         List<Integer> zeroVotes = new ArrayList<>();
         int numberOfCards = gameSession.getGameState().getCards().length;
@@ -172,7 +181,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
     }
 
     /**
-     * Start the game
+     * Start the game 
      *
      * @param gameId the game session id
      * @return the response entity
@@ -187,13 +196,15 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         gameSession.setStatus(GameSession.sessionStatus.LEADER_SELECTION);
         gameSession.setVotingStartTime(System.currentTimeMillis());
 
+        String channelId = discordGuildService.createVoiceChannel(gameSession.getGameName(), gameSession.getMaxPlayers());
+        gameSession.setDiscordChannelId(channelId);
+
         gameSessionRepository.save(gameSession);
 
         // Send the game session to all clients
         socketService.sendGameSessionUpdate(gameId, toRoomLobbyDTO(gameSessionRepository.findBySessionId(gameId)));
         socketService.sendGameSessionsList(toJoinGameDTOList(gameSessionService.getAllGameSessions()));
 
-        discordGuildService.createVoiceChannel(gameSession.getGameName(), gameSession.getMaxPlayers());
 
         return ResponseEntity.ok().build();
     }
@@ -202,6 +213,8 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      * Finish the game
      *
      * @param gameId the game session id
+     * @throws JsonProcessingException if there is an error processing JSON
+     * 
      * @return the response entity
      */
     @PostMapping("/{gameId}/finish")
@@ -211,11 +224,13 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
         // Set the game session status to finished
         gameSession.setStatus(GameSession.sessionStatus.FINISHED);
+
+        discordGuildService.deleteChannel(gameSession.getDiscordChannelId());
+        gameSession.setDiscordChannelId("");
+
         gameSessionRepository.save(gameSession);
 
         socketService.sendGameSessionUpdate(gameId, toRoomLobbyDTO(gameSessionRepository.findBySessionId(gameId)));
-
-        discordGuildService.deleteChannel(gameSession.getGameName());
 
         return ResponseEntity.ok().build();
     }
@@ -242,6 +257,8 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      *
      * @param gameId      the game session id
      * @param hintRequest the hint request containing the hint information
+     * @throws JsonProcessingException if there is an error processing JSON
+     * 
      * @return the response entity
      */
     @PostMapping("/{gameId}/send-hint")
@@ -270,11 +287,12 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      * Change the turn
      *
      * @param id the game session id
+     * @throws JsonProcessingException if there is an error processing JSON
+     * 
      * @return the response entity
      */
     @GetMapping("/{id}/change-turn")
     public ResponseEntity<?> changeTurn(@PathVariable UUID id) throws JsonProcessingException {
-
         // Change the turn
         gameStateService.changeTurn(id);
 
@@ -294,6 +312,8 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      *
      * @param gameId    the id of the game session
      * @param cardIndex index of the card to be revealed
+     * @throws JsonProcessingException if there is an error processing JSON
+     * 
      * @return response entity
      */
     @Override
@@ -315,6 +335,8 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      *
      * @param gameId      the id of the game session
      * @param voteRequest the vote request containing the user id and the id of the user that was voted on
+     * @throws JsonProcessingException if there is an error processing JSON
+     * 
      * @return the id of the user that was voted on
      */
     @Override

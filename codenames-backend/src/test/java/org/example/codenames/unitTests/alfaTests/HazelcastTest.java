@@ -71,7 +71,8 @@ public class HazelcastTest {
                     add(new ArrayList<>());
                 }},
                 gameState,
-                System.currentTimeMillis()
+                System.currentTimeMillis(),
+                null
         );
 
         gameSessionMap.put(newGame.getSessionId().toString(), newGame);
@@ -119,7 +120,8 @@ public class HazelcastTest {
                     add(new ArrayList<>());
                 }},
                 gameState,
-                System.currentTimeMillis()
+                System.currentTimeMillis(),
+                null
         );
 
         gameSessionMap.put(newGame.getSessionId().toString(), newGame);

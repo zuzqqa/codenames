@@ -69,7 +69,7 @@ class DiscordGuildServiceTest {
         ResponseEntity<Map<String, Object>> mockResponse = new ResponseEntity<>(Map.of("code", "XYZ123"), HttpStatus.OK);
         when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(Map.class))).thenReturn((ResponseEntity) mockResponse);
 
-        String inviteUrl = discordGuildService.createInvite("CHANNEL_123", 600, 5);
+        String inviteUrl = discordGuildService.createInvite("CHANNEL_123");
 
         assertEquals("https://discord.gg/XYZ123", inviteUrl);
     }

@@ -105,19 +105,15 @@ public class DiscordGuildService implements DiscordGuildClient {
      * Creates an invite link for a given channel.
      *
      * @param channelId     The Discord channel ID.
-     * @param maxAgeSeconds Time (in seconds) until the invite expires.
-     * @param maxUses       Maximum number of times the invite can be used.
      * @return The full Discord invite URL (e.g. https://discord.gg/XXXXXX).
      * @throws RuntimeException if Discord API returns an error or no invite code.
      */
-    public String createInvite(String channelId, int maxAgeSeconds, int maxUses) {
+    public String createInvite(String channelId) {
         ensureConfigured();
         final String url = API_BASE_URL + "/channels/" + channelId + "/invites";
 
         HttpHeaders headers = botHeaders();
         Map<String, Object> body = new HashMap<>();
-        body.put("max_age", maxAgeSeconds);
-        body.put("max_uses", maxUses);
         body.put("unique", true);
 
         try {

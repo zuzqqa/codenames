@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Default implementation of the {@link GameSessionService}.
@@ -44,9 +45,10 @@ public class DefaultGameSessionService implements GameSessionService {
     /**
      * Creates a new instance of the {@link DefaultGameSessionService}.
      *
-     * @param gameSessionRepository Game session repository.
-     * @param userService           User service.
-     * @param gameStateService      Game state service.
+     * @param gameSessionRepository Game session repository
+     * @param userService           User service
+     * @param gameStateService      Game state service
+     * @param passwordEncoder       Password encoder
      */
     @Autowired
     public DefaultGameSessionService(GameSessionRepository gameSessionRepository, UserService userService, GameStateService gameStateService, PasswordEncoder passwordEncoder) {
@@ -60,6 +62,7 @@ public class DefaultGameSessionService implements GameSessionService {
      * Creates a new game session.
      *
      * @param request The request containing game session details.
+     * 
      * @return The unique identifier of the created game session.
      */
     @Override
@@ -90,7 +93,8 @@ public class DefaultGameSessionService implements GameSessionService {
                     add(new ArrayList<>());
                 }},
                 gameState,
-                System.currentTimeMillis()
+                System.currentTimeMillis(),
+                null
         );
 
         gameSessionRepository.save(newGame);
@@ -101,6 +105,7 @@ public class DefaultGameSessionService implements GameSessionService {
      * Retrieves a game session by its unique identifier.
      *
      * @param gameId The UUID of the game session.
+     * 
      * @return The {@link GameSession} if found, otherwise null.
      */
     @Override
@@ -136,6 +141,7 @@ public class DefaultGameSessionService implements GameSessionService {
      * Retrieves the card colors for a given game session.
      *
      * @param sessionId The UUID of the game session.
+     * 
      * @return An array of card colors.
      */
     @Override
@@ -220,6 +226,7 @@ public class DefaultGameSessionService implements GameSessionService {
      *
      * @param team      The team to find the leader for.
      * @param teamVotes The votes for each player in the team.
+     * 
      * @return The leader of the team.
      */
     @Override
@@ -247,6 +254,7 @@ public class DefaultGameSessionService implements GameSessionService {
      * @param sessionId The UUID of the game session.
      * @param userId    The ID of the user to add.
      * @param teamIndex The index of the team to add the user to.
+     * 
      * @return True if the player was added, otherwise false.
      */
     @Override
@@ -290,6 +298,7 @@ public class DefaultGameSessionService implements GameSessionService {
      *
      * @param sessionId       The UUID of the game session.
      * @param enteredPassword The password given by user.
+     * 
      * @return True if password is correct, otherwise false.
      */
     @Override
@@ -318,6 +327,7 @@ public class DefaultGameSessionService implements GameSessionService {
      *
      * @param sessionId The UUID of the game session.
      * @param userId    The ID of the user to remove.
+     * 
      * @return True if the player was removed, otherwise false.
      */
     @Override
@@ -381,6 +391,14 @@ public class DefaultGameSessionService implements GameSessionService {
         gameSessionRepository.save(gameSession);
     }
 
+    /**
+     * Checks if a player is in a game session.
+     *
+     * @param gameId The UUID of the game session.
+     * @param userId The ID of the user to check.
+     * 
+     * @return True if the player is in the session, otherwise false.
+     */
     @Override
     public boolean isPlayerInSession(UUID gameId, String userId) {
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId)

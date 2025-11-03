@@ -21,8 +21,6 @@ import polygon1Img from "../../assets/images/Polygon1.png";
 import polygon2Img from "../../assets/images/Polygon2.png";
 import cardSound from "../../assets/sounds/card-filp.mp3";
 import votingLabel from "../../assets/images/medieval-label.png";
-import closeIcon from "../../assets/icons/close.png";
-import micGoldIcon from "../../assets/icons/mic-gold.svg";
 import logoutButton from "../../assets/icons/logout.svg";
 
 import "./Gameplay.css";
@@ -109,7 +107,7 @@ const generateId = () =>
  * @param {function(number): void} props.setVolume - Function to update the overall game volume.
  * @param {number} props.soundFXVolume - The current volume level for sound effects.
  * @param {function(number): void} props.setSoundFXVolume - Function to update the sound effects volume.
- *  * @returns {JSX.Element} The rendered GameLobby component
+ * @returns {JSX.Element} The rendered GameLobby component
  */
 const Gameplay: React.FC<GameplayProps> = ({
   setVolume,
@@ -330,6 +328,10 @@ const Gameplay: React.FC<GameplayProps> = ({
     }
   };
 
+  /**
+   * Fetches the user ID and username.
+   * Sends a Discord invite if it hasn't been sent yet.
+   */
   useEffect(() => {
     fetchUserId();
 
@@ -356,7 +358,6 @@ const Gameplay: React.FC<GameplayProps> = ({
 
   /**
    * Effect that triggers the function to fetch user by user id.
-   *  when the component is mounted.
    */
   useEffect(() => {
     const gameSocket = io(`${socketUrl}/game`, {
@@ -386,7 +387,6 @@ const Gameplay: React.FC<GameplayProps> = ({
     });
 
     gameSocket.on("disconnectUser", (userId: string) => {
-      console.log("User disconnected:", userId);
       setHasPlayerDisconnected(true);
       try {
         const newError = {
@@ -709,6 +709,7 @@ const Gameplay: React.FC<GameplayProps> = ({
           state: { result: winner === myTeam ? "Victory" : "Loss" },
         });
       }, 3000);
+      endGame();
 
       return () => clearTimeout(timeoutId);
     }
@@ -862,14 +863,6 @@ const Gameplay: React.FC<GameplayProps> = ({
     }
 
     const storedGameId = sessionStorage.getItem("gameId");
-
-    // Dla change-turn
-    console.log("Calling change-turn with gameId:", storedGameId);
-    console.log(
-      "API URL:",
-      `${apiUrl}/api/game-session/${storedGameId}/change-turn`
-    );
-
     const response = await fetch(
       `${apiUrl}/api/game-session/${storedGameId}/change-turn`,
       {
@@ -877,6 +870,20 @@ const Gameplay: React.FC<GameplayProps> = ({
         credentials: "include",
       }
     );
+  };
+
+  /**
+   * Sends a request to the backend to finish the game and delete discord channel.
+   */
+  const endGame = async () => {
+    const storedGameId = sessionStorage.getItem("gameId");
+
+    await fetch(`${apiUrl}/api/game-session/${storedGameId}/finish`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    localStorage.removeItem("chatMessages");
   };
 
   /**
@@ -893,13 +900,6 @@ const Gameplay: React.FC<GameplayProps> = ({
     if (!amIRedTeamLeader && !amIBlueTeamLeader) return;
 
     try {
-      console.log(
-        JSON.stringify({
-          hint: cardText,
-          hintNumber: cardNumber,
-          initialHintNumber: cardNumber,
-        })
-      );
       await fetch(`${apiUrl}/api/game-session/${storedGameId}/send-hint`, {
         method: "POST",
         headers: {
@@ -937,6 +937,12 @@ const Gameplay: React.FC<GameplayProps> = ({
     if (newErrors.length > 0) return;
   };
 
+  /**
+   * Disconnects the user from the game session.
+   * Emits a "disconnectUser" event to the game socket and sends a DELETE request to the backend.
+   * Removes the game ID from session storage and navigates to the "/games" page.
+   * @returns {Promise<void>} A promise that resolves when the user is disconnected.
+   */
   const disconnectUser = () => {
     const storedGameId = sessionStorage.getItem("gameId");
     if (gameSocketRef.current) {
@@ -1031,8 +1037,8 @@ const Gameplay: React.FC<GameplayProps> = ({
           musicVolume={musicVolume}
           soundFXVolume={soundFXVolume}
           setMusicVolume={(volume) => {
-            setMusicVolume(volume); // Update local music volume
-            setVolume(volume / 100); // Update global volume
+            setMusicVolume(volume);
+            setVolume(volume / 100);
           }}
           setSoundFXVolume={setSoundFXVolume}
         />

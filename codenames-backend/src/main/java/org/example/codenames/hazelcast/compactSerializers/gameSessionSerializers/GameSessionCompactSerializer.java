@@ -12,17 +12,31 @@ import java.util.List;
 import java.util.UUID;
 
 public class GameSessionCompactSerializer implements CompactSerializer<GameSession> {
-
+    /**
+     * Gets the type name for the GameSession class.
+     * 
+     * @return The type name as a String.
+     */
     @Override
     public String getTypeName() {
         return "GameSession";
     }
 
+    /**
+     * Gets the class type for the GameSession.
+     * 
+     * @return The GameSession class.
+     */
     @Override
     public Class<GameSession> getCompactClass() {
         return GameSession.class;
     }
 
+    /**
+     * Writes a GameSession object to the CompactWriter.
+     * @param writer  The CompactWriter to write to.
+     * @param session The GameSession object to write.
+     */
     @Override
     public void write(CompactWriter writer, GameSession session) {
         writer.writeString("status", session.getStatus() != null ? session.getStatus().name() : null);
@@ -31,6 +45,7 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
         writer.writeInt32("maxPlayers", session.getMaxPlayers() != null ? session.getMaxPlayers() : 0);
         writer.writeString("password", session.getPassword());
         writer.writeInt64("votingStartTime", session.getVotingStartTime() != null ? session.getVotingStartTime() : 0L);
+        writer.writeString("discordChannelId", session.getDiscordChannelId() != null ? session.getDiscordChannelId().toString() : null);
 
         // Flatten List<List<User>> into a single list and store nested sizes
         List<User> flatUsers = new ArrayList<>();
@@ -60,6 +75,12 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
         writer.writeCompact("gameState", session.getGameState());
     }
 
+    /**
+     * Reads a GameSession object from the CompactReader.
+     * @param reader The CompactReader to read from.
+     * 
+     * @return The reconstructed GameSession object.
+     */
     @Override
     public GameSession read(CompactReader reader) {
         GameSession.GameSessionBuilder builder = GameSession.builder();
@@ -74,6 +95,7 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
         builder.maxPlayers(reader.readInt32("maxPlayers"));
         builder.password(reader.readString("password"));
         builder.votingStartTime(reader.readInt64("votingStartTime"));
+        builder.discordChannelId(reader.readString("discordChannelId"));
 
         // Reconstruct connectedUsers
         int[] userGroupSizes = reader.readArrayOfInt32("userGroupSizes");

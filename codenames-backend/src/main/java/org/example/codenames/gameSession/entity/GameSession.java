@@ -20,46 +20,59 @@ import java.util.UUID;
 @ToString
 public class GameSession {
     /**
-     * Game status.
+     * Game status
      */
     private sessionStatus status;
+
     /**
-     * Game session id.
+     * Game session id
      */
     @Id
     @GeneratedValue
     private UUID sessionId;
+
     /**
-     * Game name.
+     * Game name
      */
     private String gameName;
+
     /**
-     * Maximum number of players.
+     * Maximum number of players
      */
     private Integer maxPlayers;
+
     /**
-     * Password for private session.
+     * Password for private session
      */
     private String password;
+
     /**
-     * List of connected users.
+     * List of connected users
      */
     private List<List<User>> connectedUsers;
+
     /**
-     * List of votes.
+     * List of votes
      */
     private List<List<Integer>> votes;
+
     /**
-     * Game state.
+     * Game state
      */
     private GameState gameState;
+
     /**
-     * Voting start time.
+     * Voting start time
      */
     private Long votingStartTime;
 
+    /*
+     * Discord channel id
+     */
+    private String discordChannelId;
+
     /**
-     * Enum for session status.
+     * Enum for session status
      */
     public enum sessionStatus {
         CREATED,

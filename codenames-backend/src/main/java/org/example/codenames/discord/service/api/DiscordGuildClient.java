@@ -5,7 +5,7 @@ public interface DiscordGuildClient {
 
     String createVoiceChannel(String channelName, int userLimit);
 
-    String createInvite(String channelId, int maxAgeSeconds, int maxUses);
+    String createInvite(String channelId);
 
     void deleteChannel(String channelId);
 }

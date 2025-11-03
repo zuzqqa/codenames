@@ -14,4 +14,6 @@ public interface SocketService {
     void sendGameSessionsList(List<GameSessionJoinGameDTO> gameSessions) throws JsonProcessingException;
 
     void sendGameSessionUpdate(UUID gameId, GameSession gameSession) throws JsonProcessingException;
+
+    void sendDiscordLinkInvite(UUID gameId, String discordLink) throws JsonProcessingException;
 }
