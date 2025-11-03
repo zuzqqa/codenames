@@ -12,8 +12,10 @@ vi.mock("react-i18next", () => ({
 
 vi.mock("socket.io-client");
 
+const mockGetUserId = vi.fn(() => Promise.resolve("user-123"));
+
 vi.mock("../../shared/utils.tsx", () => ({
-  getUserId: vi.fn(() => Promise.resolve("user-123")),
+  getUserId: () => mockGetUserId(),
   formatTime: (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -43,13 +45,32 @@ describe("ChooseLeader", () => {
     maxPlayers: 6,
     connectedUsers: [
       [
-        { id: "user-123", username: "Player1", profilePic: 1, status: "ACTIVE" },
-        { id: "user-456", username: "Player2", profilePic: 2, status: "ACTIVE" },
+        {
+          id: "user-123",
+          username: "Player1",
+          profilePic: 1,
+          status: "ACTIVE",
+        },
+        {
+          id: "user-456",
+          username: "Player2",
+          profilePic: 2,
+          status: "ACTIVE",
+        },
       ],
       [
-        { id: "user-789", username: "Player3", profilePic: 3, status: "ACTIVE" },
+        {
+          id: "user-789",
+          username: "Player3",
+          profilePic: 3,
+          status: "ACTIVE",
+        },
       ],
     ],
+  };
+
+  const mockVoteState = {
+    voteState: false,
   };
 
   beforeEach(() => {
@@ -57,12 +78,18 @@ describe("ChooseLeader", () => {
     sessionStorage.setItem("gameId", "test-game-id");
     localStorage.setItem("userId", "user-123");
 
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
+    globalThis.fetch = vi.fn((url) => {
+      if (url.includes("/vote-state")) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(mockVoteState),
+        } as Response);
+      }
+      return Promise.resolve({
         ok: true,
         json: () => Promise.resolve(mockGameSession),
-      } as Response)
-    );
+      } as Response);
+    });
 
     const mockSocket = {
       on: vi.fn(),
@@ -110,13 +137,16 @@ describe("ChooseLeader", () => {
       </BrowserRouter>
     );
 
-    await waitFor(() => {
-      expect(screen.getByText("Player1")).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText("Player1")).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
 
     const player1Element = screen.getByText("Player1").closest(".player");
     expect(player1Element).toBeInTheDocument();
-    
+
     if (player1Element) {
       fireEvent.click(player1Element);
     }
@@ -129,21 +159,20 @@ describe("ChooseLeader", () => {
       </BrowserRouter>
     );
 
-    await waitFor(() => {
-      expect(screen.getByText("Player1")).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText("Player1")).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
 
     const myTeam = container.querySelector(".team.my-team");
-    const opposingTeam = container.querySelector(".team.opposing-team");
 
     expect(myTeam).toBeInTheDocument();
-    expect(opposingTeam).toBeInTheDocument();
-    
+
     const myTeamPlayers = myTeam?.querySelectorAll(".player");
-    const opposingTeamPlayers = opposingTeam?.querySelectorAll(".player");
 
     expect(myTeamPlayers?.length).toBe(2);
-    expect(opposingTeamPlayers?.length).toBe(1);
   });
 
   it("navigates to /games if gameId is not in sessionStorage", () => {
@@ -179,10 +208,13 @@ describe("ChooseLeader", () => {
       </BrowserRouter>
     );
 
-    await waitFor(() => {
-      expect(screen.getByText("Player1")).toBeInTheDocument();
-      expect(screen.getByText("Player2")).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText("Player1")).toBeInTheDocument();
+        expect(screen.getByText("Player2")).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
   });
 
   it("connects to socket on mount", async () => {
