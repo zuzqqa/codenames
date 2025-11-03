@@ -45,7 +45,6 @@ interface ButtonProps {
   /** Additional custom class names */
   className?: string;
   style?: React.CSSProperties;
-
 }
 
 /**
