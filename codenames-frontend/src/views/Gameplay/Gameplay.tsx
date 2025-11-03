@@ -386,7 +386,7 @@ const Gameplay: React.FC<GameplayProps> = ({
       }
     });
 
-    gameSocket.on("disconnectUser", (userId: string) => {
+    gameSocket.on("disconnectUser", () => {
       setHasPlayerDisconnected(true);
       try {
         const newError = {
