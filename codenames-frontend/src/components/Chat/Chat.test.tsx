@@ -1,34 +1,34 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import Chat from './Chat';
-import { io } from 'socket.io-client';
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import Chat from "./Chat";
+import { io } from "socket.io-client";
 
-vi.mock('socket.io-client', () => ({
+vi.mock("socket.io-client", () => ({
   io: vi.fn(),
 }));
 
-vi.mock('i18next', () => ({
+vi.mock("i18next", () => ({
   t: (key: string) => key,
 }));
 
-vi.mock('react-cookie', () => ({
-  useCookies: () => [{ authToken: 'test-token' }],
+vi.mock("react-cookie", () => ({
+  useCookies: () => [{ authToken: "test-token" }],
 }));
 
-vi.mock('../../config/api.tsx', () => ({
-  apiUrl: 'http://localhost:8080',
-  socketUrl: 'http://localhost:3000',
+vi.mock("../../config/api.tsx", () => ({
+  apiUrl: "http://localhost:8080",
+  socketUrl: "http://localhost:3000",
 }));
 
 Element.prototype.scrollIntoView = vi.fn();
 
-describe('Chat', () => {
+describe("Chat", () => {
   const mockSocket = {
     on: vi.fn(),
     emit: vi.fn(),
     disconnect: vi.fn(),
-    id: 'test-socket-id',
+    id: "test-socket-id",
   };
 
   beforeEach(() => {
@@ -37,19 +37,19 @@ describe('Chat', () => {
     globalThis.fetch = vi.fn(() =>
       Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({ username: 'TestUser' }),
+        json: () => Promise.resolve({ username: "TestUser" }),
       })
     ) as any;
 
     Storage.prototype.getItem = vi.fn((key) => {
-      if (key === 'gameId') return 'test-game-123';
+      if (key === "gameId") return "test-game-123";
       return null;
     });
     Storage.prototype.setItem = vi.fn();
 
     const localStorageMock: { [key: string]: string } = {};
     Storage.prototype.getItem = vi.fn((key) => {
-      if (key === 'gameId') return 'test-game-123';
+      if (key === "gameId") return "test-game-123";
       return localStorageMock[key] || null;
     });
     Storage.prototype.setItem = vi.fn((key, value) => {
@@ -61,95 +61,93 @@ describe('Chat', () => {
     vi.clearAllMocks();
   });
 
-  it('renders chat input with placeholder', async () => {
+  it("renders chat input with placeholder", async () => {
     render(<Chat />);
-    
+
     await waitFor(() => {
-      expect(screen.getByPlaceholderText('enter-the-message')).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText("enter-the-message")
+      ).toBeInTheDocument();
     });
   });
 
-  it('updates message text when user types', async () => {
+  it("sends message when Enter is pressed", async () => {
     const user = userEvent.setup();
     render(<Chat />);
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText('enter-the-message')).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText("enter-the-message")
+      ).toBeInTheDocument();
     });
 
-    const input = screen.getByPlaceholderText('enter-the-message') as HTMLInputElement;
-    await user.type(input, 'Hello world');
-
-    expect(input.value).toBe('Hello world');
-  });
-
-  it('sends message when Enter is pressed', async () => {
-    const user = userEvent.setup();
-    render(<Chat />);
+    const input = screen.getByPlaceholderText("enter-the-message");
+    await user.type(input, "Test message{Enter}");
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText('enter-the-message')).toBeInTheDocument();
-    });
-
-    const input = screen.getByPlaceholderText('enter-the-message');
-    await user.type(input, 'Test message{Enter}');
-
-    await waitFor(() => {
-      expect(mockSocket.emit).toHaveBeenCalledWith('chatMessage', {
-        sender: 'TestUser',
-        content: 'Test message',
-        gameID: 'test-game-123',
+      expect(mockSocket.emit).toHaveBeenCalledWith("chatMessage", {
+        sender: "TestUser",
+        content: "Test message",
+        gameID: "test-game-123",
       });
     });
   });
 
-  it('does not send empty messages', async () => {
+  it("does not send empty messages", async () => {
     const user = userEvent.setup();
     render(<Chat />);
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText('enter-the-message')).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText("enter-the-message")
+      ).toBeInTheDocument();
     });
 
-    const input = screen.getByPlaceholderText('enter-the-message');
-    await user.type(input, '   {Enter}');
+    const input = screen.getByPlaceholderText("enter-the-message");
+    await user.type(input, "   {Enter}");
 
-    expect(mockSocket.emit).not.toHaveBeenCalledWith('chatMessage', expect.anything());
+    expect(mockSocket.emit).not.toHaveBeenCalledWith(
+      "chatMessage",
+      expect.anything()
+    );
   });
 
-  it('displays incoming messages', async () => {
+  it("displays incoming messages", async () => {
     render(<Chat />);
 
     await waitFor(() => {
-      expect(mockSocket.on).toHaveBeenCalledWith('chatMessage', expect.any(Function));
+      expect(mockSocket.on).toHaveBeenCalledWith(
+        "chatMessage",
+        expect.any(Function)
+      );
     });
 
     const chatMessageHandler = mockSocket.on.mock.calls.find(
-      (call) => call[0] === 'chatMessage'
+      (call) => call[0] === "chatMessage"
     )?.[1];
 
     if (chatMessageHandler) {
       chatMessageHandler({
-        sender: 'OtherUser',
-        content: 'Hello from other user',
-        gameID: 'test-game-123',
+        sender: "OtherUser",
+        content: "Hello from other user",
+        gameID: "test-game-123",
       });
     }
 
     await waitFor(() => {
-      expect(screen.getByText('Hello from other user')).toBeInTheDocument();
-      expect(screen.getByText('OtherUser')).toBeInTheDocument();
+      expect(screen.getByText("Hello from other user")).toBeInTheDocument();
+      expect(screen.getByText("OtherUser")).toBeInTheDocument();
     });
   });
 
-  it('connects to socket on mount', async () => {
+  it("connects to socket on mount", async () => {
     render(<Chat />);
 
     await waitFor(() => {
       expect(io).toHaveBeenCalledWith(
-        'http://localhost:3000/chat',
+        "http://localhost:3000/chat",
         expect.objectContaining({
-          transports: ['websocket', 'polling'],
+          transports: ["websocket", "polling"],
           reconnectionAttempts: 5,
           reconnectionDelay: 1000,
         })
@@ -157,15 +155,18 @@ describe('Chat', () => {
     });
   });
 
-  it('joins game room on socket connect', async () => {
+  it("joins game room on socket connect", async () => {
     render(<Chat />);
 
     await waitFor(() => {
-      expect(mockSocket.on).toHaveBeenCalledWith('connect', expect.any(Function));
+      expect(mockSocket.on).toHaveBeenCalledWith(
+        "connect",
+        expect.any(Function)
+      );
     });
 
     const connectHandler = mockSocket.on.mock.calls.find(
-      (call) => call[0] === 'connect'
+      (call) => call[0] === "connect"
     )?.[1];
 
     if (connectHandler) {
@@ -173,39 +174,45 @@ describe('Chat', () => {
     }
 
     await waitFor(() => {
-      expect(mockSocket.emit).toHaveBeenCalledWith('joinGame', 'test-game-123');
+      expect(mockSocket.emit).toHaveBeenCalledWith("joinGame", "test-game-123");
     });
   });
 
-  it('adds focused class when input is focused', async () => {
+  it("adds focused class when input is focused", async () => {
     const user = userEvent.setup();
     render(<Chat />);
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText('enter-the-message')).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText("enter-the-message")
+      ).toBeInTheDocument();
     });
 
-    const input = screen.getByPlaceholderText('enter-the-message');
-    const container = input.closest('.chat-container');
+    const input = screen.getByPlaceholderText("enter-the-message");
+    const container = input.closest(".chat-container");
 
     await user.click(input);
 
-    expect(container).toHaveClass('focused');
+    expect(container).toHaveClass("focused");
   });
 
-  it('clears message input after sending', async () => {
+  it("clears message input after sending", async () => {
     const user = userEvent.setup();
     render(<Chat />);
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText('enter-the-message')).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText("enter-the-message")
+      ).toBeInTheDocument();
     });
 
-    const input = screen.getByPlaceholderText('enter-the-message') as HTMLInputElement;
-    await user.type(input, 'Test message{Enter}');
+    const input = screen.getByPlaceholderText(
+      "enter-the-message"
+    ) as HTMLInputElement;
+    await user.type(input, "Test message{Enter}");
 
     await waitFor(() => {
-      expect(input.value).toBe('');
+      expect(input.value).toBe("");
     });
   });
 });

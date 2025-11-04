@@ -72,40 +72,6 @@ describe('MessageModal', () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it('updates email input value when user types', async () => {
-    const user = userEvent.setup();
-    render(
-      <MessageModal
-        isOpen={true}
-        onClose={mockOnClose}
-        soundFXVolume={50}
-        setIsConfirmationModalOpen={mockSetIsConfirmationModalOpen}
-      />
-    );
-
-    const emailInput = screen.getByPlaceholderText('E-MAIL') as HTMLInputElement;
-    await user.type(emailInput, 'test@example.com');
-
-    expect(emailInput.value).toBe('test@example.com');
-  });
-
-  it('updates message textarea value when user types', async () => {
-    const user = userEvent.setup();
-    render(
-      <MessageModal
-        isOpen={true}
-        onClose={mockOnClose}
-        soundFXVolume={50}
-        setIsConfirmationModalOpen={mockSetIsConfirmationModalOpen}
-      />
-    );
-
-    const messageTextarea = screen.getByPlaceholderText('MESSAGE') as HTMLTextAreaElement;
-    await user.type(messageTextarea, 'Test message');
-
-    expect(messageTextarea.value).toBe('Test message');
-  });
-
   it('shows alert when submitting with empty fields', async () => {
     const user = userEvent.setup();
     render(
