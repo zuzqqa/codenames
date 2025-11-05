@@ -23,7 +23,7 @@ import Button from "../Button/Button";
 import useFriendRequestsSocketIO from "./useFriendRequestsSocketIO.tsx";
 
 import "./ProfileModal.css";
-import defaultProfilePic from "../../assets/images/profile-pic.png";
+
 import {apiUrl} from "../../config/api.tsx";
 import {getUserId} from "../../shared/utils.tsx";
 import {useToast} from "../Toast/ToastContext.tsx";
@@ -138,7 +138,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ soundFXVolume, isOpen, onCl
                 );
             setProfilePic(image.default);
         } catch (error) {
-            setProfilePic(defaultProfilePic);
+            setProfilePic("../../assets/images/profile-pic-default.png");
         }
     };
 

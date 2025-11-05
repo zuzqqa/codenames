@@ -1,7 +1,6 @@
-import {useEffect, useState} from "react";
+import {useEffect, useState, useRef} from "react";
 import {useSocket} from "../../providers/SocketProvider";
 import {apiUrl} from "../../config/api";
-import {useToast} from "../Toast/ToastContext";
 
 interface FriendRequestsState {
     friends: string[];
@@ -21,7 +20,8 @@ const useFriendRequestsSocketIO = (
     });
 
     const {profileSocket} = useSocket();
-    const { addToast } = useToast();
+    // queue of actions to call once socket is ready (persist across renders)
+    const pendingEmitsRef = useRef<Array<() => void>>([]);
 
     // Sync initial data when it becomes available (e.g., after fetching profile)
     useEffect(() => {
@@ -37,10 +37,13 @@ const useFriendRequestsSocketIO = (
     useEffect(() => {
         if (!username || !profileSocket) return;
 
-        // Join user's private profile room
+        // Join user's private profile room and flush pending emits
         const join = () => {
-            if (profileSocket && profileSocket.connected) {
-                profileSocket.emit('joinProfile', username);
+            profileSocket.emit('joinProfile', username);
+            // flush pending emits
+            while (pendingEmitsRef.current.length > 0) {
+                const fn = pendingEmitsRef.current.shift();
+                if (fn) fn();
             }
         };
 
@@ -96,145 +99,142 @@ const useFriendRequestsSocketIO = (
         };
     }, [username, profileSocket]);
 
+    // Helper to call backend REST endpoints to persist changes
+    const callApi = async (path: string, method = 'POST') => {
+        try {
+            const res = await fetch(`${apiUrl}${path}`, {
+                method,
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            return res;
+        } catch (e) {
+            console.error('Friend request API call failed', e);
+            throw e;
+        }
+    };
+
     // === Functions to send events back to server ===
-    const sendFriendRequest = (receiverUsername: string) => {
-        // Persist change through backend REST API; update local state optimistically
+    const sendFriendRequest = async (receiverUsername: string) => {
+        // Persist via REST
+        try {
+            await callApi(`/api/users/send-request/${receiverUsername}?senderUsername=${encodeURIComponent(username)}`, 'POST');
+        } catch (e) {
+            // If REST fails, don't optimistically add
+            return;
+        }
+
+        const doEmit = () => {
+            profileSocket!.emit('sendFriendRequest', {from: username, to: receiverUsername});
+        };
+
+        if (!profileSocket || !profileSocket.connected) {
+            pendingEmitsRef.current.push(doEmit);
+        } else {
+            doEmit();
+        }
+
         setState((prev) => ({
             ...prev,
             sentRequests: [...new Set([...prev.sentRequests, receiverUsername])],
         }));
-
-        fetch(`${apiUrl}/api/users/send-request/${encodeURIComponent(receiverUsername)}?senderUsername=${encodeURIComponent(username)}`, {
-            method: 'POST',
-            credentials: 'include',
-        }).then((res) => {
-            if (!res.ok) {
-                // rollback optimistic update
-                setState((prev) => ({
-                    ...prev,
-                    sentRequests: prev.sentRequests.filter((u) => u !== receiverUsername),
-                }));
-                addToast('Failed to send friend request', 'error');
-            }
-        }).catch(() => {
-            setState((prev) => ({
-                ...prev,
-                sentRequests: prev.sentRequests.filter((u) => u !== receiverUsername),
-            }));
-            addToast('Failed to send friend request', 'error');
-        });
     };
 
-    const acceptFriendRequest = (senderUsername: string) => {
-        // Optimistic update
+    const acceptFriendRequest = async (senderUsername: string) => {
+        // Persist via REST
+        try {
+            await callApi(`/api/users/accept-request/${senderUsername}?receiverUsername=${encodeURIComponent(username)}`, 'POST');
+        } catch (e) {
+            // If REST fails, don't change UI
+            return;
+        }
+
+        const doEmit = () => {
+            profileSocket!.emit('acceptFriendRequest', {from: senderUsername, to: username});
+        };
+
+        if (!profileSocket || !profileSocket.connected) {
+            pendingEmitsRef.current.push(doEmit);
+        } else {
+            doEmit();
+        }
+
+        // Optimistic UI update
         setState((prev) => ({
             ...prev,
             receivedRequests: prev.receivedRequests.filter((u) => u !== senderUsername),
             friends: [...new Set([...prev.friends, senderUsername])],
         }));
-
-        fetch(`${apiUrl}/api/users/accept-request/${encodeURIComponent(senderUsername)}?receiverUsername=${encodeURIComponent(username)}`, {
-            method: 'POST',
-            credentials: 'include',
-        }).then((res) => {
-            if (!res.ok) {
-                // rollback optimistic update
-                setState((prev) => ({
-                    ...prev,
-                    friends: prev.friends.filter((u) => u !== senderUsername),
-                    receivedRequests: [...new Set([...prev.receivedRequests, senderUsername])],
-                }));
-                addToast('Failed to accept friend request', 'error');
-            }
-        }).catch(() => {
-            setState((prev) => ({
-                ...prev,
-                friends: prev.friends.filter((u) => u !== senderUsername),
-                receivedRequests: [...new Set([...prev.receivedRequests, senderUsername])],
-            }));
-            addToast('Failed to accept friend request', 'error');
-        });
     };
 
-    const declineFriendRequest = (senderUsername: string) => {
+    const declineFriendRequest = async (senderUsername: string) => {
+        try {
+            await callApi(`/api/users/decline-request/${senderUsername}?receiverUsername=${encodeURIComponent(username)}`, 'POST');
+        } catch (e) {
+            return;
+        }
+
+        const doEmit = () => {
+            profileSocket!.emit('declineFriendRequest', {from: senderUsername, to: username});
+        };
+
+        if (!profileSocket || !profileSocket.connected) {
+            pendingEmitsRef.current.push(doEmit);
+        } else {
+            doEmit();
+        }
+
         setState((prev) => ({
             ...prev,
             receivedRequests: prev.receivedRequests.filter((u) => u !== senderUsername),
         }));
-
-        fetch(`${apiUrl}/api/users/decline-request/${encodeURIComponent(senderUsername)}?receiverUsername=${encodeURIComponent(username)}`, {
-            method: 'POST',
-            credentials: 'include',
-        }).then((res) => {
-            if (!res.ok) {
-                // rollback
-                setState((prev) => ({
-                    ...prev,
-                    receivedRequests: [...new Set([...prev.receivedRequests, senderUsername])],
-                }));
-                addToast('Failed to decline friend request', 'error');
-            }
-        }).catch(() => {
-            setState((prev) => ({
-                ...prev,
-                receivedRequests: [...new Set([...prev.receivedRequests, senderUsername])],
-            }));
-            addToast('Failed to decline friend request', 'error');
-        });
     };
 
-    const removeFriend = (friendUsername: string) => {
+    const removeFriend = async (friendUsername: string) => {
+        try {
+            await callApi(`/api/users/remove-friend/${friendUsername}?userUsername=${encodeURIComponent(username)}`, 'DELETE');
+        } catch (e) {
+            return;
+        }
+
+        const doEmit = () => {
+            profileSocket!.emit('removeFriend', {user: username, friend: friendUsername});
+        };
+
+        if (!profileSocket || !profileSocket.connected) {
+            pendingEmitsRef.current.push(doEmit);
+        } else {
+            doEmit();
+        }
+
         setState((prev) => ({
             ...prev,
             friends: prev.friends.filter((f) => f !== friendUsername),
         }));
-
-        fetch(`${apiUrl}/api/users/remove-friend/${encodeURIComponent(friendUsername)}?userUsername=${encodeURIComponent(username)}`, {
-            method: 'DELETE',
-            credentials: 'include',
-        }).then((res) => {
-            if (!res.ok) {
-                // rollback
-                setState((prev) => ({
-                    ...prev,
-                    friends: [...new Set([...prev.friends, friendUsername])],
-                }));
-                addToast('Failed to remove friend', 'error');
-            }
-        }).catch(() => {
-            setState((prev) => ({
-                ...prev,
-                friends: [...new Set([...prev.friends, friendUsername])],
-            }));
-            addToast('Failed to remove friend', 'error');
-        });
     };
 
-    const undoFriendRequest = (receiverUsername: string) => {
+    const undoFriendRequest = async (receiverUsername: string) => {
+        try {
+            // Using decline endpoint to cancel a sent request
+            await callApi(`/api/users/decline-request/${encodeURIComponent(username)}?receiverUsername=${encodeURIComponent(receiverUsername)}`, 'POST');
+        } catch (e) {
+            return;
+        }
+
+        const doEmit = () => {
+            profileSocket!.emit('declineFriendRequest', {from: username, to: receiverUsername});
+        };
+
+        if (!profileSocket || !profileSocket.connected) {
+            pendingEmitsRef.current.push(doEmit);
+        } else {
+            doEmit();
+        }
+
         setState((prev) => ({
             ...prev,
             sentRequests: prev.sentRequests.filter((u) => u !== receiverUsername),
         }));
-
-        // reuse decline endpoint to cancel sent request
-        fetch(`${apiUrl}/api/users/decline-request/${encodeURIComponent(username)}?receiverUsername=${encodeURIComponent(receiverUsername)}`, {
-            method: 'POST',
-            credentials: 'include',
-        }).then((res) => {
-            if (!res.ok) {
-                setState((prev) => ({
-                    ...prev,
-                    sentRequests: [...new Set([...prev.sentRequests, receiverUsername])],
-                }));
-                addToast('Failed to cancel friend request', 'error');
-            }
-        }).catch(() => {
-            setState((prev) => ({
-                ...prev,
-                sentRequests: [...new Set([...prev.sentRequests, receiverUsername])],
-            }));
-            addToast('Failed to cancel friend request', 'error');
-        });
     };
 
     return {

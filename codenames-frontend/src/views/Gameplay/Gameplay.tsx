@@ -1,12 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useToast } from "../../components/Toast/ToastContext.tsx";
-import { useModal } from "../../providers/ModalProvider";
+import React, {useEffect, useRef, useState} from "react";
+import {useTranslation} from "react-i18next";
+import {useToast} from "../../components/Toast/ToastContext.tsx";
 
 import BackgroundContainer from "../../containers/Background/Background";
 
 import Button from "../../components/Button/Button";
-import QuitModal from "../../components/QuitModal/QuitModal.tsx";
+import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 
 import bannerBlue from "../../assets/images/banner-blue.png";
 import bannerBlueLeader from "../../assets/images/banner-blue-leader.png";
@@ -30,18 +29,22 @@ import "./Gameplay.css";
 
 import Chat from "../../components/Chat/Chat.tsx";
 
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import AudioRoom from "../../components/AudioRoom/AudioRoom.tsx";
-import { apiUrl, socketUrl } from "../../config/api.tsx";
-import { io, Socket } from "socket.io-client";
-import { getUserId } from "../../shared/utils.tsx";
+import {apiUrl, socketUrl} from "../../config/api.tsx";
+import {io, Socket} from "socket.io-client";
+import {getUserId} from "../../shared/utils.tsx";
 import Cookies from "js-cookie";
+import QuitModal from "../../components/QuitModal/QuitModal.tsx";
+import Profile from "../../components/Profile/Profile.tsx";
 
 /**
  * Represents properties for controlling gameplay-related settings, such as volume levels.
  */
 interface GameplayProps {
+  setVolume: (volume: number) => void;
   soundFXVolume: number;
+  setSoundFXVolume: (volume: number) => void;
 }
 
 /**
@@ -111,14 +114,18 @@ const generateId = () =>
  * @param {function(number): void} props.setSoundFXVolume - Function to update the sound effects volume.
  *  * @returns {JSX.Element} The rendered GameLobby component
  */
-const Gameplay: React.FC<GameplayProps> = ({ soundFXVolume }) => {
-  const { openSettings } = useModal();
+const Gameplay: React.FC<GameplayProps> = ({
+                                             setVolume,
+                                             soundFXVolume,
+                                             setSoundFXVolume,
+                                           }) => {
   const [musicVolume, setMusicVolume] = useState(() => {
     const savedVolume = localStorage.getItem("musicVolume");
     return savedVolume ? parseFloat(savedVolume) : 50;
   });
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isQuitModalOpen, setIsQuitModalOpen] = useState(false);
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const [isCardVisible, setIsCardVisible] = useState(false);
   const [cardText, setCardText] = useState("");
   const [cardNumber, setCardNumber] = useState(1);
@@ -151,7 +158,7 @@ const Gameplay: React.FC<GameplayProps> = ({ soundFXVolume }) => {
   const [cardsToReveal, setCardsToReveal] = useState<number[]>([]);
   const amIChoosingHint =
     (amIRedTeamLeader || amIBlueTeamLeader) && whosTurn == myTeam && isHintTime;
-  const { addToast } = useToast();
+  const {addToast} = useToast();
   const clickAudio = new Audio(cardSound);
   const [votedCards, setVotedCards] = useState<number[]>([]);
   const [userId, setUserId] = useState<string | null>();
@@ -169,6 +176,13 @@ const Gameplay: React.FC<GameplayProps> = ({ soundFXVolume }) => {
    */
   const toggleOverlay = () => {
     setIsOverlayVisible(!isOverlayVisible);
+  };
+
+  /**
+   * This function toggles the visibility of the settings modal.
+   */
+  const toggleSettings = () => {
+    setIsSettingsOpen(!isSettingsOpen);
   };
 
   /**
@@ -488,7 +502,7 @@ const Gameplay: React.FC<GameplayProps> = ({ soundFXVolume }) => {
     ) {
       setWinningTeam(redTeamPlayers.length < 2 ? "blue" : "red");
       navigate("/win-loss", {
-        state: { result: winningTeam === myTeam ? "Victory" : "Loss" },
+        state: {result: winningTeam === myTeam ? "Victory" : "Loss"},
       });
     }
   }, [blueTeamPlayers, redTeamPlayers, hasPlayerDisconnected]);
@@ -693,7 +707,7 @@ const Gameplay: React.FC<GameplayProps> = ({ soundFXVolume }) => {
       setWinningTeam(winner);
       const timeoutId = setTimeout(() => {
         navigate("/win-loss", {
-          state: { result: winner === myTeam ? "Victory" : "Loss" },
+          state: {result: winner === myTeam ? "Victory" : "Loss"},
         });
       }, 3000);
 
@@ -791,7 +805,7 @@ const Gameplay: React.FC<GameplayProps> = ({ soundFXVolume }) => {
   }, [cardText, cardNumber]);
 
   /**
-   * Effect that handles the click outside of the card input area.
+   * Effect that handles the click outside the card input area.
    * If a click occurs outside the card input, it hides the card input and resets the card text and number.
    *
    * @returns {void} Cleanup function removes the event listener on component unmount.
@@ -999,17 +1013,18 @@ const Gameplay: React.FC<GameplayProps> = ({ soundFXVolume }) => {
         <Button
           variant="circle"
           soundFXVolume={soundFXVolume}
-          onClick={openSettings}
+          onClick={toggleSettings}
         >
-          <img src={settingsIcon} alt="Settings" />
+          <img src={settingsIcon} alt="Settings"/>
         </Button>
+        <Profile soundFXVolume={soundFXVolume}/>
 
         <Button
           variant="logout"
           soundFXVolume={soundFXVolume}
           onClick={toggleQuitModal}
         >
-          <img src={logoutButton} alt="Home" />
+          <img src={logoutButton} alt="Home"/>
         </Button>
 
         {voiceChatEnabled && (
@@ -1022,7 +1037,7 @@ const Gameplay: React.FC<GameplayProps> = ({ soundFXVolume }) => {
                 <img src={closeIcon}></img>
               </button>
               <div className="audio-room">
-                <AudioRoom soundFXVolume={soundFXVolume} />
+                <AudioRoom soundFXVolume={soundFXVolume}/>
               </div>
             </div>
           </div>
@@ -1035,10 +1050,21 @@ const Gameplay: React.FC<GameplayProps> = ({ soundFXVolume }) => {
             soundFXVolume={soundFXVolume}
             onClick={() => setIsOverlayVisible(true)}
           >
-            <img className="mic-icon" src={micGoldIcon} alt="Microphone" />
+            <img className="mic-icon" src={micGoldIcon} alt="Microphone"/>
           </Button>
         )}
 
+        <SettingsModal
+          isOpen={isSettingsOpen}
+          onClose={toggleSettings}
+          musicVolume={musicVolume}
+          soundFXVolume={soundFXVolume}
+          setMusicVolume={(volume) => {
+            setMusicVolume(volume); // Update local music volume
+            setVolume(volume / 100); // Update global volume
+          }}
+          setSoundFXVolume={setSoundFXVolume}
+        />
         <QuitModal
           isOpen={isQuitModalOpen}
           onClose={toggleQuitModal}
@@ -1062,12 +1088,12 @@ const Gameplay: React.FC<GameplayProps> = ({ soundFXVolume }) => {
           </Button>
         </QuitModal>
 
-        <img className="polygon1" src={polygon1Img} />
-        <img className="polygon2" src={polygon2Img} />
+        <img className="polygon1" src={polygon1Img}/>
+        <img className="polygon2" src={polygon2Img}/>
         <div className="timer points-red">{redTeamScore} / 9</div>
         <div className="timer points-blue">{blueTeamScore} / 8</div>
         <div className="banner-container">
-          <img src={getBanner()} />
+          <img src={getBanner()}/>
         </div>
 
         <div className="content-container">
@@ -1091,23 +1117,23 @@ const Gameplay: React.FC<GameplayProps> = ({ soundFXVolume }) => {
                 onMouseEnter={
                   flipStates[index]
                     ? () => {
-                        setHoverStates((prev) => ({
-                          ...prev,
-                          [index]: "enter",
-                        }));
-                        playCardSound();
-                      }
+                      setHoverStates((prev) => ({
+                        ...prev,
+                        [index]: "enter",
+                      }));
+                      playCardSound();
+                    }
                     : undefined
                 }
                 onMouseLeave={
                   flipStates[index]
                     ? () => {
-                        setHoverStates((prev) => ({
-                          ...prev,
-                          [index]: "leave",
-                        }));
-                        playCardSound();
-                      }
+                      setHoverStates((prev) => ({
+                        ...prev,
+                        [index]: "leave",
+                      }));
+                      playCardSound();
+                    }
                     : undefined
                 }
               >
@@ -1118,19 +1144,19 @@ const Gameplay: React.FC<GameplayProps> = ({ soundFXVolume }) => {
                   src={
                     amIRedTeamLeader || amIBlueTeamLeader
                       ? (() => {
-                          const cardColor =
-                            gameSession?.gameState.cardsColors[index];
-                          switch (cardColor) {
-                            case 1:
-                              return cardRedImg;
-                            case 2:
-                              return cardBlueImg;
-                            case 3:
-                              return cardBlackImg;
-                            default:
-                              return cardWhiteImg;
-                          }
-                        })()
+                        const cardColor =
+                          gameSession?.gameState.cardsColors[index];
+                        switch (cardColor) {
+                          case 1:
+                            return cardRedImg;
+                          case 2:
+                            return cardBlueImg;
+                          case 3:
+                            return cardBlackImg;
+                          default:
+                            return cardWhiteImg;
+                        }
+                      })()
                       : cardImage
                   }
                   alt={`card-${index}`}
@@ -1168,7 +1194,7 @@ const Gameplay: React.FC<GameplayProps> = ({ soundFXVolume }) => {
           </div>
           <div className="bottom-section">
             <div className="item">
-              <Chat />
+              <Chat/>
             </div>
             <div className="item">
               <Button
@@ -1197,10 +1223,10 @@ const Gameplay: React.FC<GameplayProps> = ({ soundFXVolume }) => {
                   {amICurrentLeader ? t("pass-round") : t("end-round")}
                 </span>
               </Button>
-              <div className="horizontal-gold-bar" />
+              <div className="horizontal-gold-bar"/>
             </div>
             <div className="item codename-item">
-              <img className="card-stack" src={cardsStackImg} />
+              <img className="card-stack" src={cardsStackImg}/>
               <div
                 className={`codename-card-container ${
                   amIChoosingHint ? "pulsing" : ""
@@ -1213,11 +1239,11 @@ const Gameplay: React.FC<GameplayProps> = ({ soundFXVolume }) => {
                     {gameSession?.gameState.hintNumber === "0"
                       ? ""
                       : gameSession?.gameState.hintNumber +
-                        "/" +
-                        gameSession?.gameState.initialHintNumber}
+                      "/" +
+                      gameSession?.gameState.initialHintNumber}
                   </span>
                 </div>
-                <img className="codename-card" src={cardBlackImg} />
+                <img className="codename-card" src={cardBlackImg}/>
               </div>
             </div>
           </div>
@@ -1281,9 +1307,9 @@ const Gameplay: React.FC<GameplayProps> = ({ soundFXVolume }) => {
                     (!amIRedTeamLeader && !amIBlueTeamLeader) ||
                     whosTurn !== myTeam ||
                     cardNumber >=
-                      (whosTurn === "blue"
-                        ? 8 - blueTeamScore
-                        : 9 - redTeamScore)
+                    (whosTurn === "blue"
+                      ? 8 - blueTeamScore
+                      : 9 - redTeamScore)
                   }
                 >
                   +

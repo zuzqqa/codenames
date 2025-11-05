@@ -13,7 +13,7 @@ import Button from "../../components/Button/Button.tsx";
 import FormInput from "../../components/FormInput/FormInput.tsx";
 import TitleComponent from "../../components/Title/Title.tsx";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar.tsx";
-import { useModal } from "../../providers/ModalProvider";
+import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
 
 import settingsIcon from "../../assets/icons/settings.png";
 import eyeIcon from "../../assets/icons/eye.svg";
@@ -27,18 +27,27 @@ import { validatePassword } from "../../utils/validation.tsx";
 import { apiUrl } from "../../config/api.tsx";
 import { useToast } from "../../components/Toast/ToastContext.tsx";
 
+const generateId = () =>
+  Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+
 interface ResetPasswordProps {
   setVolume: (volume: number) => void;
   soundFXVolume: number;
+  setSoundFXVolume: (volume: number) => void;
 }
 
-const ResetPasswordPage: React.FC<ResetPasswordProps> = ({ soundFXVolume }) => {
+const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
+  setVolume,
+  soundFXVolume,
+  setSoundFXVolume,
+}) => {
   const [password, setPassword] = useState<string>("");
   const [passwordRepeat, setPasswordRepeat] = useState<string>("");
   const [musicVolume, setMusicVolume] = useState(() => {
     const savedVolume = localStorage.getItem("musicVolume");
     return savedVolume ? parseFloat(savedVolume) : 50;
   });
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -46,7 +55,6 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({ soundFXVolume }) => {
   const token = params.get("token");
   const [tokenExpired, setTokenExpired] = useState(false);
   const { addToast } = useToast();
-  const { openSettings } = useModal();
 
   useEffect(() => {
     if (!token) {
@@ -156,12 +164,26 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({ soundFXVolume }) => {
     }
   };
 
-  const toggleSettings = () => openSettings();
+  const toggleSettings = () => {
+    setIsSettingsOpen(!isSettingsOpen);
+  };
+
+  const updateMusicVolume = (volume: number) => {
+    setMusicVolume(volume);
+    setVolume(volume);
+  };
 
   return (
     <BackgroundContainer>
       <GameTitleBar />
-      {/* Settings modal provided by ModalProvider */}
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={toggleSettings}
+        musicVolume={musicVolume}
+        soundFXVolume={soundFXVolume}
+        setMusicVolume={updateMusicVolume}
+        setSoundFXVolume={setSoundFXVolume}
+      />
       <Button
         variant="circle"
         soundFXVolume={soundFXVolume}

@@ -6,8 +6,8 @@ import BackgroundContainer from "../../containers/Background/Background";
 import Button from "../../components/Button/Button";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar";
 import CreateGameForm from "../../components/CreateGameForm/CreateGameForm";
-import { useModal } from "../../providers/ModalProvider";
-
+import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
+import ProfileModal from "../../components/UserProfileOverlay/ProfileModal";
 import profileIcon from "../../assets/icons/profile.png";
 import settingsIcon from "../../assets/icons/settings.png";
 import logoutButton from "../../assets/icons/logout.svg";
@@ -19,6 +19,7 @@ import "./CreateGame.css";
 import { getCookie, logout } from "../../shared/utils.tsx";
 import { apiUrl } from "../../config/api.tsx";
 import UsernameContainer from "../../containers/UsernameContainer/UsernameContainer.tsx";
+import Profile from "../../components/Profile/Profile.tsx";
 
 /**
  * Props interface for CreateGame component.
@@ -30,6 +31,7 @@ import UsernameContainer from "../../containers/UsernameContainer/UsernameContai
 interface CreateGameProps {
   setVolume: (volume: number) => void;
   soundFXVolume: number;
+  setSoundFXVolume: (volume: number) => void;
 }
 
 /**
@@ -40,55 +42,21 @@ interface CreateGameProps {
  * @param {CreateGameProps} props - Component properties
  * @returns {JSX.Element} The rendered CreateGame component
  */
-const CreateGame: React.FC<CreateGameProps> = ({ soundFXVolume }) => {
+const CreateGame: React.FC<CreateGameProps> = ({
+  setVolume,
+  soundFXVolume,
+  setSoundFXVolume,
+}) => {
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
-  const { openSettings, openProfile, canOpenProfile } = useModal();
-  const [isGuest, setIsGuest] = useState<boolean | null>(null);
-
-  /**
-   * Effect to fetch guest status from the server.
-   * It checks if the user is a guest and updates the state accordingly.
-   */
-  useEffect(() => {
-    const fetchGuestStatus = async () => {
-      const token = getCookie("authToken");
-
-      if (!token) {
-        return;
-      }
-
-      try {
-        const response = await fetch(`${apiUrl}/api/users/is-guest`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (response.ok) {
-          const guestStatus = await response.json();
-          setIsGuest(guestStatus);
-        } else {
-          console.error("Failed to retrieve guest status.");
-        }
-      } catch (error) {
-        console.error("Error retrieving guest status: ", error);
-      }
-    };
-
-    fetchGuestStatus();
-  }, []);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
+  const { t } = useTranslation();
 
   /**
    * Toggles the settings modal visibility.
    */
-  const toggleSettings = () => openSettings();
-
-  /**
-   * Toggles the profile modal visibility.
-   */
-  const toggleProfile = () => openProfile();
+  const toggleSettings = () => {
+    setIsSettingsOpen(!isSettingsOpen);
+  };
 
   return (
     <>
@@ -100,11 +68,7 @@ const CreateGame: React.FC<CreateGameProps> = ({ soundFXVolume }) => {
         >
           <img src={settingsIcon} alt="Settings" />
         </Button>
-        {canOpenProfile && (
-          <Button variant="circle-profile" soundFXVolume={soundFXVolume}>
-            <img src={profileIcon} onClick={toggleProfile} alt="Profile" />
-          </Button>
-        )}
+        <Profile soundFXVolume={soundFXVolume} />
 
         {document.cookie
           .split("; ")
@@ -117,7 +81,18 @@ const CreateGame: React.FC<CreateGameProps> = ({ soundFXVolume }) => {
             <img src={logoutButton} alt="Logout" />
           </Button>
         )}
-        {/* Modals are provided globally by ModalProvider */}
+
+        <SettingsModal
+          isOpen={isSettingsOpen}
+          onClose={toggleSettings}
+          musicVolume={musicVolume}
+          soundFXVolume={soundFXVolume}
+          setMusicVolume={(volume) => {
+            setMusicVolume(volume);
+            setVolume(volume / 100);
+          }}
+          setSoundFXVolume={setSoundFXVolume}
+        />
         <>
           <GameTitleBar></GameTitleBar>
           <CreateGameForm soundFXVolume={soundFXVolume} />
