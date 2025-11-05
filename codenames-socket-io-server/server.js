@@ -179,8 +179,8 @@ function parsePayload(data) {
 }
 
 // --- START SERVER ---
-const PORT = process.env.PORT || 8079;
+const PORT = process.env.PORT || 8080;
 
 server.listen(PORT, () => {
-  console.log(`✅ Socket.IO server is running on port ${PORT}.`);
+  console.log(`Socket.IO server is running on port ${PORT}.`);
 });

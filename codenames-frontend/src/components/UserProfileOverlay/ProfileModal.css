@@ -1,108 +1,122 @@
+/* css */
 .profile-modal-wrapper {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-family: "Wellfleet", serif;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: "Wellfleet", serif;
+  padding: 1.25rem 0;
+  box-sizing: border-box;
 }
 
-  .profile-modal-content {
-    width: 88%;
-    margin-top: 1em;
-  }
-
-  .user-details-container {
-    margin-top: 2rem;
-    height: 35%;
-    display: grid;
-    grid-template-columns: 23% 1fr;
-    grid-template-rows: auto auto;
-    gap: 0.5rem 3rem;
-    align-items: center;
-    
-  }
-
-  
-  .user-profile-pic {
-    width: 7rem;
-    grid-column: 1 / 2;
-    grid-row: 1 / 2;
-  }
-  
-  .username {
-    grid-column: 1 / 2;
-    grid-row: 2 / 3;
-  }
-  
-  .sec-col {
-    align-self: start;
-    grid-column: 2 / 3;
-    grid-row: 1 / 2;
-    font-size: 1.2rem;
-    font-weight: bold;
-  } 
-
-  
-  .first-col{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    /* border-right: 1.5px solid #DAB274; */
-    border-right: 1.5px solid rgba(252, 241, 139, 0.5);
-    position: relative;
-    font-size: 1.2rem;
-    font-weight: bold;
-  }
-
-  .profile-pic-selector {
-    position: relative;
+/* ograniczamy szerokość modalu i centrujemy */
+.profile-modal-content {
+  width: 100%;
+  max-width: 900px;
+  margin: 0.6rem auto 1rem;
+  box-sizing: border-box;
 }
 
+/* Kontener user-details jako pozycjonowany rodzic dla przycisku edycji */
+.user-details-container {
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: 23% 1fr;
+  grid-template-rows: auto;
+  gap: 0.75rem 2rem;
+  align-items: start;
+  position: relative; /* ważne: anchor dla .edit-button */
+  padding: 1rem;
+  box-sizing: border-box;
+  border-radius: 15%;
+}
 
+/* Profilowe obrazki i layout */
+.user-profile-pic {
+  width: 7rem;
+  height: 7rem;
+  object-fit: cover;
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  border-radius: 50%;
+  border: 1.5px solid rgba(252, 241, 139, 0.5);
+}
+
+.username {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.sec-col {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+/* Pierwsza kolumna (avatar + nazwa) */
+.first-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-right: 1.5px solid rgba(252, 241, 139, 0.15);
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding-right: 1rem;
+  box-sizing: border-box;
+}
+
+/* Selector avatarów */
+.profile-pic-selector {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* Strzałki przy selectorze */
 .pic-arrow {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
 }
 
-/* Lewa strzałka */
-.pic-arrow:first-of-type {
-  left: -2rem;
-  top: 50%;
-  transform: translateY(-50%);
-}
+/* pozycjonowanie strzałek względem selector'a */
+.pic-arrow:first-of-type { margin-right: 0.25rem; transform: rotate(180deg); }
+.pic-arrow:last-of-type { margin-left: 0.25rem; }
 
-/* Prawa strzałka */
-.pic-arrow:last-of-type {
-  right: -2rem;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.edit-button{
+.edit-button {
   position: absolute;
-  top: 10%;
-  right: 5%;
-  transform: translateY(-50%);
+  top: 0.6rem;
+  right: 0.6rem;
+  transform: none;
+  z-index: 10;
 }
 
+/* Tekst i textarea */
 .description-textarea {
   width: 100%;
-  height: 100px;
-  padding: 5px;
+  min-height: 100px;
+  padding: 8px;
   border: 1px solid rgba(252, 241, 139, 0.5);
-  background: transparent;
-  resize: none;
   border-radius: 10px;
   font-family: "Wellfleet", serif;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: bold;
-  /* margin-top: 1em; */
-  /* margin-block-end: 1em; */
+  margin: 0.2rem 0;
+  box-sizing: border-box;
+  color: rgba(252, 241, 139, 0.95);
+  background: transparent;
 }
 
 .description-textarea:focus {
@@ -110,76 +124,89 @@
   border-color: #DAB274;
 }
 
+/* Search box */
 .search-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 10px 0;
-  padding: 5px;
+  padding: 6px;
   background: transparent;
   border-radius: 15px;
-  border: 2px solid;
-  border-color: rgba(252, 241, 139, 0.5);
-
-  width: 80%;
-  max-width: 400px;
+  border: 2px solid rgba(252, 241, 139, 0.15);
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
+  margin: 10px 0 10px 0.5rem;
 }
 
 .search-container input {
   width: 100%;
-  padding: 5px;
+  padding: 6px;
   border: none;
   background: transparent;
-  color: rgba(252, 241, 139, 0.5);
-  font-size: 12px;
+  color: rgba(252, 241, 139, 0.95);
+  font-size: 0.95rem;
   outline: none;
 }
 
-.search-container input::placeholder {
-  color: #aaa;
-}
-
-
+/* Wyniki wyszukiwania i listy */
 .search-results ul {
   padding: 0;
+  margin: 0.5rem 0;
 }
 
-.search-results img{
-  width: 2.5vh;
+.search-results img {
+  width: 2.2rem;
+  height: 2.2rem;
+  object-fit: contain;
 }
+
 .search-results ul li {
   display: flex;
   justify-content: space-between;
-  list-style: none;
-}
-
-.friens-list .friend-invitations{
-
-}
-
-.friend-item, .invitation-item {
-  display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  list-style: none;
+  padding: 0.35rem 0;
+  border-bottom: 1px dashed rgba(252, 241, 139, 0.06);
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
+/* Przyjazne wymiary dla list zakładek */
+.tabs-item {
+  max-height: 28vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(252, 241, 139, 0.5) transparent;
+  width: 100%;
+  margin-top: 0.6rem;
+}
+
+/* Ikony zakładek */
+.tabs img {
+  height: 3vh;
+}
+
+/* Przyjazne avatar list friends */
 .friend-profile-pic {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   border: 1px solid rgba(252, 241, 139, 0.5);
+  object-fit: cover;
 }
 
-.tabs img{
-  height: 3vh;
+/* Pozycjonowanie przycisku zamknięcia (circle button) w prawym górnym rogu modalu */
+.profile-modal-wrapper .btn-circle,
+.profile-modal-wrapper .btn-circle-profile {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  z-index: 50;
 }
 
-.tabs-item{
-  max-height: 15vh; 
-  overflow-y: auto; /* Włącza przewijanie w pionie */
-  scrollbar-width: thin; /* Cieńszy scrollbar */
-  scrollbar-color: rgba(252, 241, 139, 0.5) transparent; /* Kolor scrollbara */
-  width: 15vw;
+/* Jeśli są dwie przyciskowe ikony (profile + circle) ustaw obok siebie */
+.profile-modal-wrapper .btn-circle + .btn-circle-profile,
+.profile-modal-wrapper .btn-circle-profile + .btn-circle {
+  right: 3.2rem; /* przesunięcie drugiego przycisku w lewo */
 }
-
