@@ -6,13 +6,9 @@ import soundFile from "../../assets/sounds/old-radio-button-click-97549.mp3";
  * Props interface for the Button component.
  */
 interface ButtonProps {
-  /** Content inside the button (text/icons) */
   children: ReactNode;
-  /** Click handler function (optional) */
   onClick?: () => void;
-  /** Button type (default is "button") */
   type?: "button" | "submit" | "reset";
-  /** Button variant for styles (default is "primary") */
   variant?:
     | "primary"
     | "primary-1"
@@ -34,15 +30,12 @@ interface ButtonProps {
     | "transparent"
     | "half-circle"
     | "number-stepper"
+    | "discord"
     | "tutorial"
-    | "google"; // Button variant for styles (default is "primary")
-  /** Disabled state (default is false) */
+    | "google"; 
   disabled?: boolean;
-  /** Sound volume for the click effect */
   soundFXVolume: number;
-  /** Change handler function (optional) */
   onChange?: () => void;
-  /** Additional custom class names */
   className?: string;
   style?: React.CSSProperties;
 }
@@ -77,10 +70,10 @@ const Button: React.FC<ButtonProps> = ({
       className={`btn btn-${variant} ${className}`}
       type={type}
       onClick={() => {
-        playSound(soundFXVolume); // Play sound on click
-        if (onClick) onClick(); // Call onClick handler if provided
+        playSound(soundFXVolume); 
+        if (onClick) onClick(); 
       }}
-      disabled={disabled} // Disable button if true
+      disabled={disabled} 
       onChange={onChange}
     >
       {children}
@@ -88,4 +81,4 @@ const Button: React.FC<ButtonProps> = ({
   );
 };
 
-export default Button; // Export Button component
+export default Button; 

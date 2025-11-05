@@ -3,7 +3,6 @@ package org.example.codenames.gameState.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import lombok.ToString;
 import org.example.codenames.user.entity.User;
 

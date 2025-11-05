@@ -5,9 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.example.codenames.userDetails.service.UserEntityDetailsService;
-
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,7 +34,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     /**
      * Constructor for JwtAuthFilter.
      *
-     * @param jwtService the service responsible for JWT operations
+     * @param jwtService               the service responsible for JWT operations
      * @param userEntityDetailsService the service responsible for loading user details
      */
     public JwtAuthFilter(JwtService jwtService, @Lazy UserEntityDetailsService userEntityDetailsService) {
@@ -47,11 +45,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     /**
      * Method that intercepts every request and checks if the user is authenticated.
      *
-     * @param request the HTTP request
-     * @param response the HTTP response
+     * @param request     the HTTP request
+     * @param response    the HTTP response
      * @param filterChain the filter chain to continue processing
      * @throws ServletException if a servlet error occurs
-     * @throws IOException if an input/output error occurs
+     * @throws IOException      if an input/output error occurs
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

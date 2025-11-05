@@ -9,12 +9,12 @@ import org.example.codenames.gameState.entity.GameState;
 import org.example.codenames.gameState.service.api.GameStateService;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.service.api.UserService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Default implementation of the {@link GameSessionService}.
@@ -46,9 +46,10 @@ public class DefaultGameSessionService implements GameSessionService {
     /**
      * Creates a new instance of the {@link DefaultGameSessionService}.
      *
-     * @param gameSessionRepository Game session repository.
-     * @param userService           User service.
-     * @param gameStateService      Game state service.
+     * @param gameSessionRepository Game session repository
+     * @param userService           User service
+     * @param gameStateService      Game state service
+     * @param passwordEncoder       Password encoder
      */
     @Autowired
     public DefaultGameSessionService(GameSessionRepository gameSessionRepository, UserService userService, GameStateService gameStateService, PasswordEncoder passwordEncoder) {
@@ -62,6 +63,7 @@ public class DefaultGameSessionService implements GameSessionService {
      * Creates a new game session.
      *
      * @param request The request containing game session details.
+     * 
      * @return The unique identifier of the created game session.
      */
     @Override
@@ -93,7 +95,7 @@ public class DefaultGameSessionService implements GameSessionService {
                 }},
                 gameState,
                 System.currentTimeMillis(),
-                request.getVoiceChatEnabled()
+                null
         );
 
         gameSessionRepository.save(newGame);
@@ -104,11 +106,12 @@ public class DefaultGameSessionService implements GameSessionService {
      * Retrieves a game session by its unique identifier.
      *
      * @param gameId The UUID of the game session.
+     * 
      * @return The {@link GameSession} if found, otherwise null.
      */
     @Override
     public GameSession getGameSessionById(UUID gameId) {
-        if(gameSessionRepository.findBySessionId(gameId).isPresent()) {
+        if (gameSessionRepository.findBySessionId(gameId).isPresent()) {
             return gameSessionRepository.findBySessionId(gameId).get();
         }
 
@@ -121,7 +124,7 @@ public class DefaultGameSessionService implements GameSessionService {
      * @param sessionId The UUID of the game session.
      * @return An array of card names.
      * @throws IllegalArgumentException If the session is not found.
-     * @throws IllegalStateException If the game state is null.
+     * @throws IllegalStateException    If the game state is null.
      */
     @Override
     public String[] getCardsBySessionId(UUID sessionId) {
@@ -139,6 +142,7 @@ public class DefaultGameSessionService implements GameSessionService {
      * Retrieves the card colors for a given game session.
      *
      * @param sessionId The UUID of the game session.
+     * 
      * @return An array of card colors.
      */
     @Override
@@ -156,8 +160,8 @@ public class DefaultGameSessionService implements GameSessionService {
     /**
      * Submits a vote for a user in a given session.
      *
-     * @param sessionId The UUID of the game session.
-     * @param userId The ID of the user submitting the vote.
+     * @param sessionId   The UUID of the game session.
+     * @param userId      The ID of the user submitting the vote.
      * @param votedUserId The ID of the user being voted for.
      * @throws RuntimeException If the session or voted user is not found.
      */
@@ -221,9 +225,9 @@ public class DefaultGameSessionService implements GameSessionService {
     /**
      * Finds the leader of a team based on the votes.
      *
-     * @param team The team to find the leader for.
+     * @param team      The team to find the leader for.
      * @param teamVotes The votes for each player in the team.
-     *
+     * 
      * @return The leader of the team.
      */
     @Override
@@ -249,9 +253,9 @@ public class DefaultGameSessionService implements GameSessionService {
      * Adds a player to a game session.
      *
      * @param sessionId The UUID of the game session.
-     * @param userId The ID of the user to add.
+     * @param userId    The ID of the user to add.
      * @param teamIndex The index of the team to add the user to.
-     *
+     * 
      * @return True if the player was added, otherwise false.
      */
     @Override
@@ -262,7 +266,7 @@ public class DefaultGameSessionService implements GameSessionService {
             throw new IllegalArgumentException("Game session not found for ID: " + sessionId);
         }
 
-        if (gameSession.getMaxPlayers() == gameSession.getConnectedUsers().stream().mapToInt(List::size).sum()){
+        if (gameSession.getMaxPlayers() == gameSession.getConnectedUsers().stream().mapToInt(List::size).sum()) {
             return false;
         }
 
@@ -273,7 +277,7 @@ public class DefaultGameSessionService implements GameSessionService {
             return false;
         }
 
-        for(List<User> team : connectedUsers) {
+        for (List<User> team : connectedUsers) {
             if (team.stream().anyMatch(user -> user.getId().equals(userId))) {
                 return false;
             }
@@ -293,9 +297,9 @@ public class DefaultGameSessionService implements GameSessionService {
     /**
      * Authenticates password for session.
      *
-     * @param sessionId The UUID of the game session.
+     * @param sessionId       The UUID of the game session.
      * @param enteredPassword The password given by user.
-     *
+     * 
      * @return True if password is correct, otherwise false.
      */
     @Override
@@ -323,8 +327,8 @@ public class DefaultGameSessionService implements GameSessionService {
      * Removes a player from a game session.
      *
      * @param sessionId The UUID of the game session.
-     * @param userId The ID of the user to remove.
-     *
+     * @param userId    The ID of the user to remove.
+     * 
      * @return True if the player was removed, otherwise false.
      */
     @Override
@@ -375,7 +379,7 @@ public class DefaultGameSessionService implements GameSessionService {
     /**
      * Reveal a card.
      *
-     * @param gameId id of the game
+     * @param gameId    id of the game
      * @param cardIndex index of the card chosen
      */
     @Override
@@ -388,6 +392,14 @@ public class DefaultGameSessionService implements GameSessionService {
         gameSessionRepository.save(gameSession);
     }
 
+    /**
+     * Checks if a player is in a game session.
+     *
+     * @param gameId The UUID of the game session.
+     * @param userId The ID of the user to check.
+     * 
+     * @return True if the player is in the session, otherwise false.
+     */
     @Override
     public boolean isPlayerInSession(UUID gameId, String userId) {
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId)

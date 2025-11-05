@@ -20,7 +20,6 @@ import { apiUrl } from "../../config/api.tsx";
 import { secure } from "../../config/api.tsx";
 
 export async function createGuestUser(apiUrl: string, secure: string) {
-  console.log(apiUrl);
   try {
     const response = await fetch(`${apiUrl}/api/users/create-guest`, {
       method: "POST",

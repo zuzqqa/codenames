@@ -19,14 +19,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 public class JwtServiceTest {
+    private final String SECRET = "mysecretkeymysecretkeymysecretkeymysecretkey";
     @InjectMocks
     private JwtService jwtService;
-
-    private final String SECRET = "mysecretkeymysecretkeymysecretkeymysecretkey";
     private Key key;
 
     @BeforeEach

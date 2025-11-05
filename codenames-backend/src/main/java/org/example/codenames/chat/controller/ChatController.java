@@ -1,7 +1,6 @@
 package org.example.codenames.chat.controller;
 
 import org.example.codenames.chat.entity.ChatMessage;
-
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Controller;
 public class ChatController {
     /**
      * Receives a message from a client and broadcasts it to all subscribers of the game channel
+     *
      * @param message The message sent by the client
      * @return The message sent by the client
      */

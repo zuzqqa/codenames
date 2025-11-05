@@ -30,8 +30,6 @@ const useFriendRequestsWebSocket = (username: string) => {
         throw new Error(`Error: ${response.status} - ${responseText}`);
       }
   
-      console.log("Response Text:", responseText);
-  
       const data = JSON.parse(responseText); 
       setState({
         friends: data.friends || [],
