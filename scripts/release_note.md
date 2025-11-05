@@ -1,13 +1,14 @@
 Relevants update needed because of the switching of the Google Cloud account
 **🔧 What's included in this release?**
-Choose leader logic changes
+Friend system update.
 
 Key additions:
-- Changed underlying logic for choosing a leader
+- Notification system for friend updates
+- Friend notifications in real time via web sockets
 
 **🚧 What's still under development?**
-- UI fixes
-- UI change for choosing a leader
+- Unit tests
+- Code optimization
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 
