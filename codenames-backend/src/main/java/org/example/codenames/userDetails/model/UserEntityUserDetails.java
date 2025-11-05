@@ -2,9 +2,7 @@ package org.example.codenames.userDetails.model;
 
 import lombok.Getter;
 import lombok.Setter;
-
 import org.example.codenames.user.entity.User;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,6 +35,7 @@ public class UserEntityUserDetails implements UserDetails {
 
     /**
      * Constructor of UserEntityUserDetails class
+     *
      * @param user User object
      */
     public UserEntityUserDetails(User user) {
@@ -49,6 +48,7 @@ public class UserEntityUserDetails implements UserDetails {
 
     /**
      * Get the authorities of the user
+     *
      * @return Collection of authorities
      */
     @Override
@@ -58,6 +58,7 @@ public class UserEntityUserDetails implements UserDetails {
 
     /**
      * Get information about the user's account expiration
+     *
      * @return True if the account is non expired, false otherwise
      */
     @Override
@@ -67,6 +68,7 @@ public class UserEntityUserDetails implements UserDetails {
 
     /**
      * Get information about the user's account lock
+     *
      * @return True if the account is non locked, false otherwise
      */
     @Override
@@ -76,6 +78,7 @@ public class UserEntityUserDetails implements UserDetails {
 
     /**
      * Get information about the user's credentials expiration
+     *
      * @return True if the credentials are non expired, false otherwise
      */
     @Override
@@ -85,6 +88,7 @@ public class UserEntityUserDetails implements UserDetails {
 
     /**
      * Get information about the user's account enablement
+     *
      * @return True if the account is enabled, false otherwise
      */
     @Override

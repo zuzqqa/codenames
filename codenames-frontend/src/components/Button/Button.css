@@ -316,8 +316,23 @@
   background-image: linear-gradient(to top, #22303b, #0b1319);
 }
 
-@media (max-width: 900px) {
-  .btn-tutorial {
-    right: 4.3rem;
-  }
+.btn-discord {
+  position: fixed;
+  display: flex;
+  bottom: 3%;
+  right: 1%;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 23px;
+  width: 15%;
+  height: 3rem;
+  border-width: 0.125rem;
+  border-color: #fcf18b;
+  background-image: linear-gradient(to top, #22303b, #0b1319);
+}
+
+.btn-discord .button-text {
+  padding-left: 1rem;
+  font-size: calc(0.55rem + 0.5vw) !important;
 }

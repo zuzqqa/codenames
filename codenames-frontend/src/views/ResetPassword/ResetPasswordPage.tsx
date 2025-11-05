@@ -65,7 +65,6 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
     const validateToken = async () => {
       try {
         const url = `${apiUrl}/api/users/token-validation/${token}`;
-        console.log("Calling API at:", url);
 
         const response = await fetch(url, {
           method: "GET",

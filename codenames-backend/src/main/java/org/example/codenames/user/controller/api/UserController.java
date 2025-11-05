@@ -3,10 +3,9 @@ package org.example.codenames.user.controller.api;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import org.example.codenames.user.entity.dto.FriendRequestsDTO;
 import org.example.codenames.user.entity.PasswordResetRequest;
 import org.example.codenames.user.entity.User;
+import org.example.codenames.user.entity.dto.FriendRequestsDTO;
 import org.example.codenames.userDetails.auth.AuthRequest;
 import org.example.codenames.userDetails.auth.AuthResponse;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
  * REST endpoints for user management
  * It implements basic CRUD operations for users
  * It also provides an endpoint for user authentication
- *
  */
 public interface UserController {
     ResponseEntity<Map<String, String>> createUser(@RequestBody User user, String language) throws MessagingException, IOException;
@@ -64,7 +61,7 @@ public interface UserController {
     ResponseEntity<Void> removeFriend(@PathVariable String friendUsername, @RequestParam String userUsername);
 
     ResponseEntity<FriendRequestsDTO> getFriendRequests(@PathVariable String username);
-    
+
     ResponseEntity<String> updatePassword(@PathVariable String token, HttpServletRequest request, @RequestBody PasswordResetRequest passwordResetRequest);
 
     ResponseEntity<Void> updateUserActiveStatus(@RequestBody String userId);

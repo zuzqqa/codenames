@@ -41,9 +41,9 @@ public class DefaultGameStateWebSocketController implements GameSateWebSocketCon
     /**
      * Submit votes for the game with the given id.
      *
-     * @param gameId id of the game.
-     * @param voteRequest
-     *
+     * @param gameId      id of the game.
+     * @param voteRequest the vote request containing the votes.
+     * 
      * @return ResponseEntity containing the result of the operation.
      */
     @Override

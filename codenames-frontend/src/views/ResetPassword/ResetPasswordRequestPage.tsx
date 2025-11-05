@@ -76,8 +76,6 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
     }
 
     setIsLoading(true);
-    console.log(apiUrl);
-    console.log(import.meta.env.VITE_BACKEND_API_URL);
 
     try {
       const response = await fetch(`${apiUrl}/api/email/reset-password`, {

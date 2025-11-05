@@ -41,7 +41,7 @@
   max-width: 90%;
   padding: 0.5rem 0.7rem;
   border-radius: 10px;
-  font-size: calc(0.4rem + 0.5vw);
+  font-size: calc(0.2rem + 0.5vw);
 }
 
 .message.outgoing {
@@ -84,4 +84,29 @@
 
 .spacer-end {
   padding: 1px;
+}
+
+.message.admin {
+  background-color: #686b6d;
+  border-radius: 5px;
+  border: 2px solid #f0d8b6;
+  animation: glow-gold 1s ease-in-out infinite;
+}
+
+@keyframes glow-gold {
+  0%,
+  100% {
+    box-shadow: 0 0 2px #d4af37, 0 0 4px #d4af37;
+    border-color: #d4af37;
+  }
+  50% {
+    box-shadow: 0 0 4px #ffbf00, 0 0 6px #ffbf00;
+    border-color: #ffbf00;
+  }
+}
+
+.no-gold-animation .message.admin {
+  animation: none !important;
+  box-shadow: none;
+  border-color: #686b6d;
 }

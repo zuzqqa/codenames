@@ -1,10 +1,8 @@
 package org.example.codenames.email.service.api;
 
 import jakarta.mail.MessagingException;
-
 import jakarta.servlet.http.HttpServletRequest;
 import org.example.codenames.email.entity.EmailRequest;
-
 import org.springframework.stereotype.Service;
 
 /**

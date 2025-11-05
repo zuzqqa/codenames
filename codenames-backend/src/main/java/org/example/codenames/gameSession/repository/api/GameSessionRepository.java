@@ -3,9 +3,6 @@ package org.example.codenames.gameSession.repository.api;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import org.example.codenames.gameSession.entity.GameSession;
-
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;

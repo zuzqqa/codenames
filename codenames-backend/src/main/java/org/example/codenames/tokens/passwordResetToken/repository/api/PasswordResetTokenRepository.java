@@ -1,7 +1,6 @@
 package org.example.codenames.tokens.passwordResetToken.repository.api;
 
 import org.example.codenames.tokens.passwordResetToken.entity.PasswordResetToken;
-
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

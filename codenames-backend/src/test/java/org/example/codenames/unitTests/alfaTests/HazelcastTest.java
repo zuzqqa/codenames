@@ -1,6 +1,5 @@
 package org.example.codenames.unitTests.alfaTests;
 
-import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
@@ -12,9 +11,11 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,6 +24,11 @@ public class HazelcastTest {
 
     private HazelcastInstance hazelcastInstance;
     private IMap<String, GameSession> gameSessionMap;
+
+    @AfterAll
+    public static void afterAll() {
+        Hazelcast.shutdownAll();
+    }
 
     @BeforeEach
     public void setUp() {
@@ -66,7 +72,7 @@ public class HazelcastTest {
                 }},
                 gameState,
                 System.currentTimeMillis(),
-                false
+                null
         );
 
         gameSessionMap.put(newGame.getSessionId().toString(), newGame);
@@ -76,11 +82,6 @@ public class HazelcastTest {
     public void tearDown() {
         gameSessionMap.clear();
         hazelcastInstance.shutdown();
-    }
-
-    @AfterAll
-    public static void afterAll() {
-        Hazelcast.shutdownAll();
     }
 
     @Test
@@ -120,7 +121,7 @@ public class HazelcastTest {
                 }},
                 gameState,
                 System.currentTimeMillis(),
-                false
+                null
         );
 
         gameSessionMap.put(newGame.getSessionId().toString(), newGame);

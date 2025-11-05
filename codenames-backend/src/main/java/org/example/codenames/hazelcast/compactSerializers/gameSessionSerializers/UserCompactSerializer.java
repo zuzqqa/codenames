@@ -1,6 +1,8 @@
 package org.example.codenames.hazelcast.compactSerializers.gameSessionSerializers;
 
-import com.hazelcast.nio.serialization.compact.*;
+import com.hazelcast.nio.serialization.compact.CompactReader;
+import com.hazelcast.nio.serialization.compact.CompactSerializer;
+import com.hazelcast.nio.serialization.compact.CompactWriter;
 import org.example.codenames.user.entity.User;
 
 import java.util.List;

@@ -35,7 +35,7 @@ public class GameSessionMapper {
      *
      * @param session the Optional GameSession entity to convert
      * @return a GameSessionRoomLobbyDTO containing the session's details,
-     *         or an empty DTO if the session is not present
+     * or an empty DTO if the session is not present
      */
     public static GameSessionRoomLobbyDTO toRoomLobbyDTO(Optional<GameSession> session) {
         if (session.isPresent()) {
