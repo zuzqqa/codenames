@@ -1,6 +1,6 @@
-import React, {useEffect, useRef, useState} from "react";
-import {useTranslation} from "react-i18next";
-import {useToast} from "../../components/Toast/ToastContext.tsx";
+import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useToast } from "../../components/Toast/ToastContext.tsx";
 
 import BackgroundContainer from "../../containers/Background/Background";
 
@@ -9,8 +9,10 @@ import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 
 import bannerBlue from "../../assets/images/banner-blue.png";
 import bannerBlueLeader from "../../assets/images/banner-blue-leader.png";
+import bannerBlueGuesser from "../../assets/images/banner-blue-guesser.png";
 import bannerRed from "../../assets/images/banner-red.png";
 import bannerRedLeader from "../../assets/images/banner-red-leader.png";
+import bannerRedGuesser from "../../assets/images/banner-red-guesser.png";
 import settingsIcon from "../../assets/icons/settings.png";
 import cardsStackImg from "../../assets/images/cards-stack.png";
 import cardWhiteImg from "../../assets/images/card-white.png";
@@ -21,22 +23,20 @@ import polygon1Img from "../../assets/images/Polygon1.png";
 import polygon2Img from "../../assets/images/Polygon2.png";
 import cardSound from "../../assets/sounds/card-filp.mp3";
 import votingLabel from "../../assets/images/medieval-label.png";
-import closeIcon from "../../assets/icons/close.png";
-import micGoldIcon from "../../assets/icons/mic-gold.svg";
 import logoutButton from "../../assets/icons/logout.svg";
 
 import "./Gameplay.css";
 
 import Chat from "../../components/Chat/Chat.tsx";
 
-import {useNavigate} from "react-router-dom";
-import AudioRoom from "../../components/AudioRoom/AudioRoom.tsx";
-import {apiUrl, socketUrl} from "../../config/api.tsx";
-import {io, Socket} from "socket.io-client";
-import {getUserId} from "../../shared/utils.tsx";
+import { useNavigate } from "react-router-dom";
+import { apiUrl, socketUrl } from "../../config/api.tsx";
+import { io, Socket } from "socket.io-client";
+import { getUserId } from "../../shared/utils.tsx";
 import Cookies from "js-cookie";
 import QuitModal from "../../components/QuitModal/QuitModal.tsx";
 import Profile from "../../components/Profile/Profile.tsx";
+import TutorialModal from "../../components/TutorialModal/TutorialModal.tsx";
 
 /**
  * Represents properties for controlling gameplay-related settings, such as volume levels.
@@ -77,7 +77,6 @@ interface GameSession {
   timeForGuessing: string;
   connectedUsers: User[][];
   gameState: GameState;
-  voiceChatEnabled: boolean;
 }
 
 /**
@@ -112,7 +111,7 @@ const generateId = () =>
  * @param {function(number): void} props.setVolume - Function to update the overall game volume.
  * @param {number} props.soundFXVolume - The current volume level for sound effects.
  * @param {function(number): void} props.setSoundFXVolume - Function to update the sound effects volume.
- *  * @returns {JSX.Element} The rendered GameLobby component
+ * @returns {JSX.Element} The rendered GameLobby component
  */
 const Gameplay: React.FC<GameplayProps> = ({
                                              setVolume,
@@ -124,8 +123,9 @@ const Gameplay: React.FC<GameplayProps> = ({
     return savedVolume ? parseFloat(savedVolume) : 50;
   });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [isQuitModalOpen, setIsQuitModalOpen] = useState(false);
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [isCardVisible, setIsCardVisible] = useState(false);
   const [cardText, setCardText] = useState("");
   const [cardNumber, setCardNumber] = useState(1);
@@ -158,7 +158,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   const [cardsToReveal, setCardsToReveal] = useState<number[]>([]);
   const amIChoosingHint =
     (amIRedTeamLeader || amIBlueTeamLeader) && whosTurn == myTeam && isHintTime;
-  const {addToast} = useToast();
+  const { addToast } = useToast();
   const clickAudio = new Audio(cardSound);
   const [votedCards, setVotedCards] = useState<number[]>([]);
   const [userId, setUserId] = useState<string | null>();
@@ -168,7 +168,6 @@ const Gameplay: React.FC<GameplayProps> = ({
     localStorage.getItem("username") || ""
   );
   const gameSocketRef = useRef<Socket | null>(null);
-  const [voiceChatEnabled, setVoiceChatEnabled] = useState(false);
   const audioRef = useRef(new Audio(cardSound));
 
   /**
@@ -183,6 +182,13 @@ const Gameplay: React.FC<GameplayProps> = ({
    */
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
+  };
+
+  /**
+   * This function toggles the visibility of the tutorial modal.
+   */
+  const toggleTutorial = () => {
+    setIsTutorialOpen(!isTutorialOpen);
   };
 
   /**
@@ -217,7 +223,13 @@ const Gameplay: React.FC<GameplayProps> = ({
       return bannerBlueLeader;
     } else if (amIRedTeamLeader) {
       return bannerRedLeader;
-    } else {
+    } else if (myTeam === "blue" && amICurrentLeader) {
+        return bannerBlueGuesser;
+    }
+    else if (myTeam === "red" && amICurrentLeader) {
+        return bannerRedGuesser;
+    }
+    else {
       return myTeam === "blue" ? bannerBlue : bannerRed;
     }
   };
@@ -334,6 +346,10 @@ const Gameplay: React.FC<GameplayProps> = ({
     }
   };
 
+  /**
+   * Fetches the user ID and username.
+   * Sends a Discord invite if it hasn't been sent yet.
+   */
   useEffect(() => {
     fetchUserId();
 
@@ -360,7 +376,6 @@ const Gameplay: React.FC<GameplayProps> = ({
 
   /**
    * Effect that triggers the function to fetch user by user id.
-   *  when the component is mounted.
    */
   useEffect(() => {
     const gameSocket = io(`${socketUrl}/game`, {
@@ -389,8 +404,7 @@ const Gameplay: React.FC<GameplayProps> = ({
       }
     });
 
-    gameSocket.on("disconnectUser", (userId: string) => {
-      console.log("User disconnected:", userId);
+    gameSocket.on("disconnectUser", () => {
       setHasPlayerDisconnected(true);
       try {
         addToast(t("user-disconnected"), "error");
@@ -465,7 +479,6 @@ const Gameplay: React.FC<GameplayProps> = ({
             : "blue"
         );
         setVotedCards(data.gameState?.cardsVotes || []);
-        setVoiceChatEnabled(data.voiceChatEnabled || false);
       } catch (err) {
         console.error("Failed to load game session", err);
       }
@@ -502,7 +515,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     ) {
       setWinningTeam(redTeamPlayers.length < 2 ? "blue" : "red");
       navigate("/win-loss", {
-        state: {result: winningTeam === myTeam ? "Victory" : "Loss"},
+        state: { result: winningTeam === myTeam ? "Victory" : "Loss" },
       });
     }
   }, [blueTeamPlayers, redTeamPlayers, hasPlayerDisconnected]);
@@ -707,9 +720,10 @@ const Gameplay: React.FC<GameplayProps> = ({
       setWinningTeam(winner);
       const timeoutId = setTimeout(() => {
         navigate("/win-loss", {
-          state: {result: winner === myTeam ? "Victory" : "Loss"},
+          state: { result: winner === myTeam ? "Victory" : "Loss" },
         });
       }, 3000);
+      endGame();
 
       return () => clearTimeout(timeoutId);
     }
@@ -863,14 +877,6 @@ const Gameplay: React.FC<GameplayProps> = ({
     }
 
     const storedGameId = sessionStorage.getItem("gameId");
-
-    // Dla change-turn
-    console.log("Calling change-turn with gameId:", storedGameId);
-    console.log(
-      "API URL:",
-      `${apiUrl}/api/game-session/${storedGameId}/change-turn`
-    );
-
     const response = await fetch(
       `${apiUrl}/api/game-session/${storedGameId}/change-turn`,
       {
@@ -878,6 +884,20 @@ const Gameplay: React.FC<GameplayProps> = ({
         credentials: "include",
       }
     );
+  };
+
+  /**
+   * Sends a request to the backend to finish the game and delete discord channel.
+   */
+  const endGame = async () => {
+    const storedGameId = sessionStorage.getItem("gameId");
+
+    await fetch(`${apiUrl}/api/game-session/${storedGameId}/finish`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    localStorage.removeItem("chatMessages");
   };
 
   /**
@@ -894,13 +914,6 @@ const Gameplay: React.FC<GameplayProps> = ({
     if (!amIRedTeamLeader && !amIBlueTeamLeader) return;
 
     try {
-      console.log(
-        JSON.stringify({
-          hint: cardText,
-          hintNumber: cardNumber,
-          initialHintNumber: cardNumber,
-        })
-      );
       await fetch(`${apiUrl}/api/game-session/${storedGameId}/send-hint`, {
         method: "POST",
         headers: {
@@ -938,6 +951,12 @@ const Gameplay: React.FC<GameplayProps> = ({
     if (newErrors.length > 0) return;
   };
 
+  /**
+   * Disconnects the user from the game session.
+   * Emits a "disconnectUser" event to the game socket and sends a DELETE request to the backend.
+   * Removes the game ID from session storage and navigates to the "/games" page.
+   * @returns {Promise<void>} A promise that resolves when the user is disconnected.
+   */
   const disconnectUser = () => {
     const storedGameId = sessionStorage.getItem("gameId");
     if (gameSocketRef.current) {
@@ -1011,48 +1030,28 @@ const Gameplay: React.FC<GameplayProps> = ({
         </span>
 
         <Button
+            variant="tutorial"
+            soundFXVolume={soundFXVolume}
+            onClick={toggleTutorial}
+        >
+          ?
+        </Button>
+        <Button
           variant="circle"
           soundFXVolume={soundFXVolume}
           onClick={toggleSettings}
         >
-          <img src={settingsIcon} alt="Settings"/>
+          <img src={settingsIcon} alt="Settings" />
         </Button>
-        <Profile soundFXVolume={soundFXVolume}/>
+        <Profile soundFXVolume={soundFXVolume} />
 
         <Button
           variant="logout"
           soundFXVolume={soundFXVolume}
           onClick={toggleQuitModal}
         >
-          <img src={logoutButton} alt="Home"/>
+          <img src={logoutButton} alt="Home" />
         </Button>
-
-        {voiceChatEnabled && (
-          <div className={`custom-overlay ${isOverlayVisible ? "open" : ""}`}>
-            <div className="overlay-content">
-              <button
-                className="close-btn"
-                onClick={() => setIsOverlayVisible(false)}
-              >
-                <img src={closeIcon}></img>
-              </button>
-              <div className="audio-room">
-                <AudioRoom soundFXVolume={soundFXVolume}/>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {voiceChatEnabled && !isOverlayVisible && (
-          <Button
-            variant="half-circle"
-            className="half-circle-btn"
-            soundFXVolume={soundFXVolume}
-            onClick={() => setIsOverlayVisible(true)}
-          >
-            <img className="mic-icon" src={micGoldIcon} alt="Microphone"/>
-          </Button>
-        )}
 
         <SettingsModal
           isOpen={isSettingsOpen}
@@ -1060,10 +1059,15 @@ const Gameplay: React.FC<GameplayProps> = ({
           musicVolume={musicVolume}
           soundFXVolume={soundFXVolume}
           setMusicVolume={(volume) => {
-            setMusicVolume(volume); // Update local music volume
-            setVolume(volume / 100); // Update global volume
+            setMusicVolume(volume);
+            setVolume(volume / 100);
           }}
           setSoundFXVolume={setSoundFXVolume}
+        />
+        <TutorialModal
+            isOpen={isTutorialOpen}
+            onClose={toggleTutorial}
+            soundFXVolume={soundFXVolume}
         />
         <QuitModal
           isOpen={isQuitModalOpen}
@@ -1088,13 +1092,19 @@ const Gameplay: React.FC<GameplayProps> = ({
           </Button>
         </QuitModal>
 
-        <img className="polygon1" src={polygon1Img}/>
-        <img className="polygon2" src={polygon2Img}/>
+        <img className="polygon1" src={polygon1Img} />
+        <img className="polygon2" src={polygon2Img} />
         <div className="timer points-red">{redTeamScore} / 9</div>
         <div className="timer points-blue">{blueTeamScore} / 8</div>
-        <div className="banner-container">
-          <img src={getBanner()}/>
-        </div>
+        {amICurrentLeader ? (
+            <div className="banner-container-2">
+              <img src={getBanner()} />
+            </div>
+            ) : (
+            <div className="banner-container">
+              <img src={getBanner()} />
+            </div>
+        )}
 
         <div className="content-container">
           <div className="timer-container">
@@ -1117,23 +1127,23 @@ const Gameplay: React.FC<GameplayProps> = ({
                 onMouseEnter={
                   flipStates[index]
                     ? () => {
-                      setHoverStates((prev) => ({
-                        ...prev,
-                        [index]: "enter",
-                      }));
-                      playCardSound();
-                    }
+                        setHoverStates((prev) => ({
+                          ...prev,
+                          [index]: "enter",
+                        }));
+                        playCardSound();
+                      }
                     : undefined
                 }
                 onMouseLeave={
                   flipStates[index]
                     ? () => {
-                      setHoverStates((prev) => ({
-                        ...prev,
-                        [index]: "leave",
-                      }));
-                      playCardSound();
-                    }
+                        setHoverStates((prev) => ({
+                          ...prev,
+                          [index]: "leave",
+                        }));
+                        playCardSound();
+                      }
                     : undefined
                 }
               >
@@ -1144,19 +1154,19 @@ const Gameplay: React.FC<GameplayProps> = ({
                   src={
                     amIRedTeamLeader || amIBlueTeamLeader
                       ? (() => {
-                        const cardColor =
-                          gameSession?.gameState.cardsColors[index];
-                        switch (cardColor) {
-                          case 1:
-                            return cardRedImg;
-                          case 2:
-                            return cardBlueImg;
-                          case 3:
-                            return cardBlackImg;
-                          default:
-                            return cardWhiteImg;
-                        }
-                      })()
+                          const cardColor =
+                            gameSession?.gameState.cardsColors[index];
+                          switch (cardColor) {
+                            case 1:
+                              return cardRedImg;
+                            case 2:
+                              return cardBlueImg;
+                            case 3:
+                              return cardBlackImg;
+                            default:
+                              return cardWhiteImg;
+                          }
+                        })()
                       : cardImage
                   }
                   alt={`card-${index}`}
@@ -1194,7 +1204,7 @@ const Gameplay: React.FC<GameplayProps> = ({
           </div>
           <div className="bottom-section">
             <div className="item">
-              <Chat/>
+              <Chat />
             </div>
             <div className="item">
               <Button
@@ -1223,10 +1233,10 @@ const Gameplay: React.FC<GameplayProps> = ({
                   {amICurrentLeader ? t("pass-round") : t("end-round")}
                 </span>
               </Button>
-              <div className="horizontal-gold-bar"/>
+              <div className="horizontal-gold-bar" />
             </div>
             <div className="item codename-item">
-              <img className="card-stack" src={cardsStackImg}/>
+              <img className="card-stack" src={cardsStackImg} />
               <div
                 className={`codename-card-container ${
                   amIChoosingHint ? "pulsing" : ""
@@ -1239,11 +1249,11 @@ const Gameplay: React.FC<GameplayProps> = ({
                     {gameSession?.gameState.hintNumber === "0"
                       ? ""
                       : gameSession?.gameState.hintNumber +
-                      "/" +
-                      gameSession?.gameState.initialHintNumber}
+                        "/" +
+                        gameSession?.gameState.initialHintNumber}
                   </span>
                 </div>
-                <img className="codename-card" src={cardBlackImg}/>
+                <img className="codename-card" src={cardBlackImg} />
               </div>
             </div>
           </div>
@@ -1307,9 +1317,9 @@ const Gameplay: React.FC<GameplayProps> = ({
                     (!amIRedTeamLeader && !amIBlueTeamLeader) ||
                     whosTurn !== myTeam ||
                     cardNumber >=
-                    (whosTurn === "blue"
-                      ? 8 - blueTeamScore
-                      : 9 - redTeamScore)
+                      (whosTurn === "blue"
+                        ? 8 - blueTeamScore
+                        : 9 - redTeamScore)
                   }
                 >
                   +

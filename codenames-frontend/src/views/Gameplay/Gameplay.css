@@ -266,6 +266,16 @@ button {
   right: 4%;
 }
 
+.banner-container-2 {
+  position: absolute;
+  top: -5%;
+  right: -7.5%;
+}
+
+.banner-container-2 img {
+  height: 48vw;
+}
+
 .banner-container img {
   width: 9vw;
 }
@@ -514,15 +524,6 @@ button {
   font-size: calc(0.1rem + 0.8vw);
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
   transform: rotate(1deg);
-}
-
-.audio-room {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 @keyframes hit {

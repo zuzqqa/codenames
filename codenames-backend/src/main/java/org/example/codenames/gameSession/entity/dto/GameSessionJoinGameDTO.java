@@ -1,12 +1,9 @@
 package org.example.codenames.gameSession.entity.dto;
 
 import jakarta.persistence.GeneratedValue;
-
-import lombok.Data;
 import lombok.Builder;
-
+import lombok.Data;
 import org.example.codenames.gameSession.entity.GameSession;
-
 import org.springframework.data.annotation.Id;
 
 import java.util.UUID;

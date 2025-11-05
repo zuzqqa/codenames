@@ -2,7 +2,6 @@ package org.example.codenames.tokens.passwordResetToken.entity;
 
 import lombok.Builder;
 import lombok.Data;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 

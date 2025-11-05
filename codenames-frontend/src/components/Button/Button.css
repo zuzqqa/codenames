@@ -287,6 +287,22 @@
   cursor: not-allowed;
 }
 
+.btn-tutorial {
+  border-radius: 50%;
+  width: 3.2rem;
+  height: 3.2rem;
+  position: absolute;
+  top: 2%;
+  right: 6rem;
+
+  border-width: 0.125rem;
+  border-color: #fcf18b;
+  background-image: linear-gradient(to top, #22303b, #0b1319);
+
+  color: #fcf18b;
+  font-size: calc(0.8rem + 0.6vw);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
 .btn-google {
   display: flex;
   justify-content: center;
@@ -298,4 +314,25 @@
   border-width: 0.125rem;
   border-color: #fcf18b;
   background-image: linear-gradient(to top, #22303b, #0b1319);
+}
+
+.btn-discord {
+  position: fixed;
+  display: flex;
+  bottom: 3%;
+  right: 1%;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 23px;
+  width: 15%;
+  height: 3rem;
+  border-width: 0.125rem;
+  border-color: #fcf18b;
+  background-image: linear-gradient(to top, #22303b, #0b1319);
+}
+
+.btn-discord .button-text {
+  padding-left: 1rem;
+  font-size: calc(0.55rem + 0.5vw) !important;
 }

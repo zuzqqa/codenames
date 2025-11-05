@@ -1,7 +1,6 @@
 package org.example.codenames.user.service.impl;
 
 import com.github.javafaker.Faker;
-
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,7 +15,6 @@ import org.example.codenames.user.entity.dto.GetUserResponse;
 import org.example.codenames.user.entity.mapper.UserMapper;
 import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.api.UserService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -102,7 +100,7 @@ public class DefaultUserService implements UserService {
 
         if (!user.isGuest()) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            if(user.getRoles() == null) {
+            if (user.getRoles() == null) {
                 user.setRoles("ROLE_USER");
             }
             user.setProfilePic(0);
@@ -212,7 +210,6 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public void sendFriendRequest(String senderUsername, String receiverUsername) {
-        log.info("I am sending a friend request from {} to {}", senderUsername, receiverUsername);
         if (senderUsername.equals(receiverUsername)) {
             throw new RuntimeException("You cannot send a friend request to yourself");
         }
@@ -239,7 +236,6 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public void acceptFriendRequest(String receiverUsername, String senderUsername) {
-        log.info("I am accepting a friend request from {} to {}", senderUsername, receiverUsername);
         User sender = userRepository.findByUsername(senderUsername)
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
         User receiver = userRepository.findByUsername(receiverUsername)
@@ -265,7 +261,6 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public void declineFriendRequest(String receiverUsername, String senderUsername) {
-        log.info("I am declining a friend request from {} to {}", senderUsername, receiverUsername);
         User sender = userRepository.findByUsername(senderUsername)
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
         User receiver = userRepository.findByUsername(receiverUsername)
@@ -286,7 +281,6 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public void removeFriend(String user1Username, String user2Username) {
-        log.info("Removing friendship between {} and {}", user1Username, user2Username);
         User user1 = userRepository.findByUsername(user1Username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         User user2 = userRepository.findByUsername(user2Username)

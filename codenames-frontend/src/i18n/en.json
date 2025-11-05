@@ -95,5 +95,9 @@
   "leave-title": "Do you want to leave the game?",
   "voice-chat": "Voice chat",
   "cancel-button": "cancel",
-  "confirm-button": "confirm"
+  "confirm-button": "confirm",
+  "connect-to-discord": "Connect to Discord",
+  "tutorial-title": "Tutorial",
+  "prev": "Previous",
+  "next": "Next"
 }

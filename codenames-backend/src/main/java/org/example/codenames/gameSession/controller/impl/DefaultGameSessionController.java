@@ -1,11 +1,13 @@
 package org.example.codenames.gameSession.controller.impl;
 
+import org.example.codenames.discord.service.impl.DiscordGuildService;
 import org.example.codenames.gameSession.controller.api.GameSessionController;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.entity.dto.GameSessionRoomLobbyDTO;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.gameState.service.api.GameStateService;
+import org.example.codenames.socket.service.api.SocketService;
 import org.example.codenames.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static org.example.codenames.gameSession.entity.dto.GameSessionMapper.toRoomLobbyDTO;
 import static org.example.codenames.user.entity.mapper.UserMapper.toRoomLobbyDTOList;
@@ -41,17 +46,36 @@ public class DefaultGameSessionController implements GameSessionController {
     private final GameStateService gameStateService;
 
     /**
+     * Scheduler for delayed tasks
+     */
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+    /**
+     * The SocketService instance used to interact with the socket
+     */
+    private final SocketService socketService;
+
+    /**
+     * The DiscordGuildService instance used to interact with the Discord guild
+     */
+    private final DiscordGuildService discordGuildService;
+
+    /**
      * Constructor for the DefaultGameSessionController class
      *
-     * @param gameSessionService The GameSessionService instance used to interact with the game session repository
+     * @param gameSessionService    The GameSessionService instance used to interact with the game session repository
      * @param gameSessionRepository The GameSessionRepository instance used to interact with the game session database
-     * @param gameStateService The GameStateService instance used to interact with the game session repository
+     * @param gameStateService      The GameStateService instance used to interact with the game session repository
+     * @param socketService         The SocketService instance used to interact with the socket
+     * @param discordGuildService   The DiscordGuildService instance used to interact with the Discord guild
      */
     @Autowired
-    public DefaultGameSessionController(GameSessionService gameSessionService, GameSessionRepository gameSessionRepository, GameStateService gameStateService) {
+    public DefaultGameSessionController(GameSessionService gameSessionService, GameSessionRepository gameSessionRepository, GameStateService gameStateService, SocketService socketService, DiscordGuildService discordGuildService) {
         this.gameSessionService = gameSessionService;
         this.gameSessionRepository = gameSessionRepository;
         this.gameStateService = gameStateService;
+        this.socketService = socketService;
+        this.discordGuildService = discordGuildService;
     }
 
     /**
@@ -75,7 +99,6 @@ public class DefaultGameSessionController implements GameSessionController {
      * Get states of cards in the game session
      *
      * @param gameId The id of the game session to retrieve
-     *
      * @return The states of cards in the game session
      */
     @GetMapping("/{gameId}/cards")
@@ -87,7 +110,6 @@ public class DefaultGameSessionController implements GameSessionController {
      * Get the colors of cards in the game session
      *
      * @param gameId The id of the game session to retrieve
-     *
      * @return The colors of cards in the game session
      */
     @GetMapping("/{gameId}/cards-colors")
@@ -96,10 +118,9 @@ public class DefaultGameSessionController implements GameSessionController {
     }
 
     /**
-     * Get the votes for leaders
+     * Get the votes for leaders in the game session
      *
      * @param gameId The id of the game session
-     *
      * @return The votes for leaders
      */
     @GetMapping("/{gameId}/assign-leaders")
@@ -112,6 +133,13 @@ public class DefaultGameSessionController implements GameSessionController {
         // Check if game session exists
         if (gameSession.getGameState().getBlueTeamLeader() == null || gameSession.getGameState().getRedTeamLeader() == null) {
             gameSessionService.assignTeamLeaders(gameId);
+            scheduler.schedule(() -> {
+                try{
+                    socketService.sendDiscordLinkInvite(gameSession.getSessionId(), discordGuildService.createInvite(gameSession.getDiscordChannelId()));
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }, 3, TimeUnit.SECONDS);
             gameStateService.chooseRandomCurrentLeader(gameId);
         } else {
             return ResponseEntity.status(208).body("Duplicate action detected, already reported.");
@@ -123,9 +151,8 @@ public class DefaultGameSessionController implements GameSessionController {
     /**
      * Get users assigned to a team
      *
-     * @param gameId The id of the game session
+     * @param gameId    The id of the game session
      * @param teamIndex The index of the team
-     *
      * @return The votes for leaders
      */
     @GetMapping("/{gameId}/team")
@@ -136,8 +163,7 @@ public class DefaultGameSessionController implements GameSessionController {
         // Parse team index
         try {
             teamIndexInt = Integer.parseInt(teamIndex);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(400).body(null);
         }
 
@@ -161,9 +187,8 @@ public class DefaultGameSessionController implements GameSessionController {
     /**
      * Authenticates password for a session.
      *
-     * @param gameId   the id of the game session
+     * @param gameId          the id of the game session
      * @param enteredPassword password given by user
-     *
      * @return True if password is correct, false otherwise
      */
     @PostMapping("/{gameId}/authenticate-password/{enteredPassword}")

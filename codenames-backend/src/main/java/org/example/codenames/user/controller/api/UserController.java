@@ -10,6 +10,7 @@ import org.example.codenames.user.entity.User;
 import org.example.codenames.user.entity.dto.GetUserProfileDetailsResponse;
 import org.example.codenames.user.entity.dto.GetUserResponse;
 import org.example.codenames.user.entity.dto.GetUsernamesResponse;
+import org.example.codenames.user.entity.dto.FriendRequestsDTO;
 import org.example.codenames.userDetails.auth.AuthRequest;
 import org.example.codenames.userDetails.auth.AuthResponse;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +26,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
  * REST endpoints for user management
  * It implements basic CRUD operations for users
  * It also provides an endpoint for user authentication
- *
  */
 public interface UserController {
     ResponseEntity<Map<String, String>> createUser(@RequestBody User user, String language) throws MessagingException, IOException;

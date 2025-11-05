@@ -50,35 +50,6 @@ gameNamespace.on("connection", (socket) => {
   });
 });
 
-// --- VOICE CHAT NAMESPACE (/voice) ---
-const chatNamespace = io.of("/voice");
-
-chatNamespace.on("connection", (socket) => {
-  console.log(`[VOICE] Client connected: ${socket.id}`);
-
-  socket.on("join-room", (roomId, username) => {
-    console.log(`[VOICE] User ${username} joined room: ${roomId}`);
-
-    socket.join(roomId);
-    socket.to(roomId).emit("user-connected", username);
-
-    socket.on("leave-room", (roomId, username) => {
-      console.log(`[VOICE] User ${username} left room: ${roomId}`);
-      socket.leave(roomId);
-      socket.to(roomId).emit("user-disconnected", username);
-    });
-
-    socket.on("disconnect", () => {
-      console.log(`[VOICE] User ${username} disconnected from room: ${roomId}`);
-      socket.to(roomId).emit("user-disconnected", username);
-    });
-
-    socket.on("userMicActivity", ({ username, isSpeaking, roomId }) => {
-      socket.to(roomId).emit("userMicActivity", { username, isSpeaking });
-    });
-  });
-});
-
 const textChatNamespace = io.of("/chat");
 
 textChatNamespace.on("connection", (socket) => {
@@ -179,8 +150,8 @@ function parsePayload(data) {
 }
 
 // --- START SERVER ---
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {
-  console.log(`Socket.IO server is running on port ${PORT}.`);
+  console.log(`-> Socket.IO server is running on port ${PORT}.`);
 });

@@ -2,16 +2,16 @@ package org.example.codenames.socket.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hazelcast.topic.Message;
 import io.socket.client.IO;
 import io.socket.client.Socket;
-
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.example.codenames.chat.entity.ChatMessage;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.entity.dto.GameSessionJoinGameDTO;
 import org.example.codenames.gameSession.entity.dto.GameSessionRoomLobbyDTO;
 import org.example.codenames.socket.service.api.SocketService;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -28,13 +28,19 @@ public class DefaultSocketService implements SocketService {
     private final String socketServerUrl;
     private Socket gameSocket;
     private Socket profileSocket;
+    private Socket chatSocket;
 
     public DefaultSocketService(@Value("${socketServer.url}") String socketServerUrl) {
         this.socketServerUrl = socketServerUrl;
     }
 
+    /**
+     * Initializes the sockets after construction.
+     *
+     * @throws URISyntaxException if the socket server URL is invalid.
+     */
     @PostConstruct
-    public void initializeSocket() throws URISyntaxException {
+    public void initializeSockets() throws URISyntaxException {
         IO.Options options = IO.Options.builder()
                 .setTransports(new String[]{"websocket"})
                 .setReconnection(true)
@@ -51,8 +57,22 @@ public class DefaultSocketService implements SocketService {
         profileSocket.on(Socket.EVENT_CONNECT, args -> log.info("[PROFILE SOCKET] Connected to /profile namespace"));
         profileSocket.on(Socket.EVENT_CONNECT_ERROR, args -> log.error("[PROFILE SOCKET] Connection error: {}", args[0]));
         profileSocket.connect();
+
+        IO.Options options1 = IO.Options.builder()
+                        .setTransports(new String[]{"websocket"})
+                        .build();
+        chatSocket = IO.socket(socketServerUrl + "/chat", options1);
+        chatSocket.on(Socket.EVENT_CONNECT, args -> log.info("[CHAT SOCKET] Connected to /chat namespace"));
+        chatSocket.on(Socket.EVENT_CONNECT_ERROR, args -> log.error("[CHAT SOCKET] Connection error: {}", args[0]));
+        chatSocket.connect();
     }
 
+    /**
+     * Sends a game session update to connected clients.
+     * @param gameId      The ID of the game session.
+     * @param gameSession The game session data to send.
+     * @throws JsonProcessingException if there is an error during JSON processing.
+     */
     @Override
     public void sendGameSessionUpdate(UUID gameId, GameSessionRoomLobbyDTO gameSession) throws JsonProcessingException {
         if (gameSocket.connected()) {
@@ -63,6 +83,11 @@ public class DefaultSocketService implements SocketService {
         }
     }
 
+    /**
+     * Sends a list of game sessions to connected clients.
+     * @param gameSessions The list of game sessions to send.
+     * @throws JsonProcessingException if there is an error during JSON processing.
+     */
     @Override
     public void sendGameSessionsList(List<GameSessionJoinGameDTO> gameSessions) throws JsonProcessingException {
         if (gameSocket.connected()) {
@@ -73,6 +98,12 @@ public class DefaultSocketService implements SocketService {
         }
     }
 
+    /**
+     * Sends a game session update to connected clients.
+     * @param gameId      The ID of the game session.
+     * @param gameSession The game session data to send.
+     * @throws JsonProcessingException if there is an error during JSON processing.
+     */
     @Override
     public void sendGameSessionUpdate(UUID gameId, GameSession gameSession) throws JsonProcessingException {
         log.info(gameSession.getGameState().toString());
@@ -126,6 +157,26 @@ public class DefaultSocketService implements SocketService {
             profileSocket.emit("removeFriend", objectMapper.writeValueAsString(payload));
         } else {
             System.err.println("[SOCKET] Socket niepołączony – nie wysłano removeFriend");
+        }
+    }
+
+    /**
+     * Sends a Discord link invite to connected clients.
+     * @param gameId      The ID of the game session.
+     * @param discordLink The Discord link to send.
+     */
+    @Override
+    public void sendDiscordLinkInvite(UUID gameId, String discordLink) {
+        Map<String, Object> msg = Map.of(
+                "sender", "admin",
+                "content", "Voice chat is now available! Join your teammates here: " + discordLink,
+                "gameID", gameId.toString()
+        );
+
+        if (chatSocket.connected()) {
+            chatSocket.emit("chatMessage", msg);
+        } else {
+            System.err.println("[SOCKET] Socket niepołączony – nie wysłano wiadomosci");
         }
     }
 }

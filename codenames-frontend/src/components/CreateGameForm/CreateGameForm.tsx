@@ -12,6 +12,7 @@ import { getUserId } from "../../shared/utils.tsx";
 import { useToast } from "../Toast/ToastContext.tsx";
 import checkmarkIconEmpty from "../../assets/icons/checkbox-empty.png";
 import checkmarkIcon from "../../assets/icons/checkbox.png";
+import DiscordLoginButton from "../DiscordAuthentication/DiscordLoginButton.tsx";
 
 /**
  * Props for CreateGameForm component.
@@ -33,7 +34,6 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [isPrivate, setIsPrivate] = useState(false);
-  const [voiceChatEnabled, setVoiceChatEnabled] = useState(false);
   const { addToast } = useToast();
 
   /**
@@ -46,7 +46,6 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
       playerSlider: 4,
       password: "",
       deckLanguage: "pl",
-      voiceChatEnabled: false,
     },
     onSubmit: async (values) => {
       if (!values.gameName) {
@@ -71,7 +70,6 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
           maxPlayers: values.playerSlider,
           password: values.password,
           language: values.deckLanguage,
-          voiceChatEnabled: voiceChatEnabled,
         };
 
         const response = await fetch(`${apiUrl}/api/game-session/create-game`, {
@@ -218,30 +216,13 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
               <option value="pl">PL</option>
               <option value="en">EN</option>
             </select>
-            <label htmlFor="deckLanguage" className="label-inset">
-              {t("voice-chat")}?
-            </label>
-            <div className="custom-checkbox">
-              {!voiceChatEnabled ? (
-                <img
-                  src={checkmarkIconEmpty}
-                  alt="Checkmark"
-                  onClick={() => setVoiceChatEnabled((prev) => !prev)}
-                />
-              ) : (
-                <img
-                  src={checkmarkIcon}
-                  alt="Checkmark"
-                  onClick={() => setVoiceChatEnabled((prev) => !prev)}
-                />
-              )}
-            </div>
           </div>
           <Button type="submit" variant="room" soundFXVolume={soundFXVolume}>
             <span className="button-text">{t("create-game-button")}</span>
           </Button>
         </form>
       </RoomMenu>
+      <DiscordLoginButton soundFXVolume={soundFXVolume} />
     </>
   );
 };

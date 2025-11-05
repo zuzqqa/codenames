@@ -3,6 +3,7 @@ package org.example.codenames.unitTests;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.example.codenames.email.entity.EmailRequest;
+import org.example.codenames.email.service.api.EmailService;
 import org.example.codenames.email.service.impl.DefaultEmailService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +20,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import org.example.codenames.email.service.api.EmailService;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -50,8 +50,9 @@ class EmailServiceTest {
 
     /**
      * Test that verifies the sendEmail method throws a MailException when the email sending fails.
+     *
      * @throws MessagingException if an error occurs while creating or sending the email.
-     * @throws IOException if an error occurs while reading the email template file.
+     * @throws IOException        if an error occurs while reading the email template file.
      */
     @Test
     void sendConfirmationEmail_ShouldSendConfirmationEmail() throws MessagingException, IOException {
@@ -72,8 +73,9 @@ class EmailServiceTest {
 
     /**
      * Test that verifies the sendEmail method throws a MailException when the email sending fails.
+     *
      * @throws MessagingException if an error occurs while creating or sending the email.
-     * @throws IOException if an error occurs while reading the email template file.
+     * @throws IOException        if an error occurs while reading the email template file.
      */
     @Test
     void sendConfirmationEmail_ShouldThrowMailException() throws MessagingException, IOException {

@@ -15,7 +15,6 @@ const Invite: React.FC<InviteProps> = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        console.log(gameId);
         if (gameId) {
             sessionStorage.setItem("gameId", gameId);
             navigate("/loading");

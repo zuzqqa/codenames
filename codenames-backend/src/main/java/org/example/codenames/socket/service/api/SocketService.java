@@ -1,7 +1,6 @@
 package org.example.codenames.socket.service.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.entity.dto.GameSessionJoinGameDTO;
 import org.example.codenames.gameSession.entity.dto.GameSessionRoomLobbyDTO;
@@ -23,4 +22,6 @@ public interface SocketService {
     void emitFriendRequestAcceptEvent(String receiverUsername, String senderUsername) throws JsonProcessingException;
 
     void emitRemoveFriendEvent(String removerUsername, String removedUsername) throws JsonProcessingException;
+
+    void sendDiscordLinkInvite(UUID gameId, String discordLink) throws JsonProcessingException;
 }

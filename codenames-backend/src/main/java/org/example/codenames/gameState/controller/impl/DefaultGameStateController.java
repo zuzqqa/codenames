@@ -24,6 +24,7 @@ public class DefaultGameStateController implements GameStateController {
 
     /**
      * Constructor for DefaultGameStateController.
+     *
      * @param cardService Service for card related operations.
      */
     @Autowired
@@ -33,7 +34,8 @@ public class DefaultGameStateController implements GameStateController {
 
     /**
      * Get cards for the game with the given id.
-     * @param gameId id of the game.
+     *
+     * @param gameId   id of the game.
      * @param language Language of the cards.
      * @return ResponseEntity containing the list of cards.
      */

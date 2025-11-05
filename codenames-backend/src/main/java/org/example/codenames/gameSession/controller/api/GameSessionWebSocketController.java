@@ -27,7 +27,7 @@ public interface GameSessionWebSocketController {
 
     ResponseEntity<Void> finishGame(@PathVariable UUID id) throws JsonProcessingException;
 
-    ResponseEntity<?>  getGameSessions();
+    ResponseEntity<?> getGameSessions();
 
     ResponseEntity<?> sendHint(@PathVariable UUID gameId, @RequestBody HintRequest hintRequest) throws JsonProcessingException;
 

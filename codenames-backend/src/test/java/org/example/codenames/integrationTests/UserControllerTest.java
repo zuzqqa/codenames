@@ -6,9 +6,10 @@ import org.example.codenames.email.service.api.EmailService;
 import org.example.codenames.user.controller.api.UserController;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
-
-import org.junit.jupiter.api.*;
-
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,7 +21,6 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -31,9 +31,9 @@ import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import static org.mockito.Mockito.doNothing;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -44,27 +44,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = CodenamesApplication.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@TestPropertySource(locations="classpath:application-test.properties")
+@TestPropertySource(locations = "classpath:application-test.properties")
 public class UserControllerTest {
-    @Value("${frontend.url:http://localhost:5173}")
-    private String frontendUrl;
-    
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private MockMvc mvc;
-
-    @MockBean
-    private EmailService emailService;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     // MongoDB Testcontainers container.
     public static MongoDBContainer mongo = new MongoDBContainer(DockerImageName.parse("mongo:5"))
             .withExposedPorts(27017)
             .waitingFor(Wait.forLogMessage(".*Waiting for connections.*", 1))
             .withStartupTimeout(Duration.ofSeconds(60));
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Value("${frontend.url:http://localhost:5173}")
+    private String frontendUrl;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private MockMvc mvc;
+    @MockBean
+    private EmailService emailService;
 
     // Setting up the MongoDB connection properties (dynamic application.properties).
     @DynamicPropertySource
@@ -80,15 +75,15 @@ public class UserControllerTest {
         mongo.start();
     }
 
+    @AfterAll
+    static void shutdown() {
+        Hazelcast.shutdownAll();
+    }
+
     // Cleaning the database before each test for isolation of tests.
     @BeforeEach
     void cleanDatabase() {
         userRepository.deleteAll();
-    }
-
-    @AfterAll
-    static void shutdown() {
-        Hazelcast.shutdownAll();
     }
 
     // Testing the preflight request.

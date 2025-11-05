@@ -30,12 +30,12 @@ public class DefaultAccountActivationTokenService implements AccountActivationTo
         String token = jwtService.generateToken(username);
 
         AccountActivationToken accountActivationToken = AccountActivationToken.builder()
-                                                                              .token(token)
-                                                                              .userEmail(userEmail)
-                                                                              .createdAt(LocalDateTime.now())
-                                                                              .expiresAt(LocalDateTime.now().plusMinutes(15))
-                                                                              .used(false)
-                                                                              .build();
+                .token(token)
+                .userEmail(userEmail)
+                .createdAt(LocalDateTime.now())
+                .expiresAt(LocalDateTime.now().plusMinutes(15))
+                .used(false)
+                .build();
 
 
         accountActivationTokenRepository.save(accountActivationToken);
@@ -48,7 +48,7 @@ public class DefaultAccountActivationTokenService implements AccountActivationTo
      *
      * @param token the account activation token provided by the user
      * @return {@code true} if the token is valid (i.e., exists in the repository and can be used),
-     *         {@code false} otherwise (e.g., if the token is not found in the repository).
+     * {@code false} otherwise (e.g., if the token is not found in the repository).
      */
     @Override
     public boolean isValidToken(String token) {
@@ -64,7 +64,7 @@ public class DefaultAccountActivationTokenService implements AccountActivationTo
             return false;
         }
 
-        if(accountActivationToken.getExpiresAt().isBefore(LocalDateTime.now())) {
+        if (accountActivationToken.getExpiresAt().isBefore(LocalDateTime.now())) {
             return false;
         }
 

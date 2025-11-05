@@ -3,7 +3,6 @@ package org.example.codenames.card.service.impl;
 import org.example.codenames.card.entity.Card;
 import org.example.codenames.card.repository.CardRepository;
 import org.example.codenames.card.service.api.CardService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -62,7 +61,7 @@ public class DefaultCardService implements CardService {
      */
     @Override
     public List<String> getCardsInLanguage(String language) {
-        if(language != null && !language.isEmpty()) {
+        if (language != null && !language.isEmpty()) {
             return cardRepository.findAll().stream()
                     .map(card -> card.getNames().getOrDefault(language, ""))
                     .filter(name -> !name.isEmpty())

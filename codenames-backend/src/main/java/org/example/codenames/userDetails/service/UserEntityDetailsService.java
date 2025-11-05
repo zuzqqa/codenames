@@ -2,7 +2,6 @@ package org.example.codenames.userDetails.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.codenames.user.repository.api.UserRepository;
-
 import org.example.codenames.userDetails.model.UserEntityUserDetails;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,6 +21,7 @@ public class UserEntityDetailsService implements UserDetailsService {
 
     /**
      * Constructor that initializes the repository.
+     *
      * @param userRepository The repository to use to load user details.
      */
     public UserEntityDetailsService(UserRepository userRepository) {
@@ -30,6 +30,7 @@ public class UserEntityDetailsService implements UserDetailsService {
 
     /**
      * Load user details by username.
+     *
      * @param username The username to load user details for.
      * @return The user details.
      * @throws UsernameNotFoundException If the user is not found.

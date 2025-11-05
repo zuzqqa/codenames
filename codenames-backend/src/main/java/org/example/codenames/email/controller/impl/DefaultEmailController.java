@@ -2,11 +2,9 @@ package org.example.codenames.email.controller.impl;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
-
 import org.example.codenames.email.controller.api.EmailController;
 import org.example.codenames.email.entity.EmailRequest;
 import org.example.codenames.email.service.api.EmailService;
-
 import org.example.codenames.user.repository.api.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -48,11 +46,11 @@ public class DefaultEmailController implements EmailController {
     /**
      * Sends a confirmation email to the specified e-mail address in the specified language.
      *
-     * @param request the e-mail request containing recipient details and message content
+     * @param request  the e-mail request containing recipient details and message content
      * @param language the language preference ("pl" for Polish, defaults to English)
      * @return a ResponseEntity with an empty body and an OK status
      * @throws MessagingException if an error occurs while sending the email
-     * @throws IOException if an error occurs while reading the email template file
+     * @throws IOException        if an error occurs while reading the email template file
      */
     @PostMapping("/send-report")
     public ResponseEntity<String> sendEmail(@RequestBody EmailRequest request, String language) throws MessagingException, IOException {
@@ -65,16 +63,16 @@ public class DefaultEmailController implements EmailController {
     /**
      * Sends a password reset to the specified e-mail address in the specified language.
      *
-     * @param request the e-mail request containing recipient details and message content
+     * @param request            the e-mail request containing recipient details and message content
      * @param httpServletRequest the HTTP request containing additional context (such as IP address) for the password reset operation
-     * @param language the language preference ("pl" for Polish, defaults to English)
+     * @param language           the language preference ("pl" for Polish, defaults to English)
      * @return a ResponseEntity with an empty body and an OK status or notFound status if the is no user found with corresponding e-mail address
      * @throws MessagingException if an error occurs while sending the email
-     * @throws IOException if an error occurs while reading the email template file
+     * @throws IOException        if an error occurs while reading the email template file
      */
     @PostMapping("/reset-password")
     public ResponseEntity<String> sendResetPasswordEmail(@RequestBody EmailRequest request, HttpServletRequest httpServletRequest, String language) throws MessagingException, IOException {
-        if(userRepository.findByEmail(request.getEmail()).isEmpty()) return ResponseEntity.notFound().build();
+        if (userRepository.findByEmail(request.getEmail()).isEmpty()) return ResponseEntity.notFound().build();
 
         emailService.sendResetPasswordEmail(request.getEmail(), httpServletRequest, language);
 

@@ -3,8 +3,8 @@ package org.example.codenames.unitTests;
 
 import org.example.codenames.card.entity.Card;
 import org.example.codenames.card.repository.CardRepository;
-import org.example.codenames.card.service.impl.DefaultCardService;
 import org.example.codenames.card.service.api.CardService;
+import org.example.codenames.card.service.impl.DefaultCardService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

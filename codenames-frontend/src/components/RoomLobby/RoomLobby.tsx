@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
-import {useTranslation} from "react-i18next";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import Button from "../Button/Button.tsx";
@@ -11,10 +11,11 @@ import messageIcon from "../../assets/icons/message.svg";
 
 import "./RoomLobby.css";
 
-import {apiUrl, frontendUrl, socketUrl} from "../../config/api.tsx";
-import {getCookie, getUserId} from "../../shared/utils.tsx";
-import {io} from "socket.io-client";
-import {useToast} from "../Toast/ToastContext.tsx";
+import { apiUrl, frontendUrl, socketUrl } from "../../config/api.tsx";
+import { getCookie, getUserId } from "../../shared/utils.tsx";
+import { io } from "socket.io-client";
+import DiscordLoginButton from "../DiscordAuthentication/DiscordLoginButton.tsx";
+import { useToast } from "../Toast/ToastContext.tsx";
 
 /**
  * @returns {string} - The URL of the API.
@@ -93,10 +94,10 @@ interface GameSessionRoomLobbyDTO {
  * @param {RoomLobbyProps} props - The properties for the RoomLobby component.
  * @returns {JSX.Element} The RoomLobby component.
  */
-const RoomLobby: React.FC<RoomLobbyProps> = ({soundFXVolume}) => {
-  const {t} = useTranslation();
+const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const {addToast} = useToast();
+  const { addToast } = useToast();
   const [gameSession, setGameSession] =
     useState<GameSessionRoomLobbyDTO | null>(null);
   const [redTeamPlayers, setRedTeamPlayers] = useState<UserRoomLobbyDTO[]>([]);
@@ -269,7 +270,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({soundFXVolume}) => {
     try {
       const response = await fetch(
         `${apiUrl}/api/game-session/${storedGameId}/disconnect?userId=${userId}`,
-        {method: "DELETE", credentials: "include"}
+        { method: "DELETE", credentials: "include" }
       );
 
       if (!response.ok) {
@@ -311,7 +312,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({soundFXVolume}) => {
     try {
       const response = await fetch(
         `${apiUrl}/api/game-session/${storedGameId}/start`,
-        {method: "POST"}
+        { method: "POST" }
       );
       if (response.ok) {
         navigate("/choose-leader");
@@ -417,7 +418,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({soundFXVolume}) => {
           setLobbyLink("");
           return [
             ...prevNotifications,
-            {id: generateId(), message: t("link-copied")},
+            { id: generateId(), message: t("link-copied") },
           ];
         }
         setLobbyLink("");
@@ -439,13 +440,13 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({soundFXVolume}) => {
           soundFXVolume={soundFXVolume}
           onClick={removePlayer}
         >
-          <img src={backButton} alt="Back" className="btn-arrow-back"/>
+          <img src={backButton} alt="Back" className="btn-arrow-back" />
         </Button>
         <span className="room-form-label">{t("game-lobby")}</span>
         <div className="room-lobby-divider">
           <span className="room-lobby-divider-title">Codenames</span>
         </div>
-        <div className="background" style={{gridColumn: "2", gridRow: "2"}}>
+        <div className="background" style={{ gridColumn: "2", gridRow: "2" }}>
           {gameSession && (
             <div className="content">
               <div className="game-name">{gameSession.gameName}</div>
@@ -476,7 +477,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({soundFXVolume}) => {
                 }`}
                 onClick={handleLobbyLinkIsleUnroll}
               >
-                <img src={messageIcon} alt="Link" className="isle-image"/>
+                <img src={messageIcon} alt="Link" className="isle-image" />
                 <p className="isle-title">{t("invite-friends")}</p>
                 <p className="isle-text">{t("invite-friends-text")}</p>
                 <p className="isle-fields">

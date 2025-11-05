@@ -1,15 +1,12 @@
 package org.example.codenames.tokens.passwordResetToken.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
-
 import org.example.codenames.tokens.passwordResetToken.entity.PasswordResetToken;
 import org.example.codenames.tokens.passwordResetToken.repository.api.PasswordResetTokenRepository;
 import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetServiceToken;
-
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,7 +33,7 @@ public class DefaultPasswordResetServiceToken implements PasswordResetServiceTok
      * Creates a unique password reset token for the given user's email address.
      *
      * @param userEmail the recipient's e-mail address
-     * @param request the HTTP request containing additional context (such as IP address) for the password reset operation
+     * @param request   the HTTP request containing additional context (such as IP address) for the password reset operation
      * @return unique token that can be used to reset the user's password
      */
     @Override
@@ -44,13 +41,13 @@ public class DefaultPasswordResetServiceToken implements PasswordResetServiceTok
         String token = UUID.randomUUID().toString();
 
         PasswordResetToken passwordResetToken = PasswordResetToken.builder()
-                                                                  .token(token)
-                                                                  .userEmail(userEmail)
-                                                                  .createdAt(LocalDateTime.now())
-                                                                  .expiresAt(LocalDateTime.now().plusMinutes(15))
-                                                                  .used(false)
-                                                                  .requestedIp(getClientIp(request))
-                                                                  .build();
+                .token(token)
+                .userEmail(userEmail)
+                .createdAt(LocalDateTime.now())
+                .expiresAt(LocalDateTime.now().plusMinutes(15))
+                .used(false)
+                .requestedIp(getClientIp(request))
+                .build();
 
         passwordResetTokenRepository.save(passwordResetToken);
 
@@ -62,7 +59,7 @@ public class DefaultPasswordResetServiceToken implements PasswordResetServiceTok
      *
      * @param token the password reset token provided by the user
      * @return {@code true} if the token is valid (i.e., exists in the repository and can be used),
-     *         {@code false} otherwise (e.g., if the token is not found in the repository).
+     * {@code false} otherwise (e.g., if the token is not found in the repository).
      */
     @Override
     public boolean isValidToken(String token) {
@@ -99,6 +96,7 @@ public class DefaultPasswordResetServiceToken implements PasswordResetServiceTok
 
         passwordResetTokenRepository.save(passwordResetToken);
     }
+
     /**
      * Retrieves the client's IP address from the HTTP request.
      *
