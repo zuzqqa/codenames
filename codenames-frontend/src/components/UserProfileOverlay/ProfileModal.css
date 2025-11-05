@@ -158,7 +158,7 @@
 .search-results img {
   width: 2.2rem;
   height: 2.2rem;
-  object-fit: contain;
+  /*object-fit: contain;*/
 }
 
 .search-results ul li {
@@ -209,4 +209,8 @@
 .profile-modal-wrapper .btn-circle + .btn-circle-profile,
 .profile-modal-wrapper .btn-circle-profile + .btn-circle {
   right: 3.2rem; /* przesunięcie drugiego przycisku w lewo */
+}
+
+.reverse-image {
+  transform: scaleY(-1);
 }
