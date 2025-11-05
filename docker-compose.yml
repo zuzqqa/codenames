@@ -22,16 +22,6 @@ services:
         - ./codenames-backend:/opt/codenames-backend
       networks:
         - codenames-network
-  sockets:
-    build:
-      context: ./codenames-socket-io-server
-    container_name: codenames-socket-io-server
-    environment:
-      PORT: 3000
-    ports:
-      - "3000:3000"
-    networks:
-      - codenames-network
 
   frontend:
     build:

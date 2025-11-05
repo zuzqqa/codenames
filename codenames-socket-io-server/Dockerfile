@@ -1,13 +1,20 @@
-FROM node:20-alpine
+# Użyj obrazu z Node.js
+FROM node:16
 
+# Ustaw katalog roboczy
 WORKDIR /usr/src/app
 
+# Skopiuj package.json i package-lock.json (jeśli używasz)
 COPY package*.json ./
 
-RUN npm ci --omit=dev || npm install --omit=dev
+# Zainstaluj zależności
+RUN npm install
 
+# Skopiuj resztę plików aplikacji
 COPY . .
 
-EXPOSE 3000
+# Otwórz port 8080
+EXPOSE 8080
 
-CMD ["npm", "start", "--silent"]
+# Uruchom aplikację
+CMD ["node", "server.js"]
