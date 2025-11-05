@@ -68,6 +68,32 @@ public class JwtServiceTest {
         assertEquals("testuser", username);
     }
 
+    @Test
+    void testIsTokenExpired() {
+        String token = createTestToken("testuser");
+        assertFalse(jwtService.isTokenExpired(token));
+    }
+
+    @Test
+    void testExtractClaim() {
+        String token = createTestToken("testuser");
+        Date issuedAt = jwtService.extractClaim(token, claims -> claims.getIssuedAt());
+        assertNotNull(issuedAt);
+    }
+
+    @Test
+    void testExtractAllClaims() {
+        String token = createTestToken("testuser");
+        var claims = jwtService.extractAllClaims(token);
+        assertEquals("testuser", claims.getSubject());
+    }
+
+    @Test
+    void testGetSignKey() {
+        Key signKey = jwtService.getSignKey();
+        assertEquals(key, signKey);
+    }
+
     private String createTestToken(String username) {
         Map<String, Object> claims = new HashMap<>();
         return Jwts.builder()
