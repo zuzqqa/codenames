@@ -1,14 +1,9 @@
 .characters-container {
   position: absolute;
   margin: auto;
-  /* width: 37.1%;
-  height: 66%; */
-width: clamp(400px, 30vw, 650px);
+  width: clamp(400px, 30vw, 650px);
   max-width: 90vw;
-  /* padding-bottom: 15%; */
   padding-bottom: clamp(10rem, 30vh, 28rem);
-
-
   z-index: 0;
 }
 
@@ -17,10 +12,3 @@ width: clamp(400px, 30vw, 650px);
   height: 100%;
   object-fit: contain;
 }
-
-/* .character-image-start img {
-width: clamp(500px, 40vw, 650px);
-  max-width: 90vw;
-  position: relative;
-  z-index: 0;
-} */

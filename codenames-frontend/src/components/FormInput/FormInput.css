@@ -8,33 +8,32 @@
 }
 
 .input-field {
-  width: 100%; /* Set a max width for consistency */
+  width: 100%;
   padding: 10px 15px;
   font-family: "Wellfleet", serif;
   font-style: normal;
-  /* Text styles */
   font-size: calc(0.6rem + 0.4vw);
-  color: #000000; /* White text color */
-  background-color: #f0e0b5; /* Dark input background to match the theme */
-  border: none; /* Subtle border color */
-  border-radius: 17px; /* Rounded corners */
+  color: #000000;
+  background-color: #f0e0b5;
+  border: none;
+  border-radius: 17px;
   outline: none;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Subtle shadow */
-  transition: border-color 0.3s, box-shadow 0.3s; /* Smooth hover/active transitions */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  transition: border-color 0.3s, box-shadow 0.3s;
   text-indent: 1px;
 }
 
 .input-field::placeholder {
-  color: #b8a98e; /* Light gray placeholder text */
+  color: #b8a98e;
 }
 
 .input-field:focus {
-  border-color: #ffd363; /* Gold border on focus */
-  box-shadow: 0 6px 10px rgba(255, 211, 99, 0.5); /* Gold shadow on focus */
+  border-color: #ffd363;
+  box-shadow: 0 6px 10px rgba(255, 211, 99, 0.5);
 }
 
 .input-label {
   font-size: 1.2rem;
-  color: #fcf18b; /* Light yellow label text to match theme */
+  color: #fcf18b;
   margin-bottom: 5px;
 }

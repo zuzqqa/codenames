@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from "react";
-import {apiUrl} from "../../config/api.tsx";
+import React, { useEffect, useState } from "react";
+import { apiUrl } from "../../config/api.tsx";
 import Button from "../Button/Button.tsx";
 import profileIcon from "../../assets/icons/profile.png";
-import {getCookie} from "../../shared/utils.tsx";
+import { getCookie } from "../../shared/utils.tsx";
 import ProfileModal from "../UserProfileOverlay/ProfileModal.tsx";
 
 interface ProfileProps {
@@ -10,7 +10,6 @@ interface ProfileProps {
 }
 
 const Profile: React.FC<ProfileProps> = ({ soundFXVolume }) => {
-
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isGuest, setIsGuest] = useState<boolean | null>(null);
   const toggleProfile = () => {
@@ -22,7 +21,6 @@ const Profile: React.FC<ProfileProps> = ({ soundFXVolume }) => {
       const token = getCookie("authToken");
 
       if (!token) {
-        // if there is no token treat as guest (or keep as null) — we choose guest
         setIsGuest(true);
         return;
       }

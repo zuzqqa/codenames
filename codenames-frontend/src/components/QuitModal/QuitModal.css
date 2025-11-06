@@ -1,12 +1,4 @@
-/* .modal-content-default{
-    scale: 50%;
-}
-
-.modal-background-img-default {
-    scale: 50%;
-} */
-
-.quit-modal-title {
+quit-modal-title {
     width: 100%;
     position: absolute;
     top: 15%;

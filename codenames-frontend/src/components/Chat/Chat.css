@@ -14,8 +14,8 @@
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
-  overflow-y: auto; /* vertical scrolling */
-  overflow-x: hidden; /* horizontal scrolling */
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 0.5rem;
   padding-top: 0;
   transition: height 0.4s ease, opacity 0.4s ease;

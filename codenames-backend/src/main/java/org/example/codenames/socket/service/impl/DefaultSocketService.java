@@ -106,7 +106,6 @@ public class DefaultSocketService implements SocketService {
      */
     @Override
     public void sendGameSessionUpdate(UUID gameId, GameSession gameSession) throws JsonProcessingException {
-        log.info(gameSession.getGameState().toString());
         if (gameSocket.connected()) {
             String gameSessionJson = objectMapper.writeValueAsString(gameSession);
             gameSocket.emit("gameSessionData", gameId.toString(), gameSessionJson);
@@ -118,7 +117,6 @@ public class DefaultSocketService implements SocketService {
     @Override
     public void emitFriendRequestEvent(String senderUsername, String receiverUsername) throws JsonProcessingException {
         if (profileSocket.connected()) {
-            log.info("Emitting friend request from {} to {}", senderUsername, receiverUsername);
             Map<String, String> payload = Map.of("from", senderUsername, "to", receiverUsername);
             profileSocket.emit("sendFriendRequest", objectMapper.writeValueAsString(payload));
         } else {
@@ -129,7 +127,6 @@ public class DefaultSocketService implements SocketService {
     @Override
     public void emitFriendRequestDeclineEvent(String senderUsername, String receiverUsername) throws JsonProcessingException {
         if (profileSocket.connected()) {
-            log.info("Emitting friend request decline from {} to {}", senderUsername, receiverUsername);
             Map<String, String> payload = Map.of("from", senderUsername, "to", receiverUsername);
             profileSocket.emit("declineFriendRequest", objectMapper.writeValueAsString(payload));
         } else {
@@ -140,7 +137,6 @@ public class DefaultSocketService implements SocketService {
     @Override
     public void emitFriendRequestAcceptEvent(String senderUsername, String receiverUsername) throws JsonProcessingException {
         if (profileSocket.connected()) {
-            log.info("Emitting friend request accept from {} to {}", senderUsername, receiverUsername);
             Map<String, String> payload = Map.of("from", senderUsername, "to", receiverUsername);
             profileSocket.emit("acceptFriendRequest", objectMapper.writeValueAsString(payload));
         } else {
@@ -151,9 +147,7 @@ public class DefaultSocketService implements SocketService {
     @Override
     public void emitRemoveFriendEvent(String removerUsername, String removedUsername) throws JsonProcessingException {
         if (profileSocket.connected()) {
-            log.info("Emitting removeFriend from {} to {}", removerUsername, removedUsername);
             Map<String, String> payload = Map.of("user", removerUsername, "friend", removedUsername);
-            // emit the removeFriend event to socket server; server will forward friendRemoved to the removed user's room
             profileSocket.emit("removeFriend", objectMapper.writeValueAsString(payload));
         } else {
             System.err.println("[SOCKET] Socket niepołączony – nie wysłano removeFriend");

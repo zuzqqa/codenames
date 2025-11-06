@@ -1,13 +1,13 @@
 .register-form-container {
   margin-top: 0;
-  grid-column: 1 / span 3; /* Stretch across all columns */
-  grid-row: 1 / span 6; /* Stretch across all rows */
+  grid-column: 1 / span 3;
+  grid-row: 1 / span 6;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%; /* Match the height of its parent */
-  width: 100%; /* Match the width of its parent */
+  height: 100%;
+  width: 100%;
 }
 
 .register-form {
@@ -15,20 +15,19 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 55%; /* Full height of parent */
-  width: 95%; /* Full width of parent */
-  padding: 10px; /* Padding for spacing */
-  border-radius: 17px; /* Rounded corners */
+  height: 55%;
+  width: 95%;
+  border-radius: 17px;
   margin-bottom: 0;
   margin-top: 1vw;
-  padding-bottom: 0;
+  padding: 10px 10px 0;
 }
 
 .register-form button {
   font-size: 1.2rem;
   cursor: pointer;
-  align-self: center; /* Align the button to the right */
-  margin-top: 1%; /* Add some spacing above the button */
+  align-self: center;
+  margin-top: 1%;
 }
 
 .toast-container {

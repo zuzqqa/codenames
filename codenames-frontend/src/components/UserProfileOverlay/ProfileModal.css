@@ -1,4 +1,3 @@
-/* css */
 .profile-modal-wrapper {
   position: relative;
   width: 100%;
@@ -11,7 +10,6 @@
   box-sizing: border-box;
 }
 
-/* ograniczamy szerokość modalu i centrujemy */
 .profile-modal-content {
   width: 100%;
   max-width: 900px;
@@ -19,7 +17,6 @@
   box-sizing: border-box;
 }
 
-/* Kontener user-details jako pozycjonowany rodzic dla przycisku edycji */
 .user-details-container {
   margin-top: 1.5rem;
   display: grid;
@@ -27,13 +24,12 @@
   grid-template-rows: auto;
   gap: 0.75rem 2rem;
   align-items: start;
-  position: relative; /* ważne: anchor dla .edit-button */
+  position: relative;
   padding: 1rem;
   box-sizing: border-box;
   border-radius: 15%;
 }
 
-/* Profilowe obrazki i layout */
 .user-profile-pic {
   width: 7rem;
   height: 7rem;
@@ -58,7 +54,6 @@
   font-weight: bold;
 }
 
-/* Pierwsza kolumna (avatar + nazwa) */
 .first-col {
   display: flex;
   flex-direction: column;
@@ -71,7 +66,6 @@
   box-sizing: border-box;
 }
 
-/* Selector avatarów */
 .profile-pic-selector {
   position: relative;
   display: inline-flex;
@@ -79,7 +73,6 @@
   gap: 0.6rem;
 }
 
-/* Strzałki przy selectorze */
 .pic-arrow {
   display: flex;
   align-items: center;
@@ -91,7 +84,6 @@
   cursor: pointer;
 }
 
-/* pozycjonowanie strzałek względem selector'a */
 .pic-arrow:first-of-type { margin-right: 0.25rem; transform: rotate(180deg); }
 .pic-arrow:last-of-type { margin-left: 0.25rem; }
 
@@ -103,7 +95,6 @@
   z-index: 10;
 }
 
-/* Tekst i textarea */
 .description-textarea {
   width: 100%;
   min-height: 100px;
@@ -124,7 +115,6 @@
   border-color: #DAB274;
 }
 
-/* Search box */
 .search-container {
   display: flex;
   justify-content: center;
@@ -149,7 +139,6 @@
   outline: none;
 }
 
-/* Wyniki wyszukiwania i listy */
 .search-results ul {
   padding: 0;
   margin: 0.5rem 0;
@@ -158,7 +147,6 @@
 .search-results img {
   width: 2.2rem;
   height: 2.2rem;
-  /*object-fit: contain;*/
 }
 
 .search-results ul li {
@@ -172,7 +160,6 @@
   margin-right: 1rem;
 }
 
-/* Przyjazne wymiary dla list zakładek */
 .tabs-item {
   max-height: 28vh;
   overflow-y: auto;
@@ -182,12 +169,10 @@
   margin-top: 0.6rem;
 }
 
-/* Ikony zakładek */
 .tabs img {
   height: 3vh;
 }
 
-/* Przyjazne avatar list friends */
 .friend-profile-pic {
   width: 40px;
   height: 40px;
@@ -196,7 +181,6 @@
   object-fit: cover;
 }
 
-/* Pozycjonowanie przycisku zamknięcia (circle button) w prawym górnym rogu modalu */
 .profile-modal-wrapper .btn-circle,
 .profile-modal-wrapper .btn-circle-profile {
   position: absolute;
@@ -205,10 +189,9 @@
   z-index: 50;
 }
 
-/* Jeśli są dwie przyciskowe ikony (profile + circle) ustaw obok siebie */
 .profile-modal-wrapper .btn-circle + .btn-circle-profile,
 .profile-modal-wrapper .btn-circle-profile + .btn-circle {
-  right: 3.2rem; /* przesunięcie drugiego przycisku w lewo */
+  right: 3.2rem;
 }
 
 .reverse-image {

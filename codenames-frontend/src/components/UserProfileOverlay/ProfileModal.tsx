@@ -68,7 +68,6 @@ const ProfileModal: React.FC<ProfileModalProps> = ({soundFXVolume, isOpen, onClo
   const [searchResults, setSearchResults] = useState<UserList>({users: []});
   const [activeTab, setActiveTab] = useState<"friends" | "invitations" | "search">("friends");
 
-  // pass initial lists from currentUser into the hook via memoized object
   const initialFriendState = currentUser ? {
     friends: currentUser.friends ?? [],
     sentRequests: currentUser.sentRequests ?? [],
