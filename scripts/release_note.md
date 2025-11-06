@@ -1,14 +1,9 @@
-Frontend tests implementation
+choosing leader vied adjustments
 **🔧 What's included in this release?**
-Created tests for key functionalities in frontend
+moved players containers to the center
 
 Key additions: 
-- choose leader view tests
-- gameplay tests
-- create game tests
-- game lobby tests
-- join game tests
-- chat tests
+- players containers moved to the center
 
 **🚧 What's still under development?**
 - Migration from Google Cloud Run to a new hosting provider
