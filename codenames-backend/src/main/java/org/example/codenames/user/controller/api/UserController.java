@@ -10,7 +10,6 @@ import org.example.codenames.user.entity.User;
 import org.example.codenames.user.entity.dto.GetUserProfileDetailsResponse;
 import org.example.codenames.user.entity.dto.GetUserResponse;
 import org.example.codenames.user.entity.dto.GetUsernamesResponse;
-import org.example.codenames.user.entity.dto.FriendRequestsDTO;
 import org.example.codenames.userDetails.auth.AuthRequest;
 import org.example.codenames.userDetails.auth.AuthResponse;
 import org.springframework.http.ResponseEntity;
