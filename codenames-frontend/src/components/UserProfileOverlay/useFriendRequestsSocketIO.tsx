@@ -8,7 +8,6 @@ interface FriendRequestsState {
     receivedRequests: string[];
 }
 
-// Allow passing initial lists (from REST) so UI reflects server state on open
 const useFriendRequestsSocketIO = (
     username: string,
     initial?: Partial<FriendRequestsState>
@@ -20,10 +19,8 @@ const useFriendRequestsSocketIO = (
     });
 
     const {profileSocket} = useSocket();
-    // queue of actions to call once socket is ready (persist across renders)
     const pendingEmitsRef = useRef<Array<() => void>>([]);
 
-    // Sync initial data when it becomes available (e.g., after fetching profile)
     useEffect(() => {
         if (!initial) return;
         setState((prev) => ({
@@ -37,7 +34,6 @@ const useFriendRequestsSocketIO = (
     useEffect(() => {
         if (!username || !profileSocket) return;
 
-        // Join user's private profile room and flush pending emits
         const join = () => {
             profileSocket.emit('joinProfile', username);
             // flush pending emits
@@ -99,7 +95,6 @@ const useFriendRequestsSocketIO = (
         };
     }, [username, profileSocket]);
 
-    // Helper to call backend REST endpoints to persist changes
     const callApi = async (path: string, method = 'POST') => {
         try {
             const res = await fetch(`${apiUrl}${path}`, {
@@ -114,13 +109,10 @@ const useFriendRequestsSocketIO = (
         }
     };
 
-    // === Functions to send events back to server ===
     const sendFriendRequest = async (receiverUsername: string) => {
-        // Persist via REST
         try {
             await callApi(`/api/users/send-request/${receiverUsername}?senderUsername=${encodeURIComponent(username)}`, 'POST');
         } catch (e) {
-            // If REST fails, don't optimistically add
             return;
         }
 
@@ -141,11 +133,9 @@ const useFriendRequestsSocketIO = (
     };
 
     const acceptFriendRequest = async (senderUsername: string) => {
-        // Persist via REST
         try {
             await callApi(`/api/users/accept-request/${senderUsername}?receiverUsername=${encodeURIComponent(username)}`, 'POST');
         } catch (e) {
-            // If REST fails, don't change UI
             return;
         }
 
@@ -159,7 +149,6 @@ const useFriendRequestsSocketIO = (
             doEmit();
         }
 
-        // Optimistic UI update
         setState((prev) => ({
             ...prev,
             receivedRequests: prev.receivedRequests.filter((u) => u !== senderUsername),

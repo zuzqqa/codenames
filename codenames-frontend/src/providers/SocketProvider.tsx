@@ -73,16 +73,6 @@ export const SocketProvider: React.FC<Props> = ({ children }) => {
             addToast(`${by} zaakceptował(a) zaproszenie`, 'notification')
         })
 
-        profileSocket.on('friendRequestDeclined', (payload: any) => {
-            const by = payload?.by ?? 'Ktoś'
-            addToast(`${by} odrzucił(a) zaproszenie`, 'notification')
-        })
-
-        profileSocket.on('friendRemoved', (payload: any) => {
-            const by = payload?.by ?? 'Ktoś'
-            addToast(`${by} usunął(a) Cię ze znajomych`, 'notification')
-        })
-
         profileSocket.on('connect_error', (err: any) => {
             console.error('Profile socket connect error', err)
         })

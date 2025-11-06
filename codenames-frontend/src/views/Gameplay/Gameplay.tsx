@@ -931,7 +931,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
       changeTurn();
     } catch (err) {
-      addToast("An error occurred while sending the hint.", "error");
+      addToast(t("hint-error"), "error");
     }
     setCardText("");
   };

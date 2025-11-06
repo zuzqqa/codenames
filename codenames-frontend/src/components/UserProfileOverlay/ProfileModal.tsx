@@ -120,10 +120,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({soundFXVolume, isOpen, onClo
 
           loadProfilePic(userData.profilePic);
         } else {
-          addToast("Something went wrong", "error");
+          addToast(t("unknown-error"), "error");
         }
       } catch (error) {
-        addToast("An error occured when loading user data", "error");
+        addToast(t("fetching-user-error"), "error");
       }
     };
 
@@ -167,10 +167,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({soundFXVolume, isOpen, onClo
         setIsEditing(false);
         loadProfilePic(availableProfilePics[profilePicIndex]);
       } else {
-        addToast("Failed to update user information", "error");
+        addToast(t("fetch-user-error"), "error");
       }
     } catch (error) {
-      addToast("Failed to update user information", "error");
+      addToast(t("fetch-user-error"), "error");
     }
   };
 
@@ -199,10 +199,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({soundFXVolume, isOpen, onClo
         const data: UserList = await response.json();
         setSearchResults(data);
       } else {
-        addToast("Failed to fetch users", "error");
+        addToast(t("fetch-user-error"), "error");
       }
     } catch (error) {
-      addToast("Failed to fetch users", "error");
+      addToast(t("fetch-user-error"), "error");
     }
   };
 
@@ -398,7 +398,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({soundFXVolume, isOpen, onClo
                             soundFXVolume={soundFXVolume}
                             onClick={() =>
                               friends.includes(user.username)
-                                ? addToast("You are friends already!", "notification")
+                                ? addToast(t("friends-already-error"), "notification")
                                 : sentRequests.includes(user.username)
                                   ? undoFriendRequest(user.username)
                                   : receivedRequests.includes(user.username)
