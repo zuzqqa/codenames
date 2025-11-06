@@ -5,11 +5,14 @@ import org.example.codenames.CodenamesApplication;
 import org.example.codenames.gameSession.controller.api.GameSessionController;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 
+import org.example.codenames.socket.service.api.SocketService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -49,9 +52,9 @@ public class GameSessionControllerTest {
 
     @Autowired
     private MockMvc mvc;
-
     @Autowired
     GameSessionRepository gameSessionRepository;
+
 
     // MongoDB Testcontainers container.
     public static MongoDBContainer mongo = new MongoDBContainer(DockerImageName.parse("mongo:5"))
