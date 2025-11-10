@@ -2,12 +2,26 @@ import { useEffect, useRef, useState } from "react";
 import { useSocket } from "../../providers/SocketProvider";
 import { apiUrl } from "../../config/api";
 
+/**
+ * Shape of the friend-related data tracked by the hook.
+ */
 interface FriendRequestsState {
   friends: string[];
   sentRequests: string[];
   receivedRequests: string[];
 }
 
+/**
+ * Custom hook to manage friend requests and related Socket.IO events for the profile view.
+ *
+ * Responsibilities:
+ * - keep local lists of friends, sent and received requests
+ * - subscribe to profile socket events for real-time updates
+ * - provide helper functions to call backend APIs and emit socket events (queued until socket connects)
+ *
+ * @param username the username of the current profile (used to join profile room and in API calls)
+ * @param initial optional initial state to seed the lists (useful when loading from backend)
+ */
 const useFriendRequestsSocketIO = (
   username: string,
   initial?: Partial<FriendRequestsState>
@@ -95,20 +109,32 @@ const useFriendRequestsSocketIO = (
     };
   }, [username, profileSocket]);
 
+  /**
+   * Small wrapper around fetch for friend-related API calls.
+   * It centralizes credentials and headers and surfaces errors to the caller.
+   *
+   * @param path API path (appended to apiUrl)
+   * @param method HTTP method to use (default POST)
+   */
   const callApi = async (path: string, method = 'POST') => {
     try {
-      const res = await fetch(`${apiUrl}${path}`, {
+      return await fetch(`${apiUrl}${path}`, {
         method,
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
       });
-      return res;
     } catch (e) {
       console.error('Friend request API call failed', e);
       throw e;
     }
   };
 
+  /**
+   * Sends a friend request: calls backend API, emits socket event (queued if socket not connected)
+   * and updates local state to include the receiver in sentRequests.
+   *
+   * @param receiverUsername receiver of the friend request
+   */
   const sendFriendRequest = async (receiverUsername: string) => {
     try {
       await callApi(`/api/users/send-request/${receiverUsername}?senderUsername=${encodeURIComponent(username)}`, 'POST');
@@ -132,6 +158,11 @@ const useFriendRequestsSocketIO = (
     }));
   };
 
+  /**
+   * Accepts a friend request: calls backend API, emits socket event and updates local lists.
+   *
+   * @param senderUsername who sent the original request
+   */
   const acceptFriendRequest = async (senderUsername: string) => {
     try {
       await callApi(`/api/users/accept-request/${senderUsername}?receiverUsername=${encodeURIComponent(username)}`, 'POST');
@@ -156,6 +187,11 @@ const useFriendRequestsSocketIO = (
     }));
   };
 
+  /**
+   * Declines a friend request: calls backend API, emits socket event and updates local lists.
+   *
+   * @param senderUsername who sent the original request
+   */
   const declineFriendRequest = async (senderUsername: string) => {
     try {
       await callApi(`/api/users/decline-request/${senderUsername}?receiverUsername=${encodeURIComponent(username)}`, 'POST');
@@ -179,6 +215,11 @@ const useFriendRequestsSocketIO = (
     }));
   };
 
+  /**
+   * Removes a friend: calls backend API, emits socket event and updates local friends list.
+   *
+   * @param friendUsername friend to remove
+   */
   const removeFriend = async (friendUsername: string) => {
     try {
       await callApi(`/api/users/remove-friend/${friendUsername}?userUsername=${encodeURIComponent(username)}`, 'DELETE');
@@ -202,6 +243,12 @@ const useFriendRequestsSocketIO = (
     }));
   };
 
+  /**
+   * Undo a previously sent friend request by calling the decline endpoint for the other user
+   * and emitting a decline socket event. This keeps backend and frontend semantics aligned.
+   *
+   * @param receiverUsername user who was going to receive the original request
+   */
   const undoFriendRequest = async (receiverUsername: string) => {
     try {
       // Using decline endpoint to cancel a sent request

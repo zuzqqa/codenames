@@ -14,6 +14,13 @@ type Props = {
   children: ReactNode
 }
 
+/**
+ * Provider that creates and exposes two Socket.IO connections:
+ *  - `socket` for general events
+ *  - `profileSocket` for profile-scoped events (joined rooms per username)
+ *
+ * The provider also registers notification toasts for incoming friend events.
+ */
 export const SocketProvider: React.FC<Props> = ({ children }) => {
   const socketRef = useRef<Socket | null>(null)
   const profileSocketRef = useRef<Socket | null>(null)
