@@ -9,10 +9,10 @@ import org.example.codenames.email.service.api.EmailService;
 import org.example.codenames.jwt.JwtService;
 import org.example.codenames.socket.service.api.SocketService;
 import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetServiceToken;
-import org.example.codenames.user.entity.dto.GetFriendDataResponse;
+import org.example.codenames.user.controller.api.UserController;
 import org.example.codenames.user.entity.PasswordResetRequest;
 import org.example.codenames.user.entity.User;
-import org.example.codenames.user.controller.api.UserController;
+import org.example.codenames.user.entity.dto.GetFriendDataResponse;
 import org.example.codenames.user.entity.dto.GetUserProfileDetailsResponse;
 import org.example.codenames.user.entity.dto.GetUserResponse;
 import org.example.codenames.user.entity.dto.GetUsernamesResponse;
@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -34,7 +33,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
-
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -154,7 +152,7 @@ public class DefaultUserController implements UserController {
     /**
      * Updates a user by their ID.
      *
-     * @param id the ID of the user
+     * @param id          the ID of the user
      * @param updatedUser the updated user information
      * @return ResponseEntity containing the updated user or 404 if not found
      */
@@ -399,8 +397,8 @@ public class DefaultUserController implements UserController {
     /**
      * Resets user password based on the token and new password provided.
      *
-     * @param token the reset token provided by the user.
-     * @param request the HTTP request containing additional context (such as IP address) for the password reset operation.
+     * @param token                the reset token provided by the user.
+     * @param request              the HTTP request containing additional context (such as IP address) for the password reset operation.
      * @param passwordResetRequest the entity containing new password.
      * @return ResponseEntity with status 200 OK if password change was successful or 400 BAD REQUEST otherwise
      */

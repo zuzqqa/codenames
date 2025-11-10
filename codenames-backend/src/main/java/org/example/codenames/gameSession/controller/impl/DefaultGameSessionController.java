@@ -134,9 +134,9 @@ public class DefaultGameSessionController implements GameSessionController {
         if (gameSession.getGameState().getBlueTeamLeader() == null || gameSession.getGameState().getRedTeamLeader() == null) {
             gameSessionService.assignTeamLeaders(gameId);
             scheduler.schedule(() -> {
-                try{
+                try {
                     socketService.sendDiscordLinkInvite(gameSession.getSessionId(), discordGuildService.createInvite(gameSession.getDiscordChannelId()));
-                } catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }, 3, TimeUnit.SECONDS);

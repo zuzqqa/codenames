@@ -11,6 +11,8 @@ import java.util.List;
 @Builder
 public class GetUsernamesResponse {
 
+    List<User> users;
+
     @NoArgsConstructor
     @AllArgsConstructor
     @Getter
@@ -20,6 +22,4 @@ public class GetUsernamesResponse {
         private String id;
         private String username;
     }
-
-    List<User> users;
 }

@@ -3,10 +3,9 @@ package org.example.codenames.user.controller.api;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import org.example.codenames.user.entity.dto.GetFriendDataResponse;
 import org.example.codenames.user.entity.PasswordResetRequest;
 import org.example.codenames.user.entity.User;
+import org.example.codenames.user.entity.dto.GetFriendDataResponse;
 import org.example.codenames.user.entity.dto.GetUserProfileDetailsResponse;
 import org.example.codenames.user.entity.dto.GetUserResponse;
 import org.example.codenames.user.entity.dto.GetUsernamesResponse;
@@ -67,7 +66,7 @@ public interface UserController {
     ResponseEntity<Void> removeFriend(@PathVariable String friendUsername, @RequestParam String userUsername);
 
     ResponseEntity<GetFriendDataResponse> getFriendRequests(@PathVariable String username);
-    
+
     ResponseEntity<String> updatePassword(@PathVariable String token, HttpServletRequest request, @RequestBody PasswordResetRequest passwordResetRequest);
 
     ResponseEntity<Void> updateUserActiveStatus(@RequestBody String userId);

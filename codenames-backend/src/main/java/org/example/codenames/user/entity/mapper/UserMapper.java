@@ -59,10 +59,10 @@ public class UserMapper {
     public static GetUsernamesResponse toGetUsernamesResponse(List<User> users) {
         return GetUsernamesResponse.builder()
                 .users(users.stream().map(user ->
-                        GetUsernamesResponse.User.builder()
-                                .id(user.getId())
-                                .username(user.getUsername())
-                                .build())
+                                GetUsernamesResponse.User.builder()
+                                        .id(user.getId())
+                                        .username(user.getUsername())
+                                        .build())
                         .toList())
                 .build();
     }

@@ -19,9 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import static org.example.codenames.gameSession.entity.dto.GameSessionMapper.toJoinGameDTOList;
 import static org.example.codenames.gameSession.entity.dto.GameSessionMapper.toRoomLobbyDTO;
@@ -62,7 +59,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
     /**
      * Clear all votes in the game session
      *
-     * @param gameSession          the game session
+     * @param gameSession           the game session
      * @param gameSessionRepository the game session repository
      */
     public static void clearVotes(GameSession gameSession, GameSessionRepository gameSessionRepository) {
@@ -183,7 +180,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
     }
 
     /**
-     * Start the game 
+     * Start the game
      *
      * @param gameId the game session id
      * @return the response entity
@@ -215,9 +212,8 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      * Finish the game
      *
      * @param gameId the game session id
-     * @throws JsonProcessingException if there is an error processing JSON
-     * 
      * @return the response entity
+     * @throws JsonProcessingException if there is an error processing JSON
      */
     @PostMapping("/{gameId}/finish")
     public ResponseEntity<Void> finishGame(@PathVariable UUID gameId) throws JsonProcessingException {
@@ -259,9 +255,8 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      *
      * @param gameId      the game session id
      * @param hintRequest the hint request containing the hint information
-     * @throws JsonProcessingException if there is an error processing JSON
-     * 
      * @return the response entity
+     * @throws JsonProcessingException if there is an error processing JSON
      */
     @PostMapping("/{gameId}/send-hint")
     public ResponseEntity<Void> sendHint(@PathVariable UUID gameId, @RequestBody HintRequest hintRequest) throws JsonProcessingException {
@@ -289,9 +284,8 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      * Change the turn
      *
      * @param id the game session id
-     * @throws JsonProcessingException if there is an error processing JSON
-     * 
      * @return the response entity
+     * @throws JsonProcessingException if there is an error processing JSON
      */
     @GetMapping("/{id}/change-turn")
     public ResponseEntity<?> changeTurn(@PathVariable UUID id) throws JsonProcessingException {
@@ -314,9 +308,8 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      *
      * @param gameId    the id of the game session
      * @param cardIndex index of the card to be revealed
-     * @throws JsonProcessingException if there is an error processing JSON
-     * 
      * @return response entity
+     * @throws JsonProcessingException if there is an error processing JSON
      */
     @Override
     @PostMapping("/{gameId}/reveal-card")
@@ -337,9 +330,8 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
      *
      * @param gameId      the id of the game session
      * @param voteRequest the vote request containing the user id and the id of the user that was voted on
-     * @throws JsonProcessingException if there is an error processing JSON
-     * 
      * @return the id of the user that was voted on
+     * @throws JsonProcessingException if there is an error processing JSON
      */
     @Override
     @PostMapping("/{gameId}/vote")
@@ -357,6 +349,7 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
     /**
      * Get the current vote state for leader selection
+     *
      * @param gameId
      * @return the leader vote state
      */

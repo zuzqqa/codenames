@@ -75,11 +75,7 @@ public class DefaultPasswordResetServiceToken implements PasswordResetServiceTok
             return false;
         }
 
-        if (passwordResetToken.getExpiresAt().isBefore(LocalDateTime.now())) {
-            return false;
-        }
-
-        return true;
+        return !passwordResetToken.getExpiresAt().isBefore(LocalDateTime.now());
     }
 
     @Override

@@ -14,7 +14,7 @@ import java.util.UUID;
 public class GameSessionCompactSerializer implements CompactSerializer<GameSession> {
     /**
      * Gets the type name for the GameSession class.
-     * 
+     *
      * @return The type name as a String.
      */
     @Override
@@ -24,7 +24,7 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
 
     /**
      * Gets the class type for the GameSession.
-     * 
+     *
      * @return The GameSession class.
      */
     @Override
@@ -34,6 +34,7 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
 
     /**
      * Writes a GameSession object to the CompactWriter.
+     *
      * @param writer  The CompactWriter to write to.
      * @param session The GameSession object to write.
      */
@@ -45,7 +46,7 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
         writer.writeInt32("maxPlayers", session.getMaxPlayers() != null ? session.getMaxPlayers() : 0);
         writer.writeString("password", session.getPassword());
         writer.writeInt64("votingStartTime", session.getVotingStartTime() != null ? session.getVotingStartTime() : 0L);
-        writer.writeString("discordChannelId", session.getDiscordChannelId() != null ? session.getDiscordChannelId().toString() : null);
+        writer.writeString("discordChannelId", session.getDiscordChannelId() != null ? session.getDiscordChannelId() : null);
 
         // Flatten List<List<User>> into a single list and store nested sizes
         List<User> flatUsers = new ArrayList<>();
@@ -77,8 +78,8 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
 
     /**
      * Reads a GameSession object from the CompactReader.
+     *
      * @param reader The CompactReader to read from.
-     * 
      * @return The reconstructed GameSession object.
      */
     @Override
