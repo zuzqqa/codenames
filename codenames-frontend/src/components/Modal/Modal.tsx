@@ -12,10 +12,10 @@ import "./Modal.css";
  * @property {string} variant - Variant for styling.
  */
 interface ModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    children: ReactNode;
-    variant?: "default" | "large" | "small";
+  isOpen: boolean;
+  onClose: () => void;
+  children: ReactNode;
+  variant?: "default" | "large" | "small";
 }
 
 /**
@@ -24,16 +24,17 @@ interface ModalProps {
  * @returns {JSX.Element | null} The rendered Modal component.
  */
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, variant = "default" }) => {
-    if (!isOpen) return null;
+  if (!isOpen) return null;
 
-    return (
-        <div className="modal-overlay" onClick={onClose}>
-            <img src={ BackgroundImg } className={`modal-background-img modal-background-img-${variant}`} alt="Modal background" />
-            <div className={`modal-content modal-content-${variant}`} onClick={(e) => e.stopPropagation()}>
-                {children}
-            </div>
-        </div>
-    );
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <img src={BackgroundImg} className={`modal-background-img modal-background-img-${variant}`}
+           alt="Modal background"/>
+      <div className={`modal-content modal-content-${variant}`} onClick={(e) => e.stopPropagation()}>
+        {children}
+      </div>
+    </div>
+  );
 };
 
 export default Modal;

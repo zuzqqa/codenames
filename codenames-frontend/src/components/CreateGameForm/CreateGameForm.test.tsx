@@ -1,6 +1,6 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import CreateGameForm from "./CreateGameForm";
 
 const mockNavigate = vi.fn();
@@ -50,7 +50,7 @@ describe("CreateGameForm", () => {
   });
 
   it("renders form with all fields", () => {
-    render(<CreateGameForm soundFXVolume={50} />);
+    render(<CreateGameForm soundFXVolume={50}/>);
 
     expect(screen.getByPlaceholderText("game-name")).toBeInTheDocument();
     expect(screen.getByText("private-lobby?")).toBeInTheDocument();
@@ -60,7 +60,7 @@ describe("CreateGameForm", () => {
 
   it("shows password field when private lobby is enabled", async () => {
     const user = userEvent.setup();
-    render(<CreateGameForm soundFXVolume={50} />);
+    render(<CreateGameForm soundFXVolume={50}/>);
 
     const checkboxes = screen.getAllByAltText("Checkmark");
     await user.click(checkboxes[0]);
@@ -70,7 +70,7 @@ describe("CreateGameForm", () => {
   });
 
   it("changes player slider value", () => {
-    render(<CreateGameForm soundFXVolume={50} />);
+    render(<CreateGameForm soundFXVolume={50}/>);
 
     const slider = screen.getByRole("slider") as HTMLInputElement;
     fireEvent.change(slider, { target: { value: "8" } });
@@ -80,7 +80,7 @@ describe("CreateGameForm", () => {
 
   it("shows error when game name is empty", async () => {
     const user = userEvent.setup();
-    render(<CreateGameForm soundFXVolume={50} />);
+    render(<CreateGameForm soundFXVolume={50}/>);
 
     const submitButton = screen.getByRole("button", {
       name: /create-game-button/i,
@@ -94,7 +94,7 @@ describe("CreateGameForm", () => {
 
   it("shows error when private lobby has no password", async () => {
     const user = userEvent.setup();
-    render(<CreateGameForm soundFXVolume={50} />);
+    render(<CreateGameForm soundFXVolume={50}/>);
 
     const gameNameInput = screen.getByPlaceholderText("game-name");
     await user.type(gameNameInput, "Test Game");
@@ -117,7 +117,7 @@ describe("CreateGameForm", () => {
 
   it("creates game successfully and navigates to lobby", async () => {
     const user = userEvent.setup();
-    render(<CreateGameForm soundFXVolume={50} />);
+    render(<CreateGameForm soundFXVolume={50}/>);
 
     const gameNameInput = screen.getByPlaceholderText("game-name");
     await user.type(gameNameInput, "Test Game");
@@ -152,7 +152,7 @@ describe("CreateGameForm", () => {
 
   it("creates private game with password", async () => {
     const user = userEvent.setup();
-    render(<CreateGameForm soundFXVolume={50} />);
+    render(<CreateGameForm soundFXVolume={50}/>);
 
     const gameNameInput = screen.getByPlaceholderText("game-name");
     await user.type(gameNameInput, "Private Game");
@@ -191,7 +191,7 @@ describe("CreateGameForm", () => {
     ) as any;
 
     const user = userEvent.setup();
-    render(<CreateGameForm soundFXVolume={50} />);
+    render(<CreateGameForm soundFXVolume={50}/>);
 
     const gameNameInput = screen.getByPlaceholderText("game-name");
     await user.type(gameNameInput, "Test Game");
@@ -215,7 +215,7 @@ describe("CreateGameForm", () => {
     ) as any;
 
     const user = userEvent.setup();
-    render(<CreateGameForm soundFXVolume={50} />);
+    render(<CreateGameForm soundFXVolume={50}/>);
 
     const gameNameInput = screen.getByPlaceholderText("game-name");
     await user.type(gameNameInput, "Test Game");
@@ -232,7 +232,7 @@ describe("CreateGameForm", () => {
 
   it("navigates back when back button is clicked", async () => {
     const user = userEvent.setup();
-    render(<CreateGameForm soundFXVolume={50} />);
+    render(<CreateGameForm soundFXVolume={50}/>);
 
     const backButton = screen.getByAltText("Back");
     await user.click(backButton);

@@ -1,6 +1,6 @@
-import { useNavigate, useLocation } from "react-router-dom"; // Hook for programmatic navigation
-import React, { useEffect } from "react"; // Hook for managing component state and effects
-import { useTranslation } from "react-i18next"; // Hook for translation
+import { useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 import BackgroundContainer from "../../containers/Background/Background";
 import characters from "../../assets/images/characters.png";
@@ -44,7 +44,7 @@ const WinLossView: React.FC = () => {
    * Clears stored chat messages from local storage when the component mounts.
    */
   useEffect(() => {
-    if(localStorage.getItem("chatMessages")) {
+    if (localStorage.getItem("chatMessages")) {
       localStorage.removeItem("chatMessages");
     }
   }, []);
@@ -54,18 +54,18 @@ const WinLossView: React.FC = () => {
       <div className="start-container">
         {/* Initial state before starting the game */}
         <div className="character-image-start">
-          <img src={characters} alt="Characters" />
+          <img src={characters} alt="Characters"/>
         </div>
         <div
           className={`blurred-rectangle ${
             result === "Victory" ? "victory" : "defeat"
           }`}
         />
-        <div className="horizontal-line" />
+        <div className="horizontal-line"/>
         <div className="win-loss-container">
           <span className="">{resultText}</span>
         </div>
-        <div className="progressContainer" />
+        <div className="progressContainer"/>
       </div>
     </BackgroundContainer>
   );

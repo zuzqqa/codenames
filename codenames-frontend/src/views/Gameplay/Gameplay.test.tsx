@@ -1,6 +1,6 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import Gameplay from "./Gameplay";
 import { io } from "socket.io-client";
 
@@ -59,11 +59,11 @@ vi.mock("../../containers/Background/Background", () => ({
 
 vi.mock("../../components/Button/Button", () => ({
   default: ({
-    children,
-    onClick,
-    className,
-    disabled,
-  }: React.PropsWithChildren<
+              children,
+              onClick,
+              className,
+              disabled,
+            }: React.PropsWithChildren<
     React.ButtonHTMLAttributes<HTMLButtonElement>
   >) => (
     <button onClick={onClick} className={className} disabled={disabled}>
@@ -79,9 +79,9 @@ vi.mock("../../components/SettingsOverlay/SettingsModal", () => ({
 
 vi.mock("../../components/QuitModal/QuitModal", () => ({
   default: ({
-    isOpen,
-    children,
-  }: {
+              isOpen,
+              children,
+            }: {
     isOpen: boolean;
     children?: React.ReactNode;
   }) => (isOpen ? <div>Quit Modal {children}</div> : null),
@@ -361,18 +361,18 @@ describe("Gameplay", () => {
       connectedUsers: [
         [
           { id: "user-123", username: "Player1" },
-          { id: "user-2", username: "Player2" }, // user-2 będzie red team leaderem
+          { id: "user-2", username: "Player2" },
         ],
         [
           { id: "user-3", username: "Player3" },
-          { id: "user-4", username: "Player4" }, // user-4 będzie current selection leaderem
+          { id: "user-4", username: "Player4" },
         ],
       ],
       gameState: {
         ...mockGameSession.gameState,
         blueTeamLeader: { id: "user-3", username: "Player3" },
-        redTeamLeader: { id: "user-2", username: "Player2" }, // NIE user-123
-        currentSelectionLeader: { id: "user-4", username: "Player4" }, // ktoś z drużyny
+        redTeamLeader: { id: "user-2", username: "Player2" },
+        currentSelectionLeader: { id: "user-4", username: "Player4" },
         hintTurn: false,
         guessingTurn: true,
       },

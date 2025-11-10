@@ -1,16 +1,10 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom"; // Importing React Router components
-import React, { useEffect, useState } from "react"; // Importing React hooks
-import Cookies from "js-cookie"; // Importing cookie management library
+import { BrowserRouter as Router, Navigate, Route, Routes, } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 import { useTranslation } from "react-i18next";
 
-import soundFile from "./assets/sounds/background-music.mp3"; // Importing background music file
+import soundFile from "./assets/sounds/background-music.mp3";
 
-// Importing components for different views in the app
 import Home from "./views/Home/Home";
 import SelectGame from "./views/SelectGame/SelectGame";
 import CreateGame from "./views/CreateGame/CreateGame";
@@ -27,7 +21,7 @@ import ResetPasswordPage from "./views/ResetPassword/ResetPasswordPage.tsx";
 import ResetPasswordRequestPage from "./views/ResetPassword/ResetPasswordRequestPage.tsx";
 import Invite from "./components/Invite/Invite.tsx";
 import { apiUrl } from "./config/api.tsx";
-import { getCookie } from "./shared/utils.tsx"; // Importing API URL
+import { getCookie } from "./shared/utils.tsx";
 import AuthCallback from "./shared/authCallback.tsx";
 
 const App: React.FC = () => {
@@ -49,19 +43,16 @@ const App: React.FC = () => {
   const storedMusicVolume = localStorage.getItem("musicVolume");
   const storedSoundFXVolume = localStorage.getItem("soundFXVolume");
 
-  // Function to set the background music volume
   const setVolume = (volume: number) => {
-    audio.volume = volume / 100; // Adjust the background music volume
+    audio.volume = volume / 100;
     localStorage.setItem("musicVolume", volume.toString());
   };
 
-  // Function to set the sound effects volume
   const setSoundFX = (volume: number) => {
-    setSoundFXVolume(volume); // Adjust the sound effects volume
+    setSoundFXVolume(volume);
     localStorage.setItem("soundFXVolume", volume.toString());
   };
 
-  // useEffect hook to check authentication and handle audio setup
   useEffect(() => {
     const initialMusicVolume = storedMusicVolume
       ? parseFloat(storedMusicVolume)
@@ -71,67 +62,63 @@ const App: React.FC = () => {
       : 0.5;
 
     setSoundFXVolume(initialSoundFXVolume);
-    audio.volume = initialMusicVolume / 100; // Set initial volume from localStorage
+    audio.volume = initialMusicVolume / 100;
 
     i18n.changeLanguage(localStorage.getItem("i18nextLng") || "en");
 
-    // Function to check if the user is authenticated by checking cookies
     const checkAuthentication = () => {
       const loggedIn = Cookies.get("loggedIn");
-      setIsAuthenticated(loggedIn === "true"); // Set the authentication state based on the cookie
+      setIsAuthenticated(loggedIn === "true");
     };
 
-    checkAuthentication(); // Call authentication check on component mount
+    checkAuthentication();
 
-    // Function to play audio after the first user interaction (click)
     const handleFirstInteraction = () => {
-      playAudio(); // Play audio on first interaction
-      window.removeEventListener("click", handleFirstInteraction); // Remove the event listener after the first interaction
+      playAudio();
+      window.removeEventListener("click", handleFirstInteraction);
     };
 
-    window.addEventListener("click", handleFirstInteraction); // Add event listener for first user interaction
+    window.addEventListener("click", handleFirstInteraction);
 
-    // Cleanup event listener when the component unmounts or the effect reruns
     return () => {
       window.removeEventListener("click", handleFirstInteraction);
     };
-  }, []); // Empty dependency array ensures this effect runs only once on mount
+  }, []);
 
-  // If authentication status is still null (loading), show a loading indicator
   if (isAuthenticated === null) {
     return <div>Loading...</div>;
   }
 
   setInterval(async () => {
-      if (!isAuthenticated) return;
-      const token = getCookie("authToken");
+    if (!isAuthenticated) return;
+    const token = getCookie("authToken");
 
-      if (!userId || userId == "") {
-          const getIdResponse = await fetch(apiUrl + "/api/users/get-id", {
-              headers: {
-                  "Authorization": `Bearer ${token}`,
-              },
-              method: "GET",
-              credentials: "include",
-          });
-          userId = await getIdResponse.text();
-          localStorage.setItem("userId", userId);
-      }
-      await fetch(apiUrl + '/api/users/activity', {
-          method: 'POST',
-          body: userId,
-          headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-          },
-          credentials: "include"
+    if (!userId || userId == "") {
+      const getIdResponse = await fetch(apiUrl + "/api/users/get-id", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+        method: "GET",
+        credentials: "include",
       });
-    }, 1000 * 60 * 15);
+      userId = await getIdResponse.text();
+      localStorage.setItem("userId", userId);
+    }
+    await fetch(apiUrl + '/api/users/activity', {
+      method: 'POST',
+      body: userId,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      credentials: "include"
+    });
+  }, 1000 * 60 * 15);
 
   return (
     <Router>
       <Routes>
-        <Route path="/win-loss" element={<WinLossView />} />
+        <Route path="/win-loss" element={<WinLossView/>}/>
         {/* Public routes */}
         <Route
           path="/"
@@ -147,7 +134,7 @@ const App: React.FC = () => {
           path="/login"
           element={
             isAuthenticated ? (
-              <Navigate to="/games" replace />
+              <Navigate to="/games" replace/>
             ) : (
               <LoginPage
                 setVolume={setVolume}
@@ -171,7 +158,7 @@ const App: React.FC = () => {
           path="/send-reset-password"
           element={
             isAuthenticated ? (
-              <Navigate to="/games" replace />
+              <Navigate to="/games" replace/>
             ) : (
               <ResetPasswordRequestPage
                 setVolume={setVolume}
@@ -185,7 +172,7 @@ const App: React.FC = () => {
           path="/register"
           element={
             isAuthenticated ? (
-              <Navigate to="/games" replace />
+              <Navigate to="/games" replace/>
             ) : (
               <RegisterPage
                 setVolume={setVolume}
@@ -298,15 +285,15 @@ const App: React.FC = () => {
             />
           }
         />
-        <Route path="/invite/:gameId" element={<Invite />} />
+        <Route path="/invite/:gameId" element={<Invite/>}/>
         {/* Fallback route */}
         <Route
           path="*"
           element={
             isAuthenticated ? (
-              <Navigate to="/games" replace />
+              <Navigate to="/games" replace/>
             ) : (
-              <Navigate to="/" replace />
+              <Navigate to="/" replace/>
             )
           }
         />

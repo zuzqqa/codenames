@@ -5,11 +5,11 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills';
 export default defineConfig({
   server: {
     watch: {
-      usePolling: true, 
-      interval: 300,     
+      usePolling: true,
+      interval: 300,
     },
-    host: "0.0.0.0",     
-    port: 5173,          
+    host: "0.0.0.0",
+    port: 5173,
     strictPort: true,
   },
   plugins: [
@@ -28,9 +28,9 @@ export default defineConfig({
       "@": "/src",
     },
   },
-  test: { 
-    globals: true, 
-    environment: 'jsdom', 
-    setupFiles: './src/setupTests.ts' 
-  }  
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/setupTests.ts'
+  }
 });

@@ -34,24 +34,24 @@ interface SettingsModalProps {
  * @returns {JSX.Element | null} The rendered settings modal or null if not open.
  */
 const SettingsModal: React.FC<SettingsModalProps> = ({
-  isOpen,
-  onClose,
-  musicVolume,
-  soundFXVolume,
-  setMusicVolume,
-  setSoundFXVolume,
-}) => {
+                                                       isOpen,
+                                                       onClose,
+                                                       musicVolume,
+                                                       soundFXVolume,
+                                                       setMusicVolume,
+                                                       setSoundFXVolume,
+                                                     }) => {
   const { t } = useTranslation();
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false); // Manage visibility of MessageModal
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false); // Manage visibility of ConfirmationModal
 
-   /**
+  /**
    * Closes all modals, including the settings, message, and confirmation modals.
    */
-    const handleCloseAllModals = () => {
-    setIsMessageModalOpen(false); 
+  const handleCloseAllModals = () => {
+    setIsMessageModalOpen(false);
     setIsConfirmationModalOpen(false);
-    onClose(); 
+    onClose();
   };
 
   /**
@@ -66,7 +66,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
    */
   const closeConfirmationModal = () => {
     setIsConfirmationModalOpen(false);
-    setIsMessageModalOpen(false); 
+    setIsMessageModalOpen(false);
   };
 
   if (!isOpen) return null;
@@ -74,16 +74,16 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   return (
     <div className="settings-modal-container">
       <Modal isOpen={isOpen} onClose={handleCloseAllModals}>
-        <TitleModal>{ t('settings-title') }</TitleModal>
+        <TitleModal>{t('settings-title')}</TitleModal>
         <Button variant="circle" soundFXVolume={soundFXVolume} onClick={handleCloseAllModals}>
-          <img className="close-icon" src={closeIcon} alt="Close" />
+          <img className="close-icon" src={closeIcon} alt="Close"/>
         </Button>
 
         <div className="settings-overlay-container">
           <div className="settings-grid">
             <div className="settings-row-item">
               <div className="settings-row-item-title">
-                <p className="settings-modal-p">{ t('settings-modal-p-music') }</p>
+                <p className="settings-modal-p">{t('settings-modal-p-music')}</p>
               </div>
               <div className="slider">
                 <input
@@ -99,7 +99,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
             <div className="settings-row-item">
               <div className="settings-row-item-title">
-                <p className="settings-modal-p">{ t('settings-modal-p-sound-fx') }</p>
+                <p className="settings-modal-p">{t('settings-modal-p-sound-fx')}</p>
               </div>
               <div className="slider">
                 <input
@@ -115,45 +115,45 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
             <div className="settings-row-item">
               <div className="settings-row-item-title">
-                <p className="settings-modal-p">{ t('settings-modal-p-language') }</p>
+                <p className="settings-modal-p">{t('settings-modal-p-language')}</p>
               </div>
-              <LanguageSlider soundFXVolume={soundFXVolume} />
+              <LanguageSlider soundFXVolume={soundFXVolume}/>
             </div>
 
             <div className="settings-row-item">
               <div className="settings-row-item-title">
-                <p className="settings-modal-p">{ t('settings-modal-p-help') }</p>
+                <p className="settings-modal-p">{t('settings-modal-p-help')}</p>
               </div>
               <div className="settings-row-help-btn">
                 <Button variant="help" soundFXVolume={soundFXVolume} onClick={openMessageModal}>
-                  <span className="button-text">{ t('settings-modal-p-send-message') }</span>
+                  <span className="button-text">{t('settings-modal-p-send-message')}</span>
                 </Button>
               </div>
             </div>
           </div>
         </div>
 
-        <SettingsFooter />
+        <SettingsFooter/>
       </Modal>
 
       {/* MessageModal */}
       <MessageModal
         isOpen={isMessageModalOpen}
-        onClose={handleCloseAllModals} 
+        onClose={handleCloseAllModals}
         soundFXVolume={soundFXVolume}
-        setIsConfirmationModalOpen={setIsConfirmationModalOpen} 
+        setIsConfirmationModalOpen={setIsConfirmationModalOpen}
       />
 
       {/* ConfirmationModal */}
       {isConfirmationModalOpen && (
         <div className="confirmation-modal-container">
-            <img src={ BackgroundImg } className="confirmation-modal-background-img" alt="Modal background" />
-            <div className="confirmation-modal-content">
-              <p>Your message has been sent successfully!</p>
-              <Button variant="primary-1" soundFXVolume={soundFXVolume} onClick={closeConfirmationModal}>
-                <span>OK</span>
-              </Button>
-            </div>
+          <img src={BackgroundImg} className="confirmation-modal-background-img" alt="Modal background"/>
+          <div className="confirmation-modal-content">
+            <p>Your message has been sent successfully!</p>
+            <Button variant="primary-1" soundFXVolume={soundFXVolume} onClick={closeConfirmationModal}>
+              <span>OK</span>
+            </Button>
+          </div>
         </div>
       )}
     </div>

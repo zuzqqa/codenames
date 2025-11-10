@@ -1,6 +1,5 @@
-import { useNavigate } from "react-router-dom"; // Hook for programmatic navigation
-import React, { useEffect } from "react"; // Hook for managing component state and effects
-import { useTranslation } from "react-i18next"; // Hook for translation
+import { useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
 
 import BackgroundContainer from "../../containers/Background/Background";
 
@@ -16,10 +15,10 @@ import "./LoadingPage.css";
  * Props type definition for the LoadingPage component.
  */
 interface LoadingPageProps {
-  setVolume: (volume: number) => void; // Function to set global volume
-  soundFXVolume: number; // Current sound effects volume level
-  setSoundFXVolume: (volume: number) => void; // Function to set sound effects volume
-  duration?: number; // Optional duration for the loading screen
+  setVolume: (volume: number) => void;
+  soundFXVolume: number;
+  setSoundFXVolume: (volume: number) => void;
+  duration?: number;
 }
 
 /**
@@ -29,34 +28,32 @@ interface LoadingPageProps {
  * @returns {JSX.Element} The rendered LoadingPage component.
  */
 const LoadingPage: React.FC<LoadingPageProps> = ({ soundFXVolume, duration }) => {
-  const { t } = useTranslation(); // Hook for translation
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const defaultDuration = 3; // Default duration in seconds
+    const defaultDuration = 3;
     const effectiveDuration = duration ?? defaultDuration;
     const timer = setTimeout(() => {
       const endpoint = localStorage.getItem("userId") ? "/game-lobby" : "/";
-      navigate(endpoint); // Navigate to "/" after the progress bar is full
-    }, effectiveDuration * 1000); // Convert seconds to milliseconds
+      navigate(endpoint);
+    }, effectiveDuration * 1000);
 
     const progressBar = document.getElementById("progressBar");
     if (progressBar) {
       progressBar.style.setProperty(
-          "--progress-duration",
-          `${effectiveDuration}s`
+        "--progress-duration",
+        `${effectiveDuration}s`
       );
     }
 
-    return () => clearTimeout(timer); // Cleanup the timer
+    return () => clearTimeout(timer);
   }, [navigate, duration]);
 
   return (
     <BackgroundContainer>
       <div className="start-container">
-        {/* Initial state before starting the game */}
         <div className="character-image-start">
-          <img src={characters} alt="Characters" />
+          <img src={characters} alt="Characters"/>
         </div>
         <div className="start-text-container">
           <TitleComponent soundFXVolume={soundFXVolume} variant="start-title">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -14,7 +14,6 @@ import "./RoomLobby.css";
 import { apiUrl, frontendUrl, socketUrl } from "../../config/api.tsx";
 import { getCookie, getUserId } from "../../shared/utils.tsx";
 import { io } from "socket.io-client";
-import DiscordLoginButton from "../DiscordAuthentication/DiscordLoginButton.tsx";
 import { useToast } from "../Toast/ToastContext.tsx";
 
 /**
@@ -440,7 +439,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
           soundFXVolume={soundFXVolume}
           onClick={removePlayer}
         >
-          <img src={backButton} alt="Back" className="btn-arrow-back" />
+          <img src={backButton} alt="Back" className="btn-arrow-back"/>
         </Button>
         <span className="room-form-label">{t("game-lobby")}</span>
         <div className="room-lobby-divider">
@@ -477,7 +476,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                 }`}
                 onClick={handleLobbyLinkIsleUnroll}
               >
-                <img src={messageIcon} alt="Link" className="isle-image" />
+                <img src={messageIcon} alt="Link" className="isle-image"/>
                 <p className="isle-title">{t("invite-friends")}</p>
                 <p className="isle-text">{t("invite-friends-text")}</p>
                 <p className="isle-fields">

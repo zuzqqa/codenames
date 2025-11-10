@@ -224,12 +224,10 @@ const Gameplay: React.FC<GameplayProps> = ({
     } else if (amIRedTeamLeader) {
       return bannerRedLeader;
     } else if (myTeam === "blue" && amICurrentLeader) {
-        return bannerBlueGuesser;
-    }
-    else if (myTeam === "red" && amICurrentLeader) {
-        return bannerRedGuesser;
-    }
-    else {
+      return bannerBlueGuesser;
+    } else if (myTeam === "red" && amICurrentLeader) {
+      return bannerRedGuesser;
+    } else {
       return myTeam === "blue" ? bannerBlue : bannerRed;
     }
   };
@@ -1030,9 +1028,9 @@ const Gameplay: React.FC<GameplayProps> = ({
         </span>
 
         <Button
-            variant="tutorial"
-            soundFXVolume={soundFXVolume}
-            onClick={toggleTutorial}
+          variant="tutorial"
+          soundFXVolume={soundFXVolume}
+          onClick={toggleTutorial}
         >
           ?
         </Button>
@@ -1041,16 +1039,16 @@ const Gameplay: React.FC<GameplayProps> = ({
           soundFXVolume={soundFXVolume}
           onClick={toggleSettings}
         >
-          <img src={settingsIcon} alt="Settings" />
+          <img src={settingsIcon} alt="Settings"/>
         </Button>
-        <Profile soundFXVolume={soundFXVolume} />
+        <Profile soundFXVolume={soundFXVolume}/>
 
         <Button
           variant="logout"
           soundFXVolume={soundFXVolume}
           onClick={toggleQuitModal}
         >
-          <img src={logoutButton} alt="Home" />
+          <img src={logoutButton} alt="Home"/>
         </Button>
 
         <SettingsModal
@@ -1065,9 +1063,9 @@ const Gameplay: React.FC<GameplayProps> = ({
           setSoundFXVolume={setSoundFXVolume}
         />
         <TutorialModal
-            isOpen={isTutorialOpen}
-            onClose={toggleTutorial}
-            soundFXVolume={soundFXVolume}
+          isOpen={isTutorialOpen}
+          onClose={toggleTutorial}
+          soundFXVolume={soundFXVolume}
         />
         <QuitModal
           isOpen={isQuitModalOpen}
@@ -1092,18 +1090,18 @@ const Gameplay: React.FC<GameplayProps> = ({
           </Button>
         </QuitModal>
 
-        <img className="polygon1" src={polygon1Img} />
-        <img className="polygon2" src={polygon2Img} />
+        <img className="polygon1" src={polygon1Img}/>
+        <img className="polygon2" src={polygon2Img}/>
         <div className="timer points-red">{redTeamScore} / 9</div>
         <div className="timer points-blue">{blueTeamScore} / 8</div>
         {amICurrentLeader ? (
-            <div className="banner-container-2">
-              <img src={getBanner()} />
-            </div>
-            ) : (
-            <div className="banner-container">
-              <img src={getBanner()} />
-            </div>
+          <div className="banner-container-2">
+            <img src={getBanner()}/>
+          </div>
+        ) : (
+          <div className="banner-container">
+            <img src={getBanner()}/>
+          </div>
         )}
 
         <div className="content-container">
@@ -1127,23 +1125,23 @@ const Gameplay: React.FC<GameplayProps> = ({
                 onMouseEnter={
                   flipStates[index]
                     ? () => {
-                        setHoverStates((prev) => ({
-                          ...prev,
-                          [index]: "enter",
-                        }));
-                        playCardSound();
-                      }
+                      setHoverStates((prev) => ({
+                        ...prev,
+                        [index]: "enter",
+                      }));
+                      playCardSound();
+                    }
                     : undefined
                 }
                 onMouseLeave={
                   flipStates[index]
                     ? () => {
-                        setHoverStates((prev) => ({
-                          ...prev,
-                          [index]: "leave",
-                        }));
-                        playCardSound();
-                      }
+                      setHoverStates((prev) => ({
+                        ...prev,
+                        [index]: "leave",
+                      }));
+                      playCardSound();
+                    }
                     : undefined
                 }
               >
@@ -1154,19 +1152,19 @@ const Gameplay: React.FC<GameplayProps> = ({
                   src={
                     amIRedTeamLeader || amIBlueTeamLeader
                       ? (() => {
-                          const cardColor =
-                            gameSession?.gameState.cardsColors[index];
-                          switch (cardColor) {
-                            case 1:
-                              return cardRedImg;
-                            case 2:
-                              return cardBlueImg;
-                            case 3:
-                              return cardBlackImg;
-                            default:
-                              return cardWhiteImg;
-                          }
-                        })()
+                        const cardColor =
+                          gameSession?.gameState.cardsColors[index];
+                        switch (cardColor) {
+                          case 1:
+                            return cardRedImg;
+                          case 2:
+                            return cardBlueImg;
+                          case 3:
+                            return cardBlackImg;
+                          default:
+                            return cardWhiteImg;
+                        }
+                      })()
                       : cardImage
                   }
                   alt={`card-${index}`}
@@ -1204,7 +1202,7 @@ const Gameplay: React.FC<GameplayProps> = ({
           </div>
           <div className="bottom-section">
             <div className="item">
-              <Chat />
+              <Chat/>
             </div>
             <div className="item">
               <Button
@@ -1233,10 +1231,10 @@ const Gameplay: React.FC<GameplayProps> = ({
                   {amICurrentLeader ? t("pass-round") : t("end-round")}
                 </span>
               </Button>
-              <div className="horizontal-gold-bar" />
+              <div className="horizontal-gold-bar"/>
             </div>
             <div className="item codename-item">
-              <img className="card-stack" src={cardsStackImg} />
+              <img className="card-stack" src={cardsStackImg}/>
               <div
                 className={`codename-card-container ${
                   amIChoosingHint ? "pulsing" : ""
@@ -1249,11 +1247,11 @@ const Gameplay: React.FC<GameplayProps> = ({
                     {gameSession?.gameState.hintNumber === "0"
                       ? ""
                       : gameSession?.gameState.hintNumber +
-                        "/" +
-                        gameSession?.gameState.initialHintNumber}
+                      "/" +
+                      gameSession?.gameState.initialHintNumber}
                   </span>
                 </div>
-                <img className="codename-card" src={cardBlackImg} />
+                <img className="codename-card" src={cardBlackImg}/>
               </div>
             </div>
           </div>
@@ -1317,9 +1315,9 @@ const Gameplay: React.FC<GameplayProps> = ({
                     (!amIRedTeamLeader && !amIBlueTeamLeader) ||
                     whosTurn !== myTeam ||
                     cardNumber >=
-                      (whosTurn === "blue"
-                        ? 8 - blueTeamScore
-                        : 9 - redTeamScore)
+                    (whosTurn === "blue"
+                      ? 8 - blueTeamScore
+                      : 9 - redTeamScore)
                   }
                 >
                   +
@@ -1327,7 +1325,6 @@ const Gameplay: React.FC<GameplayProps> = ({
               </div>
               <div className="cancel-confirm-buttons">
                 <Button
-                  // type="submit"
                   variant="primary"
                   soundFXVolume={soundFXVolume}
                   onClick={() => setIsCardVisible(false)}
@@ -1335,7 +1332,6 @@ const Gameplay: React.FC<GameplayProps> = ({
                   <span className="button-text">{t("cancel-button")}</span>
                 </Button>
                 <Button
-                  // type="submit"
                   variant="primary"
                   soundFXVolume={soundFXVolume}
                   onClick={() => {

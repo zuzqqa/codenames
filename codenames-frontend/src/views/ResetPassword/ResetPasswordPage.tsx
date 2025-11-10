@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
@@ -37,17 +37,17 @@ interface ResetPasswordProps {
 }
 
 const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
-  setVolume,
-  soundFXVolume,
-  setSoundFXVolume,
-}) => {
+                                                           setVolume,
+                                                           soundFXVolume,
+                                                           setSoundFXVolume,
+                                                         }) => {
   const [password, setPassword] = useState<string>("");
   const [passwordRepeat, setPasswordRepeat] = useState<string>("");
   const [musicVolume, setMusicVolume] = useState(() => {
     const savedVolume = localStorage.getItem("musicVolume");
     return savedVolume ? parseFloat(savedVolume) : 50;
   });
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -174,7 +174,7 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
 
   return (
     <BackgroundContainer>
-      <GameTitleBar />
+      <GameTitleBar/>
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={toggleSettings}
@@ -188,13 +188,13 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
         soundFXVolume={soundFXVolume}
         onClick={toggleSettings}
       >
-        <img src={settingsIcon} alt="Settings" />
+        <img src={settingsIcon} alt="Settings"/>
       </Button>
       {document.cookie
         .split("; ")
         .find((cookie) => cookie.startsWith("loggedIn=")) && (
         <Button variant="logout" soundFXVolume={soundFXVolume}>
-          <img src={logoutButtonIcon} onClick={logout} alt="Logout" />
+          <img src={logoutButtonIcon} onClick={logout} alt="Logout"/>
         </Button>
       )}
       <LoginRegisterContainer variant="reset">

@@ -1,5 +1,5 @@
-import {useEffect, useState} from "react";
-import {useTranslation} from "react-i18next";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import closeIcon from "../../assets/icons/close.png";
 import checkmarkIcon from "../../assets/icons/check.png";
@@ -24,9 +24,9 @@ import useFriendRequestsSocketIO from "./useFriendRequestsSocketIO.tsx";
 
 import "./ProfileModal.css";
 
-import {apiUrl} from "../../config/api.tsx";
-import {getUserId} from "../../shared/utils.tsx";
-import {useToast} from "../Toast/ToastContext.tsx";
+import { apiUrl } from "../../config/api.tsx";
+import { getUserId } from "../../shared/utils.tsx";
+import { useToast } from "../Toast/ToastContext.tsx";
 
 interface ProfileModalProps {
   soundFXVolume: number;
@@ -51,9 +51,9 @@ interface UserList {
 
 const availableProfilePics = [0, 1, 2, 3, 4];
 
-const ProfileModal: React.FC<ProfileModalProps> = ({soundFXVolume, isOpen, onClose}) => {
-  const {t} = useTranslation();
-  const {addToast} = useToast();
+const ProfileModal: React.FC<ProfileModalProps> = ({ soundFXVolume, isOpen, onClose }) => {
+  const { t } = useTranslation();
+  const { addToast } = useToast();
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [editedUsername, setEditedUsername] = useState("");
@@ -65,7 +65,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({soundFXVolume, isOpen, onClo
     "../../assets/images/profile-pic-default.png"
   );
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<UserList>({users: []});
+  const [searchResults, setSearchResults] = useState<UserList>({ users: [] });
   const [activeTab, setActiveTab] = useState<"friends" | "invitations" | "search">("friends");
 
   const initialFriendState = currentUser ? {
@@ -86,12 +86,12 @@ const ProfileModal: React.FC<ProfileModalProps> = ({soundFXVolume, isOpen, onClo
   } = useFriendRequestsSocketIO(currentUser?.username || "", initialFriendState);
 
   const tabIcons = {
-    friends: {default: friendsIcon, picked: friendsIconPicked},
+    friends: { default: friendsIcon, picked: friendsIconPicked },
     invitations: {
       default: friendRequestsIcon,
       picked: friendRequestsIconPicked,
     },
-    search: {default: searchIcon, picked: searchIconPicked},
+    search: { default: searchIcon, picked: searchIconPicked },
   };
 
   useEffect(() => {
@@ -147,7 +147,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({soundFXVolume, isOpen, onClo
     try {
       const response = await fetch(`${apiUrl}/api/users/${currentUser.id}`, {
         method: "PUT",
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
           id: currentUser.id,

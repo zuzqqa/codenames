@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router-dom"; // Hook for programmatic navigation
-import React, { useState, useEffect } from "react"; // Hook for managing component state and effects
-import { useTranslation } from "react-i18next"; // Hook for translation
+import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import BackgroundContainer from "../../containers/Background/Background";
 import MenuContainer from "../../containers/Menu/Menu";
@@ -15,9 +15,8 @@ import characters from "../../assets/images/characters.png";
 
 import "../../styles/App.css";
 import "./Home.css";
-import Cookies from "js-cookie"; // Import js-cookie for cookie handling
-import { apiUrl } from "../../config/api.tsx";
-import { secure } from "../../config/api.tsx";
+import Cookies from "js-cookie";
+import { apiUrl, secure } from "../../config/api.tsx";
 
 export async function createGuestUser(apiUrl: string, secure: string) {
   try {
@@ -46,9 +45,9 @@ export async function createGuestUser(apiUrl: string, secure: string) {
  * Props type definition for the Home component.
  */
 interface HomeProps {
-  setVolume: (volume: number) => void; // Function to set global volume
-  soundFXVolume: number; // Current sound effects volume level
-  setSoundFXVolume: (volume: number) => void; // Function to set sound effects volume
+  setVolume: (volume: number) => void;
+  soundFXVolume: number;
+  setSoundFXVolume: (volume: number) => void;
 }
 
 /**
@@ -58,19 +57,18 @@ interface HomeProps {
  * @returns {JSX.Element} The rendered Home component.
  */
 const Home: React.FC<HomeProps> = ({
-  setVolume,
-  soundFXVolume,
-  setSoundFXVolume,
-}) => {
-  // State variables for managing component behavior
-  const [isGameStarted, setIsGameStarted] = useState(false); // Tracks if the game has started
+                                     setVolume,
+                                     soundFXVolume,
+                                     setSoundFXVolume,
+                                   }) => {
+  const [isGameStarted, setIsGameStarted] = useState(false);
   const [musicVolume, setMusicVolume] = useState(() => {
     const savedVolume = localStorage.getItem("musicVolume");
     return savedVolume ? parseFloat(savedVolume) : 50;
   });
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
-  const { t } = useTranslation(); // Hook for translation
-  const navigate = useNavigate(); // Hook for navigation
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { t } = useTranslation();
+  const navigate = useNavigate();
 
   /**
    * Starts the game by updating the state.
@@ -94,16 +92,14 @@ const Home: React.FC<HomeProps> = ({
    * Effect that checks if the user is logged in using cookies and navigates to the games page if authenticated.
    */
   useEffect(() => {
-    const loggedIn = Cookies.get("loggedIn"); // Retrieve the cookie value
+    const loggedIn = Cookies.get("loggedIn");
 
     if (sessionStorage.getItem("gameId") && loggedIn === "true") {
-      // If a game ID exists in localStorage and the user is logged in, navigate to the loading page
       navigate("/game-lobby");
     }
 
-    // Ensure 'loggedIn' is true
     if (loggedIn === "true") {
-      navigate("/games"); // Redirect to /games if logged in
+      navigate("/games");
     }
   }, [navigate]);
 
@@ -114,7 +110,7 @@ const Home: React.FC<HomeProps> = ({
    */
   const updateMusicVolume = (volume: number) => {
     setMusicVolume(volume);
-    setVolume(volume); // Update global volume
+    setVolume(volume);
   };
 
   return (
@@ -143,7 +139,7 @@ const Home: React.FC<HomeProps> = ({
             <TitleComponent soundFXVolume={soundFXVolume}>
               Codenames
             </TitleComponent>
-            <CharactersComponent />
+            <CharactersComponent/>
             <SubtitleComponent variant="primary">
               {t("home-subtitle")}
             </SubtitleComponent>
@@ -191,7 +187,7 @@ const Home: React.FC<HomeProps> = ({
             <div className="start-container">
               {/* Initial state before starting the game */}
               <div className="character-image-start">
-                <img src={characters} alt="Characters" />
+                <img src={characters} alt="Characters"/>
               </div>
               <div className="start-text-container">
                 <TitleComponent

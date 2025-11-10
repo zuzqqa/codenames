@@ -23,9 +23,9 @@ interface SearchModalProps {
  * @returns {JSX.Element | null} - Rendered component or null if modal is closed
  */
 const SearchModal: React.FC<SearchModalProps> = ({
-  isOpen,
-  onClose
-}) => {
+                                                   isOpen,
+                                                   onClose
+                                                 }) => {
   // If the modal is not open, return null to render nothing
   if (!isOpen) return null;
 
@@ -37,21 +37,21 @@ const SearchModal: React.FC<SearchModalProps> = ({
   };
 
   return (
-        <Modal isOpen={isOpen} onClose={toggleModal}>
-        {/* Modal header with title */}
-        <div search-modal-content>
-            <img src={searchBar} alt="searchbar" className="search-bar-background"/>
-            <div className="search-bar-container">
-                <div className="search-input-container">
-                <input
-                        className="input-field"
-                        placeholder="search"
-                />
-                </div>
-                <img src={searchIcon} alt="search" className="search-icon" onClick={toggleModal}/>
-            </div>
+    <Modal isOpen={isOpen} onClose={toggleModal}>
+      {/* Modal header with title */}
+      <div search-modal-content>
+        <img src={searchBar} alt="searchbar" className="search-bar-background"/>
+        <div className="search-bar-container">
+          <div className="search-input-container">
+            <input
+              className="input-field"
+              placeholder="search"
+            />
+          </div>
+          <img src={searchIcon} alt="search" className="search-icon" onClick={toggleModal}/>
         </div>
-        </Modal>
+      </div>
+    </Modal>
   );
 };
 

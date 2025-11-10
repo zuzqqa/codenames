@@ -15,8 +15,8 @@
 
 .first-column {
   display: grid;
-  grid-template-rows: 0.8fr 0.8fr; 
-  grid-row: 2 / span 2; 
+  grid-template-rows: 0.8fr 0.8fr;
+  grid-row: 2 / span 2;
 }
 
 .row1,
@@ -27,7 +27,7 @@
 }
 
 .row2 {
-  padding-top: 1rem; 
+  padding-top: 1rem;
 }
 
 .second-column {
@@ -42,7 +42,7 @@
 
 .gold-bar {
   grid-column: 2;
-  grid-row: 1 / span 4; 
+  grid-row: 1 / span 4;
 
   height: 62.7%;
   width: 2px;
@@ -83,7 +83,7 @@
 }
 
 .character-image-start img {
-width: clamp(500px, 40vw, 650px);
+  width: clamp(500px, 40vw, 650px);
   max-width: 90vw;
   position: relative;
   z-index: 0;

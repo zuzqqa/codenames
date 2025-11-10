@@ -10,10 +10,10 @@ interface AuthCallbackProps {
 }
 
 export default function AuthCallback({
-  setVolume,
-  soundFXVolume,
-  setSoundFXVolume,
-}: AuthCallbackProps) {
+                                       setVolume,
+                                       soundFXVolume,
+                                       setSoundFXVolume,
+                                     }: AuthCallbackProps) {
   const navigate = useNavigate();
 
   useEffect(() => {

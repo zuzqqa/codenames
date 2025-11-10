@@ -78,7 +78,7 @@ form {
 #gameName::placeholder {
   color: #5b544e;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2),
-    -1px -1px 2px rgba(255, 255, 255, 0.7);
+  -1px -1px 2px rgba(255, 255, 255, 0.7);
   opacity: 0.3;
 }
 
@@ -106,7 +106,7 @@ form {
   border-radius: 12px;
   outline: none;
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1),
-    -5px -5px 10px rgba(255, 255, 255, 0.45);
+  -5px -5px 10px rgba(255, 255, 255, 0.45);
   transition: 0.3s ease;
   text-indent: 1px;
 }
@@ -120,14 +120,14 @@ form {
   font-size: calc(0.3rem + 1vw);
   color: #5b544e;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2),
-    -1px -1px 2px rgba(255, 255, 255, 0.7);
+  -1px -1px 2px rgba(255, 255, 255, 0.7);
 }
 
 .password-input::placeholder {
   color: #5b544e;
   opacity: 0.3;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2),
-    -1px -1px 2px rgba(255, 255, 255, 0.7);
+  -1px -1px 2px rgba(255, 255, 255, 0.7);
 }
 
 .room-form-divider {

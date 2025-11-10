@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import RoomLobby from "./RoomLobby";
 import { io } from "socket.io-client";
 
@@ -108,7 +108,7 @@ describe("RoomLobby", () => {
   });
 
   it("renders game session data", async () => {
-    render(<RoomLobby soundFXVolume={50} />);
+    render(<RoomLobby soundFXVolume={50}/>);
 
     await waitFor(() => {
       expect(screen.getByText("Test Game")).toBeInTheDocument();
@@ -118,7 +118,7 @@ describe("RoomLobby", () => {
   });
 
   it("displays players in red and blue teams", async () => {
-    render(<RoomLobby soundFXVolume={50} />);
+    render(<RoomLobby soundFXVolume={50}/>);
 
     await waitFor(() => {
       expect(screen.getByText("Player1")).toBeInTheDocument();
@@ -128,7 +128,7 @@ describe("RoomLobby", () => {
 
   it("joins red team when join red button is clicked", async () => {
     const user = userEvent.setup();
-    render(<RoomLobby soundFXVolume={50} />);
+    render(<RoomLobby soundFXVolume={50}/>);
 
     await waitFor(() => {
       expect(screen.getByText("Test Game")).toBeInTheDocument();
@@ -150,7 +150,7 @@ describe("RoomLobby", () => {
 
   it("joins blue team when join blue button is clicked", async () => {
     const user = userEvent.setup();
-    render(<RoomLobby soundFXVolume={50} />);
+    render(<RoomLobby soundFXVolume={50}/>);
 
     await waitFor(() => {
       expect(screen.getByText("Test Game")).toBeInTheDocument();
@@ -191,7 +191,7 @@ describe("RoomLobby", () => {
     }) as any;
 
     const user = userEvent.setup();
-    render(<RoomLobby soundFXVolume={50} />);
+    render(<RoomLobby soundFXVolume={50}/>);
 
     await waitFor(() => {
       expect(screen.getByText("Test Game")).toBeInTheDocument();
@@ -267,7 +267,7 @@ describe("RoomLobby", () => {
     }) as any;
 
     const user = userEvent.setup();
-    render(<RoomLobby soundFXVolume={50} />);
+    render(<RoomLobby soundFXVolume={50}/>);
 
     await waitFor(() => {
       expect(screen.getByText("Test Game")).toBeInTheDocument();
@@ -283,7 +283,7 @@ describe("RoomLobby", () => {
 
   it("shows notification after copying link", async () => {
     const user = userEvent.setup();
-    render(<RoomLobby soundFXVolume={50} />);
+    render(<RoomLobby soundFXVolume={50}/>);
 
     await waitFor(() => {
       expect(screen.getByText("Test Game")).toBeInTheDocument();
@@ -301,7 +301,7 @@ describe("RoomLobby", () => {
   });
 
   it("navigates to choose-leader when gameSessionUpdate received with LEADER_SELECTION status", async () => {
-    render(<RoomLobby soundFXVolume={50} />);
+    render(<RoomLobby soundFXVolume={50}/>);
 
     await waitFor(() => {
       expect(mockSocket.on).toHaveBeenCalledWith(
@@ -329,7 +329,7 @@ describe("RoomLobby", () => {
   });
 
   it("connects to game socket on mount", async () => {
-    render(<RoomLobby soundFXVolume={50} />);
+    render(<RoomLobby soundFXVolume={50}/>);
 
     await waitFor(() => {
       expect(io).toHaveBeenCalledWith(
@@ -344,7 +344,7 @@ describe("RoomLobby", () => {
   });
 
   it("emits joinGame event on socket connect", async () => {
-    render(<RoomLobby soundFXVolume={50} />);
+    render(<RoomLobby soundFXVolume={50}/>);
 
     await waitFor(() => {
       expect(mockSocket.on).toHaveBeenCalledWith(
@@ -366,7 +366,7 @@ describe("RoomLobby", () => {
 
   it("navigates back and removes gameId when back button is clicked", async () => {
     const user = userEvent.setup();
-    render(<RoomLobby soundFXVolume={50} />);
+    render(<RoomLobby soundFXVolume={50}/>);
 
     await waitFor(() => {
       expect(screen.getByText("Test Game")).toBeInTheDocument();
@@ -382,13 +382,13 @@ describe("RoomLobby", () => {
   it("navigates to join-game if no gameId in sessionStorage", () => {
     Storage.prototype.getItem = vi.fn(() => null);
 
-    render(<RoomLobby soundFXVolume={50} />);
+    render(<RoomLobby soundFXVolume={50}/>);
 
     expect(mockNavigate).toHaveBeenCalledWith("/join-game");
   });
 
   it("updates team players when gameSessionUpdate is received", async () => {
-    render(<RoomLobby soundFXVolume={50} />);
+    render(<RoomLobby soundFXVolume={50}/>);
 
     await waitFor(() => {
       expect(mockSocket.on).toHaveBeenCalledWith(
@@ -441,7 +441,7 @@ describe("RoomLobby", () => {
 
   it("copies lobby link to clipboard when copy button is clicked", async () => {
     const user = userEvent.setup();
-    render(<RoomLobby soundFXVolume={50} />);
+    render(<RoomLobby soundFXVolume={50}/>);
 
     await waitFor(() => {
       expect(screen.getByText("Test Game")).toBeInTheDocument();
