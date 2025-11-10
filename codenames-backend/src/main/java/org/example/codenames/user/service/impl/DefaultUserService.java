@@ -4,10 +4,15 @@ import com.github.javafaker.Faker;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import jakarta.servlet.http.HttpServletRequest;
+
+import lombok.extern.slf4j.Slf4j;
 import org.example.codenames.tokens.passwordResetToken.entity.PasswordResetToken;
 import org.example.codenames.tokens.passwordResetToken.repository.api.PasswordResetTokenRepository;
 import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetServiceToken;
 import org.example.codenames.user.entity.User;
+import org.example.codenames.user.entity.dto.GetFriendDataResponse;
+import org.example.codenames.user.entity.dto.GetUserResponse;
+import org.example.codenames.user.entity.mapper.UserMapper;
 import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +30,7 @@ import java.util.Optional;
  * Default implementation of the {@link UserService} interface.
  */
 @Service
+@Slf4j
 public class DefaultUserService implements UserService {
     /**
      * The user repository.
@@ -52,10 +58,10 @@ public class DefaultUserService implements UserService {
     /**
      * Constructs a new DefaultUserService with the given user repository, password encoder, passwordResetTokenRepository and passwordResetService.
      *
-     * @param userRepository               the user repository
-     * @param passwordEncoder              the password encoder
+     * @param userRepository the user repository
+     * @param passwordEncoder the password encoder
      * @param passwordResetTokenRepository the password reset tokens repository
-     * @param passwordResetServiceToken    the password reset service
+     * @param passwordResetServiceToken the password reset service
      */
     @Autowired
     public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PasswordResetTokenRepository passwordResetTokenRepository, PasswordResetServiceToken passwordResetServiceToken, HazelcastInstance hazelcastInstance) {
@@ -148,12 +154,11 @@ public class DefaultUserService implements UserService {
      */
     /**
      * Updates a user by their ID.
-     *
-     * @param id          the ID of the user
+     * @param id the ID of the user
      * @param updatedUser the updated user
      * @return the updated user, if found
      */
-    public Optional<User> updateUser(String id, User updatedUser) {
+    public Optional<GetUserResponse> updateUser(String id, User updatedUser) {
         return Optional.ofNullable(userRepository.findById(id)
                 .map(user -> {
                     user.setUsername(updatedUser.getUsername());
@@ -165,7 +170,7 @@ public class DefaultUserService implements UserService {
                     if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
                         user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
                     }
-                    return userRepository.save(user);
+                    return UserMapper.toGetUserResponse(userRepository.save(user));
                 })
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + id)));
     }
@@ -178,13 +183,29 @@ public class DefaultUserService implements UserService {
      */
     @Override
     public List<User> searchActiveUsersByUsername(String username) {
-        return userRepository.findByUsernameContainingAndStatus(username, User.userStatus.valueOf(String.valueOf(User.userStatus.ACTIVE)));
+        return userRepository.findByUsernameContainingAndStatusAndIsGuest(username, User.userStatus.valueOf(String.valueOf(User.userStatus.ACTIVE)), false);
+    }
+
+    @Override
+    public GetFriendDataResponse getFriendData(String username) {
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isPresent()) {
+            User u = user.get();
+            return GetFriendDataResponse.builder()
+                    .friends(u.getFriends())
+                    .receivedRequests(u.getReceivedRequests())
+                    .sentRequests(u.getSentRequests())
+                    .build();
+        } else {
+            log.warn("User not found when trying to get friend data for username: {}", username);
+            return null;
+        }
     }
 
     /**
      * Sends a friend request from one user to another.
      *
-     * @param senderUsername   the username of the sender
+     * @param senderUsername the username of the sender
      * @param receiverUsername the username of the receiver
      */
     @Override
@@ -211,7 +232,7 @@ public class DefaultUserService implements UserService {
      * Accepts a friend request.
      *
      * @param receiverUsername the username of the user accepting the request
-     * @param senderUsername   the username of the user who sent the request
+     * @param senderUsername the username of the user who sent the request
      */
     @Override
     public void acceptFriendRequest(String receiverUsername, String senderUsername) {
@@ -236,7 +257,7 @@ public class DefaultUserService implements UserService {
      * Declines a friend request.
      *
      * @param receiverUsername the username of the user declining the request
-     * @param senderUsername   the username of the user who sent the request
+     * @param senderUsername the username of the user who sent the request
      */
     @Override
     public void declineFriendRequest(String receiverUsername, String senderUsername) {
@@ -275,8 +296,8 @@ public class DefaultUserService implements UserService {
     /**
      * Resets the user's password based on the provided token.
      *
-     * @param token    the reset token provided by the user
-     * @param request  the HTTP request containing additional context (such as IP address) for the password reset operation
+     * @param token the reset token provided by the user
+     * @param request the HTTP request containing additional context (such as IP address) for the password reset operation
      * @param password the new password provided by the user
      * @return {@code true} if password reset was successful, {@code false} otherwise
      */

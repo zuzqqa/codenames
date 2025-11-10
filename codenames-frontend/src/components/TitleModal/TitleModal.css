@@ -14,7 +14,6 @@
   text-transform: uppercase;
   letter-spacing: 2px;
 
-  /* Gradient text effect */
   background-image: linear-gradient(to bottom, #fcf18b, #ffd363);
   background-clip: text;
   -webkit-background-clip: text;
@@ -38,13 +37,11 @@
   text-transform: uppercase;
   letter-spacing: 2px;
 
-  /* Gradient text effect for shadow */
   background-image: linear-gradient(to bottom, #fcf18b, #ffd363);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
 
-  /* Shadow positioning and effect */
   position: absolute;
   left: 0;
   top: 1rem;

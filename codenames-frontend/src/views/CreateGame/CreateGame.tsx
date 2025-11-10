@@ -19,6 +19,7 @@ import "./CreateGame.css";
 import { getCookie, logout } from "../../shared/utils.tsx";
 import { apiUrl } from "../../config/api.tsx";
 import UsernameContainer from "../../containers/UsernameContainer/UsernameContainer.tsx";
+import Profile from "../../components/Profile/Profile.tsx";
 
 /**
  * Props interface for CreateGame component.
@@ -48,58 +49,13 @@ const CreateGame: React.FC<CreateGameProps> = ({
 }) => {
   const [musicVolume, setMusicVolume] = useState(50); // Music volume level
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
-  const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
-  const [isGuest, setIsGuest] = useState<boolean | null>(null);
-  const [username, setUsername] = useState<string | null>(null);
   const { t } = useTranslation();
-
-  /**
-   * Effect to fetch guest status from the server.
-   * It checks if the user is a guest and updates the state accordingly.
-   */
-  useEffect(() => {
-    const fetchGuestStatus = async () => {
-      const token = getCookie("authToken");
-
-      if (!token) {
-        return;
-      }
-
-      try {
-        const response = await fetch(`${apiUrl}/api/users/is-guest`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (response.ok) {
-          const guestStatus = await response.json();
-          setIsGuest(guestStatus);
-        } else {
-          console.error("Failed to retrieve guest status.");
-        }
-      } catch (error) {
-        console.error("Error retrieving guest status: ", error);
-      }
-    };
-
-    fetchGuestStatus();
-  }, []);
 
   /**
    * Toggles the settings modal visibility.
    */
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
-  };
-
-  /**
-   * Toggles the profile modal visibility.
-   */
-  const toggleProfile = () => {
-    setIsProfileOpen(!isProfileOpen);
   };
 
   return (
@@ -112,11 +68,7 @@ const CreateGame: React.FC<CreateGameProps> = ({
         >
           <img src={settingsIcon} alt="Settings" />
         </Button>
-        {isGuest === false && (
-          <Button variant="circle-profile" soundFXVolume={soundFXVolume}>
-            <img src={profileIcon} onClick={toggleProfile} alt="Profile" />
-          </Button>
-        )}
+        <Profile soundFXVolume={soundFXVolume} />
 
         {document.cookie
           .split("; ")
@@ -140,11 +92,6 @@ const CreateGame: React.FC<CreateGameProps> = ({
             setVolume(volume / 100);
           }}
           setSoundFXVolume={setSoundFXVolume}
-        />
-        <ProfileModal
-          isOpen={isProfileOpen}
-          onClose={toggleProfile}
-          soundFXVolume={soundFXVolume}
         />
         <>
           <GameTitleBar></GameTitleBar>

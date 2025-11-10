@@ -15,5 +15,13 @@ public interface SocketService {
 
     void sendGameSessionUpdate(UUID gameId, GameSession gameSession) throws JsonProcessingException;
 
+    void emitFriendRequestEvent(String receiverUsername, String senderUsername) throws JsonProcessingException;
+
+    void emitFriendRequestDeclineEvent(String receiverUsername, String senderUsername) throws JsonProcessingException;
+
+    void emitFriendRequestAcceptEvent(String receiverUsername, String senderUsername) throws JsonProcessingException;
+
+    void emitRemoveFriendEvent(String removerUsername, String removedUsername) throws JsonProcessingException;
+
     void sendDiscordLinkInvite(UUID gameId, String discordLink) throws JsonProcessingException;
 }

@@ -35,6 +35,7 @@ import { io, Socket } from "socket.io-client";
 import { getUserId } from "../../shared/utils.tsx";
 import Cookies from "js-cookie";
 import QuitModal from "../../components/QuitModal/QuitModal.tsx";
+import Profile from "../../components/Profile/Profile.tsx";
 import TutorialModal from "../../components/TutorialModal/TutorialModal.tsx";
 
 /**
@@ -113,10 +114,10 @@ const generateId = () =>
  * @returns {JSX.Element} The rendered GameLobby component
  */
 const Gameplay: React.FC<GameplayProps> = ({
-  setVolume,
-  soundFXVolume,
-  setSoundFXVolume,
-}) => {
+                                             setVolume,
+                                             soundFXVolume,
+                                             setSoundFXVolume,
+                                           }) => {
   const [musicVolume, setMusicVolume] = useState(() => {
     const savedVolume = localStorage.getItem("musicVolume");
     return savedVolume ? parseFloat(savedVolume) : 50;
@@ -406,11 +407,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     gameSocket.on("disconnectUser", () => {
       setHasPlayerDisconnected(true);
       try {
-        const newError = {
-          id: generateId(),
-          message: t("user-disconnected"),
-        };
-        addToast(newError.message, "error");
+        addToast(t("user-disconnected"), "error");
       } catch (err) {
         console.error("Error parsing gameSessionsList JSON:", err);
       }
@@ -822,7 +819,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   }, [cardText, cardNumber]);
 
   /**
-   * Effect that handles the click outside of the card input area.
+   * Effect that handles the click outside the card input area.
    * If a click occurs outside the card input, it hides the card input and resets the card text and number.
    *
    * @returns {void} Cleanup function removes the event listener on component unmount.
@@ -934,7 +931,7 @@ const Gameplay: React.FC<GameplayProps> = ({
 
       changeTurn();
     } catch (err) {
-      addToast("An error occurred while sending the hint.", "error");
+      addToast(t("hint-error"), "error");
     }
     setCardText("");
   };
@@ -1046,6 +1043,7 @@ const Gameplay: React.FC<GameplayProps> = ({
         >
           <img src={settingsIcon} alt="Settings" />
         </Button>
+        <Profile soundFXVolume={soundFXVolume} />
 
         <Button
           variant="logout"

@@ -18,6 +18,7 @@ import {apiUrl, socketUrl} from "../../config/api.tsx";
 import {getUserId} from "../../shared/utils.tsx";
 import {io} from "socket.io-client";
 import UsernameContainer from "../../containers/UsernameContainer/UsernameContainer.tsx";
+import Profile from "../../components/Profile/Profile.tsx";
 
 /**
  * Props for the ChooseLeader component.
@@ -326,6 +327,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
                     }}
                     setSoundFXVolume={setSoundFXVolume}
                 />
+              <Profile soundFXVolume={soundFXVolume} />
                 <div className="content-container flex-start">
                     <div className="timer-container">
                         <div className="horizontal-gold-bar"></div>

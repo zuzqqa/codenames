@@ -15,6 +15,7 @@ import { apiUrl, frontendUrl, socketUrl } from "../../config/api.tsx";
 import { getCookie, getUserId } from "../../shared/utils.tsx";
 import { io } from "socket.io-client";
 import DiscordLoginButton from "../DiscordAuthentication/DiscordLoginButton.tsx";
+import { useToast } from "../Toast/ToastContext.tsx";
 
 /**
  * @returns {string} - The URL of the API.
@@ -96,7 +97,7 @@ interface GameSessionRoomLobbyDTO {
 const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-
+  const { addToast } = useToast();
   const [gameSession, setGameSession] =
     useState<GameSessionRoomLobbyDTO | null>(null);
   const [redTeamPlayers, setRedTeamPlayers] = useState<UserRoomLobbyDTO[]>([]);
@@ -106,7 +107,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
   const [isJoined, setIsJoined] = useState(false);
   const [isJoinedRed, setIsJoinedRed] = useState(false);
   const [isJoinedBlue, setIsJoinedBlue] = useState(false);
-  const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
   const [notifications, setNotifications] = useState<
     { id: string; message: string }[]
   >([]);
@@ -115,26 +115,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
   const exampleLink = `${frontendUrl}/invite/${sessionStorage.getItem(
     "gameId"
   )}`;
-
-  /**
-   * Handles manual closing of a toast error.
-   *
-   * - Fades out the toast visually before removing it from the state.
-   *
-   * @param {string} id - The unique identifier of the error toast to be closed.
-   */
-  const handleCloseErrorToast = (id: string) => {
-    const toastElement = document.getElementById(id);
-    if (toastElement) {
-      toastElement.classList.add("hide");
-
-      setTimeout(() => {
-        setErrors((prevErrors) =>
-          prevErrors.filter((error) => error.id !== id)
-        );
-      }, 500);
-    }
-  };
 
   /**
    * Initializes the WebSocket connection and fetches the game session data.
@@ -321,17 +301,12 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
    * Starts the game session.
    */
   const startGame = async () => {
-    const newErrors: { id: string; message: string }[] = [];
-    setErrors(newErrors);
 
     const storedGameId = sessionStorage.getItem("gameId");
     if (!storedGameId) return;
 
     if (redTeamPlayers.length < 2 || redTeamPlayers.length < 2) {
-      newErrors.push({
-        id: generateId(),
-        message: t("too-few-players"),
-      });
+      addToast(t("too-few-players"), "error");
       return;
     }
     try {
@@ -593,58 +568,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
             </div>
           )}
         </div>
-        {errors.length > 0 && (
-          <div className="toast-container">
-            {errors.map((error) => (
-              <div id={error.id} key={error.id} className="toast active">
-                <div className="toast-content">
-                  <i
-                    className="fa fa-exclamation-circle fa-3x"
-                    style={{ color: "#561723" }}
-                    aria-hidden="true"
-                  ></i>
-                  <div className="message">
-                    <span className="text text-1">Error</span>
-                    <span className="text text-2">{error.message}</span>
-                  </div>
-                </div>
-                <i
-                  className="fa-solid fa-xmark close"
-                  onClick={() => handleCloseErrorToast(error.id)}
-                ></i>
-                <div className="progress active"></div>
-              </div>
-            ))}
-          </div>
-        )}
-        {notifications.length > 0 && (
-          <div className="toast-container">
-            {notifications.map((notification) => (
-              <div
-                id={notification.id}
-                key={notification.id}
-                className="toast active"
-              >
-                <div className="toast-content">
-                  <i
-                    className="fa fa-info-circle fa-3x"
-                    style={{ color: "#1B74BB" }}
-                    aria-hidden="true"
-                  ></i>
-                  <div className="message">
-                    <span className="text text-1">Notification</span>
-                    <span className="text text-2">{notification.message}</span>
-                  </div>
-                </div>
-                <i
-                  className="fa-solid fa-xmark close"
-                  onClick={() => handleCloseNotificationToast(notification.id)}
-                ></i>
-                <div className="progress active notification"></div>
-              </div>
-            ))}
-          </div>
-        )}
       </RoomMenu>
     </>
   );

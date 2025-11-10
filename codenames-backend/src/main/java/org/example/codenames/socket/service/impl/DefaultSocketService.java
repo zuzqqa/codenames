@@ -23,72 +23,47 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class DefaultSocketService implements SocketService {
-    /**
-     * Object mapper for JSON serialization/deserialization.
-     */
+
     private final ObjectMapper objectMapper = new ObjectMapper();
-
-    /**
-     * URL of the socket server.
-     */
     private final String socketServerUrl;
-
-    /**
-     * Socket for game session updates.
-     */
-    private Socket gameSessionSocket;
-
-    /**
-     * Socket for chat messages.
-     */
+    private Socket gameSocket;
+    private Socket profileSocket;
     private Socket chatSocket;
 
-    /**
-     * Constructor for DefaultSocketService.
-     * 
-     * @param socketServerUrl The URL of the socket server.
-     */
     public DefaultSocketService(@Value("${socketServer.url}") String socketServerUrl) {
         this.socketServerUrl = socketServerUrl;
     }
 
     /**
      * Initializes the sockets after construction.
-     * 
+     *
      * @throws URISyntaxException if the socket server URL is invalid.
      */
     @PostConstruct
     public void initializeSockets() throws URISyntaxException {
         IO.Options options = IO.Options.builder()
                 .setTransports(new String[]{"websocket"})
+                .setReconnection(true)
+                .setReconnectionAttempts(10)
+                .setReconnectionDelay(1000)
                 .build();
 
-        gameSessionSocket = IO.socket(socketServerUrl + "/game", options);
+        gameSocket = IO.socket(socketServerUrl + "/game", options);
+        gameSocket.on(Socket.EVENT_CONNECT, args -> log.info("[GAME SOCKET] Connected to /game namespace"));
+        gameSocket.on(Socket.EVENT_CONNECT_ERROR, args -> log.error("[GAME SOCKET] Connection error: {}", args[0]));
+        gameSocket.connect();
 
-        gameSessionSocket.on(Socket.EVENT_CONNECT, args -> {
-            System.out.println("[SOCKET] Połączono z serwerem Socket.IO");
-        });
-
-        gameSessionSocket.on(Socket.EVENT_CONNECT_ERROR, args -> {
-            System.err.println("[SOCKET] Błąd połączenia: " + args[0]);
-        });
-
-        gameSessionSocket.connect();
+        profileSocket = IO.socket(socketServerUrl + "/profile", options);
+        profileSocket.on(Socket.EVENT_CONNECT, args -> log.info("[PROFILE SOCKET] Connected to /profile namespace"));
+        profileSocket.on(Socket.EVENT_CONNECT_ERROR, args -> log.error("[PROFILE SOCKET] Connection error: {}", args[0]));
+        profileSocket.connect();
 
         IO.Options options1 = IO.Options.builder()
-                .setTransports(new String[]{"websocket"})
-                .build();
-
+                        .setTransports(new String[]{"websocket"})
+                        .build();
         chatSocket = IO.socket(socketServerUrl + "/chat", options1);
-
-        chatSocket.on(Socket.EVENT_CONNECT, args -> {
-            System.out.println("[SOCKET] Połączono z serwerem Socket.IO");
-        });
-
-        chatSocket.on(Socket.EVENT_CONNECT_ERROR, args -> {
-            System.err.println("[SOCKET] Błąd połączenia: " + args[0]);
-        });
-
+        chatSocket.on(Socket.EVENT_CONNECT, args -> log.info("[CHAT SOCKET] Connected to /chat namespace"));
+        chatSocket.on(Socket.EVENT_CONNECT_ERROR, args -> log.error("[CHAT SOCKET] Connection error: {}", args[0]));
         chatSocket.connect();
     }
 
@@ -100,9 +75,9 @@ public class DefaultSocketService implements SocketService {
      */
     @Override
     public void sendGameSessionUpdate(UUID gameId, GameSessionRoomLobbyDTO gameSession) throws JsonProcessingException {
-        if (gameSessionSocket.connected()) {
+        if (gameSocket.connected()) {
             String gameSessionJson = objectMapper.writeValueAsString(gameSession);
-            gameSessionSocket.emit("gameSessionUpdate", gameId.toString(), gameSessionJson);
+            gameSocket.emit("gameSessionUpdate", gameId.toString(), gameSessionJson);
         } else {
             System.err.println("[SOCKET] Socket niepołączony – nie wysłano gameSessionUpdate");
         }
@@ -115,9 +90,9 @@ public class DefaultSocketService implements SocketService {
      */
     @Override
     public void sendGameSessionsList(List<GameSessionJoinGameDTO> gameSessions) throws JsonProcessingException {
-        if (gameSessionSocket.connected()) {
+        if (gameSocket.connected()) {
             String gameSessionJson = objectMapper.writeValueAsString(gameSessions);
-            gameSessionSocket.emit("gameSessionsList", gameSessionJson);
+            gameSocket.emit("gameSessionsList", gameSessionJson);
         } else {
             System.err.println("[SOCKET] Socket niepołączony – nie wysłano gameSessionsList");
         }
@@ -131,11 +106,51 @@ public class DefaultSocketService implements SocketService {
      */
     @Override
     public void sendGameSessionUpdate(UUID gameId, GameSession gameSession) throws JsonProcessingException {
-        if (gameSessionSocket.connected()) {
+        if (gameSocket.connected()) {
             String gameSessionJson = objectMapper.writeValueAsString(gameSession);
-            gameSessionSocket.emit("gameSessionData", gameId.toString(), gameSessionJson);
+            gameSocket.emit("gameSessionData", gameId.toString(), gameSessionJson);
         } else {
             System.err.println("[SOCKET] Socket niepołączony – nie wysłano gameSessionData");
+        }
+    }
+
+    @Override
+    public void emitFriendRequestEvent(String senderUsername, String receiverUsername) throws JsonProcessingException {
+        if (profileSocket.connected()) {
+            Map<String, String> payload = Map.of("from", senderUsername, "to", receiverUsername);
+            profileSocket.emit("sendFriendRequest", objectMapper.writeValueAsString(payload));
+        } else {
+            System.err.println("[SOCKET] Socket niepołączony – nie wysłano friendRequest");
+        }
+    }
+
+    @Override
+    public void emitFriendRequestDeclineEvent(String senderUsername, String receiverUsername) throws JsonProcessingException {
+        if (profileSocket.connected()) {
+            Map<String, String> payload = Map.of("from", senderUsername, "to", receiverUsername);
+            profileSocket.emit("declineFriendRequest", objectMapper.writeValueAsString(payload));
+        } else {
+            System.err.println("[SOCKET] Socket niepołączony – nie wysłano friendRequest");
+        }
+    }
+
+    @Override
+    public void emitFriendRequestAcceptEvent(String senderUsername, String receiverUsername) throws JsonProcessingException {
+        if (profileSocket.connected()) {
+            Map<String, String> payload = Map.of("from", senderUsername, "to", receiverUsername);
+            profileSocket.emit("acceptFriendRequest", objectMapper.writeValueAsString(payload));
+        } else {
+            System.err.println("[SOCKET] Socket niepołączony – nie wysłano friendRequest");
+        }
+    }
+
+    @Override
+    public void emitRemoveFriendEvent(String removerUsername, String removedUsername) throws JsonProcessingException {
+        if (profileSocket.connected()) {
+            Map<String, String> payload = Map.of("user", removerUsername, "friend", removedUsername);
+            profileSocket.emit("removeFriend", objectMapper.writeValueAsString(payload));
+        } else {
+            System.err.println("[SOCKET] Socket niepołączony – nie wysłano removeFriend");
         }
     }
 

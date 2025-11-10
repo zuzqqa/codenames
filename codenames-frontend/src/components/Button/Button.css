@@ -43,8 +43,8 @@
   width: 3.2rem;
   height: 3.2rem;
   position: absolute;
-  top: 2%;
-  right: 2%;
+  top: 1rem;
+  right: 1rem;
 
   border-width: 0.125rem;
   border-color: #fcf18b;
@@ -53,11 +53,11 @@
 
 .btn-circle-profile {
   border-radius: 50%;
-  width: 2.5rem;
-  height: 2.7rem;
+  width: 3.2rem;
+  height: 3.2rem;
   position: absolute;
-  top: 2%;
-  right: 5.5%;
+  top: 1rem;
+  right: 4.5rem;
 
   border-width: 0.125rem;
   border-color: #fcf18b;

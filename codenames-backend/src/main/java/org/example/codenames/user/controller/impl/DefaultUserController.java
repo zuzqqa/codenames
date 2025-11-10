@@ -1,16 +1,22 @@
 package org.example.codenames.user.controller.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.codenames.email.service.api.EmailService;
 import org.example.codenames.jwt.JwtService;
+import org.example.codenames.socket.service.api.SocketService;
 import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetServiceToken;
-import org.example.codenames.user.controller.api.UserController;
+import org.example.codenames.user.entity.dto.GetFriendDataResponse;
 import org.example.codenames.user.entity.PasswordResetRequest;
 import org.example.codenames.user.entity.User;
-import org.example.codenames.user.entity.dto.FriendRequestsDTO;
+import org.example.codenames.user.controller.api.UserController;
+import org.example.codenames.user.entity.dto.GetUserProfileDetailsResponse;
+import org.example.codenames.user.entity.dto.GetUserResponse;
+import org.example.codenames.user.entity.dto.GetUsernamesResponse;
+import org.example.codenames.user.entity.mapper.UserMapper;
 import org.example.codenames.user.service.api.UserService;
 import org.example.codenames.userDetails.auth.AuthRequest;
 import org.example.codenames.userDetails.auth.AuthResponse;
@@ -18,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -27,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
+
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -43,6 +51,9 @@ public class DefaultUserController implements UserController {
      * Service for managing actions on user's account.
      */
     private final UserService userService;
+
+    private final SocketService socketService;
+
     /**
      * Authentication manager used for handling user authentication and verifying credentials.
      */
@@ -143,13 +154,13 @@ public class DefaultUserController implements UserController {
     /**
      * Updates a user by their ID.
      *
-     * @param id          the ID of the user
+     * @param id the ID of the user
      * @param updatedUser the updated user information
      * @return ResponseEntity containing the updated user or 404 if not found
      */
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User updatedUser) {
-        Optional<User> user = userService.updateUser(id, updatedUser);
+    public ResponseEntity<GetUserResponse> updateUser(@PathVariable String id, @RequestBody User updatedUser) {
+        Optional<GetUserResponse> user = userService.updateUser(id, updatedUser);
         return user.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
@@ -274,14 +285,26 @@ public class DefaultUserController implements UserController {
     }
 
     /**
+     * Retrieves the profile details of a user by their ID.
+     *
+     * @param id the ID of the user
+     * @return ResponseEntity containing the user's profile details or 404 if not found
+     */
+    @GetMapping("profile/{id}")
+    public ResponseEntity<GetUserProfileDetailsResponse> getUserProfile(@PathVariable String id) {
+        return userService.getUserById(id).map(user -> ResponseEntity.ok(UserMapper.toGetUserProfileResponse(user)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
      * Searches for users with usernames that match the provided string.
      *
      * @param username the username to search for
      * @return ResponseEntity containing the list of matched users
      */
     @GetMapping("/search")
-    public ResponseEntity<List<User>> searchUsers(@RequestParam String username) {
-        List<User> users = userService.searchActiveUsersByUsername(username);
+    public ResponseEntity<GetUsernamesResponse> searchUsers(@RequestParam String username) {
+        GetUsernamesResponse users = UserMapper.toGetUsernamesResponse(userService.searchActiveUsersByUsername(username));
         return ResponseEntity.ok(users);
     }
 
@@ -295,6 +318,12 @@ public class DefaultUserController implements UserController {
     @PostMapping("/send-request/{receiverUsername}")
     public ResponseEntity<Void> sendFriendRequest(@PathVariable String receiverUsername, @RequestParam String senderUsername) {
         userService.sendFriendRequest(senderUsername, receiverUsername);
+        try {
+            // emit with (sender, receiver) ordering so payload contains {from: sender, to: receiver}
+            socketService.emitFriendRequestEvent(senderUsername, receiverUsername);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to emit friend request event", e);
+        }
         return ResponseEntity.ok().build();
     }
 
@@ -308,6 +337,12 @@ public class DefaultUserController implements UserController {
     @PostMapping("/decline-request/{senderUsername}")
     public ResponseEntity<Void> declineFriendRequest(@PathVariable String senderUsername, @RequestParam String receiverUsername) {
         userService.declineFriendRequest(receiverUsername, senderUsername);
+        try {
+            // emit decline with (sender, receiver) ordering
+            socketService.emitFriendRequestDeclineEvent(senderUsername, receiverUsername);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to emit friend request decline event", e);
+        }
         return ResponseEntity.ok().build();
     }
 
@@ -321,6 +356,12 @@ public class DefaultUserController implements UserController {
     @PostMapping("/accept-request/{senderUsername}")
     public ResponseEntity<Void> acceptFriendRequest(@PathVariable String senderUsername, @RequestParam String receiverUsername) {
         userService.acceptFriendRequest(receiverUsername, senderUsername);
+        try {
+            // emit accept with (sender, receiver) ordering
+            socketService.emitFriendRequestAcceptEvent(senderUsername, receiverUsername);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.ok().build();
     }
 
@@ -334,6 +375,13 @@ public class DefaultUserController implements UserController {
     @DeleteMapping("/remove-friend/{friendUsername}")
     public ResponseEntity<Void> removeFriend(@PathVariable String friendUsername, @RequestParam String userUsername) {
         userService.removeFriend(userUsername, friendUsername);
+        try {
+            // notify the removed user about being removed
+            socketService.emitRemoveFriendEvent(userUsername, friendUsername);
+        } catch (JsonProcessingException e) {
+            // log but don't fail the request
+            throw new RuntimeException("Failed to emit friend removed event", e);
+        }
         return ResponseEntity.ok().build();
     }
 
@@ -341,31 +389,18 @@ public class DefaultUserController implements UserController {
      * Retrieves all friend-related lists (friends, sent requests, received requests) for a given user.
      *
      * @param username the username of the user
-     * @return ResponseEntity containing a {@link FriendRequestsDTO} or 404 if user not found
+     * @return ResponseEntity containing a {@link GetFriendDataResponse} or 404 if user not found
      */
     @GetMapping("/{username}/friend-requests")
-    public ResponseEntity<FriendRequestsDTO> getFriendRequests(@PathVariable String username) {
-        Optional<User> user = userService.getUserByUsername(username);
-        if (user.isPresent()) {
-            User u = user.get();
-
-            FriendRequestsDTO dto = FriendRequestsDTO.builder()
-                    .friends(u.getFriends())
-                    .sentRequests(u.getSentRequests())
-                    .receivedRequests(u.getReceivedRequests())
-                    .build();
-
-            return ResponseEntity.ok(dto);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<GetFriendDataResponse> getFriendRequests(@PathVariable String username) {
+        return ResponseEntity.ok(userService.getFriendData(username));
     }
 
     /**
      * Resets user password based on the token and new password provided.
      *
-     * @param token                the reset token provided by the user.
-     * @param request              the HTTP request containing additional context (such as IP address) for the password reset operation.
+     * @param token the reset token provided by the user.
+     * @param request the HTTP request containing additional context (such as IP address) for the password reset operation.
      * @param passwordResetRequest the entity containing new password.
      * @return ResponseEntity with status 200 OK if password change was successful or 400 BAD REQUEST otherwise
      */

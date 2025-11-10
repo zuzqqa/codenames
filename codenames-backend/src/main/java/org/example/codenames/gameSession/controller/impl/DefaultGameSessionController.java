@@ -21,7 +21,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static org.example.codenames.gameSession.entity.dto.GameSessionMapper.toRoomLobbyDTO;
-import static org.example.codenames.user.entity.dto.UserMapper.toRoomLobbyDTOList;
+import static org.example.codenames.user.entity.mapper.UserMapper.toRoomLobbyDTOList;
 
 /**
  * Default implementation of the GameSessionController interface.

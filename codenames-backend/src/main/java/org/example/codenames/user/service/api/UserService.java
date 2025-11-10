@@ -2,6 +2,8 @@ package org.example.codenames.user.service.api;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.example.codenames.user.entity.User;
+import org.example.codenames.user.entity.dto.GetFriendDataResponse;
+import org.example.codenames.user.entity.dto.GetUserResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,7 +22,7 @@ public interface UserService {
 
     List<User> getAllUsers();
 
-    Optional<User> updateUser(String id, User updatedUser);
+    Optional<GetUserResponse> updateUser(String id, User updatedUser);
 
     void activateUser(String username);
 
@@ -45,4 +47,6 @@ public interface UserService {
     void updateUserActiveStatus(String userId);
 
     Map<String, LocalDateTime> getAllActiveUsers();
+
+    GetFriendDataResponse getFriendData(String username);
 }
