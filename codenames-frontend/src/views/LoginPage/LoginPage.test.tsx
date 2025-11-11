@@ -33,6 +33,7 @@ vi.mock("../../config/api.tsx", () => ({
 
 vi.mock("../../shared/utils.tsx", () => ({
   logout: vi.fn(),
+  getCookie: vi.fn(),
 }));
 
 vi.mock("../../components/GoogleAuthentication/GoogleLoginButton.tsx", () => ({

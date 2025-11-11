@@ -15,6 +15,13 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
+const mockAddToast = vi.fn();
+vi.mock("../../components/Toast/ToastContext.tsx", () => ({
+  useToast: () => ({
+    addToast: mockAddToast,
+  }),
+}));
+
 const mockSocket = {
   on: vi.fn(),
   emit: vi.fn(),
@@ -296,7 +303,7 @@ describe("RoomLobby", () => {
     await user.click(copyButton);
 
     await waitFor(() => {
-      expect(screen.getByText("link-copied")).toBeInTheDocument();
+      expect(mockAddToast).toHaveBeenCalledWith("link-copied", "notification");
     });
   });
 
@@ -454,7 +461,7 @@ describe("RoomLobby", () => {
     await user.click(copyButton);
 
     await waitFor(() => {
-      expect(screen.getByText("link-copied")).toBeInTheDocument();
+      expect(mockAddToast).toHaveBeenCalledWith("link-copied", "notification");
     });
   });
 });

@@ -38,6 +38,7 @@ vi.mock("socket.io-client", () => ({
 
 vi.mock("../../shared/utils.tsx", () => ({
   getUserId: vi.fn(() => Promise.resolve("user-123")),
+  getCookie: vi.fn(),
 }));
 
 vi.mock("../../config/api.tsx", () => ({

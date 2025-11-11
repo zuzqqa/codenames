@@ -22,6 +22,7 @@ vi.mock("../Toast/ToastContext.tsx", () => ({
 }));
 
 vi.mock("../../shared/utils.tsx", () => ({
+  getCookie: vi.fn(),
   getUserId: vi.fn(() => Promise.resolve("user-123")),
 }));
 
@@ -203,7 +204,7 @@ describe("CreateGameForm", () => {
 
     await waitFor(() => {
       expect(mockAddToast).toHaveBeenCalledWith(
-        "Failed to create game session",
+        "create-game-error",
         "error"
       );
     });
@@ -226,7 +227,7 @@ describe("CreateGameForm", () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(mockAddToast).toHaveBeenCalledWith("Network error", "error");
+      expect(mockAddToast).toHaveBeenCalledWith("unknown-error", "error");
     });
   });
 
