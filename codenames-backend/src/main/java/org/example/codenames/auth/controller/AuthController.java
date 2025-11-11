@@ -8,10 +8,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
+/**
+ * Controller to handle OAuth2 authentication-related endpoints.
+ */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    /**
+     * Endpoint to retrieve authenticated user's information.
+     * @param principal
+     * @return
+     */
     @GetMapping("/user")
     public Map<String, Object> getUser(@AuthenticationPrincipal OAuth2User principal) {
         return principal.getAttributes();
