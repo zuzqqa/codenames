@@ -21,34 +21,13 @@ import java.util.*;
 @Service
 public class DefaultGameStateService implements GameStateService {
 
-    /**
-     * The repository for cards.
-     */
     private final CardRepository cardRepository;
-
-    /**
-     * The repository for game sessions.
-     */
     private final GameSessionRepository gameSessionRepository;
-
-    /**
-     * Game parameters specified in application.properties file
-     */
+    private final int cardsRed = 9;
+    private final int cardsBlue = 8;
     @Value("${codenames.game.cards-total}")
     private int cardsTotal;
 
-    @Value("9")
-    private int cardsRed;
-
-    @Value("8")
-    private int cardsBlue;
-
-    /**
-     * Constructs a new DefaultGameStateService.
-     *
-     * @param cardRepository        the repository for cards
-     * @param gameSessionRepository the repository for game sessions
-     */
     @Autowired
     public DefaultGameStateService(CardRepository cardRepository, GameSessionRepository gameSessionRepository) {
         this.cardRepository = cardRepository;
@@ -77,12 +56,6 @@ public class DefaultGameStateService implements GameStateService {
         return availablePlayers.get(rand.nextInt(availablePlayers.size()));
     }
 
-    /**
-     * Generates a set of random card names based on the selected language.
-     *
-     * @param gameState the game state to update
-     * @param language  the language for the card names
-     */
     @Override
     public void generateRandomCardsNames(GameState gameState, String language) {
         List<Card> allCards = cardRepository.findAll();
@@ -90,7 +63,6 @@ public class DefaultGameStateService implements GameStateService {
         Random random = new Random();
         Set<Integer> selectedIndexes = new HashSet<>();
 
-        // Select random cards
         while (selectedIndexes.size() < cardsTotal) {
             selectedIndexes.add(random.nextInt(allCards.size()));
         }
@@ -107,13 +79,6 @@ public class DefaultGameStateService implements GameStateService {
         gameState.setCards(cards);
     }
 
-    /**
-     * Returns the card name in the specified language.
-     *
-     * @param card     the card
-     * @param language the language
-     * @return the card name in the specified language
-     */
     @Override
     public String getCardNameInLanguage(Card card, String language) {
         if ("pl".equals(language)) {
@@ -124,12 +89,6 @@ public class DefaultGameStateService implements GameStateService {
         return card.getId();
     }
 
-    /**
-     * Generates and assigns random colors to the 25 cards.
-     * 9 red, 8 blue, 1 assassin, and 7 neutral cards.
-     *
-     * @param gameState the game state to update
-     */
     @Override
     public void generateRandomCardsColors(GameState gameState) {
         List<Integer> cardColorsList = new ArrayList<>();
@@ -141,23 +100,14 @@ public class DefaultGameStateService implements GameStateService {
         for (int i = 0; i < cardsBlue; i++) {
             cardColorsList.add(2);
         }
-        // Adding neutral cards
         cardColorsList.add(3);
         for (int i = 0; i < cardsTotal - (cardsRed + cardsBlue + 1); i++) {
             cardColorsList.add(0);
         }
-
         Collections.shuffle(cardColorsList);
-
         gameState.setCardsColors(cardColorsList.toArray(new Integer[0]));
     }
 
-    /**
-     * Updates vote counts for selected card.
-     *
-     * @param gameId      the game session ID
-     * @param voteRequest the entity containing the cardIndex and whether the vote is an addition.
-     */
     @Override
     public void updateVotes(UUID gameId, CardsVoteRequest voteRequest) {
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId).orElseThrow(() ->
@@ -181,12 +131,6 @@ public class DefaultGameStateService implements GameStateService {
         gameSessionRepository.save(gameSession);
     }
 
-    /**
-     * Determines which cards have been chosen based on votes.
-     *
-     * @param gameSession the current game session
-     * @param cardIndex   the index of the card that was chosen
-     */
     @Override
     public void cardsChosen(GameSession gameSession, int cardIndex) {
         GameState gameState = gameSession.getGameState();
@@ -231,23 +175,11 @@ public class DefaultGameStateService implements GameStateService {
         gameSessionRepository.save(gameSession);
     }
 
-    /**
-     * Gets the current team's turn.
-     *
-     * @param gameSession the game session
-     * @return the team turn index
-     */
     @Override
     public int getTeamSize(GameSession gameSession) {
         return gameSession.getGameState().getTeamTurn();
     }
 
-    /**
-     * Toggles the turn of the current game session, switching between the teams' turns,
-     * the hint turn, and the guessing turn.
-     *
-     * @param gameSession the game session
-     */
     @Override
     public void toogleTurn(GameSession gameSession) {
         GameState gameState = gameSession.getGameState();
@@ -255,50 +187,30 @@ public class DefaultGameStateService implements GameStateService {
         if (!gameState.isHintTurn()) {
             gameState.setTeamTurn((gameState.getTeamTurn() == 0) ? 1 : 0);
         }
-
         gameState.setHintTurn(!gameState.isHintTurn());
-
         gameState.setGuessingTurn(!gameState.isGuessingTurn());
-
-
         DefaultGameSessionWebSocketController.clearVotes(gameSession, gameSessionRepository);
 
     }
 
-    /**
-     * Changes the turn of the game session.
-     *
-     * @param gameId The UUID of the game session.
-     */
     @Override
     public void changeTurn(UUID gameId) {
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
-
         this.toogleTurn(gameSession);
-
         this.chooseRandomCurrentLeader(gameId);
         gameSession = gameSessionRepository.findBySessionId(gameId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
         gameSessionRepository.save(gameSession);
     }
 
-    /**
-     * Selects new turn leader.
-     *
-     * @param gameId The UUID of the game session.
-     */
     @Override
     public void chooseRandomCurrentLeader(UUID gameId) {
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
-
         List<List<User>> connectedUsers = gameSession.getConnectedUsers();
-
         User newLeader = getNewLeader(gameSession, connectedUsers);
-
         gameSession.getGameState().setCurrentSelectionLeader(newLeader);
-
         gameSessionRepository.save(gameSession);
     }
 }
