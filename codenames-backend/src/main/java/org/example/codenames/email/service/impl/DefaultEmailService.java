@@ -19,10 +19,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-/**
- * Default implementation of the EmailService interface.
- * Provides functionality to send emails, including standard and confirmation emails.
- */
 @Service
 public class DefaultEmailService implements EmailService {
 
@@ -37,12 +33,6 @@ public class DefaultEmailService implements EmailService {
     @Value("${backend.url:http://localhost:8080}")
     private String backendUrl;
 
-    /**
-     * Constructs a DefaultEmailService with the specified JavaMailSender and passwordResetService.
-     *
-     * @param mailSender                the JavaMailSender instance for sending emails
-     * @param passwordResetServiceToken the PasswordResetService instance for managing password reset
-     */
     @Autowired
     public DefaultEmailService(JavaMailSender mailSender, PasswordResetServiceToken passwordResetServiceToken, AccountActivationTokenService accountActivationTokenService) {
         this.mailSender = mailSender;
@@ -50,11 +40,6 @@ public class DefaultEmailService implements EmailService {
         this.accountActivationTokenService = accountActivationTokenService;
     }
 
-    /**
-     * Sends a standard e-mail containing data from an EmailRequest.
-     *
-     * @param request the e-mail request containing recipient details and message content
-     */
     public void sendEmail(EmailRequest request) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo("codenames.contact@gmail.com");
@@ -63,14 +48,6 @@ public class DefaultEmailService implements EmailService {
         mailSender.send(mailMessage);
     }
 
-    /**
-     * Sends a confirmation e-mail to the specified user in the appropriate language.
-     * The e-mail template is selected based on the provided language parameter.
-     *
-     * @param userEmail the recipient's e-mail address
-     * @param language  the language preference ("pl" for Polish, defaults to English)
-     * @throws MessagingException if an error occurs while creating or sending the e-mail
-     */
     public void sendConfirmationEmail(String userEmail, String language) throws MessagingException {
         if (userEmail == null || userEmail.trim().isEmpty()) {
             throw new IllegalArgumentException("Email cannot be null.");
@@ -99,15 +76,6 @@ public class DefaultEmailService implements EmailService {
         }
     }
 
-    /**
-     * Sends a password reset email to the specified user in the appropriate language.
-     * The e-mail template is selected based on the provided language parameter.
-     *
-     * @param userEmail the recipient's email address
-     * @param request   the HTTP request containing additional context (such as IP address) for the password reset operation
-     * @param language  the language preference ("pl" for Polish, defaults to English)
-     * @throws MessagingException if an error occurs while creating or sending the email
-     */
     public void sendResetPasswordEmail(String userEmail, HttpServletRequest request, String language) throws MessagingException {
         if (userEmail == null || userEmail.trim().isEmpty()) {
             throw new IllegalArgumentException("Email cannot be null.");
