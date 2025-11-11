@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class JwtServiceTest {
+
     private final String SECRET = "mysecretkeymysecretkeymysecretkeymysecretkey";
     @InjectMocks
     private JwtService jwtService;

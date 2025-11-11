@@ -46,6 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class UserControllerTest {
+
     // MongoDB Testcontainers container.
     public static MongoDBContainer mongo = new MongoDBContainer(DockerImageName.parse("mongo:5"))
             .withExposedPorts(27017)
