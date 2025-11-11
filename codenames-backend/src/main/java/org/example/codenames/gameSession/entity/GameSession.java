@@ -9,9 +9,6 @@ import org.springframework.data.annotation.Id;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * GameSession entity class.
- */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -20,61 +17,18 @@ import java.util.UUID;
 @ToString
 public class GameSession {
 
-    /**
-     * Game status
-     */
-    private sessionStatus status;
-
-    /**
-     * Game session id
-     */
     @Id
     @GeneratedValue
     private UUID sessionId;
-
-    /**
-     * Game name
-     */
+    private sessionStatus status;
     private String gameName;
-
-    /**
-     * Maximum number of players
-     */
     private Integer maxPlayers;
-
-    /**
-     * Password for private session
-     */
     private String password;
-
-    /**
-     * List of connected users
-     */
     private List<List<User>> connectedUsers;
-
-    /**
-     * List of votes
-     */
     private List<List<Integer>> votes;
-
-    /**
-     * Game state
-     */
     private GameState gameState;
-
-    /**
-     * Voting start time
-     */
     private Long votingStartTime;
-
-    /*
-     * Discord channel id
-     */
     private String discordChannelId;
-
-    /**
-     * Enum for session status
-     */
     public enum sessionStatus {
         CREATED,
         LEADER_SELECTION,

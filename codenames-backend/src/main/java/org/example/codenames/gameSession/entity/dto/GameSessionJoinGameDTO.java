@@ -12,40 +12,13 @@ import java.util.UUID;
 @Builder
 public class GameSessionJoinGameDTO {
 
-    /**
-     * Game status.
-     */
-    private GameSession.sessionStatus status;
-
-    /**
-     * Game session id.
-     */
     @Id
     @GeneratedValue
     private UUID sessionId;
-
-    /**
-     * Game name.
-     */
+    private GameSession.sessionStatus status;
     private String gameName;
-
-    /**
-     * Maximum number of players.
-     */
     private Integer maxPlayers;
-
-    /**
-     * Password for private session.
-     */
     private String password;
-
-    /**
-     * Number of players connected to the red team.
-     */
     private int currentRedTeamPlayers;
-
-    /**
-     * Number of players connected to the blue team.
-     */
     private int currentBlueTeamPlayers;
 }

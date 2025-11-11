@@ -1,5 +1,6 @@
 package org.example.codenames.gameSession.controller.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.codenames.discord.service.impl.DiscordGuildService;
 import org.example.codenames.gameSession.controller.api.GameSessionController;
 import org.example.codenames.gameSession.entity.GameSession;
@@ -20,56 +21,21 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static org.example.codenames.gameSession.entity.dto.GameSessionMapper.toRoomLobbyDTO;
+import static org.example.codenames.gameSession.entity.dto.mapper.GameSessionMapper.toRoomLobbyDTO;
 import static org.example.codenames.user.entity.mapper.UserMapper.toRoomLobbyDTOList;
 
-/**
- * Default implementation of the GameSessionController interface.
- * This class is responsible for handling HTTP requests related to game sessions
- */
+@Slf4j
 @RestController
 @RequestMapping("/api/game-session")
 public class DefaultGameSessionController implements GameSessionController {
 
-    /**
-     * The GameSessionService instance used to interact with the game session
-     */
     private final GameSessionService gameSessionService;
-
-    /**
-     * The GameSessionRepository instance used to interact with the game session database
-     */
     private final GameSessionRepository gameSessionRepository;
-
-    /**
-     * The GameStateService instance used to interact with the game state
-     */
     private final GameStateService gameStateService;
-
-    /**
-     * Scheduler for delayed tasks
-     */
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-
-    /**
-     * The SocketService instance used to interact with the socket
-     */
     private final SocketService socketService;
-
-    /**
-     * The DiscordGuildService instance used to interact with the Discord guild
-     */
     private final DiscordGuildService discordGuildService;
 
-    /**
-     * Constructor for the DefaultGameSessionController class
-     *
-     * @param gameSessionService    The GameSessionService instance used to interact with the game session repository
-     * @param gameSessionRepository The GameSessionRepository instance used to interact with the game session database
-     * @param gameStateService      The GameStateService instance used to interact with the game session repository
-     * @param socketService         The SocketService instance used to interact with the socket
-     * @param discordGuildService   The DiscordGuildService instance used to interact with the Discord guild
-     */
     @Autowired
     public DefaultGameSessionController(GameSessionService gameSessionService, GameSessionRepository gameSessionRepository, GameStateService gameStateService, SocketService socketService, DiscordGuildService discordGuildService) {
         this.gameSessionService = gameSessionService;
@@ -79,12 +45,6 @@ public class DefaultGameSessionController implements GameSessionController {
         this.discordGuildService = discordGuildService;
     }
 
-    /**
-     * Get game session by id
-     *
-     * @param gameId The id of the game session to retrieve
-     * @return The game session with the specified id
-     */
     @GetMapping("/{gameId}")
     public ResponseEntity<GameSessionRoomLobbyDTO> getGameSession(@PathVariable String gameId) {
         GameSession gameSession = gameSessionService.getGameSessionById(UUID.fromString(gameId));
@@ -96,34 +56,16 @@ public class DefaultGameSessionController implements GameSessionController {
         }
     }
 
-    /**
-     * Get states of cards in the game session
-     *
-     * @param gameId The id of the game session to retrieve
-     * @return The states of cards in the game session
-     */
     @GetMapping("/{gameId}/cards")
     public String[] getGameStateCards(@PathVariable UUID gameId) {
         return gameSessionService.getCardsBySessionId(gameId);
     }
 
-    /**
-     * Get the colors of cards in the game session
-     *
-     * @param gameId The id of the game session to retrieve
-     * @return The colors of cards in the game session
-     */
     @GetMapping("/{gameId}/cards-colors")
     public Integer[] getGameStateCardsColors(@PathVariable UUID gameId) {
         return gameSessionService.getCardsColorsBySessionId(gameId);
     }
 
-    /**
-     * Get the votes for leaders in the game session
-     *
-     * @param gameId The id of the game session
-     * @return The votes for leaders
-     */
     @GetMapping("/{gameId}/assign-leaders")
     public ResponseEntity<String> getVotes(@PathVariable UUID gameId) {
         GameSession gameSession = gameSessionService.getGameSessionById(gameId);
@@ -131,14 +73,13 @@ public class DefaultGameSessionController implements GameSessionController {
         gameSession.setStatus(GameSession.sessionStatus.IN_PROGRESS);
         gameSessionRepository.save(gameSession);
 
-        // Check if game session exists
         if (gameSession.getGameState().getBlueTeamLeader() == null || gameSession.getGameState().getRedTeamLeader() == null) {
             gameSessionService.assignTeamLeaders(gameId);
             scheduler.schedule(() -> {
                 try {
                     socketService.sendDiscordLinkInvite(gameSession.getSessionId(), discordGuildService.createInvite(gameSession.getDiscordChannelId()));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error("Failed to send Discord invite link: {}", e.getMessage());
                 }
             }, 3, TimeUnit.SECONDS);
             gameStateService.chooseRandomCurrentLeader(gameId);
@@ -149,33 +90,23 @@ public class DefaultGameSessionController implements GameSessionController {
         return ResponseEntity.ok().build();
     }
 
-    /**
-     * Get users assigned to a team
-     *
-     * @param gameId    The id of the game session
-     * @param teamIndex The index of the team
-     * @return The votes for leaders
-     */
     @GetMapping("/{gameId}/team")
     public ResponseEntity<?> getUsersByTeam(@PathVariable String gameId, @RequestParam String teamIndex) {
         GameSession gameSession = gameSessionService.getGameSessionById(UUID.fromString(gameId));
         int teamIndexInt;
 
-        // Parse team index
         try {
             teamIndexInt = Integer.parseInt(teamIndex);
         } catch (Exception e) {
             return ResponseEntity.status(400).body(null);
         }
 
-        // Check if game session exists
         if (gameSession == null) {
             return ResponseEntity.status(404).body("Game session not found");
         }
 
         List<List<User>> connectedUsers = gameSession.getConnectedUsers();
 
-        // Check if team index is valid
         if (teamIndexInt < 0 || teamIndexInt >= connectedUsers.size()) {
             return ResponseEntity.status(400).body("Invalid team index. Must be 0 (red) or 1 (blue).");
         }
@@ -185,13 +116,6 @@ public class DefaultGameSessionController implements GameSessionController {
         return ResponseEntity.ok(teamUsers);
     }
 
-    /**
-     * Authenticates password for a session.
-     *
-     * @param gameId          the id of the game session
-     * @param enteredPassword password given by user
-     * @return True if password is correct, false otherwise
-     */
     @PostMapping("/{gameId}/authenticate-password/{enteredPassword}")
     public ResponseEntity<?> authenticatePassword(@PathVariable String gameId, @PathVariable String enteredPassword) {
         return ResponseEntity.ok(gameSessionService.authenticatePassword(UUID.fromString(gameId), enteredPassword));

@@ -11,20 +11,8 @@ import java.util.List;
 @Builder
 public class GameSessionRoomLobbyDTO {
 
-    /**
-     * List of connected users.
-     */
     List<List<UserRoomLobbyDTO>> connectedUsers;
-    /**
-     * Game status.
-     */
     private GameSession.sessionStatus status;
-    /**
-     * Game name.
-     */
     private String gameName;
-    /**
-     * Maximum number of players.
-     */
     private Integer maxPlayers;
 }
