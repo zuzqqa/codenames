@@ -3,7 +3,9 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import RegisterPage from "./RegisterPage";
 import Cookies from "js-cookie";
+import { useTranslation } from "react-i18next";
 
+const { t } = useTranslation();
 const mockNavigate = vi.fn();
 const mockUseLocation = vi.fn(() => ({
   search: "",
@@ -285,7 +287,7 @@ describe("RegisterPage", () => {
 
     await waitFor(() => {
       expect(mockAddToast).toHaveBeenCalledWith(
-        "Invalid email. Use format: example@domain.com.",
+        t("email-error-message"),
         "error"
       );
     });
@@ -308,7 +310,7 @@ describe("RegisterPage", () => {
 
     await waitFor(() => {
       expect(mockAddToast).toHaveBeenCalledWith(
-        "Username can only contain letters and numbers.",
+        t("username-error-message"),
         "error"
       );
     });

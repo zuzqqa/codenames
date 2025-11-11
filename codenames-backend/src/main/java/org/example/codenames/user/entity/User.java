@@ -27,8 +27,11 @@ public class User {
     private String roles;
     private boolean isGuest;
     private userStatus status;
+    @Builder.Default
     private List<String> friends = new ArrayList<>();
+    @Builder.Default
     private List<String> sentRequests = new ArrayList<>();
+    @Builder.Default
     private List<String> receivedRequests = new ArrayList<>();
 
     /**
