@@ -15,6 +15,7 @@ import java.util.UUID;
  */
 @Service
 public class DefaultPasswordResetServiceToken implements PasswordResetServiceToken {
+
     /**
      * Repository for managing password reset tokens in the database.
      */

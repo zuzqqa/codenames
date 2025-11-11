@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface SocketService {
+
     void sendGameSessionUpdate(UUID gameId, GameSessionRoomLobbyDTO gameSession) throws JsonProcessingException;
 
     void sendGameSessionsList(List<GameSessionJoinGameDTO> gameSessions) throws JsonProcessingException;

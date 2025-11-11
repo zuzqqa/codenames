@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class AuthRequest {
+
     /**
      * The username of the user
      */

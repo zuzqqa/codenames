@@ -7,6 +7,7 @@ import lombok.Data;
  */
 @Data
 public class CardsVoteRequest {
+
     private int cardIndex;
     private boolean addingVote;
 }

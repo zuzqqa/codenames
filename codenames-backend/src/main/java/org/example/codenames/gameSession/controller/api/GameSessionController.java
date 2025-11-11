@@ -12,6 +12,7 @@ import java.util.UUID;
  * This controller is responsible for handling requests related to the game session
  */
 public interface GameSessionController {
+
     ResponseEntity<GameSessionRoomLobbyDTO> getGameSession(@PathVariable String gameId);
 
     ResponseEntity<String> getVotes(@PathVariable UUID id);

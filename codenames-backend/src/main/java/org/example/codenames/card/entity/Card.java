@@ -14,6 +14,7 @@ import java.util.Map;
 @Getter
 @Setter
 public class Card {
+
     @Id
     private String id;
     private Map<String, String> names = new HashMap<>();

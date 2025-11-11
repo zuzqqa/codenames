@@ -30,6 +30,7 @@ import static org.example.codenames.user.entity.mapper.UserMapper.toRoomLobbyDTO
 @RestController
 @RequestMapping("/api/game-session")
 public class DefaultGameSessionController implements GameSessionController {
+
     /**
      * The GameSessionService instance used to interact with the game session
      */

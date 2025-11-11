@@ -18,6 +18,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class DiscordGuildService implements DiscordGuildClient {
+
     /**
      * The base URL for all Discord API v10 requests.
      */

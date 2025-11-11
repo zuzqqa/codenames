@@ -29,6 +29,7 @@ import java.util.Map;
  * It also provides an endpoint for user authentication
  */
 public interface UserController {
+
     ResponseEntity<Map<String, String>> createUser(@RequestBody User user, String language) throws MessagingException, IOException;
 
     RedirectView activateAccount(@PathVariable String token);

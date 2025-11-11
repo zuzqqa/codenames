@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 @Builder
 public class GetFriendDataResponse {
+
     /**
      * List of friends.
      * This list contains the usernames of the friends of the user.

@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 @Data
 @Builder
 public class UserRoomLobbyDTO {
+
     /**
      * The unique identifier for the user.
      */

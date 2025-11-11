@@ -7,6 +7,7 @@ import lombok.Data;
  */
 @Data
 public class VoteRequest {
+
     /**
      * The id of the user who is voting.
      */

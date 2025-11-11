@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
  */
 @Service
 public class DefaultEmailService implements EmailService {
+
     /**
      * Service for sending emails through JavaMail.
      */

@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class PasswordResetToken {
+
     /**
      * The unique identifier for the token.
      */

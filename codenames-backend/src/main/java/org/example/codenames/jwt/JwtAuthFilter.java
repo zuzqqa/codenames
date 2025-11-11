@@ -21,6 +21,7 @@ import java.io.IOException;
  */
 @Service
 public class JwtAuthFilter extends OncePerRequestFilter {
+
     /**
      * Service that handles JWT operations.
      */

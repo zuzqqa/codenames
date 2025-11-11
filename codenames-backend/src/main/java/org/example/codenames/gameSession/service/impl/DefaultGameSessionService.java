@@ -21,6 +21,7 @@ import java.util.*;
  */
 @Service
 public class DefaultGameSessionService implements GameSessionService {
+
     /**
      * Game session repository.
      */

@@ -13,6 +13,7 @@ import java.util.UUID;
  * Game session service interface.
  */
 public interface GameSessionService {
+
     String createGameSession(CreateGameRequest request);
 
     GameSession getGameSessionById(UUID gameId);

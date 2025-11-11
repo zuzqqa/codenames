@@ -20,6 +20,7 @@ import java.util.Optional;
  */
 @Component
 public class AppInitializer implements InitializingBean {
+
     /**
      * User service.
      */

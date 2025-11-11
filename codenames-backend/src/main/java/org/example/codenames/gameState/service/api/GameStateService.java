@@ -11,6 +11,7 @@ import java.util.UUID;
  * Service for game state.
  */
 public interface GameStateService {
+
     void generateRandomCardsNames(GameState gameState, String language);
 
     String getCardNameInLanguage(Card card, String language);

@@ -31,6 +31,7 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class DefaultUserService implements UserService {
+
     /**
      * The user repository.
      */

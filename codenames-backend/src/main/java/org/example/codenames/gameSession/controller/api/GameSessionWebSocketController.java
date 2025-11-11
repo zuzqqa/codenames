@@ -17,6 +17,7 @@ import java.util.UUID;
  * This controller is used to manage the game sessions and the players connected to them
  */
 public interface GameSessionWebSocketController {
+
     ResponseEntity<Map<String, String>> createGameSession(@RequestBody CreateGameRequest request) throws JsonProcessingException;
 
     ResponseEntity<Void> connectPlayer(@PathVariable UUID gameId, @RequestParam String userId, @RequestParam String teamIndex);

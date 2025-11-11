@@ -45,6 +45,7 @@ import java.util.Optional;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class ConfigSecurity {
+
     private final UserRepository userRepository;
     private final JwtAuthFilter jwtAuthFilter;
     private final JwtService jwtService;

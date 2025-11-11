@@ -19,6 +19,7 @@ public class GetUsernamesResponse {
     @Setter
     @Builder
     public static class User {
+
         private String id;
         private String username;
     }

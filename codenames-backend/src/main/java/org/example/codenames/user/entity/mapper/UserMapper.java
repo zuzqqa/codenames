@@ -14,6 +14,7 @@ import java.util.List;
  * into their corresponding DTO representations.
  */
 public class UserMapper {
+
     /**
      * Converts a User object to a UserRoomLobbyDTO object.
      *

@@ -14,6 +14,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class EmailRequest {
+
     /**
      * The email address to send the email to
      */

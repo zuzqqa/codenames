@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 @Builder
 public class GameSessionRoomLobbyDTO {
+
     /**
      * List of connected users.
      */

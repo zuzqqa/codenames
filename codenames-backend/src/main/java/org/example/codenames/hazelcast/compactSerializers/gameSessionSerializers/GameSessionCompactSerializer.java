@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class GameSessionCompactSerializer implements CompactSerializer<GameSession> {
+
     /**
      * Gets the type name for the GameSession class.
      *

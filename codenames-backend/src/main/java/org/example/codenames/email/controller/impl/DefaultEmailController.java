@@ -22,6 +22,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/email")
 public class DefaultEmailController implements EmailController {
+
     /**
      * The EmailService instance for sending emails.
      */

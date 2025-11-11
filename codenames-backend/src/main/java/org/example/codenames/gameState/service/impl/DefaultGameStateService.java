@@ -20,6 +20,7 @@ import java.util.*;
  */
 @Service
 public class DefaultGameStateService implements GameStateService {
+
     /**
      * The repository for cards.
      */

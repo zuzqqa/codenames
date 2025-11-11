@@ -31,6 +31,7 @@ import static org.example.codenames.gameSession.entity.dto.GameSessionMapper.toR
 @RestController
 @RequestMapping("/api/game-session")
 public class DefaultGameSessionWebSocketController implements GameSessionWebSocketController {
+
     /**
      * The GameSessionService instance used to interact with the game session repository
      */

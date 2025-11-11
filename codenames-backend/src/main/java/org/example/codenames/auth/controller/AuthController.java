@@ -17,6 +17,7 @@ public class AuthController {
 
     /**
      * Endpoint to retrieve authenticated user's information.
+     *
      * @param principal
      * @return
      */

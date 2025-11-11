@@ -43,6 +43,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class DefaultUserController implements UserController {
+
     private final EmailService emailService;
     private final PasswordResetServiceToken passwordResetServiceToken;
     /**

@@ -18,6 +18,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/game-session")
 public class DefaultGameStateWebSocketController implements GameSateWebSocketController {
+
     /**
      * Service for game session operations.
      */

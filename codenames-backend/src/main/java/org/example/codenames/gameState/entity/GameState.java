@@ -16,6 +16,7 @@ import java.util.List;
 @Data
 @ToString
 public class GameState {
+
     /**
      * Blue team leader
      */

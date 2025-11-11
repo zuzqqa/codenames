@@ -7,6 +7,7 @@ import lombok.Data;
  */
 @Data
 public class CreateGameRequest {
+
     /**
      * The name of the game.
      */

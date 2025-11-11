@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
  * PasswordReset service interface.
  */
 public interface PasswordResetServiceToken {
+
     String createResetToken(String userEmail, HttpServletRequest request);
 
     boolean isValidToken(String token);

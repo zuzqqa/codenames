@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public interface EmailService {
+
     void sendEmail(EmailRequest request);
 
     void sendConfirmationEmail(String userEmail, String language) throws MessagingException;

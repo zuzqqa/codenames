@@ -19,6 +19,7 @@ import java.util.UUID;
 @Builder
 @ToString
 public class GameSession {
+
     /**
      * Game status
      */

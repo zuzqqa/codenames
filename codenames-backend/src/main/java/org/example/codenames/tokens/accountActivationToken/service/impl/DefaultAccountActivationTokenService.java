@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @Service
 public class DefaultAccountActivationTokenService implements AccountActivationTokenService {
+
     private final AccountActivationTokenRepository accountActivationTokenRepository;
     private final JwtService jwtService;
 

@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public class UserEntityUserDetails implements UserDetails {
+
     /**
      * Username of the user
      */

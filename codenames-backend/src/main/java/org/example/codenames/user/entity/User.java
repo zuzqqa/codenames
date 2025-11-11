@@ -18,6 +18,7 @@ import java.util.Objects;
 @Setter
 @Builder
 public class User {
+
     /**
      * The unique identifier for the user.
      */

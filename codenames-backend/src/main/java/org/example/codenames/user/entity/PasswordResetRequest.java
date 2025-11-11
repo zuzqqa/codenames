@@ -7,6 +7,7 @@ import lombok.Data;
  */
 @Data
 public class PasswordResetRequest {
+
     /**
      * The new password for the account.
      */
