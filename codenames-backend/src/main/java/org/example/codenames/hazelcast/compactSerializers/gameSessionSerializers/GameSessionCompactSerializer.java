@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * CompactSerializer implementation for GameSession objects.
+ */
 public class GameSessionCompactSerializer implements CompactSerializer<GameSession> {
 
     /**
@@ -49,7 +52,6 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
         writer.writeInt64("votingStartTime", session.getVotingStartTime() != null ? session.getVotingStartTime() : 0L);
         writer.writeString("discordChannelId", session.getDiscordChannelId() != null ? session.getDiscordChannelId() : null);
 
-        // Flatten List<List<User>> into a single list and store nested sizes
         List<User> flatUsers = new ArrayList<>();
         List<Integer> userGroupSizes = new ArrayList<>();
         if (session.getConnectedUsers() != null) {
@@ -61,7 +63,6 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
         writer.writeArrayOfInt32("userGroupSizes", userGroupSizes.stream().mapToInt(i -> i).toArray());
         writer.writeArrayOfCompact("connectedUsersFlat", flatUsers.toArray(new User[0]));
 
-        // Flatten List<List<Integer>> into a single list and store nested sizes
         List<Integer> flatVotes = new ArrayList<>();
         List<Integer> voteGroupSizes = new ArrayList<>();
         if (session.getVotes() != null) {
@@ -99,7 +100,6 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
         builder.votingStartTime(reader.readInt64("votingStartTime"));
         builder.discordChannelId(reader.readString("discordChannelId"));
 
-        // Reconstruct connectedUsers
         int[] userGroupSizes = reader.readArrayOfInt32("userGroupSizes");
         User[] flatUsers = reader.readArrayOfCompact("connectedUsersFlat", User.class);
         List<List<User>> connectedUsers = new ArrayList<>();
@@ -113,7 +113,6 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
         }
         builder.connectedUsers(connectedUsers);
 
-        // Reconstruct votes
         int[] voteGroupSizes = reader.readArrayOfInt32("voteGroupSizes");
         int[] flatVotes = reader.readArrayOfInt32("votesFlat");
         List<List<Integer>> votes = new ArrayList<>();

@@ -7,18 +7,37 @@ import org.example.codenames.user.entity.User;
 
 import java.util.List;
 
+/**
+ * Compact serializer for the User class.
+ */
 public class UserCompactSerializer implements CompactSerializer<User> {
 
+    /**
+     * Returns the type name for the User class.
+     *
+     * @return the type name "User"
+     */
     @Override
     public String getTypeName() {
         return "User";
     }
 
+    /**
+     * Returns the User class.
+     *
+     * @return the User class
+     */
     @Override
     public Class<User> getCompactClass() {
         return User.class;
     }
 
+    /**
+     * Writes a User object to the CompactWriter.
+     *
+     * @param writer the CompactWriter to write to
+     * @param user   the User object to write
+     */
     @Override
     public void write(CompactWriter writer, User user) {
         writer.writeString("id", user.getId());
@@ -35,6 +54,12 @@ public class UserCompactSerializer implements CompactSerializer<User> {
         writer.writeArrayOfString("receivedRequests", user.getReceivedRequests().toArray(new String[0]));
     }
 
+    /**
+     * Reads a User object from the CompactReader.
+     *
+     * @param reader the CompactReader to read from
+     * @return the User object read from the reader
+     */
     @Override
     public User read(CompactReader reader) {
         return User.builder()

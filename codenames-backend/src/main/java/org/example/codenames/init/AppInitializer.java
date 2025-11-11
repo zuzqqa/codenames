@@ -57,8 +57,6 @@ public class AppInitializer implements InitializingBean {
      */
     private void initializeUsers() {
         createUser("1", "admin", "admin", "codenames.contact@gmail.com", "ROLE_ADMIN");
-        createUser("2", "Ben", "Ben", "ben.dover@gmail.com", "ROLE_ADMIN");
-        createUser("3", "Anna", "Anna", "anna.contact@gmail.com", "ROLE_ADMIN");
     }
 
     private void createUser(String id, String username, String password, String email, String roles) {

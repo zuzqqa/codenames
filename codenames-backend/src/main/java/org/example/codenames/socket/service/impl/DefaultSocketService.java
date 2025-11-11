@@ -65,13 +65,6 @@ public class DefaultSocketService implements SocketService {
         chatSocket.connect();
     }
 
-    /**
-     * Sends a game session update to connected clients.
-     *
-     * @param gameId      The ID of the game session.
-     * @param gameSession The game session data to send.
-     * @throws JsonProcessingException if there is an error during JSON processing.
-     */
     @Override
     public void sendGameSessionUpdate(UUID gameId, GameSessionRoomLobbyDTO gameSession) throws JsonProcessingException {
         if (gameSocket.connected()) {
@@ -82,12 +75,6 @@ public class DefaultSocketService implements SocketService {
         }
     }
 
-    /**
-     * Sends a list of game sessions to connected clients.
-     *
-     * @param gameSessions The list of game sessions to send.
-     * @throws JsonProcessingException if there is an error during JSON processing.
-     */
     @Override
     public void sendGameSessionsList(List<GameSessionJoinGameDTO> gameSessions) throws JsonProcessingException {
         if (gameSocket.connected()) {
@@ -98,13 +85,6 @@ public class DefaultSocketService implements SocketService {
         }
     }
 
-    /**
-     * Sends a game session update to connected clients.
-     *
-     * @param gameId      The ID of the game session.
-     * @param gameSession The game session data to send.
-     * @throws JsonProcessingException if there is an error during JSON processing.
-     */
     @Override
     public void sendGameSessionUpdate(UUID gameId, GameSession gameSession) throws JsonProcessingException {
         if (gameSocket.connected()) {
@@ -155,12 +135,6 @@ public class DefaultSocketService implements SocketService {
         }
     }
 
-    /**
-     * Sends a Discord link invite to connected clients.
-     *
-     * @param gameId      The ID of the game session.
-     * @param discordLink The Discord link to send.
-     */
     @Override
     public void sendDiscordLinkInvite(UUID gameId, String discordLink) {
         Map<String, Object> msg = Map.of(

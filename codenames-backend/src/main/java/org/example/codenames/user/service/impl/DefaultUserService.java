@@ -32,37 +32,12 @@ import java.util.Optional;
 @Slf4j
 public class DefaultUserService implements UserService {
 
-    /**
-     * The user repository.
-     */
     private final UserRepository userRepository;
-
-    /**
-     * Encoder used to securely hash and verify game session passwords,
-     * preventing storage of plain-text passwords.
-     */
     private final PasswordEncoder passwordEncoder;
-
-    /**
-     * Repository for managing password reset tokens in the database.
-     */
     private final PasswordResetTokenRepository passwordResetTokenRepository;
-
-    /**
-     * Service responsible for handling password reset process.
-     */
     private final PasswordResetServiceToken passwordResetServiceToken;
-
     private final IMap<String, LocalDateTime> activityMap;
 
-    /**
-     * Constructs a new DefaultUserService with the given user repository, password encoder, passwordResetTokenRepository and passwordResetService.
-     *
-     * @param userRepository               the user repository
-     * @param passwordEncoder              the password encoder
-     * @param passwordResetTokenRepository the password reset tokens repository
-     * @param passwordResetServiceToken    the password reset service
-     */
     @Autowired
     public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PasswordResetTokenRepository passwordResetTokenRepository, PasswordResetServiceToken passwordResetServiceToken, HazelcastInstance hazelcastInstance) {
         this.userRepository = userRepository;
@@ -72,12 +47,6 @@ public class DefaultUserService implements UserService {
         this.activityMap = hazelcastInstance.getMap("activeUsers");
     }
 
-    /**
-     * Creates a new user.
-     *
-     * @param user the user to be created
-     * @return the created user
-     */
     @Override
     public Optional<String> createUser(User user) {
         if (Objects.equals(user.getRoles(), "ROLE_USER")) {
@@ -112,53 +81,22 @@ public class DefaultUserService implements UserService {
         return Optional.empty();
     }
 
-    /**
-     * Retrieves a user by their ID.
-     *
-     * @param id the ID of the user
-     * @return the user, if found
-     */
     @Override
     public Optional<User> getUserById(String id) {
         return userRepository.findById(id);
     }
 
-    /**
-     * Retrieves a user by their username.
-     *
-     * @param username the username of the user
-     * @return the user, if found
-     */
     @Override
     public Optional<User> getUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
-    /**
-     * Retrieves all users.
-     *
-     * @return a list of all users
-     */
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    /**
-     * Updates a user by their ID.
-     *
-     * @param id the ID of the user
-     * @param updatedUser the updated user
-     * @return the updated user, if found
-     * @throws IllegalArgumentException if the user was not found in the repository
-     */
-    /**
-     * Updates a user by their ID.
-     *
-     * @param id          the ID of the user
-     * @param updatedUser the updated user
-     * @return the updated user, if found
-     */
+    @Override
     public Optional<GetUserResponse> updateUser(String id, User updatedUser) {
         return Optional.ofNullable(userRepository.findById(id)
                 .map(user -> {
@@ -176,12 +114,6 @@ public class DefaultUserService implements UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + id)));
     }
 
-    /**
-     * Searches for users with an active status and usernames containing the specified substring.
-     *
-     * @param username the substring to search in usernames
-     * @return list of users with matching usernames and ACTIVE status
-     */
     @Override
     public List<User> searchActiveUsersByUsername(String username) {
         return userRepository.findByUsernameContainingAndStatusAndIsGuest(username, User.userStatus.valueOf(String.valueOf(User.userStatus.ACTIVE)), false);
@@ -203,12 +135,6 @@ public class DefaultUserService implements UserService {
         }
     }
 
-    /**
-     * Sends a friend request from one user to another.
-     *
-     * @param senderUsername   the username of the sender
-     * @param receiverUsername the username of the receiver
-     */
     @Override
     public void sendFriendRequest(String senderUsername, String receiverUsername) {
         if (senderUsername.equals(receiverUsername)) {
@@ -229,12 +155,6 @@ public class DefaultUserService implements UserService {
         }
     }
 
-    /**
-     * Accepts a friend request.
-     *
-     * @param receiverUsername the username of the user accepting the request
-     * @param senderUsername   the username of the user who sent the request
-     */
     @Override
     public void acceptFriendRequest(String receiverUsername, String senderUsername) {
         User sender = userRepository.findByUsername(senderUsername)
@@ -254,12 +174,6 @@ public class DefaultUserService implements UserService {
         }
     }
 
-    /**
-     * Declines a friend request.
-     *
-     * @param receiverUsername the username of the user declining the request
-     * @param senderUsername   the username of the user who sent the request
-     */
     @Override
     public void declineFriendRequest(String receiverUsername, String senderUsername) {
         User sender = userRepository.findByUsername(senderUsername)
@@ -274,12 +188,6 @@ public class DefaultUserService implements UserService {
         userRepository.save(sender);
     }
 
-    /**
-     * Removes a friend relationship between two users.
-     *
-     * @param user1Username the username of the first user
-     * @param user2Username the username of the second user
-     */
     @Override
     public void removeFriend(String user1Username, String user2Username) {
         User user1 = userRepository.findByUsername(user1Username)
@@ -294,14 +202,6 @@ public class DefaultUserService implements UserService {
         userRepository.save(user2);
     }
 
-    /**
-     * Resets the user's password based on the provided token.
-     *
-     * @param token    the reset token provided by the user
-     * @param request  the HTTP request containing additional context (such as IP address) for the password reset operation
-     * @param password the new password provided by the user
-     * @return {@code true} if password reset was successful, {@code false} otherwise
-     */
     @Override
     public boolean resetPassword(String token, HttpServletRequest request, String password) {
         Optional<PasswordResetToken> optionalPasswordResetToken = passwordResetTokenRepository.findByToken(token);
@@ -323,21 +223,11 @@ public class DefaultUserService implements UserService {
         return false;
     }
 
-    /**
-     * Deletes a user by their ID.
-     *
-     * @param id the ID of the user
-     */
     @Override
     public void deleteUserById(String id) {
         userRepository.deleteById(id);
     }
 
-    /**
-     * Performs user account activation.
-     *
-     * @param username the username
-     */
     @Override
     public void activateUser(String username) {
         userRepository.findByUsername(username).map(user -> {
@@ -348,13 +238,6 @@ public class DefaultUserService implements UserService {
                 .orElse(null);
     }
 
-    /**
-     * Checks whether the account with the given username is activated.
-     *
-     * @param username the username of the account to check
-     * @return {@code true} if the account is activated; {@code false} otherwise
-     * @throws UsernameNotFoundException if no user is found with the given username
-     */
     @Override
     public boolean isAccountActivated(String username) {
         User user = userRepository.findByUsername(username)
@@ -363,11 +246,6 @@ public class DefaultUserService implements UserService {
         return user.getStatus() == User.userStatus.ACTIVE;
     }
 
-    /**
-     * Generates a unique username consisting of an adjective and a noun.
-     *
-     * @return a unique username combining an adjective and a noun, without whitespaces
-     */
     @Override
     public String generateUniqueUsername() {
         Faker faker = new Faker();
@@ -385,21 +263,11 @@ public class DefaultUserService implements UserService {
         return username;
     }
 
-    /**
-     * Updates the user's active status.
-     *
-     * @param userId the ID of the user
-     */
     @Override
     public void updateUserActiveStatus(String userId) {
         activityMap.put(userId, LocalDateTime.now());
     }
 
-    /**
-     * Retrieves all active users.
-     *
-     * @return a map of all active users
-     */
     @Override
     public Map<String, LocalDateTime> getAllActiveUsers() {
         return activityMap.getAll(activityMap.keySet());

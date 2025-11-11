@@ -2,7 +2,6 @@ package org.example.codenames.gameState.controller.impl;
 
 import org.example.codenames.card.service.api.CardService;
 import org.example.codenames.gameState.controller.api.GameStateController;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

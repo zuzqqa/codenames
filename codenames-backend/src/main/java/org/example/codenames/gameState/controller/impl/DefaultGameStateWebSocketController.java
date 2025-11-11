@@ -2,10 +2,8 @@ package org.example.codenames.gameState.controller.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
-import org.example.codenames.gameSession.service.api.GameSessionService;
 import org.example.codenames.gameState.controller.api.GameSateWebSocketController;
 import org.example.codenames.gameState.entity.CardsVoteRequest;
 import org.example.codenames.gameState.service.api.GameStateService;
