@@ -160,7 +160,7 @@ const useFriendRequestsSocketIO = (
 
   /**
    * Accepts a friend request: calls backend API, emits socket event and updates local lists.
-   *
+   * 
    * @param senderUsername who sent the original request
    */
   const acceptFriendRequest = async (senderUsername: string) => {

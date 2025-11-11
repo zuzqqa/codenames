@@ -1,10 +1,10 @@
 Relevants update needed because of the switching of the Google Cloud account
 **🔧 What's included in this release?**
-Friend system update.
+Code cleaning
 
 Key additions:
-- Notification system for friend updates
-- Friend notifications in real time via web sockets
+- Removed unnecessary comments, added missing ones
+- Reformatted code using JetBrains built-in formatter
 
 **🚧 What's still under development?**
 - Unit tests
