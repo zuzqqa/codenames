@@ -82,9 +82,10 @@ jobs:
           cache: 'npm'  # Enable npm caching
           cache-dependency-path: codenames-frontend/package-lock.json  # Cache dependencies based on package-lock.json
 
-      - name: 📦 Install dependencies
+      - name: 🧹 Clean install environment
         run: |
             cd codenames-frontend
+            rm -rf node_modules package-lock.json
             npm install
       
       - name: 🏗️ Build frontend
