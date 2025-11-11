@@ -32,7 +32,8 @@ interface GameListProps {
 enum SessionStatus {
   CREATED = "CREATED",
   LEADER_SELECTION = "LEADER_SELECTION",
-  IN_PROGRESS = "IN_PROGRESS"
+  IN_PROGRESS = "IN_PROGRESS",
+  FINISHED = "FINISHED",
 }
 
 /**
