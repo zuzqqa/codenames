@@ -1,0 +1,74 @@
+name: 🚀 Deploy to AWS App Runner (Build & Push Images)
+
+on:
+  push:
+    branches:
+      - '**'
+
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  REGION: ${{ secrets.AWS_REGION }}
+  ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials (OIDC)
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: ${{ env.REGION }}
+        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+
+    - name: Login to Amazon ECR
+      uses: aws-actions/amazon-ecr-login@v2
+
+    ##################################################################
+    # BACKEND
+    ##################################################################
+    - name: Build backend
+      uses: docker/build-push-action@v6
+      with:
+        context: ./codenames-backend
+        file: ./codenames-backend/Dockerfile
+        push: true
+        tags: |
+          ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.REGION }}.amazonaws.com/backend-codenames:main
+
+    ##################################################################
+    # FRONTEND
+    ##################################################################
+    - name: Build frontend
+      uses: docker/build-push-action@v6
+      with:
+        context: ./codenames-frontend
+        file: ./codenames-frontend/Dockerfile.prod
+        push: true
+        tags: |
+          ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.REGION }}.amazonaws.com/frontend-codenames:main
+        build-args: |
+          VITE_BACKEND_API_URL=${{ secrets.VITE_BACKEND_API_URL }}
+          VITE_SOCKET_IO_SERVER=${{ secrets.VITE_SOCKET_IO_SERVER }}
+          VITE_PEERSERVER=${{ secrets.VITE_PEERSERVER }}
+          VITE_SECURE_COOKIES=${{ secrets.VITE_SECURE_COOKIES }}
+          VITE_FRONTEND_URL=${{ secrets.VITE_FRONTEND_URL }}
+
+    ##################################################################
+    # SOCKET SERVER (Socket.IO)
+    ##################################################################
+    - name: Build socket server
+      uses: docker/build-push-action@v6
+      with:
+        context: ./codenames-socket-io-server
+        file: ./codenames-socket-io-server/Dockerfile
+        push: true
+        tags: |
+          ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.REGION }}.amazonaws.com/socket-codenames:main
