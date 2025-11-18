@@ -1,9 +1,9 @@
-choosing leader vied adjustments
+Choosing leader vied adjustments
 **🔧 What's included in this release?**
-moved players containers to the center
+Moved players containers to the center
 
 Key additions: 
-- players containers moved to the center
+- Players containers moved to the center
 
 **🚧 What's still under development?**
 - Migration from Google Cloud Run to a new hosting provider
