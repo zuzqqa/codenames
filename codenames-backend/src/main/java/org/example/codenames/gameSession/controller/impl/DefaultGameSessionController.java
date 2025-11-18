@@ -1,5 +1,6 @@
 package org.example.codenames.gameSession.controller.impl;
 
+import jakarta.annotation.PreDestroy;
 import org.example.codenames.discord.service.impl.DiscordGuildService;
 import org.example.codenames.gameSession.controller.api.GameSessionController;
 import org.example.codenames.gameSession.entity.GameSession;
@@ -76,6 +77,25 @@ public class DefaultGameSessionController implements GameSessionController {
         this.gameStateService = gameStateService;
         this.socketService = socketService;
         this.discordGuildService = discordGuildService;
+    }
+
+    /**
+     * Cleanup method called when the bean is destroyed.
+     * Shuts down the scheduler to prevent thread leaks.
+     */
+    @PreDestroy
+    public void cleanup() {
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdown();
+            try {
+                if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
+                    scheduler.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                scheduler.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
     /**
