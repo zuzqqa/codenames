@@ -90,10 +90,21 @@ public class SchedulerService {
         }
 
         for (GameSession gameSession : allGameSessions) {
-            gameSession.getConnectedUsers().get(0).removeIf(user -> !activityKeys.contains(user.getId()));
-            gameSession.getConnectedUsers().get(1).removeIf(user -> !activityKeys.contains(user.getId()));
-            if (gameSession.getConnectedUsers().get(0).isEmpty() && gameSession.getConnectedUsers().get(1).isEmpty()) {
-                gameSessionMap.delete(gameSession.getSessionId());
+            // Defensive checks: some GameSession objects (especially in tests) may have null or incomplete connectedUsers lists.
+            if (gameSession.getConnectedUsers() == null || gameSession.getConnectedUsers().size() < 2) {
+                // Skip improperly initialized sessions
+                continue;
+            }
+
+            try {
+                gameSession.getConnectedUsers().get(0).removeIf(user -> !activityKeys.contains(user.getId()));
+                gameSession.getConnectedUsers().get(1).removeIf(user -> !activityKeys.contains(user.getId()));
+                if (gameSession.getConnectedUsers().get(0).isEmpty() && gameSession.getConnectedUsers().get(1).isEmpty()) {
+                    gameSessionMap.delete(gameSession.getSessionId());
+                }
+            } catch (IndexOutOfBoundsException | NullPointerException e) {
+                // Be defensive: if concurrent modification or unexpected structure occurs, skip this session.
+                log.warn("Skipping gameSession during cleanup due to unexpected connectedUsers structure: {}", e.getMessage());
             }
         }
     }
