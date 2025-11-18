@@ -4,6 +4,7 @@ import com.hazelcast.core.Hazelcast;
 import org.example.codenames.CodenamesApplication;
 import org.example.codenames.email.service.api.EmailService;
 import org.example.codenames.jwt.JwtService;
+import org.example.codenames.socket.service.api.SocketService;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -53,17 +54,29 @@ public abstract class AbstractIntegrationTest {
         }));
     }
 
+    /**
+     * Mock EmailService to avoid requiring actual SMTP server during tests.
+     */
     @MockBean
     protected EmailService emailService;
 
+    /**
+     * Mock JwtService to avoid JWT token generation complexities in tests.
+     */
     @MockBean
     protected JwtService jwtService;
+
+    /**
+     * Mock SocketService to prevent Socket.IO connection attempts to external server during tests.
+     * Without this mock, the DefaultSocketService @PostConstruct would try to connect to
+     * the Socket.IO server, causing tests to hang or fail in CI/CD environments.
+     */
+    @MockBean
+    protected SocketService socketService;
 
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.data.mongodb.uri",
                 () -> "mongodb://" + mongo.getHost() + ":" + mongo.getMappedPort(27017) + "/CodenamesDB");
     }
-
-    // ...existing code...
 }
