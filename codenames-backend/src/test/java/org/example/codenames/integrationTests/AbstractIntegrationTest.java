@@ -2,12 +2,14 @@ package org.example.codenames.integrationTests;
 
 import com.hazelcast.core.Hazelcast;
 import org.example.codenames.CodenamesApplication;
+import org.example.codenames.config.IntegrationTestConfig;
 import org.example.codenames.email.service.api.EmailService;
 import org.example.codenames.jwt.JwtService;
 import org.example.codenames.socket.service.api.SocketService;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -29,6 +31,7 @@ import java.time.Duration;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.properties")
+@Import(IntegrationTestConfig.class)
 public abstract class AbstractIntegrationTest {
 
     public static MongoDBContainer mongo = new MongoDBContainer(DockerImageName.parse("mongo:5"))
