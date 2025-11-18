@@ -61,6 +61,8 @@ public class DefaultSocketService implements SocketService {
     public void initializeSockets() throws URISyntaxException {
         IO.Options options = IO.Options.builder()
                 .setTransports(new String[]{"websocket"})
+                .setReconnection(false)  // Disable reconnection for tests
+                .setTimeout(2000)         // Short timeout for tests
                 .build();
 
         gameSessionSocket = IO.socket(socketServerUrl + "/game", options);
@@ -73,10 +75,17 @@ public class DefaultSocketService implements SocketService {
             System.err.println("[SOCKET] Błąd połączenia: " + args[0]);
         });
 
-        gameSessionSocket.connect();
+        // Try to connect but don't block if server is unavailable
+        try {
+            gameSessionSocket.connect();
+        } catch (Exception e) {
+            log.warn("[SOCKET] Failed to connect game socket (server may be unavailable): {}", e.getMessage());
+        }
 
         IO.Options options1 = IO.Options.builder()
                 .setTransports(new String[]{"websocket"})
+                .setReconnection(false)  // Disable reconnection for tests
+                .setTimeout(2000)         // Short timeout for tests
                 .build();
 
         chatSocket = IO.socket(socketServerUrl + "/chat", options1);
@@ -89,7 +98,12 @@ public class DefaultSocketService implements SocketService {
             System.err.println("[SOCKET] Błąd połączenia: " + args[0]);
         });
 
-        chatSocket.connect();
+        // Try to connect but don't block if server is unavailable
+        try {
+            chatSocket.connect();
+        } catch (Exception e) {
+            log.warn("[SOCKET] Failed to connect chat socket (server may be unavailable): {}", e.getMessage());
+        }
     }
 
     /**
@@ -100,7 +114,7 @@ public class DefaultSocketService implements SocketService {
      */
     @Override
     public void sendGameSessionUpdate(UUID gameId, GameSessionRoomLobbyDTO gameSession) throws JsonProcessingException {
-        if (gameSessionSocket.connected()) {
+        if (gameSessionSocket != null && gameSessionSocket.connected()) {
             String gameSessionJson = objectMapper.writeValueAsString(gameSession);
             gameSessionSocket.emit("gameSessionUpdate", gameId.toString(), gameSessionJson);
         } else {
@@ -115,7 +129,7 @@ public class DefaultSocketService implements SocketService {
      */
     @Override
     public void sendGameSessionsList(List<GameSessionJoinGameDTO> gameSessions) throws JsonProcessingException {
-        if (gameSessionSocket.connected()) {
+        if (gameSessionSocket != null && gameSessionSocket.connected()) {
             String gameSessionJson = objectMapper.writeValueAsString(gameSessions);
             gameSessionSocket.emit("gameSessionsList", gameSessionJson);
         } else {
@@ -131,7 +145,7 @@ public class DefaultSocketService implements SocketService {
      */
     @Override
     public void sendGameSessionUpdate(UUID gameId, GameSession gameSession) throws JsonProcessingException {
-        if (gameSessionSocket.connected()) {
+        if (gameSessionSocket != null && gameSessionSocket.connected()) {
             String gameSessionJson = objectMapper.writeValueAsString(gameSession);
             gameSessionSocket.emit("gameSessionData", gameId.toString(), gameSessionJson);
         } else {
