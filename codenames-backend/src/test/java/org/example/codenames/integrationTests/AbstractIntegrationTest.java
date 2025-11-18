@@ -4,8 +4,6 @@ import com.hazelcast.core.Hazelcast;
 import org.example.codenames.CodenamesApplication;
 import org.example.codenames.email.service.api.EmailService;
 import org.example.codenames.jwt.JwtService;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -37,6 +35,24 @@ public abstract class AbstractIntegrationTest {
             .waitingFor(Wait.forLogMessage(".*Waiting for connections.*", 1))
             .withStartupTimeout(Duration.ofSeconds(60));
 
+    static {
+        // Start the mongo container as early as possible (static initializer)
+        // so DynamicPropertySource can query its host/port before the Spring
+        // ApplicationContext is created.
+        mongo.start();
+
+        // install a JVM shutdown hook to shut down Hazelcast only when the JVM exits
+        // This avoids shutting Hazelcast down after each integration test class which
+        // can leave subsequent test classes with inactive Hazelcast instances.
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                Hazelcast.shutdownAll();
+            } catch (Throwable ignored) {
+                // ignore any errors during JVM shutdown
+            }
+        }));
+    }
+
     @MockBean
     protected EmailService emailService;
 
@@ -49,14 +65,5 @@ public abstract class AbstractIntegrationTest {
                 () -> "mongodb://" + mongo.getHost() + ":" + mongo.getMappedPort(27017) + "/CodenamesDB");
     }
 
-    @BeforeAll
-    static void setup() {
-        mongo.start();
-    }
-
-    @AfterAll
-    static void shutdown() {
-        Hazelcast.shutdownAll();
-    }
+    // ...existing code...
 }
-
