@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import Button from "../../components/Button/Button";
 import BackgroundContainer from "../../containers/Background/Background";
@@ -32,15 +32,15 @@ interface GameLobbyProps {
  * @returns {JSX.Element} The rendered GameLobby component
  */
 const GameLobby: React.FC<GameLobbyProps> = ({
-  setVolume,
-  soundFXVolume,
-  setSoundFXVolume,
-}) => {
+                                               setVolume,
+                                               soundFXVolume,
+                                               setSoundFXVolume,
+                                             }) => {
   const [musicVolume, setMusicVolume] = useState(() => {
     const savedVolume = localStorage.getItem("musicVolume");
     return savedVolume ? parseFloat(savedVolume) : 50;
   });
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   /**
    * Toggles the settings modal visibility.
@@ -57,26 +57,25 @@ const GameLobby: React.FC<GameLobbyProps> = ({
     <>
       <BackgroundContainer>
         <Button variant="circle" soundFXVolume={soundFXVolume} onClick={toggleSettings}>
-          <img src={settingsIcon} alt="Settings" />
+          <img src={settingsIcon} alt="Settings"/>
         </Button>
 
-        {/* Settings modal */}
         <SettingsModal
           isOpen={isSettingsOpen}
           onClose={toggleSettings}
           musicVolume={musicVolume}
           soundFXVolume={soundFXVolume}
           setMusicVolume={(volume) => {
-            setMusicVolume(volume); // Update local music volume
-            setVolume(volume / 100); // Update global volume
+            setMusicVolume(volume);
+            setVolume(volume / 100);
           }}
           setSoundFXVolume={setSoundFXVolume}
         />
-        <Profile soundFXVolume={soundFXVolume} />
+        <Profile soundFXVolume={soundFXVolume}/>
         <>
           <GameTitleBar></GameTitleBar>
-          <RoomLobby soundFXVolume={soundFXVolume} />
-          <UsernameContainer />
+          <RoomLobby soundFXVolume={soundFXVolume}/>
+          <UsernameContainer/>
         </>
       </BackgroundContainer>
     </>

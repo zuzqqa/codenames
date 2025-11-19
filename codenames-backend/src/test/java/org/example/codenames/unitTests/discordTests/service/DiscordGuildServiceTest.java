@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
  * Unit tests for {@link DiscordGuildService}.
  */
 class DiscordGuildServiceTest {
+
     private RestTemplate restTemplate;
     private DiscordGuildService discordGuildService;
 

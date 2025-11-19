@@ -12,25 +12,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * UserEntityUserDetails class is used to get the user details
- */
 @Getter
 @Setter
 public class UserEntityUserDetails implements UserDetails {
-    /**
-     * Username of the user
-     */
+
     private String username;
-
-    /**
-     * Password of the user
-     */
     private String password;
-
-    /**
-     * Authority of the user
-     */
     private List<GrantedAuthority> authority;
 
     /**

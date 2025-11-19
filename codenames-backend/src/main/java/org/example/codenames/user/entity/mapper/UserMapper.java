@@ -14,6 +14,7 @@ import java.util.List;
  * into their corresponding DTO representations.
  */
 public class UserMapper {
+
     /**
      * Converts a User object to a UserRoomLobbyDTO object.
      *
@@ -43,6 +44,12 @@ public class UserMapper {
                 .toList();
     }
 
+    /**
+     * Converts a User object to a GetUserProfileDetailsResponse object.
+     *
+     * @param user the User object to convert
+     * @return the converted GetUserProfileDetailsResponse object
+     */
     public static GetUserProfileDetailsResponse toGetUserProfileResponse(User user) {
         return GetUserProfileDetailsResponse.builder()
                 .id(user.getId())
@@ -56,17 +63,29 @@ public class UserMapper {
                 .build();
     }
 
+    /**
+     * Converts a list of User objects to a GetUsernamesResponse object.
+     *
+     * @param users the list of User objects to convert
+     * @return the converted GetUsernamesResponse object
+     */
     public static GetUsernamesResponse toGetUsernamesResponse(List<User> users) {
         return GetUsernamesResponse.builder()
                 .users(users.stream().map(user ->
-                        GetUsernamesResponse.User.builder()
-                                .id(user.getId())
-                                .username(user.getUsername())
-                                .build())
+                                GetUsernamesResponse.User.builder()
+                                        .id(user.getId())
+                                        .username(user.getUsername())
+                                        .build())
                         .toList())
                 .build();
     }
 
+    /**
+     * Converts a User object to a GetUserResponse object.
+     *
+     * @param user the User object to convert
+     * @return the converted GetUserResponse object
+     */
     public static GetUserResponse toGetUserResponse(User user) {
         return GetUserResponse.builder()
                 .id(user.getId())

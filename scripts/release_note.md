@@ -1,9 +1,10 @@
 Choosing leader vied adjustments
 **🔧 What's included in this release?**
-Moved players containers to the center
+Code cleaning
 
-Key additions: 
-- Players containers moved to the center
+Key additions:
+- Removed unnecessary comments, added missing ones
+- Reformatted code using JetBrains built-in formatter
 
 **🚧 What's still under development?**
 - Unit tests

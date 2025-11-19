@@ -11,10 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * CompactSerializer implementation for GameSession objects.
+ */
 public class GameSessionCompactSerializer implements CompactSerializer<GameSession> {
+
     /**
      * Gets the type name for the GameSession class.
-     * 
+     *
      * @return The type name as a String.
      */
     @Override
@@ -24,7 +28,7 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
 
     /**
      * Gets the class type for the GameSession.
-     * 
+     *
      * @return The GameSession class.
      */
     @Override
@@ -34,6 +38,7 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
 
     /**
      * Writes a GameSession object to the CompactWriter.
+     *
      * @param writer  The CompactWriter to write to.
      * @param session The GameSession object to write.
      */
@@ -45,9 +50,8 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
         writer.writeInt32("maxPlayers", session.getMaxPlayers() != null ? session.getMaxPlayers() : 0);
         writer.writeString("password", session.getPassword());
         writer.writeInt64("votingStartTime", session.getVotingStartTime() != null ? session.getVotingStartTime() : 0L);
-        writer.writeString("discordChannelId", session.getDiscordChannelId() != null ? session.getDiscordChannelId().toString() : null);
+        writer.writeString("discordChannelId", session.getDiscordChannelId() != null ? session.getDiscordChannelId() : null);
 
-        // Flatten List<List<User>> into a single list and store nested sizes
         List<User> flatUsers = new ArrayList<>();
         List<Integer> userGroupSizes = new ArrayList<>();
         if (session.getConnectedUsers() != null) {
@@ -59,7 +63,6 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
         writer.writeArrayOfInt32("userGroupSizes", userGroupSizes.stream().mapToInt(i -> i).toArray());
         writer.writeArrayOfCompact("connectedUsersFlat", flatUsers.toArray(new User[0]));
 
-        // Flatten List<List<Integer>> into a single list and store nested sizes
         List<Integer> flatVotes = new ArrayList<>();
         List<Integer> voteGroupSizes = new ArrayList<>();
         if (session.getVotes() != null) {
@@ -77,8 +80,8 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
 
     /**
      * Reads a GameSession object from the CompactReader.
+     *
      * @param reader The CompactReader to read from.
-     * 
      * @return The reconstructed GameSession object.
      */
     @Override
@@ -97,7 +100,6 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
         builder.votingStartTime(reader.readInt64("votingStartTime"));
         builder.discordChannelId(reader.readString("discordChannelId"));
 
-        // Reconstruct connectedUsers
         int[] userGroupSizes = reader.readArrayOfInt32("userGroupSizes");
         User[] flatUsers = reader.readArrayOfCompact("connectedUsersFlat", User.class);
         List<List<User>> connectedUsers = new ArrayList<>();
@@ -111,7 +113,6 @@ public class GameSessionCompactSerializer implements CompactSerializer<GameSessi
         }
         builder.connectedUsers(connectedUsers);
 
-        // Reconstruct votes
         int[] voteGroupSizes = reader.readArrayOfInt32("voteGroupSizes");
         int[] flatVotes = reader.readArrayOfInt32("votesFlat");
         List<List<Integer>> votes = new ArrayList<>();

@@ -1,5 +1,5 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { BrowserRouter } from "react-router-dom";
 import ChooseLeader from "./ChooseLeader";
 import { io } from "socket.io-client";
@@ -21,6 +21,7 @@ vi.mock("../../shared/utils.tsx", () => ({
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   },
+  getCookie: vi.fn(),
 }));
 
 const mockNavigate = vi.fn();
@@ -31,6 +32,13 @@ vi.mock("react-router-dom", async () => {
     useNavigate: () => mockNavigate,
   };
 });
+
+const mockAddToast = vi.fn();
+vi.mock("../../components/Toast/ToastContext.tsx", () => ({
+  useToast: () => ({
+    addToast: mockAddToast,
+  }),
+}));
 
 describe("ChooseLeader", () => {
   const mockProps = {

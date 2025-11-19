@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
  */
 @Controller
 public class ChatController {
+
     /**
      * Receives a message from a client and broadcasts it to all subscribers of the game channel
      *
@@ -19,6 +20,7 @@ public class ChatController {
     @MessageMapping("/send/{gameId}")
     @SendTo("/topic/{gameId}/messages")
     public ChatMessage sendMessage(ChatMessage message) {
+
         return message;
     }
 }

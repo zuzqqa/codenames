@@ -57,8 +57,8 @@ public class HazelcastTest {
         gameState.setCardsVotes(cardsVotes);
 
         GameSession newGame = new GameSession(
-                GameSession.sessionStatus.CREATED,
                 UUID.randomUUID(),
+                GameSession.sessionStatus.CREATED,
                 "testName",
                 8,
                 "abcd",
@@ -106,8 +106,8 @@ public class HazelcastTest {
         gameState.setCardsVotes(cardsVotes);
 
         GameSession newGame = new GameSession(
-                GameSession.sessionStatus.CREATED,
                 UUID.randomUUID(),
+                GameSession.sessionStatus.CREATED,
                 "randomName",
                 4,
                 "",

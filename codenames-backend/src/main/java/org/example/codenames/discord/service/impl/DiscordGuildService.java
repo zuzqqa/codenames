@@ -18,6 +18,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class DiscordGuildService implements DiscordGuildClient {
+
     /**
      * The base URL for all Discord API v10 requests.
      */
@@ -104,7 +105,7 @@ public class DiscordGuildService implements DiscordGuildClient {
     /**
      * Creates an invite link for a given channel.
      *
-     * @param channelId     The Discord channel ID.
+     * @param channelId The Discord channel ID.
      * @return The full Discord invite URL (e.g. https://discord.gg/XXXXXX).
      * @throws RuntimeException if Discord API returns an error or no invite code.
      */

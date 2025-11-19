@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router-dom"; // Importing the navigate hook from React Router
-import { useTranslation } from "react-i18next"; // Importing the useTranslation hook from react-i18next
-import React, { useState, useEffect } from "react"; // Hook for managing component state
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import React, { useEffect, useState } from "react";
 
 import BackgroundContainer from "../../containers/Background/Background";
 import MenuContainer from "../../containers/Menu/Menu";
@@ -12,14 +12,11 @@ import Button from "../../components/Button/Button";
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 
 import settingsIcon from "../../assets/icons/settings.png";
-import ProfileModal from "../../components/UserProfileOverlay/ProfileModal";
-import profileIcon from "../../assets/icons/profile.png";
 
 import "../../styles/App.css";
 import "./SelectGame.css";
-import { getCookie, logout } from "../../shared/utils.tsx";
+import { logout } from "../../shared/utils.tsx";
 import logoutButton from "../../assets/icons/logout.svg";
-import { apiUrl } from "../../config/api.tsx";
 import UsernameContainer from "../../containers/UsernameContainer/UsernameContainer.tsx";
 import Profile from "../../components/Profile/Profile.tsx";
 
@@ -43,19 +40,19 @@ interface SelectGameProps {
  * @returns {JSX.Element} The rendered SelectGame component.
  */
 const SelectGame: React.FC<SelectGameProps> = ({
-  setVolume,
-  soundFXVolume,
-  setSoundFXVolume,
-}) => {
+                                                 setVolume,
+                                                 soundFXVolume,
+                                                 setSoundFXVolume,
+                                               }) => {
   const [musicVolume, setMusicVolume] = useState(() => {
     const savedVolume = localStorage.getItem("musicVolume");
     return savedVolume ? parseFloat(savedVolume) : 50;
   });
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // State to track if settings modal is open
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  const { t } = useTranslation(); // Hook for translations
+  const { t } = useTranslation();
 
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
 
   /**
    * Toggles the settings modal visibility.
@@ -71,7 +68,7 @@ const SelectGame: React.FC<SelectGameProps> = ({
    */
   const updateMusicVolume = (volume: number) => {
     setMusicVolume(volume);
-    setVolume(volume); // Update global volume
+    setVolume(volume);
   };
 
   useEffect(() => {
@@ -81,24 +78,21 @@ const SelectGame: React.FC<SelectGameProps> = ({
   return (
     <>
       <BackgroundContainer>
-        <Profile soundFXVolume={soundFXVolume} />
-        {/* Settings button */}
+        <Profile soundFXVolume={soundFXVolume}/>
         <Button
           variant="circle"
           soundFXVolume={soundFXVolume}
           onClick={toggleSettings}
         >
-          <img src={settingsIcon} alt="Settings" />
+          <img src={settingsIcon} alt="Settings"/>
         </Button>
-        {/* Logout button */}
         {document.cookie
           .split("; ")
           .find((cookie) => cookie.startsWith("loggedIn=")) && (
           <Button variant="logout" soundFXVolume={soundFXVolume}>
-            <img src={logoutButton} onClick={logout} alt="Logout" />
+            <img src={logoutButton} onClick={logout} alt="Logout"/>
           </Button>
         )}
-        {/* Settings modal */}
         <SettingsModal
           isOpen={isSettingsOpen}
           onClose={toggleSettings}
@@ -107,18 +101,16 @@ const SelectGame: React.FC<SelectGameProps> = ({
           setMusicVolume={updateMusicVolume}
           setSoundFXVolume={setSoundFXVolume}
         />
-        {/* Main content of the SelectGame page */}
         <TitleComponent soundFXVolume={soundFXVolume}>Codenames</TitleComponent>
-        <CharactersComponent /> {/* Renders the characters component */}
+        <CharactersComponent/>
         <SubtitleComponent variant="primary">
           {t("home-subtitle")}
         </SubtitleComponent>
-        {/* Menu section with options for creating or joining a room */}
         <MenuContainer>
           <div className="first-column">
             <Button
-              variant="room" // Button variant for creating a room
-              onClick={() => navigate("/create-game")} // Navigates to create game page
+              variant="room"
+              onClick={() => navigate("/create-game")}
               soundFXVolume={soundFXVolume}
             >
               <span className="button-text">{t("create-game-button")}</span>
@@ -127,15 +119,15 @@ const SelectGame: React.FC<SelectGameProps> = ({
           <div className="gold-bar"></div>
           <div className="second-column">
             <Button
-              variant="room" // Button variant for joining a room
-              onClick={() => navigate("/join-game")} // Navigates to join game page
+              variant="room"
+              onClick={() => navigate("/join-game")}
               soundFXVolume={soundFXVolume}
             >
               <span className="button-text">{t("join-room-button")}</span>
             </Button>
           </div>
         </MenuContainer>
-        <UsernameContainer />
+        <UsernameContainer/>
       </BackgroundContainer>
     </>
   );

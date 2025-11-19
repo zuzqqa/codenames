@@ -14,8 +14,8 @@ interface DiscordLoginButtonProps {
 }
 
 const DiscordLoginButton: React.FC<DiscordLoginButtonProps> = ({
-  soundFXVolume,
-}) => {
+                                                                 soundFXVolume,
+                                                               }) => {
   const { t } = useTranslation();
 
   /**

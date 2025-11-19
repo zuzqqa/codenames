@@ -2,12 +2,10 @@ package org.example.codenames.socket.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hazelcast.topic.Message;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.example.codenames.chat.entity.ChatMessage;
 import org.example.codenames.gameSession.entity.GameSession;
 import org.example.codenames.gameSession.entity.dto.GameSessionJoinGameDTO;
 import org.example.codenames.gameSession.entity.dto.GameSessionRoomLobbyDTO;
@@ -59,20 +57,14 @@ public class DefaultSocketService implements SocketService {
         profileSocket.connect();
 
         IO.Options options1 = IO.Options.builder()
-                        .setTransports(new String[]{"websocket"})
-                        .build();
+                .setTransports(new String[]{"websocket"})
+                .build();
         chatSocket = IO.socket(socketServerUrl + "/chat", options1);
         chatSocket.on(Socket.EVENT_CONNECT, args -> log.info("[CHAT SOCKET] Connected to /chat namespace"));
         chatSocket.on(Socket.EVENT_CONNECT_ERROR, args -> log.error("[CHAT SOCKET] Connection error: {}", args[0]));
         chatSocket.connect();
     }
 
-    /**
-     * Sends a game session update to connected clients.
-     * @param gameId      The ID of the game session.
-     * @param gameSession The game session data to send.
-     * @throws JsonProcessingException if there is an error during JSON processing.
-     */
     @Override
     public void sendGameSessionUpdate(UUID gameId, GameSessionRoomLobbyDTO gameSession) throws JsonProcessingException {
         if (gameSocket.connected()) {
@@ -83,11 +75,6 @@ public class DefaultSocketService implements SocketService {
         }
     }
 
-    /**
-     * Sends a list of game sessions to connected clients.
-     * @param gameSessions The list of game sessions to send.
-     * @throws JsonProcessingException if there is an error during JSON processing.
-     */
     @Override
     public void sendGameSessionsList(List<GameSessionJoinGameDTO> gameSessions) throws JsonProcessingException {
         if (gameSocket.connected()) {
@@ -98,12 +85,6 @@ public class DefaultSocketService implements SocketService {
         }
     }
 
-    /**
-     * Sends a game session update to connected clients.
-     * @param gameId      The ID of the game session.
-     * @param gameSession The game session data to send.
-     * @throws JsonProcessingException if there is an error during JSON processing.
-     */
     @Override
     public void sendGameSessionUpdate(UUID gameId, GameSession gameSession) throws JsonProcessingException {
         if (gameSocket.connected()) {
@@ -154,11 +135,6 @@ public class DefaultSocketService implements SocketService {
         }
     }
 
-    /**
-     * Sends a Discord link invite to connected clients.
-     * @param gameId      The ID of the game session.
-     * @param discordLink The Discord link to send.
-     */
     @Override
     public void sendDiscordLinkInvite(UUID gameId, String discordLink) {
         Map<String, Object> msg = Map.of(

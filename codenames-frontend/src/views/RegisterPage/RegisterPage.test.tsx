@@ -1,9 +1,11 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import RegisterPage from "./RegisterPage";
 import Cookies from "js-cookie";
+import { useTranslation } from "react-i18next";
 
+const { t } = useTranslation();
 const mockNavigate = vi.fn();
 const mockUseLocation = vi.fn(() => ({
   search: "",
@@ -35,6 +37,7 @@ vi.mock("../../config/api.tsx", () => ({
 
 vi.mock("../../shared/utils.tsx", () => ({
   logout: vi.fn(),
+  getCookie: vi.fn(),
 }));
 
 vi.mock("../../utils/validation.tsx", () => ({
@@ -285,7 +288,7 @@ describe("RegisterPage", () => {
 
     await waitFor(() => {
       expect(mockAddToast).toHaveBeenCalledWith(
-        "Invalid email. Use format: example@domain.com.",
+        t("email-error-message"),
         "error"
       );
     });
@@ -308,7 +311,7 @@ describe("RegisterPage", () => {
 
     await waitFor(() => {
       expect(mockAddToast).toHaveBeenCalledWith(
-        "Username can only contain letters and numbers.",
+        t("username-error-message"),
         "error"
       );
     });

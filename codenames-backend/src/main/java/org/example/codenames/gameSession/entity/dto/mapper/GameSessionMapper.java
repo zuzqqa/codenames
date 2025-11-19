@@ -1,6 +1,8 @@
-package org.example.codenames.gameSession.entity.dto;
+package org.example.codenames.gameSession.entity.dto.mapper;
 
 import org.example.codenames.gameSession.entity.GameSession;
+import org.example.codenames.gameSession.entity.dto.GameSessionJoinGameDTO;
+import org.example.codenames.gameSession.entity.dto.GameSessionRoomLobbyDTO;
 
 import java.util.List;
 import java.util.Optional;

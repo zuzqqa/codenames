@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import React, { ChangeEvent, FormEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { logout } from "../../shared/utils.tsx";
 import { useNavigate } from "react-router-dom";
@@ -43,13 +43,13 @@ interface ResetPasswordRequestProps {
  * @returns JSX.Element
  */
 const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
-  setVolume,
-  soundFXVolume,
-  setSoundFXVolume,
-}) => {
+                                                                         setVolume,
+                                                                         soundFXVolume,
+                                                                         setSoundFXVolume,
+                                                                       }) => {
   const [email, setEmail] = useState<string>("");
-  const [musicVolume, setMusicVolume] = useState(soundFXVolume); // Music volume level
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
+  const [musicVolume, setMusicVolume] = useState(soundFXVolume);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -115,12 +115,12 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
    */
   const updateMusicVolume = (volume: number) => {
     setMusicVolume(volume);
-    setVolume(volume); // Update global volume
+    setVolume(volume);
   };
 
   return (
     <BackgroundContainer>
-      <GameTitleBar />
+      <GameTitleBar/>
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={toggleSettings}
@@ -134,13 +134,13 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
         soundFXVolume={soundFXVolume}
         onClick={toggleSettings}
       >
-        <img src={settingsIcon} alt="Settings" />
+        <img src={settingsIcon} alt="Settings"/>
       </Button>
       {document.cookie
         .split("; ")
         .find((cookie) => cookie.startsWith("loggedIn=")) && (
         <Button variant="logout" soundFXVolume={soundFXVolume}>
-          <img src={logoutButtonIcon} onClick={logout} alt="Logout" />
+          <img src={logoutButtonIcon} onClick={logout} alt="Logout"/>
         </Button>
       )}
       <LoginRegisterContainer variant="reset">

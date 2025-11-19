@@ -1,7 +1,13 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import GameList from "./GameList";
+
+vi.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+  }),
+}));
 
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", () => ({
@@ -11,6 +17,13 @@ vi.mock("react-router-dom", () => ({
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
+  }),
+}));
+
+const mockAddToast = vi.fn();
+vi.mock("../../components/Toast/ToastContext.tsx", () => ({
+  useToast: () => ({
+    addToast: mockAddToast,
   }),
 }));
 
@@ -36,7 +49,6 @@ enum SessionStatus {
   CREATED = "CREATED",
   LEADER_SELECTION = "LEADER_SELECTION",
   IN_PROGRESS = "IN_PROGRESS",
-  FINISHED = "FINISHED",
 }
 
 interface GameSessionJoinGameDTO {
@@ -265,7 +277,7 @@ describe("GameList", () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText("incorrect-password")).toBeInTheDocument();
+      expect(mockAddToast).toHaveBeenCalledWith("incorrect-password", "error");
     });
   });
 

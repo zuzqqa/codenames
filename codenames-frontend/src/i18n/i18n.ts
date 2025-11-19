@@ -5,7 +5,7 @@ import pl from './pl.json';
 
 /**
  * Initializes the i18n instance with language resources and settings.
- * 
+ *
  * - Supports English ('en') and Polish ('pl').
  * - Default language is English.
  * - Uses 'react-i18next' for integration with React.
@@ -16,10 +16,10 @@ i18n.use(initReactI18next).init({
     en: { translation: en },
     pl: { translation: pl },
   },
-  lng: 'en', // Default language
-  fallbackLng: 'en', // Fallback language if the selected one is unavailable
+  lng: 'en',
+  fallbackLng: 'en',
   interpolation: {
-    escapeValue: false, // Prevents escaping of values
+    escapeValue: false,
   },
 });
 
