@@ -38,7 +38,7 @@ class DefaultSocketServiceTest {
     void setUp() throws Exception {
         service = new DefaultSocketService("http://localhost:3000");
 
-        Field gs = DefaultSocketService.class.getDeclaredField("gameSessionSocket");
+        Field gs = DefaultSocketService.class.getDeclaredField("gameSocket");
         gs.setAccessible(true);
         gs.set(service, gameSocket);
 

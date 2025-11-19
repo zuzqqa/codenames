@@ -222,7 +222,7 @@ public class UserServiceTest {
     @Test
     public void shouldSearchActiveUsersByUsername() {
         String searchUsername = "user";
-        when(userRepository.findByUsernameContainingAndStatus(searchUsername, User.userStatus.ACTIVE))
+        when(userRepository.findByUsernameContainingAndStatusAndIsGuest(searchUsername, User.userStatus.ACTIVE, false))
                 .thenReturn(java.util.List.of(user1, user2));
 
         java.util.List<User> users = userService.searchActiveUsersByUsername(searchUsername);
