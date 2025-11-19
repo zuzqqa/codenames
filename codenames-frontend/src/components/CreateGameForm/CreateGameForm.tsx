@@ -61,7 +61,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
         const getIdResponse = await getUserId();
 
         if (getIdResponse === null) {
-          addToast("Failed to fetch ID.", "error");
+          addToast(t("id-not-found"), "error");
           return;
         }
 
@@ -85,10 +85,10 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
           sessionStorage.setItem("gameId", data.gameId);
           navigate("/game-lobby");
         } else {
-          addToast("Failed to create game session", "error");
+          addToast(t("create-game-error"), "error");
         }
       } catch (err) {
-        addToast("Network error", "error");
+        addToast(t("unknown-error"), "error");
       }
     },
   });

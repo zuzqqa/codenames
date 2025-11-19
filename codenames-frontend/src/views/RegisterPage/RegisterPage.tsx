@@ -141,12 +141,12 @@ const RegisterPage: React.FC<RegisterProps> = ({
     }
 
     if (!emailRegex.test(email)) {
-      addToast("Invalid email. Use format: example@domain.com.", "error");
+      addToast(t("email-error-message"), "error");
       return;
     }
 
     if (!usernameRegex.test(login)) {
-      addToast("Username can only contain letters and numbers.", "error");
+      addToast(t("username-error-message"), "error");
       return;
     }
 

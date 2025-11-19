@@ -71,6 +71,85 @@ textChatNamespace.on("connection", (socket) => {
   });
 });
 
+// ------------------ PROFILE NAMESPACE ------------------
+const profileNamespace = io.of("/profile");
+
+profileNamespace.on("connection", (socket) => {
+  console.log(`[PROFILE] Client connected: ${socket.id}`);
+
+  // User joins their private profile room (e.g., username)
+  socket.on("joinProfile", (username) => {
+    console.log(`[PROFILE] ${username} joined their personal profile room`);
+    socket.join(username);
+  });
+
+  // Handle friend request
+  socket.on("sendFriendRequest", (data) => {
+    const { from, to } = parsePayload(data);
+    console.log(`[PROFILE] ${from} sent a friend request to ${to}`);
+
+    if (to) {
+      profileNamespace.to(to).emit("friendRequestReceived", { from });
+    } else {
+      console.warn(`[PROFILE] Warning: recipient ${to} not connected.`);
+    }
+  });
+
+  // Handle friend request acceptance
+  socket.on("acceptFriendRequest", (data) => {
+    const { from, to } = parsePayload(data);
+    console.log(`[PROFILE] ${to} accepted friend request from ${from}`);
+
+    if (from) {
+      profileNamespace.to(from).emit("friendRequestAccepted", { by: to });
+    } else {
+      console.warn(`[PROFILE] Warning: sender ${from} not connected.`);
+    }
+  });
+
+  // Handle friend request decline
+  socket.on("declineFriendRequest", (data) => {
+    const { from, to } = parsePayload(data);
+    console.log(`[PROFILE] ${to} declined friend request from ${from}`);
+
+    if (from) {
+      profileNamespace.to(from).emit("friendRequestDeclined", { by: to });
+    } else {
+      console.warn(`[PROFILE] Warning: sender ${from} not connected.`);
+    }
+  });
+
+  // Handle friend removal
+  socket.on("removeFriend", (data) => {
+    const { user, friend } = parsePayload(data);
+    console.log(`[PROFILE] ${user} removed friend ${friend}`);
+
+    if (friend) {
+      profileNamespace.to(friend).emit("friendRemoved", { by: user });
+    } else {
+      console.warn(`[PROFILE] Warning: friend ${friend} not connected.`);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`[PROFILE] Client disconnected: ${socket.id}`);
+  });
+});
+
+// Helper: safely parse JSON payloads from Java
+function parsePayload(data) {
+  if (typeof data === "string") {
+    try {
+      return JSON.parse(data);
+    } catch (err) {
+      console.error("[PROFILE] Failed to parse JSON payload:", data);
+      return {};
+    }
+  }
+  return data || {};
+}
+
+// --- START SERVER ---
 const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {

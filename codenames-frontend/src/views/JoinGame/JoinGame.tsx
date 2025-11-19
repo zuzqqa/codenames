@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react"; // Hook for managing component state
-import { io } from "socket.io-client";
+import React, {useEffect, useState} from "react"; // Hook for managing component state
+import {io} from "socket.io-client";
 
 import BackgroundContainer from "../../containers/Background/Background";
 
@@ -7,14 +7,13 @@ import Button from "../../components/Button/Button";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar";
 import GameList from "../../components/GameList/GameList";
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
-import ProfileModal from "../../components/UserProfileOverlay/ProfileModal";
-import profileIcon from "../../assets/icons/profile.png";
 import settingsIcon from "../../assets/icons/settings.png";
 import logoutButton from "../../assets/icons/logout.svg";
 
-import { getCookie, logout } from "../../shared/utils.tsx";
-import { apiUrl, socketUrl } from "../../config/api.tsx";
+import {logout} from "../../shared/utils.tsx";
+import {apiUrl, socketUrl} from "../../config/api.tsx";
 import UsernameContainer from "../../containers/UsernameContainer/UsernameContainer.tsx";
+import Profile from "../../components/Profile/Profile.tsx";
 
 /**
  * Props type definition for the JoinGame component.
@@ -137,40 +136,6 @@ const JoinGame: React.FC<JoinGameProps> = ({
   }, []);
 
   /**
-   * useEffect hook that checks if the user is a guest by making an API call.
-   */
-  useEffect(() => {
-    const fetchGuestStatus = async () => {
-      const token = getCookie("authToken");
-
-      if (!token) {
-        return;
-      }
-
-      try {
-        const response = await fetch(`${apiUrl}/api/users/is-guest`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (response.ok) {
-          const guestStatus = await response.json();
-          setIsGuest(guestStatus);
-        } else {
-          console.error("Failed to retrieve guest status.");
-        }
-      } catch (error) {
-        console.error("Error retrieving guest status: ", error);
-      }
-    };
-
-    fetchGuestStatus();
-  }, []);
-
-  /**
    * Fetches all available game sessions from the backend.
    * Only sessions in the "CREATED" state are stored.
    */
@@ -196,9 +161,6 @@ const JoinGame: React.FC<JoinGameProps> = ({
     setIsSettingsOpen(!isSettingsOpen);
   };
 
-  const toggleProfile = () => {
-    setIsProfileOpen(!isProfileOpen);
-  };
   return (
     <>
       <BackgroundContainer>
@@ -221,16 +183,7 @@ const JoinGame: React.FC<JoinGameProps> = ({
           }}
           setSoundFXVolume={setSoundFXVolume}
         />
-        {isGuest === false && (
-          <Button variant="circle-profile" soundFXVolume={soundFXVolume}>
-            <img src={profileIcon} onClick={toggleProfile} alt="Profile" />
-          </Button>
-        )}
-        <ProfileModal
-          isOpen={isProfileOpen}
-          onClose={toggleProfile}
-          soundFXVolume={soundFXVolume}
-        />
+        <Profile soundFXVolume={soundFXVolume} />
         {document.cookie
           .split("; ")
           .find((cookie) => cookie.startsWith("loggedIn=")) && (

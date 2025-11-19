@@ -85,7 +85,7 @@
 }
 
 .lobby-link-switch:active {
-  transform: translate(130%, 80%) scale(0.95); /* small press-down effect */
+  transform: translate(130%, 80%) scale(0.95);
 }
 
 .lobby-link-switch.disable {

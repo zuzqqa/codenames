@@ -8,6 +8,7 @@ import RoomLobby from "../../components/RoomLobby/RoomLobby";
 
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal.tsx";
 import UsernameContainer from "../../containers/UsernameContainer/UsernameContainer.tsx";
+import Profile from "../../components/Profile/Profile.tsx";
 
 /**
  * Props interface for GameLobby component.
@@ -71,6 +72,7 @@ const GameLobby: React.FC<GameLobbyProps> = ({
           }}
           setSoundFXVolume={setSoundFXVolume}
         />
+        <Profile soundFXVolume={soundFXVolume} />
         <>
           <GameTitleBar></GameTitleBar>
           <RoomLobby soundFXVolume={soundFXVolume} />
