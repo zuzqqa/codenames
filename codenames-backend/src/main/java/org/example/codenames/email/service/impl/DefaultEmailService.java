@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.example.codenames.email.entity.EmailRequest;
 import org.example.codenames.email.service.api.EmailService;
 import org.example.codenames.tokens.accountActivationToken.service.api.AccountActivationTokenService;
-import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetServiceToken;
+import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetTokenService;
 import org.example.codenames.util.ResourceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +26,7 @@ public class DefaultEmailService implements EmailService {
      * Service for sending emails through JavaMail.
      */
     private final JavaMailSender mailSender;
-    private final PasswordResetServiceToken passwordResetServiceToken;
+    private final PasswordResetTokenService passwordResetTokenService;
     private final AccountActivationTokenService accountActivationTokenService;
     @Value("${frontend.url:http://localhost:5173}")
     private String frontendUrl;
@@ -34,9 +34,9 @@ public class DefaultEmailService implements EmailService {
     private String backendUrl;
 
     @Autowired
-    public DefaultEmailService(JavaMailSender mailSender, PasswordResetServiceToken passwordResetServiceToken, AccountActivationTokenService accountActivationTokenService) {
+    public DefaultEmailService(JavaMailSender mailSender, PasswordResetTokenService passwordResetTokenService, AccountActivationTokenService accountActivationTokenService) {
         this.mailSender = mailSender;
-        this.passwordResetServiceToken = passwordResetServiceToken;
+        this.passwordResetTokenService = passwordResetTokenService;
         this.accountActivationTokenService = accountActivationTokenService;
     }
 
@@ -94,7 +94,7 @@ public class DefaultEmailService implements EmailService {
                     MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                     StandardCharsets.UTF_8.name());
 
-            String token = passwordResetServiceToken.createResetToken(userEmail, request);
+            String token = passwordResetTokenService.createResetToken(userEmail, request);
             String resetLink = frontendUrl + "/reset-password?token=" + token;
             htmlContent = htmlContent.replace("{{reset_link}}", resetLink);
 

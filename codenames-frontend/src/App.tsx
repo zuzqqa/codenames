@@ -119,7 +119,6 @@ const App: React.FC = () => {
     <Router>
       <Routes>
         <Route path="/win-loss" element={<WinLossView/>}/>
-        {/* Public routes */}
         <Route
           path="/"
           element={
@@ -183,7 +182,6 @@ const App: React.FC = () => {
           }
         />
 
-        {/* Protected routes wrapped with PrivateRoute */}
         <Route
           path="/games"
           element={
@@ -286,7 +284,6 @@ const App: React.FC = () => {
           }
         />
         <Route path="/invite/:gameId" element={<Invite/>}/>
-        {/* Fallback route */}
         <Route
           path="*"
           element={

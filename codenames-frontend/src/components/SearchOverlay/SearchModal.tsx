@@ -38,7 +38,6 @@ const SearchModal: React.FC<SearchModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={toggleModal}>
-      {/* Modal header with title */}
       <div search-modal-content>
         <img src={searchBar} alt="searchbar" className="search-bar-background"/>
         <div className="search-bar-container">

@@ -79,7 +79,6 @@ const SelectGame: React.FC<SelectGameProps> = ({
     <>
       <BackgroundContainer>
         <Profile soundFXVolume={soundFXVolume}/>
-        {/* Settings button */}
         <Button
           variant="circle"
           soundFXVolume={soundFXVolume}
@@ -87,7 +86,6 @@ const SelectGame: React.FC<SelectGameProps> = ({
         >
           <img src={settingsIcon} alt="Settings"/>
         </Button>
-        {/* Logout button */}
         {document.cookie
           .split("; ")
           .find((cookie) => cookie.startsWith("loggedIn=")) && (
@@ -95,7 +93,6 @@ const SelectGame: React.FC<SelectGameProps> = ({
             <img src={logoutButton} onClick={logout} alt="Logout"/>
           </Button>
         )}
-        {/* Settings modal */}
         <SettingsModal
           isOpen={isSettingsOpen}
           onClose={toggleSettings}
@@ -104,9 +101,8 @@ const SelectGame: React.FC<SelectGameProps> = ({
           setMusicVolume={updateMusicVolume}
           setSoundFXVolume={setSoundFXVolume}
         />
-        {/* Main content of the SelectGame page */}
         <TitleComponent soundFXVolume={soundFXVolume}>Codenames</TitleComponent>
-        <CharactersComponent/> {/* Renders the characters component */}
+        <CharactersComponent/>
         <SubtitleComponent variant="primary">
           {t("home-subtitle")}
         </SubtitleComponent>

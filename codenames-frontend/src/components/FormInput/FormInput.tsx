@@ -30,10 +30,8 @@ const FormInput: React.FC<FormInputProps> = ({
                                              }) => {
   return (
     <div className="input-container">
-      {/* Render label if provided */}
       {label && <label className="input-label">{label}</label>}
 
-      {/* Main input field */}
       <input
         type={type}
         className="input-field"
@@ -42,7 +40,6 @@ const FormInput: React.FC<FormInputProps> = ({
         onChange={onChange}
       />
 
-      {/* Render button if provided */}
       {button != null ? button : null}
     </div>
   );

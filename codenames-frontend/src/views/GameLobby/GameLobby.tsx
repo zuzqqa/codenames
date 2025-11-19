@@ -60,7 +60,6 @@ const GameLobby: React.FC<GameLobbyProps> = ({
           <img src={settingsIcon} alt="Settings"/>
         </Button>
 
-        {/* Settings modal */}
         <SettingsModal
           isOpen={isSettingsOpen}
           onClose={toggleSettings}

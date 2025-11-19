@@ -1106,9 +1106,6 @@ const Gameplay: React.FC<GameplayProps> = ({
 
         <div className="content-container">
           <div className="timer-container">
-            {/* <div className="horizontal-gold-bar"></div>
-            <span className="timer">
-            </span> */}
           </div>
           <div className="cards-section">
             {cards.map((cardImage, index) => (
@@ -1263,12 +1260,6 @@ const Gameplay: React.FC<GameplayProps> = ({
               src={cardBlackImg}
               alt="Black Card"
             />
-            {/* <Button className="close-button" variant="transparent" soundFXVolume={soundFXVolume}>
-              <i
-                className="fa-solid fa-xmark close"
-                onClick={() => setIsCardVisible(false)}
-              ></i>
-            </Button> */}
             <div className="codename-input-container">
               <input
                 type="text"
@@ -1347,19 +1338,6 @@ const Gameplay: React.FC<GameplayProps> = ({
                 </Button>
               </div>
             </div>
-            {/* <Button variant="transparent" soundFXVolume={soundFXVolume} className="confirm-button">
-              <i
-                className="fa-solid fa-check confirm" style={{ color: "white" }}
-                onClick={() => {
-                  if (validateCardText(cardText)) {
-                    sendHint();
-                    setIsCardVisible(false);
-                    setCardText("");
-                    setCardNumber(1);
-                  }
-                }}
-              ></i>
-            </Button> */}
           </div>
         )}
         {ownUsername && (

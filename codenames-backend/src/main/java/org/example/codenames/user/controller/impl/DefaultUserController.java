@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.codenames.email.service.api.EmailService;
 import org.example.codenames.jwt.JwtService;
 import org.example.codenames.socket.service.api.SocketService;
-import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetServiceToken;
+import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetTokenService;
 import org.example.codenames.user.controller.api.UserController;
 import org.example.codenames.user.entity.PasswordResetRequest;
 import org.example.codenames.user.entity.User;
@@ -45,7 +45,7 @@ import java.util.*;
 public class DefaultUserController implements UserController {
 
     private final EmailService emailService;
-    private final PasswordResetServiceToken passwordResetServiceToken;
+    private final PasswordResetTokenService passwordResetTokenService;
     private final UserService userService;
     private final SocketService socketService;
     private final AuthenticationManager authenticationManager;
@@ -269,7 +269,7 @@ public class DefaultUserController implements UserController {
         boolean success = userService.resetPassword(token, request, passwordResetRequest.getPassword());
 
         if (success) {
-            passwordResetServiceToken.tokenUsed(token, request);
+            passwordResetTokenService.tokenUsed(token, request);
 
             return ResponseEntity.ok().build();
         }
@@ -294,7 +294,7 @@ public class DefaultUserController implements UserController {
 
     @GetMapping("/token-validation/{token}")
     public ResponseEntity<Void> isPasswordResetTokenValid(@PathVariable String token, HttpServletRequest request) {
-        if (passwordResetServiceToken.isValidToken(token))
+        if (passwordResetTokenService.isValidToken(token))
             return ResponseEntity.ok().build();
 
         return ResponseEntity.status(HttpStatus.GONE).build();

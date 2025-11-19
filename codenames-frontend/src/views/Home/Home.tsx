@@ -116,7 +116,6 @@ const Home: React.FC<HomeProps> = ({
   return (
     <>
       <BackgroundContainer>
-        {/* Settings modal */}
         <SettingsModal
           isOpen={isSettingsOpen}
           onClose={toggleSettings}
@@ -185,7 +184,6 @@ const Home: React.FC<HomeProps> = ({
         ) : (
           <>
             <div className="start-container">
-              {/* Initial state before starting the game */}
               <div className="character-image-start">
                 <img src={characters} alt="Characters"/>
               </div>
@@ -200,7 +198,6 @@ const Home: React.FC<HomeProps> = ({
                   Your mission begins now
                 </SubtitleComponent>
                 <div className="start-button">
-                  {/* Start game button */}
                   <Button
                     variant="primary"
                     onClick={startGame}

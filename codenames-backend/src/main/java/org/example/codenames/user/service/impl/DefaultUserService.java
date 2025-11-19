@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.example.codenames.tokens.passwordResetToken.entity.PasswordResetToken;
 import org.example.codenames.tokens.passwordResetToken.repository.api.PasswordResetTokenRepository;
-import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetServiceToken;
+import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetTokenService;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.entity.dto.GetFriendDataResponse;
 import org.example.codenames.user.entity.dto.GetUserResponse;
@@ -35,15 +35,15 @@ public class DefaultUserService implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
-    private final PasswordResetServiceToken passwordResetServiceToken;
+    private final PasswordResetTokenService passwordResetTokenService;
     private final IMap<String, LocalDateTime> activityMap;
 
     @Autowired
-    public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PasswordResetTokenRepository passwordResetTokenRepository, PasswordResetServiceToken passwordResetServiceToken, HazelcastInstance hazelcastInstance) {
+    public DefaultUserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PasswordResetTokenRepository passwordResetTokenRepository, PasswordResetTokenService passwordResetTokenService, HazelcastInstance hazelcastInstance) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
-        this.passwordResetServiceToken = passwordResetServiceToken;
+        this.passwordResetTokenService = passwordResetTokenService;
         this.activityMap = hazelcastInstance.getMap("activeUsers");
     }
 
@@ -209,7 +209,7 @@ public class DefaultUserService implements UserService {
         if (optionalPasswordResetToken.isPresent()) {
             PasswordResetToken passwordResetToken = optionalPasswordResetToken.get();
 
-            if (passwordResetServiceToken.isValidToken(token)) {
+            if (passwordResetTokenService.isValidToken(token)) {
                 userRepository.findByEmail(passwordResetToken.getUserEmail())
                         .ifPresent(user -> {
                             String encodedPassword = passwordEncoder.encode(password);

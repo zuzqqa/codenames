@@ -3,7 +3,7 @@ package org.example.codenames.tokens.passwordResetToken.service.impl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.example.codenames.tokens.passwordResetToken.entity.PasswordResetToken;
 import org.example.codenames.tokens.passwordResetToken.repository.api.PasswordResetTokenRepository;
-import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetServiceToken;
+import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetTokenService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -11,10 +11,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Default implementation of the {@link PasswordResetServiceToken} interface.
+ * Default implementation of the {@link PasswordResetTokenService} interface.
  */
 @Service
-public class DefaultPasswordResetServiceToken implements PasswordResetServiceToken {
+public class DefaultPasswordResetTokenService implements PasswordResetTokenService {
 
     /**
      * Repository for managing password reset tokens in the database.
@@ -26,7 +26,7 @@ public class DefaultPasswordResetServiceToken implements PasswordResetServiceTok
      *
      * @param passwordResetTokenRepository the password reset tokens repository
      */
-    public DefaultPasswordResetServiceToken(PasswordResetTokenRepository passwordResetTokenRepository) {
+    public DefaultPasswordResetTokenService(PasswordResetTokenRepository passwordResetTokenRepository) {
         this.passwordResetTokenRepository = passwordResetTokenRepository;
     }
 

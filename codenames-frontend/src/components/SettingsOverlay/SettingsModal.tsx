@@ -136,7 +136,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         <SettingsFooter/>
       </Modal>
 
-      {/* MessageModal */}
       <MessageModal
         isOpen={isMessageModalOpen}
         onClose={handleCloseAllModals}
@@ -144,7 +143,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         setIsConfirmationModalOpen={setIsConfirmationModalOpen}
       />
 
-      {/* ConfirmationModal */}
       {isConfirmationModalOpen && (
         <div className="confirmation-modal-container">
           <img src={BackgroundImg} className="confirmation-modal-background-img" alt="Modal background"/>

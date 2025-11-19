@@ -52,7 +52,6 @@ const WinLossView: React.FC = () => {
   return (
     <BackgroundContainer>
       <div className="start-container">
-        {/* Initial state before starting the game */}
         <div className="character-image-start">
           <img src={characters} alt="Characters"/>
         </div>
