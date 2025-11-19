@@ -18,7 +18,7 @@ public class AuthController {
     /**
      * Endpoint to retrieve authenticated user's information.
      *
-     * @param principal
+     * @param principal the OAuth2-authenticated user injected from the security context
      * @return
      */
     @GetMapping("/user")
