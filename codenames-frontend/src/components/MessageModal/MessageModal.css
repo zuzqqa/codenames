@@ -21,8 +21,8 @@
 
 .message-grid {
   display: grid;
-  grid-template-rows: 0.5fr 0.7fr 1fr 1fr; /* Four evenly spaced rows */
-  text-align: left; /* Align text to the left */
+  grid-template-rows: 0.5fr 0.7fr 1fr 1fr;
+  text-align: left;
   height: 95%;
   width: auto;
 }
@@ -35,15 +35,11 @@
 .message-row-item-message {
   width: 100%;
   margin: auto;
-  position: relative; /* Relative for positioning child elements */
-  display: flex; /* Flexbox for alignment */
-  justify-content: left; /* Align content to the left */
+  position: relative;
+  display: flex;
+  justify-content: left;
   align-items: center;
-
-  /* Text styles */
   font-size: calc(0.4rem + 0.5vw);
-
-  /* Gradient text */
   background-image: linear-gradient(to bottom, #fcf18b, #ffd363);
   background-clip: text;
   -webkit-background-clip: text;
@@ -67,12 +63,11 @@
   text-indent: 15px;
   font-family: "Wellfleet", serif;
   font-style: normal;
-  /* Text styles */
   font-size: calc(0.6rem + 0.4vw);
 
   border: none;
 
-  box-shadow: 0 0 1rem rgba(0, 0, 0, 1); /* Soft shadow */
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 1);
   outline: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -88,12 +83,11 @@
   background: linear-gradient(to bottom, #f0e0b5, #eed8b0);
   font-family: "Wellfleet", serif;
   font-style: normal;
-  /* Text styles */
   font-size: calc(0.6rem + 0.4vw);
 
   border: none;
 
-  box-shadow: 0 0 1rem rgba(0, 0, 0, 1); /* Soft shadow */
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 1);
 
   resize: none;
   overflow-y: auto;
@@ -125,7 +119,7 @@
 
 .message-row-item-grid {
   display: grid;
-  grid-template-columns: 1fr 0.1fr; /* Two evenly spaced columns */
+  grid-template-columns: 1fr 0.1fr;
 }
 
 .message-row-item:nth-child(4) {
@@ -134,13 +128,13 @@
 }
 
 .message-row-item-textarea:focus {
-  border-color: #ffd363; /* Gold border on focus */
-  box-shadow: 0 6px 10px rgba(255, 211, 99, 0.5); /* Gold shadow on focus */
+  border-color: #ffd363;
+  box-shadow: 0 6px 10px rgba(255, 211, 99, 0.5);
 }
 
 .message-email-input:focus {
-  border-color: #ffd363; /* Gold border on focus */
-  box-shadow: 0 6px 10px rgba(255, 211, 99, 0.5); /* Gold shadow on focus */
+  border-color: #ffd363;
+  box-shadow: 0 6px 10px rgba(255, 211, 99, 0.5);
 }
 
 .spinner-image {

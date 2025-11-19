@@ -239,7 +239,6 @@ input[type="range"]:focus::-ms-fill-upper {
   margin-right: auto;
   padding-left: 2px;
 
-  /* Gradient text */
   background-image: linear-gradient(to bottom, #fcf18b, #ffd363);
   background-clip: text;
   -webkit-background-clip: text;

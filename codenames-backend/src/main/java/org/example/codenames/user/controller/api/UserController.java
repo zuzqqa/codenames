@@ -3,9 +3,13 @@ package org.example.codenames.user.controller.api;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.example.codenames.user.entity.dto.GetFriendDataResponse;
 import org.example.codenames.user.entity.PasswordResetRequest;
 import org.example.codenames.user.entity.User;
-import org.example.codenames.user.entity.dto.FriendRequestsDTO;
+import org.example.codenames.user.entity.dto.GetUserProfileDetailsResponse;
+import org.example.codenames.user.entity.dto.GetUserResponse;
+import org.example.codenames.user.entity.dto.GetUsernamesResponse;
 import org.example.codenames.userDetails.auth.AuthRequest;
 import org.example.codenames.userDetails.auth.AuthResponse;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +40,7 @@ public interface UserController {
 
     ResponseEntity<Map<String, String>> getUserByToken(String token);
 
-    ResponseEntity<User> updateUser(String id, User updatedUser);
+    ResponseEntity<GetUserResponse> updateUser(String id, User updatedUser);
 
     ResponseEntity<Void> deleteUserById(String id);
 
@@ -50,7 +54,9 @@ public interface UserController {
 
     ResponseEntity<String> createGuest(HttpServletResponse response);
 
-    ResponseEntity<List<User>> searchUsers(@RequestParam String username);
+    ResponseEntity<GetUserProfileDetailsResponse> getUserProfile(@PathVariable String id);
+
+    ResponseEntity<GetUsernamesResponse> searchUsers(@RequestParam String username);
 
     ResponseEntity<Void> sendFriendRequest(@PathVariable String receiverUsername, @RequestParam String senderUsername);
 
@@ -60,8 +66,8 @@ public interface UserController {
 
     ResponseEntity<Void> removeFriend(@PathVariable String friendUsername, @RequestParam String userUsername);
 
-    ResponseEntity<FriendRequestsDTO> getFriendRequests(@PathVariable String username);
-
+    ResponseEntity<GetFriendDataResponse> getFriendRequests(@PathVariable String username);
+    
     ResponseEntity<String> updatePassword(@PathVariable String token, HttpServletRequest request, @RequestBody PasswordResetRequest passwordResetRequest);
 
     ResponseEntity<Void> updateUserActiveStatus(@RequestBody String userId);

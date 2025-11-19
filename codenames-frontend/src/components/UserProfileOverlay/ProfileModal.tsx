@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import {useEffect, useState} from "react";
+import {useTranslation} from "react-i18next";
 
 import closeIcon from "../../assets/icons/close.png";
 import checkmarkIcon from "../../assets/icons/check.png";
@@ -20,12 +20,14 @@ import TitleModal from "../TitleModal/TitleModal";
 
 import Button from "../Button/Button";
 
-import useFriendRequestsWebSocket from "./useFriendRequestsWebSocket.tsx";
+import useFriendRequestsSocketIO from "./useFriendRequestsSocketIO.tsx";
 
 import "./ProfileModal.css";
 
-import { apiUrl } from "../../config/api.tsx";
-import { getUserId } from "../../shared/utils.tsx";
+import {apiUrl} from "../../config/api.tsx";
+import {getUserId} from "../../shared/utils.tsx";
+import {useToast} from "../Toast/ToastContext.tsx";
+
 interface ProfileModalProps {
   soundFXVolume: number;
   isOpen: boolean;
@@ -39,17 +41,20 @@ interface User {
   description: string;
   profilePic: number;
   friends: string[];
-  invitations: string[];
+  sentRequests: string[];
+  receivedRequests: string[];
+}
+
+interface UserList {
+  users: { id: string, username: string }[];
 }
 
 const availableProfilePics = [0, 1, 2, 3, 4];
 
-const ProfileModal: React.FC<ProfileModalProps> = ({
-  soundFXVolume,
-  isOpen,
-  onClose,
-}) => {
-  const { t } = useTranslation();
+const ProfileModal: React.FC<ProfileModalProps> = ({soundFXVolume, isOpen, onClose}) => {
+  const {t} = useTranslation();
+  const {addToast} = useToast();
+
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [editedUsername, setEditedUsername] = useState("");
   const [editedEmail, setEditedEmail] = useState("");
@@ -60,10 +65,14 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
     "../../assets/images/profile-pic-default.png"
   );
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<User[]>([]);
-  const [activeTab, setActiveTab] = useState<
-    "friends" | "invitations" | "search"
-  >("friends");
+  const [searchResults, setSearchResults] = useState<UserList>({users: []});
+  const [activeTab, setActiveTab] = useState<"friends" | "invitations" | "search">("friends");
+
+  const initialFriendState = currentUser ? {
+    friends: currentUser.friends ?? [],
+    sentRequests: currentUser.sentRequests ?? [],
+    receivedRequests: currentUser.receivedRequests ?? [],
+  } : undefined;
 
   const {
     friends,
@@ -74,15 +83,15 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
     acceptFriendRequest,
     declineFriendRequest,
     undoFriendRequest,
-  } = useFriendRequestsWebSocket(currentUser?.username || "");
+  } = useFriendRequestsSocketIO(currentUser?.username || "", initialFriendState);
 
   const tabIcons = {
-    friends: { default: friendsIcon, picked: friendsIconPicked },
+    friends: {default: friendsIcon, picked: friendsIconPicked},
     invitations: {
       default: friendRequestsIcon,
       picked: friendRequestsIconPicked,
     },
-    search: { default: searchIcon, picked: searchIconPicked },
+    search: {default: searchIcon, picked: searchIconPicked},
   };
 
   useEffect(() => {
@@ -94,7 +103,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
           return;
         }
 
-        const userResponse = await fetch(`${apiUrl}/api/users/${id}`, {
+        const userResponse = await fetch(`${apiUrl}/api/users/profile/${id}`, {
           method: "GET",
           credentials: "include",
         });
@@ -102,35 +111,32 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
         if (userResponse.ok) {
           const userData: User = await userResponse.json();
           setCurrentUser(userData);
-          setEditedUsername(userData.username);
-          setEditedEmail(userData.email);
-          setEditedDescription(userData.description);
-
+          // Initialize edited fields when user is loaded
+          setEditedUsername(userData.username ?? "");
+          setEditedEmail(userData.email ?? "");
+          setEditedDescription(userData.description ?? "");
           const picIndex = availableProfilePics.indexOf(userData.profilePic);
           setProfilePicIndex(picIndex !== -1 ? picIndex : 0);
 
           loadProfilePic(userData.profilePic);
         } else {
-          console.error("Cannot fetch user data");
+          addToast(t("unknown-error"), "error");
         }
       } catch (error) {
-        console.error("Error while fetching user data", error);
+        addToast(t("fetching-user-error"), "error");
       }
     };
 
-    if (isOpen) {
-      fetchCurrentUser();
-    }
+    if (isOpen) fetchCurrentUser();
   }, [isOpen]);
 
   const loadProfilePic = async (profilePicId: number) => {
     try {
       const image = await import(
         `../../assets/images/profile-pic-${profilePicId}.png`
-      );
+        );
       setProfilePic(image.default);
     } catch (error) {
-      console.error("Image not found, using default", error);
       setProfilePic("../../assets/images/profile-pic-default.png");
     }
   };
@@ -138,19 +144,16 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
   const handleSave = async () => {
     if (!currentUser) return;
 
-    const selectedProfilePic = availableProfilePics[profilePicIndex];
-
     try {
       const response = await fetch(`${apiUrl}/api/users/${currentUser.id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
         credentials: "include",
         body: JSON.stringify({
           id: currentUser.id,
           username: editedUsername,
-          email: editedEmail,
           description: editedDescription,
-          profilePic: selectedProfilePic,
+          profilePic: availableProfilePics[profilePicIndex],
         }),
       });
 
@@ -158,17 +161,16 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
         setCurrentUser({
           ...currentUser,
           username: editedUsername,
-          email: editedEmail,
           description: editedDescription,
-          profilePic: selectedProfilePic,
+          profilePic: availableProfilePics[profilePicIndex],
         });
         setIsEditing(false);
-        loadProfilePic(selectedProfilePic);
+        loadProfilePic(availableProfilePics[profilePicIndex]);
       } else {
-        console.error("Failed to update user");
+        addToast(t("fetch-user-error"), "error");
       }
     } catch (error) {
-      console.error("Error while updating user", error);
+      addToast(t("fetch-user-error"), "error");
     }
   };
 
@@ -187,22 +189,20 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
   };
 
   const handleSearch = async () => {
+    if (!searchQuery) return;
     try {
-      const response = await fetch(
-        `${apiUrl}/api/users/search?username=${searchQuery}`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`${apiUrl}/api/users/search?username=${searchQuery}`, {
+        method: "GET",
+        credentials: "include",
+      });
       if (response.ok) {
-        const data: User[] = await response.json();
+        const data: UserList = await response.json();
         setSearchResults(data);
       } else {
-        console.error("Failed to fetch users");
+        addToast(t("fetch-user-error"), "error");
       }
     } catch (error) {
-      console.error("Error while searching users", error);
+      addToast(t("fetch-user-error"), "error");
     }
   };
 
@@ -245,7 +245,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
                       onClick={handleNextProfilePic}
                       className="arrow-button pic-arrow"
                     >
-                      <img src={arrow} alt="Next" />
+                      <img src={arrow} alt="Next"/>
                     </button>
                   </div>
                   <p className="gold-text username">
@@ -253,13 +253,15 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
                   </p>
                 </div>
                 <div className="sec-col">
-                  <p className="gold-text">
-                    {t("email")}:{" "}
-                    {currentUser ? currentUser.email : t("unknown user")}
-                  </p>
+                  <label className="gold-text">{t("username")}:<br/></label>
+                  <input
+                    className="gold-text username-input"
+                    value={editedUsername}
+                    onChange={(e) => setEditedUsername(e.target.value)}
+                  />
                   <div>
                     <label className="gold-text">
-                      {t("description")}:<br />
+                      {t("description")}:<br/>
                     </label>
                     <textarea
                       className="description-textarea gold-text"
@@ -273,7 +275,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
                     soundFXVolume={soundFXVolume}
                     onClick={() => setIsEditing(!isEditing)}
                   >
-                    <img src={editIcon} alt="Profile" />
+                    <img src={editIcon} alt="Profile"/>
                   </Button>
                   <Button
                     variant="navy-blue"
@@ -317,7 +319,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
                   soundFXVolume={soundFXVolume}
                   onClick={() => setIsEditing(!isEditing)}
                 >
-                  <img src={editIcon} alt="Profile" />
+                  <img src={editIcon} alt="Profile"/>
                 </Button>
               </div>
             </div>
@@ -381,10 +383,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
                   onKeyUp={handleSearch}
                 />
               </div>
-              {searchResults.length > 0 && searchQuery.length > 0 && (
+              {searchResults.users.length > 0 && searchQuery.length > 0 && (
                 <div className="search-results">
                   <ul>
-                    {searchResults
+                    {searchResults.users
                       .filter((user) => user.username !== currentUser?.username)
                       .slice(0, 3)
                       .map((user) => (
@@ -396,12 +398,12 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
                             soundFXVolume={soundFXVolume}
                             onClick={() =>
                               friends.includes(user.username)
-                                ? console.log("Already friends")
+                                ? addToast(t("friends-already-error"), "notification")
                                 : sentRequests.includes(user.username)
-                                ? undoFriendRequest(user.username)
-                                : receivedRequests.includes(user.username)
-                                ? acceptFriendRequest(user.username)
-                                : sendFriendRequest(user.username)
+                                  ? undoFriendRequest(user.username)
+                                  : receivedRequests.includes(user.username)
+                                    ? acceptFriendRequest(user.username)
+                                    : sendFriendRequest(user.username)
                             }
                           >
                             <img
@@ -409,10 +411,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
                                 friends.includes(user.username)
                                   ? moreIcon
                                   : sentRequests.includes(user.username)
-                                  ? removeRequestsIcon
-                                  : receivedRequests.includes(user.username)
-                                  ? checkmarkIcon
-                                  : friendRequestsIcon
+                                    ? removeRequestsIcon
+                                    : receivedRequests.includes(user.username)
+                                      ? checkmarkIcon
+                                      : friendRequestsIcon
                               }
                               alt="Friend request action"
                             />
@@ -438,7 +440,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
                           soundFXVolume={soundFXVolume}
                           onClick={() => removeFriend(friendId)}
                         >
-                          <img src={trashIcon} alt="deleteIcon" />
+                          <img src={trashIcon} alt="deleteIcon"/>
                         </Button>
                       </li>
                     ))}
@@ -462,14 +464,14 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
                             soundFXVolume={soundFXVolume}
                             onClick={() => acceptFriendRequest(senderId)}
                           >
-                            <img src={checkmarkIcon} alt="acceptIcon" />
+                            <img src={checkmarkIcon} alt="acceptIcon"/>
                           </Button>
                           <Button
                             variant="transparent"
                             soundFXVolume={soundFXVolume}
                             onClick={() => declineFriendRequest(senderId)}
                           >
-                            <img src={closeIcon} alt="rejectIcon" />
+                            <img src={closeIcon} alt="rejectIcon"/>
                           </Button>
                         </div>
                       </li>

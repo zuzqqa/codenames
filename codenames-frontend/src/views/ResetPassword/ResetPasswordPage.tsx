@@ -58,7 +58,7 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
 
   useEffect(() => {
     if (!token) {
-      addToast("Token is missing", "error");
+      addToast(t("token-missing"), "error");
       return;
     }
 
@@ -159,7 +159,7 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
         addToast(t("invalid-or-expired-token"), "error");
       }
     } catch (error) {
-      addToast("Unknown error. Try again later.", "error");
+      addToast(t("unknown-error"), "error");
     }
   };
 

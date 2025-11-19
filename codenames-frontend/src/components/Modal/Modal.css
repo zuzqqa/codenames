@@ -14,7 +14,6 @@
   z-index: 1000;
 }
 
-/* Default modal variant */
 .modal-content-default {
   position: absolute;
   width: 34.8%;
@@ -31,17 +30,16 @@
 }
 
 
-/* Large modal variant */
 .modal-content-large {
   position: absolute;
-  width: 65%; /* 80% width for large variant */
+  width: 65%;
   height: 85%;
   border-radius: 17px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .modal-background-img-large {
-  width: 65%; /* 80% width for large variant */
+  width: 65%;
   height: 85%;
   margin: auto;
   border-radius: 17px;
