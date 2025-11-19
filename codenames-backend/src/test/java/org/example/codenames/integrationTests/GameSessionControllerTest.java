@@ -1,12 +1,18 @@
 package org.example.codenames.integrationTests;
 
+import com.hazelcast.core.Hazelcast;
 import org.example.codenames.CodenamesApplication;
 import org.example.codenames.gameSession.controller.api.GameSessionController;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
 
+import org.example.codenames.socket.service.api.SocketService;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,6 +21,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -22,28 +30,51 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+import org.testcontainers.utility.DockerImageName;
 
+import java.time.Duration;
 import java.util.UUID;
 
 /**
  * Integration tests for the game session functionalities.
  * Primarily testing {@link GameSessionController} endpoints.
- *
- * This class reuses the shared Testcontainers setup from {@link AbstractIntegrationTest}
- * to ensure the MongoDB container is started before Spring's ApplicationContext loads.
  */
+@Testcontainers
 @SpringBootTest(classes = CodenamesApplication.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @TestPropertySource(locations="classpath:application-test.properties")
-public class GameSessionControllerTest extends AbstractIntegrationTest {
+public class GameSessionControllerTest {
 
     @Autowired
     private MockMvc mvc;
-
     @Autowired
     GameSessionRepository gameSessionRepository;
+
+
+    // MongoDB Testcontainers container.
+    public static MongoDBContainer mongo = new MongoDBContainer(DockerImageName.parse("mongo:5"))
+            .withExposedPorts(27017)
+            .waitingFor(Wait.forLogMessage(".*Waiting for connections.*", 1))
+            .withStartupTimeout(Duration.ofSeconds(60));
+
+    // Setting up the MongoDB connection properties (dynamic application.properties).
+    @DynamicPropertySource
+    static void mongoProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.data.mongodb.uri",
+                () -> "mongodb://" + mongo.getHost() + ":" + mongo.getMappedPort(27017) + "/CodenamesDB");
+        // Secret for token generation.
+    }
+
+    // Starting the MongoDB container before all tests.
+    @BeforeAll
+    static void startup() {
+        mongo.start();
+    }
 
     // Cleaning the database after each test for isolation.
     @AfterEach
@@ -51,6 +82,10 @@ public class GameSessionControllerTest extends AbstractIntegrationTest {
         gameSessionRepository.deleteAll();
     }
 
+    @AfterAll
+    static void shutdown() {
+        Hazelcast.shutdownAll();
+    }
 
     @Test
     void shouldCreateGame() throws Exception {
