@@ -1,4 +1,4 @@
-package org.example.codenames.unitTests.alfaTests;
+package org.example.codenames.unitTests;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
@@ -51,29 +51,34 @@ public class HazelcastTest {
         gameState.setTeamTurn(0);
         gameState.setBlueTeamScore(0);
         gameState.setRedTeamScore(0);
+        gameState.setHintNumber(0);
+        gameState.setInitialHintNumber("0");
+        gameState.setHintTurn(true);
+        gameState.setGuessingTurn(false);
+        gameState.setCardsChosen(new ArrayList<>());
 
         List<Integer> cardsVotes = new ArrayList<>(Collections.nCopies(gameState.getCards().length, 0));
 
         gameState.setCardsVotes(cardsVotes);
 
-        GameSession newGame = new GameSession(
-                GameSession.sessionStatus.CREATED,
-                UUID.randomUUID(),
-                "testName",
-                8,
-                "abcd",
-                new ArrayList<>() {{
+        GameSession newGame = GameSession.builder()
+                .status(GameSession.sessionStatus.CREATED)
+                .sessionId(UUID.randomUUID())
+                .gameName("testName")
+                .maxPlayers(8)
+                .password("abcd")
+                .connectedUsers(new ArrayList<>() {{
                     add(new ArrayList<>());
                     add(new ArrayList<>());
-                }},
-                new ArrayList<>() {{
+                }})
+                .votes(new ArrayList<>() {{
                     add(new ArrayList<>());
                     add(new ArrayList<>());
-                }},
-                gameState,
-                System.currentTimeMillis(),
-                null
-        );
+                }})
+                .gameState(gameState)
+                .votingStartTime(System.currentTimeMillis())
+                .discordChannelId(null)
+                .build();
 
         gameSessionMap.put(newGame.getSessionId().toString(), newGame);
     }
@@ -100,29 +105,34 @@ public class HazelcastTest {
         gameState.setTeamTurn(0);
         gameState.setBlueTeamScore(0);
         gameState.setRedTeamScore(0);
+        gameState.setHintNumber(0);
+        gameState.setInitialHintNumber("0");
+        gameState.setHintTurn(true);
+        gameState.setGuessingTurn(false);
+        gameState.setCardsChosen(new ArrayList<>());
 
         List<Integer> cardsVotes = new ArrayList<>(Collections.nCopies(gameState.getCards().length, 0));
 
         gameState.setCardsVotes(cardsVotes);
 
-        GameSession newGame = new GameSession(
-                GameSession.sessionStatus.CREATED,
-                UUID.randomUUID(),
-                "randomName",
-                4,
-                "",
-                new ArrayList<>() {{
+        GameSession newGame = GameSession.builder()
+                .status(GameSession.sessionStatus.CREATED)
+                .sessionId(UUID.randomUUID())
+                .gameName("randomName")
+                .maxPlayers(4)
+                .password("")
+                .connectedUsers(new ArrayList<>() {{
                     add(new ArrayList<>());
                     add(new ArrayList<>());
-                }},
-                new ArrayList<>() {{
+                }})
+                .votes(new ArrayList<>() {{
                     add(new ArrayList<>());
                     add(new ArrayList<>());
-                }},
-                gameState,
-                System.currentTimeMillis(),
-                null
-        );
+                }})
+                .gameState(gameState)
+                .votingStartTime(System.currentTimeMillis())
+                .discordChannelId(null)
+                .build();
 
         gameSessionMap.put(newGame.getSessionId().toString(), newGame);
 

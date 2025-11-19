@@ -47,6 +47,6 @@ public class HazelcastConfiguration {
     @Bean
     @Primary
     public HazelcastInstance hazelcastInstance() {
-        return Hazelcast.newHazelcastInstance(hazelcastConfig());
+        return Hazelcast.getOrCreateHazelcastInstance(hazelcastConfig());
     }
 }

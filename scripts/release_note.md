@@ -5,10 +5,11 @@ Friend system update.
 Key additions:
 - Notification system for friend updates
 - Friend notifications in real time via web sockets
+- New unit and integration tests
 
 **🚧 What's still under development?**
-- Unit tests
 - Code optimization
+
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 

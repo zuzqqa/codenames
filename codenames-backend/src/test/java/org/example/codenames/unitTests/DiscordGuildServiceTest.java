@@ -1,4 +1,4 @@
-package org.example.codenames.unitTests.discordTests.service;
+package org.example.codenames.unitTests;
 
 import org.example.codenames.discord.service.impl.DiscordGuildService;
 import org.junit.jupiter.api.BeforeEach;
