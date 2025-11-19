@@ -1,4 +1,4 @@
-Relevants update needed because of the switching of the Google Cloud account
+Choosing leader vied adjustments
 **🔧 What's included in this release?**
 Code cleaning
 
