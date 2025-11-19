@@ -1,10 +1,9 @@
-Relevants update needed because of the switching of the Google Cloud account
+Choosing leader vied adjustments
 **🔧 What's included in this release?**
-Friend system update.
+Moved players containers to the center
 
-Key additions:
-- Notification system for friend updates
-- Friend notifications in real time via web sockets
+Key additions: 
+- Players containers moved to the center
 
 **🚧 What's still under development?**
 - Unit tests

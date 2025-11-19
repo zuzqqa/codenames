@@ -40,13 +40,19 @@
 
 .teams-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   margin: 5vh auto;
 }
 
-.my-team {
-  text-align: left;
+.team.my-team {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 2vw;
+  text-align: center;
 }
 
 .opposing-team {
@@ -63,12 +69,23 @@
   border-style: outset;
   border-width: 2px;
   border-color: #fcdc8b80;
+  margin-top: 55vh;
 }
 
 .my-team .player {
   justify-content: flex-start;
-  border-radius: 0 50px 50px 0;
+  border-radius: 50px 50px 50px 50px;
   border-left: none;
+  width: 13vw;
+  min-width: 150px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .opposing-team .player {
