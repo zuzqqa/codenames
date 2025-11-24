@@ -80,7 +80,7 @@ public class JwtService {
      * @param token the JWT token
      * @return true if the token has expired, false otherwise
      */
-    private Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) {
         return ExtractExpiration(token).before(new Date());
     }
 
@@ -145,7 +145,7 @@ public class JwtService {
      *
      * @return the signing key
      */
-    private Key getSignKey() {
+    public Key getSignKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET));
     }
 }

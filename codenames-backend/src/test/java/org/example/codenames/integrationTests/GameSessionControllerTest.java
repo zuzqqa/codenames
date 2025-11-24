@@ -14,12 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import org.springframework.http.MediaType;
-
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -67,12 +64,13 @@ public class GameSessionControllerTest {
     static void mongoProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.data.mongodb.uri",
                 () -> "mongodb://" + mongo.getHost() + ":" + mongo.getMappedPort(27017) + "/CodenamesDB");
-        // Secret for token generation.
     }
 
     // Starting the MongoDB container before all tests.
     @BeforeAll
     static void startup() {
+        // Shutdown any existing Hazelcast instances to ensure clean state
+        Hazelcast.shutdownAll();
         mongo.start();
     }
 
@@ -86,6 +84,7 @@ public class GameSessionControllerTest {
     static void shutdown() {
         Hazelcast.shutdownAll();
     }
+
 
     @Test
     void shouldCreateGame() throws Exception {

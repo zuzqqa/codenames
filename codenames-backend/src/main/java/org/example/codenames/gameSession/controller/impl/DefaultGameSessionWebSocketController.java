@@ -95,7 +95,11 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         response.put("gameId", gameId);
 
         // Send the game session to all clients
-        socketService.sendGameSessionsList(GameSessionMapper.toJoinGameDTOList(gameSessionService.getAllGameSessions()));
+        try {
+            socketService.sendGameSessionsList(GameSessionMapper.toJoinGameDTOList(gameSessionService.getAllGameSessions()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return ResponseEntity.ok(response);
     }
@@ -111,7 +115,11 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         GameSession gameSession = gameSessionService.getGameSessionById(UUID.fromString(gameId));
 
         if (gameSession != null) {
-            socketService.sendGameSessionUpdate(UUID.fromString(gameId), gameSession);
+            try {
+                socketService.sendGameSessionUpdate(UUID.fromString(gameId), gameSession);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             return ResponseEntity.ok(gameSession);
         } else {
@@ -143,8 +151,17 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
             if (added) {
                 // Send the game session to all clients
-                socketService.sendGameSessionUpdate(gameId, toRoomLobbyDTO(gameSessionRepository.findBySessionId(gameId)));
-                socketService.sendGameSessionsList(toJoinGameDTOList(gameSessionService.getAllGameSessions()));
+                try {
+                    socketService.sendGameSessionUpdate(gameId, toRoomLobbyDTO(gameSessionRepository.findBySessionId(gameId)));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    socketService.sendGameSessionsList(toJoinGameDTOList(gameSessionService.getAllGameSessions()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 return ResponseEntity.ok().build();
             } else {
@@ -170,8 +187,17 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
             if (removed) {
                 // Send the game session to all clients
-                socketService.sendGameSessionUpdate(gameId, toRoomLobbyDTO(gameSessionRepository.findBySessionId(gameId)));
-                socketService.sendGameSessionsList(toJoinGameDTOList(gameSessionService.getAllGameSessions()));
+                try {
+                    socketService.sendGameSessionUpdate(gameId, toRoomLobbyDTO(gameSessionRepository.findBySessionId(gameId)));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    socketService.sendGameSessionsList(toJoinGameDTOList(gameSessionService.getAllGameSessions()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 return ResponseEntity.ok().build();
             } else {
@@ -204,8 +230,17 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         gameSessionRepository.save(gameSession);
 
         // Send the game session to all clients
-        socketService.sendGameSessionUpdate(gameId, toRoomLobbyDTO(gameSessionRepository.findBySessionId(gameId)));
-        socketService.sendGameSessionsList(toJoinGameDTOList(gameSessionService.getAllGameSessions()));
+        try {
+            socketService.sendGameSessionUpdate(gameId, toRoomLobbyDTO(gameSessionRepository.findBySessionId(gameId)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            socketService.sendGameSessionsList(toJoinGameDTOList(gameSessionService.getAllGameSessions()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         return ResponseEntity.ok().build();
@@ -232,7 +267,11 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
         gameSessionRepository.save(gameSession);
 
-        socketService.sendGameSessionUpdate(gameId, toRoomLobbyDTO(gameSessionRepository.findBySessionId(gameId)));
+        try {
+            socketService.sendGameSessionUpdate(gameId, toRoomLobbyDTO(gameSessionRepository.findBySessionId(gameId)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return ResponseEntity.ok().build();
     }
@@ -251,7 +290,12 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok(toJoinGameDTOList(gameSessions));
+        try {
+            return ResponseEntity.ok(toJoinGameDTOList(gameSessions));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
     }
 
     /**
@@ -279,7 +323,11 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         Optional<GameSession> optionalSession = gameSessionRepository.findBySessionId(gameId);
 
         if (optionalSession.isPresent()) {
-            socketService.sendGameSessionUpdate(gameId, optionalSession.get());
+            try {
+                socketService.sendGameSessionUpdate(gameId, optionalSession.get());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         return ResponseEntity.ok().build();
@@ -304,7 +352,11 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
 
         clearVotes(gameSession, gameSessionRepository);
 
-        socketService.sendGameSessionUpdate(id, gameSession);
+        try {
+            socketService.sendGameSessionUpdate(id, gameSession);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return ResponseEntity.ok("Turn changed");
     }
@@ -327,7 +379,11 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
                 new IllegalArgumentException("Game with an ID of " + gameId + " does not exist."));
 
 
-        socketService.sendGameSessionUpdate(gameId, gameSession);
+        try {
+            socketService.sendGameSessionUpdate(gameId, gameSession);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return ResponseEntity.ok("Card revealed.");
     }
@@ -350,7 +406,11 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         GameSession gameSession = gameSessionRepository.findBySessionId(gameId).orElseThrow(() ->
                 new IllegalArgumentException("Game with an ID of " + gameId + " does not exist."));
 
-        socketService.sendGameSessionUpdate(gameId, gameSession);
+        try {
+            socketService.sendGameSessionUpdate(gameId, gameSession);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return ResponseEntity.ok(voteRequest.getVotedUserId());
     }
@@ -367,3 +427,4 @@ public class DefaultGameSessionWebSocketController implements GameSessionWebSock
         return response.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
+
