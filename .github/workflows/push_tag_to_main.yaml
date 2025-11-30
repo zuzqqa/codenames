@@ -3,22 +3,22 @@ name: 🚀 Push Tag to Main & Deploy to Docker Hub
 on:
   push:
     branches:
-      - main  # Trigger workflow on pushes to the main branch
+      - main  
 
 jobs:
   create-release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Allow the job to create and push tags
+      contents: write  
       
     steps:
       - name: 📥 Checkout the repository
-        uses: actions/checkout@v4  # Fetch repository code
+        uses: actions/checkout@v4  
 
       - name: 🔄 Fetch tags
         run: |
           git fetch --tags
-          echo "✅ Tags downloaded!"
+          echo "Tags downloaded!"
 
       - name: 🔍 Get the latest tag on main
         run: |
@@ -103,7 +103,7 @@ jobs:
       - name: 🔎 Verify that the tag was created
         run: |
           git tag
-          git show-ref --tags | grep ${{ env.SELECTED_VERSION }} || echo "❌ Tag not found!"
+          git show-ref --tags | grep ${{ env.SELECTED_VERSION }} || echo "Tag not found!"
 
       - name: 📤 Push the tag to the remote repository
         run: |
@@ -111,14 +111,14 @@ jobs:
           git push origin ${{ env.SELECTED_VERSION }}
 
   push-docker:
-    needs: create-release # Ensure the tagging job completes before running this job
+    needs: create-release 
     runs-on: ubuntu-latest
 
     steps:
       - name: 📥 Checkout repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch full history to include tags  
+          fetch-depth: 0  
 
       - name: 🔍 Fetch and list tags
         run: |
@@ -133,21 +133,21 @@ jobs:
       - name: 🔑 Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}  # Use secret credentials for authentication
+          username: ${{ secrets.DOCKER_USERNAME }}  
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: 🐳 Build and push backend Docker image
         uses: docker/build-push-action@v5
         with:
-          push: true  # Push image to Docker Hub
-          tags: codenames/codenames-backend:${{ env.VERSION }}  # Tag image with the retrieved version
-          context: ./codenames-backend  # Set the build context
-          file: ./codenames-backend/Dockerfile  # Use the backend Dockerfile
+          push: true  
+          tags: codenames/codenames-backend:${{ env.VERSION }} 
+          context: ./codenames-backend  
+          file: ./codenames-backend/Dockerfile  
 
       - name: 🐳 Build and push frontend Docker image
         uses: docker/build-push-action@v5
         with:
-          push: true  # Push image to Docker Hub
-          tags: codenames/codenames-frontend:${{ env.VERSION }}  # Tag image with the retrieved version
-          context: ./codenames-frontend  # Set the build context
-          file: ./codenames-frontend/Dockerfile.prod  # Use the frontend Dockerfile
+          push: true 
+          tags: codenames/codenames-frontend:${{ env.VERSION }}  
+          context: ./codenames-frontend 
+          file: ./codenames-frontend/Dockerfile.prod  
