@@ -17,8 +17,8 @@ type BackgroundContainerProps = {
  * @returns {JSX.Element} The rendered background container.
  */
 const BackgroundContainer: React.FC<BackgroundContainerProps> = ({
-  children,
-}) => {
+                                                                   children,
+                                                                 }) => {
   return <div className="background-container">{children}</div>;
 };
 

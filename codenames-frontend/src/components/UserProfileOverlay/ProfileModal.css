@@ -84,8 +84,14 @@
   cursor: pointer;
 }
 
-.pic-arrow:first-of-type { margin-right: 0.25rem; transform: rotate(180deg); }
-.pic-arrow:last-of-type { margin-left: 0.25rem; }
+.pic-arrow:first-of-type {
+  margin-right: 0.25rem;
+  transform: rotate(180deg);
+}
+
+.pic-arrow:last-of-type {
+  margin-left: 0.25rem;
+}
 
 .edit-button {
   position: absolute;

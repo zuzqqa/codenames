@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class UserEntityDetailsService implements UserDetailsService {
+
     /**
      * The repository to use to load user details.
      */

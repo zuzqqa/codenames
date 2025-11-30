@@ -51,14 +51,13 @@ const Profile: React.FC<ProfileProps> = ({ soundFXVolume }) => {
     fetchGuestStatus();
   }, []);
 
-  // While we don't know guest status render nothing
   if (isGuest === null) return null;
 
   return (
     <>
       {!isGuest && (
         <Button variant="circle-profile" soundFXVolume={soundFXVolume} onClick={toggleProfile}>
-          <img src={profileIcon} alt="Profile" />
+          <img src={profileIcon} alt="Profile"/>
         </Button>
       )}
 

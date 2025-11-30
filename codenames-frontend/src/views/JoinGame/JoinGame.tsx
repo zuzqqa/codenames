@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react"; // Hook for managing component state
-import {io} from "socket.io-client";
+import React, { useEffect, useState } from "react";
+import { io } from "socket.io-client";
 
 import BackgroundContainer from "../../containers/Background/Background";
 
@@ -10,8 +10,8 @@ import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
 import settingsIcon from "../../assets/icons/settings.png";
 import logoutButton from "../../assets/icons/logout.svg";
 
-import {logout} from "../../shared/utils.tsx";
-import {apiUrl, socketUrl} from "../../config/api.tsx";
+import { logout } from "../../shared/utils.tsx";
+import { apiUrl, socketUrl } from "../../config/api.tsx";
 import UsernameContainer from "../../containers/UsernameContainer/UsernameContainer.tsx";
 import Profile from "../../components/Profile/Profile.tsx";
 
@@ -23,9 +23,9 @@ import Profile from "../../components/Profile/Profile.tsx";
  * @property {function} setSoundFXVolume - Function to set sound effects volume.
  */
 interface JoinGameProps {
-  setVolume: (volume: number) => void; // Function to set global volume
-  soundFXVolume: number; // Current sound effects volume level
-  setSoundFXVolume: (volume: number) => void; // Function to set sound effects volume
+  setVolume: (volume: number) => void;
+  soundFXVolume: number;
+  setSoundFXVolume: (volume: number) => void;
 }
 
 /**
@@ -71,16 +71,16 @@ interface GameSessionJoinGameDTO {
  * @returns {JSX.Element} The rendered JoinGame component.
  */
 const JoinGame: React.FC<JoinGameProps> = ({
-  setVolume,
-  soundFXVolume,
-  setSoundFXVolume,
-}) => {
+                                             setVolume,
+                                             soundFXVolume,
+                                             setSoundFXVolume,
+                                           }) => {
   const [musicVolume, setMusicVolume] = useState(() => {
     const savedVolume = localStorage.getItem("musicVolume");
     return savedVolume ? parseFloat(savedVolume) : 50;
   });
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
-  const [isProfileOpen, setIsProfileOpen] = useState(false); // Tracks if the profile modal is open
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [gameSessions, setGameSessions] = useState<GameSessionJoinGameDTO[]>(
     []
   );
@@ -169,7 +169,7 @@ const JoinGame: React.FC<JoinGameProps> = ({
           soundFXVolume={soundFXVolume}
           onClick={toggleSettings}
         >
-          <img src={settingsIcon} alt="Settings" />
+          <img src={settingsIcon} alt="Settings"/>
         </Button>
 
         <SettingsModal
@@ -183,12 +183,12 @@ const JoinGame: React.FC<JoinGameProps> = ({
           }}
           setSoundFXVolume={setSoundFXVolume}
         />
-        <Profile soundFXVolume={soundFXVolume} />
+        <Profile soundFXVolume={soundFXVolume}/>
         {document.cookie
           .split("; ")
           .find((cookie) => cookie.startsWith("loggedIn=")) && (
           <Button variant="logout" soundFXVolume={soundFXVolume}>
-            <img src={logoutButton} onClick={logout} alt="Logout" />
+            <img src={logoutButton} onClick={logout} alt="Logout"/>
           </Button>
         )}
 
@@ -201,7 +201,7 @@ const JoinGame: React.FC<JoinGameProps> = ({
             setFilteredSessions={setFilteredGames}
           />
         </>
-        <UsernameContainer />
+        <UsernameContainer/>
       </BackgroundContainer>
     </>
   );

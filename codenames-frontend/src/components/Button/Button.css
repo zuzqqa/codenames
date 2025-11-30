@@ -303,6 +303,7 @@
   font-size: calc(0.8rem + 0.6vw);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .btn-google {
   display: flex;
   justify-content: center;

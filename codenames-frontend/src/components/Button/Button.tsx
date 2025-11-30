@@ -32,7 +32,7 @@ interface ButtonProps {
     | "number-stepper"
     | "discord"
     | "tutorial"
-    | "google"; 
+    | "google";
   disabled?: boolean;
   soundFXVolume: number;
   onChange?: () => void;
@@ -56,24 +56,24 @@ const playSound = (volume: number) => {
  * @returns {JSX.Element} A styled button element.
  */
 const Button: React.FC<ButtonProps> = ({
-  children,
-  onClick,
-  type = "button",
-  variant = "primary",
-  disabled = false,
-  soundFXVolume,
-  className = "",
-  onChange,
-}) => {
+                                         children,
+                                         onClick,
+                                         type = "button",
+                                         variant = "primary",
+                                         disabled = false,
+                                         soundFXVolume,
+                                         className = "",
+                                         onChange,
+                                       }) => {
   return (
     <button
       className={`btn btn-${variant} ${className}`}
       type={type}
       onClick={() => {
-        playSound(soundFXVolume); 
-        if (onClick) onClick(); 
+        playSound(soundFXVolume);
+        if (onClick) onClick();
       }}
-      disabled={disabled} 
+      disabled={disabled}
       onChange={onChange}
     >
       {children}

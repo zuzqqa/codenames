@@ -8,5 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface AccountActivationTokenRepository extends MongoRepository<AccountActivationToken, String> {
+
     Optional<AccountActivationToken> findByToken(String token);
 }

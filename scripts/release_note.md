@@ -1,16 +1,13 @@
-Choosing leader vied adjustments
+Relevants update needed because of the switching of the Google Cloud account
 **🔧 What's included in this release?**
-Moved players containers to the center
+Code cleaning
 
 Key additions:
-- Players containers moved to the center
-- Notification system for friend updates
-- Friend notifications in real time via web sockets
-- New unit and integration tests
+- Removed unnecessary comments, added missing ones
+- Reformatted code using JetBrains built-in formatter
 
 **🚧 What's still under development?**
 - Code optimization
-
 
 ⚠️Important! This version is intended for testers and developers. Please note that the game is not fully functional yet, and some elements may not behave as expected.
 

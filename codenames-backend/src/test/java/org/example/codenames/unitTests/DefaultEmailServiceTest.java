@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.example.codenames.email.entity.EmailRequest;
 import org.example.codenames.email.service.impl.DefaultEmailService;
 import org.example.codenames.tokens.accountActivationToken.service.api.AccountActivationTokenService;
-import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetServiceToken;
+import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetTokenService;
 import org.example.codenames.util.ResourceUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +26,7 @@ class DefaultEmailServiceTest {
     JavaMailSender mailSender;
 
     @Mock
-    PasswordResetServiceToken passwordResetServiceToken;
+    PasswordResetTokenService passwordResetServiceToken;
 
     @Mock
     AccountActivationTokenService accountActivationTokenService;

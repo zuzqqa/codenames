@@ -3,7 +3,7 @@ name: 🚀 Codenames CI/CD Pipeline
 on:
   push:
     branches:
-      - '*' # Trigger pipeline on pushes 
+      - '*' 
   pull_request:
     branches:
       - main
@@ -11,18 +11,18 @@ on:
 jobs:
   backend:
     name: 🏗️ Build Backend
-    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+    runs-on: ubuntu-latest  
     services:
       mongodb:
-        image: mongo  # Use the official MongoDB image
+        image: mongo 
         ports:
-          - 27017:27017  # Map MongoDB's default port
+          - 27017:27017  
 
     steps:
       - name: 📥 Checkout repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Ensure the entire history is fetched for versioning
+          fetch-depth: 0  
 
       - name: 🔍 List tags in the repository
         run: |
@@ -38,9 +38,9 @@ jobs:
       - name: ☕ Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'  # Specify Java 17
-          distribution: 'temurin'  # Use the Temurin JDK distribution
-          cache: maven  # Enable caching for Maven dependencies
+          java-version: '17'  
+          distribution: 'temurin'  
+          cache: maven 
     
       - name: 🌍 Set environment variables
         run: |
@@ -69,22 +69,23 @@ jobs:
 
   frontend: 
     name: 🎨 Build Frontend
-    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+    runs-on: ubuntu-latest 
 
     steps:
       - name: 📥 Checkout repo 
-        uses: actions/checkout@v4  # Checkout the repository code
+        uses: actions/checkout@v4 
 
       - name: 🛠️ Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20  # Use Node.js v20
-          cache: 'npm'  # Enable npm caching
-          cache-dependency-path: codenames-frontend/package-lock.json  # Cache dependencies based on package-lock.json
+          node-version: 20
+          cache: 'npm'  
+          cache-dependency-path: codenames-frontend/package-lock.json  
 
-      - name: 📦 Install dependencies
+      - name: 🧹 Clean install environment
         run: |
             cd codenames-frontend
+            rm -rf node_modules package-lock.json
             npm install
       
       - name: 🏗️ Build frontend

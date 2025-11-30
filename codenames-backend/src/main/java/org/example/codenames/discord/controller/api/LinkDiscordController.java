@@ -20,7 +20,6 @@ import java.util.Map;
 /**
  * {@code LinkDiscordController} provides an endpoint to initiate
  * the process of linking an existing user account with a Discord account.
- * <p>
  * This endpoint validates the application JWT token, stores it as a temporary cookie,
  * and returns the frontend redirect URL that triggers the Discord OAuth2 login flow.
  */
@@ -28,14 +27,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/api/discord/link")
 public class LinkDiscordController implements DiscordLinkController {
-    /**
-     * JWT service used to validate and parse user tokens.
-     */
+
     private final JwtService jwtService;
 
-    /**
-     * Whether to mark the temporary cookie as secure (HTTPS-only).
-     */
     @Value("${app.cookie.secure:false}")
     private boolean cookieSecure;
 

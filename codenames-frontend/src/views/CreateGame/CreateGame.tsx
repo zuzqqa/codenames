@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"; // Hook for managing component state
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import BackgroundContainer from "../../containers/Background/Background";
@@ -7,8 +7,6 @@ import Button from "../../components/Button/Button";
 import GameTitleBar from "../../components/GameTitleBar/GameTitleBar";
 import CreateGameForm from "../../components/CreateGameForm/CreateGameForm";
 import SettingsModal from "../../components/SettingsOverlay/SettingsModal";
-import ProfileModal from "../../components/UserProfileOverlay/ProfileModal";
-import profileIcon from "../../assets/icons/profile.png";
 import settingsIcon from "../../assets/icons/settings.png";
 import logoutButton from "../../assets/icons/logout.svg";
 
@@ -16,8 +14,7 @@ import "../../styles/App.css";
 import "../SelectGame/SelectGame.css";
 import "./CreateGame.css";
 
-import { getCookie, logout } from "../../shared/utils.tsx";
-import { apiUrl } from "../../config/api.tsx";
+import { logout } from "../../shared/utils.tsx";
 import UsernameContainer from "../../containers/UsernameContainer/UsernameContainer.tsx";
 import Profile from "../../components/Profile/Profile.tsx";
 
@@ -43,17 +40,14 @@ interface CreateGameProps {
  * @returns {JSX.Element} The rendered CreateGame component
  */
 const CreateGame: React.FC<CreateGameProps> = ({
-  setVolume,
-  soundFXVolume,
-  setSoundFXVolume,
-}) => {
-  const [musicVolume, setMusicVolume] = useState(50); // Music volume level
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
+                                                 setVolume,
+                                                 soundFXVolume,
+                                                 setSoundFXVolume,
+                                               }) => {
+  const [musicVolume, setMusicVolume] = useState(50);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { t } = useTranslation();
 
-  /**
-   * Toggles the settings modal visibility.
-   */
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
@@ -66,9 +60,9 @@ const CreateGame: React.FC<CreateGameProps> = ({
           soundFXVolume={soundFXVolume}
           onClick={toggleSettings}
         >
-          <img src={settingsIcon} alt="Settings" />
+          <img src={settingsIcon} alt="Settings"/>
         </Button>
-        <Profile soundFXVolume={soundFXVolume} />
+        <Profile soundFXVolume={soundFXVolume}/>
 
         {document.cookie
           .split("; ")
@@ -78,7 +72,7 @@ const CreateGame: React.FC<CreateGameProps> = ({
             soundFXVolume={soundFXVolume}
             onClick={logout}
           >
-            <img src={logoutButton} alt="Logout" />
+            <img src={logoutButton} alt="Logout"/>
           </Button>
         )}
 
@@ -95,9 +89,9 @@ const CreateGame: React.FC<CreateGameProps> = ({
         />
         <>
           <GameTitleBar></GameTitleBar>
-          <CreateGameForm soundFXVolume={soundFXVolume} />
+          <CreateGameForm soundFXVolume={soundFXVolume}/>
         </>
-        <UsernameContainer />
+        <UsernameContainer/>
       </BackgroundContainer>
     </>
   );

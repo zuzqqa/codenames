@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -14,7 +14,6 @@ import "./RoomLobby.css";
 import { apiUrl, frontendUrl, socketUrl } from "../../config/api.tsx";
 import { getCookie, getUserId } from "../../shared/utils.tsx";
 import { io } from "socket.io-client";
-import DiscordLoginButton from "../DiscordAuthentication/DiscordLoginButton.tsx";
 import { useToast } from "../Toast/ToastContext.tsx";
 
 /**
@@ -336,6 +335,8 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     navigator.clipboard.writeText(tempLobbyLink).then(() => {
       console.log("Lobby link copied to clipboard:", tempLobbyLink);
     });
+
+    addToast(t("link-copied"), "notification");
   };
 
   /**
@@ -358,75 +359,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     }
   };
 
-  /**
-   * useEffect hook for handling the automatic removal of notification messages after a delay.
-   *
-   * - Adds a fade-out effect to the toast notification before removal.
-   * - Removes notifications from the state after a timeout.
-   *
-   * @param {Array<{ id: string; message: string }>} errors - Array of notification messages with unique IDs.
-   */
-  useEffect(() => {
-    if (notifications.length === 0) return;
-
-    const timers: number[] = notifications.map((notification) => {
-      const toastElement = document.getElementById(notification.id);
-
-      if (toastElement) {
-        // Fade out the toast after 8 seconds
-        const fadeOutTimer = setTimeout(() => {
-          toastElement.classList.add("hide");
-        }, 8000);
-
-        // Remove the message from state after 8.5 seconds
-        const removeTimer = setTimeout(() => {
-          setNotifications((prevNotifications) =>
-            prevNotifications.filter((n) => n.id !== notification.id)
-          );
-        }, 8500);
-
-        return removeTimer;
-      } else {
-        // Remove message if toast element is not found
-        return setTimeout(() => {
-          setNotifications((prevNotifications) =>
-            prevNotifications.filter((n) => n.id !== notification.id)
-          );
-        }, 8000);
-      }
-    });
-
-    return () => timers.forEach(clearTimeout);
-  }, [notifications]);
-
-  /**
-   * useEffect hook for handling the copying of the lobby link to the clipboard.
-   *
-   * - Displays a notification message when the link is copied.
-   * - Clears the lobby link state after displaying the notification.
-   *
-   * @param {string} lobbyLink - The generated lobby link to be copied.
-   */
-  useEffect(() => {
-    if (lobbyLink) {
-      setNotifications((prevNotifications) => {
-        const notificationExists = prevNotifications.some(
-          (n) => n.message === t("link-copied")
-        );
-
-        if (!notificationExists) {
-          setLobbyLink("");
-          return [
-            ...prevNotifications,
-            { id: generateId(), message: t("link-copied") },
-          ];
-        }
-        setLobbyLink("");
-        return prevNotifications;
-      });
-    }
-  }, [lobbyLink]);
-
   const handleLobbyLinkIsleUnroll = () => {
     setIsLinkIsleExpanded((prev) => !prev);
   };
@@ -440,7 +372,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
           soundFXVolume={soundFXVolume}
           onClick={removePlayer}
         >
-          <img src={backButton} alt="Back" className="btn-arrow-back" />
+          <img src={backButton} alt="Back" className="btn-arrow-back"/>
         </Button>
         <span className="room-form-label">{t("game-lobby")}</span>
         <div className="room-lobby-divider">
@@ -477,7 +409,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                 }`}
                 onClick={handleLobbyLinkIsleUnroll}
               >
-                <img src={messageIcon} alt="Link" className="isle-image" />
+                <img src={messageIcon} alt="Link" className="isle-image"/>
                 <p className="isle-title">{t("invite-friends")}</p>
                 <p className="isle-text">{t("invite-friends-text")}</p>
                 <p className="isle-fields">

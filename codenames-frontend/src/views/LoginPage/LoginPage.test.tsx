@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import LoginPage from "./LoginPage";
 
 const mockNavigate = vi.fn();
@@ -33,6 +33,7 @@ vi.mock("../../config/api.tsx", () => ({
 
 vi.mock("../../shared/utils.tsx", () => ({
   logout: vi.fn(),
+  getCookie: vi.fn(),
 }));
 
 vi.mock("../../components/GoogleAuthentication/GoogleLoginButton.tsx", () => ({

@@ -11,13 +11,13 @@ interface GoogleLoginButtonProps {
 const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ soundFXVolume }) => {
   return (
     <Button
-      variant="google" 
+      variant="google"
       soundFXVolume={soundFXVolume}
       onClick={() =>
         (window.location.href = `${apiUrl}/oauth2/authorization/google`)
       }
     >
-      <img src={googleIcon} alt="Google logo" style={{ width: "2rem", height: "2rem", objectFit: "contain" }} />
+      <img src={googleIcon} alt="Google logo" style={{ width: "2rem", height: "2rem", objectFit: "contain" }}/>
     </Button>
   );
 };

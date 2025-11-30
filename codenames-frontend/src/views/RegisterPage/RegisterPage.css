@@ -41,13 +41,13 @@
 }
 
 .toast {
-  position: relative; 
+  position: relative;
   border-radius: 12px;
   background: #fff;
   padding: 15px 15px 15px 15px;
   box-shadow: 0 6px 20px -5px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  min-width: 250px; 
+  min-width: 250px;
   max-width: 350px;
   transform: translateX(100%);
   transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.35);
@@ -55,14 +55,14 @@
 }
 
 .toast-content {
-  flex-grow: 1; 
+  flex-grow: 1;
   display: flex;
   align-items: center;
 }
 
 .message {
   flex-grow: 1;
-  word-break: break-word; 
+  word-break: break-word;
 }
 
 .toast.active {
@@ -190,7 +190,7 @@
   background: linear-gradient(to right, #FFD363, #FCF18B);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin: 0 10px; 
+  margin: 0 10px;
 }
 
 .gold-line {

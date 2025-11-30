@@ -24,7 +24,7 @@ interface MessageModalProps {
   isOpen: boolean;
   onClose: () => void;
   soundFXVolume: number;
-  setIsConfirmationModalOpen: (open: boolean) => void; 
+  setIsConfirmationModalOpen: (open: boolean) => void;
 }
 
 /**
@@ -33,15 +33,15 @@ interface MessageModalProps {
  * @returns {JSX.Element | null} The rendered MessageModal component.
  */
 const MessageModal: React.FC<MessageModalProps> = ({
-  isOpen,
-  onClose,
-  soundFXVolume,
-  setIsConfirmationModalOpen,
-}) => {
+                                                     isOpen,
+                                                     onClose,
+                                                     soundFXVolume,
+                                                     setIsConfirmationModalOpen,
+                                                   }) => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
 
   if (!isOpen) return null;
@@ -81,20 +81,20 @@ const MessageModal: React.FC<MessageModalProps> = ({
     } catch (err: any) {
       setError(err.message);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <TitleModal>{ t('message-us-title') }</TitleModal>
+      <TitleModal>{t('message-us-title')}</TitleModal>
       <Button variant="circle" soundFXVolume={soundFXVolume}>
-        <img src={closeIcon} onClick={onClose} alt="Close" />
+        <img src={closeIcon} onClick={onClose} alt="Close"/>
       </Button>
       <div className="message-overlay-container">
         <div className="message-grid">
           <div className="message-row-item">
-            <p className="message-row-item-message">{ t('message-row-item-message-2') }</p>
+            <p className="message-row-item-message">{t('message-row-item-message-2')}</p>
           </div>
           <div className="message-row-item">
             <input
@@ -107,7 +107,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
           </div>
           <div className="message-row-item">
             <textarea
-              placeholder={ t('MESSAGE') }
+              placeholder={t('MESSAGE')}
               className="message-row-item-textarea"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -116,7 +116,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
           <div className="message-row-item">
             <div className="message-row-item-grid">
               <p className="message-row-item-message">
-                { t('message-row-item-message') }
+                {t('message-row-item-message')}
               </p>
               {isLoading ? (
                 <div className="loading-spinner">
@@ -132,7 +132,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
                   soundFXVolume={soundFXVolume}
                   onClick={handleSubmit} // Triggering the handleSubmit function on button click
                 >
-                  <span>{ t('submit-button') }</span>
+                  <span>{t('submit-button')}</span>
                 </Button>
               )}
             </div>

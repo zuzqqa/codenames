@@ -11,6 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
+
     @Value("${frontend.origins1:http://localhost:5173, http://localhost:8080}")
     private String[] allowedOrigins;
 

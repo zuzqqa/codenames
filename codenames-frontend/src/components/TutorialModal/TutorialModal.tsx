@@ -20,9 +20,9 @@ import "./TutorialModal.css";
  * Props interface for the TutorialModal component.
  */
 interface TutorialModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    soundFXVolume: number;
+  isOpen: boolean;
+  onClose: () => void;
+  soundFXVolume: number;
 }
 
 /**
@@ -35,62 +35,64 @@ interface TutorialModalProps {
  * @returns {JSX.Element | null} The rendered tutorial modal or null if not open.
  */
 const TutorialModal: React.FC<TutorialModalProps> = ({
-                                                         isOpen,
-                                                         onClose,
-                                                         soundFXVolume,
+                                                       isOpen,
+                                                       onClose,
+                                                       soundFXVolume,
                                                      }) => {
-    const { t, i18n } = useTranslation();
-    const [currentPage, setCurrentPage] = useState(0);
-    const [pages, setPages] = useState<string[]>([
-        engPage1, engPage2, engPage3, engPage4
-    ]);
+  const { t, i18n } = useTranslation();
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pages, setPages] = useState<string[]>([
+    engPage1, engPage2, engPage3, engPage4
+  ]);
 
-    /**
-     * Closes modal
-     */
-    const handleCloseModal = () => {
-        onClose();
-    };
+  /**
+   * Closes modal
+   */
+  const handleCloseModal = () => {
+    onClose();
+  };
 
-    React.useEffect(() => {
-        if (i18n.language === "pl") {
-            setPages([plPage1, plPage2, plPage3, plPage4]);
-        } else {
-            setPages([engPage1, engPage2, engPage3, engPage4]);
-        }
-    }, [i18n.language]);
+  React.useEffect(() => {
+    if (i18n.language === "pl") {
+      setPages([plPage1, plPage2, plPage3, plPage4]);
+    } else {
+      setPages([engPage1, engPage2, engPage3, engPage4]);
+    }
+  }, [i18n.language]);
 
-    const pageCount = pages.length;
+  const pageCount = pages.length;
 
-    const handleNext = () => {
-        if (currentPage < pageCount - 1) setCurrentPage(currentPage + 1);
-    };
-    const handlePrev = () => {
-        if (currentPage > 0) setCurrentPage(currentPage - 1);
-    };
+  const handleNext = () => {
+    if (currentPage < pageCount - 1) setCurrentPage(currentPage + 1);
+  };
+  const handlePrev = () => {
+    if (currentPage > 0) setCurrentPage(currentPage - 1);
+  };
 
-    if (!isOpen) return null;
+  if (!isOpen) return null;
 
-    return (
-        <div className="tutorial-modal-container">
-            <Modal isOpen={isOpen} onClose={handleCloseModal} variant="large">
-                <TitleModal>{ t('tutorial-title') }</TitleModal>
-                <Button variant="circle" soundFXVolume={soundFXVolume} onClick={handleCloseModal}>
-                    <img className="close-icon" src={closeIcon} alt="Close" />
-                </Button>
+  return (
+    <div className="tutorial-modal-container">
+      <Modal isOpen={isOpen} onClose={handleCloseModal} variant="large">
+        <TitleModal>{t('tutorial-title')}</TitleModal>
+        <Button variant="circle" soundFXVolume={soundFXVolume} onClick={handleCloseModal}>
+          <img className="close-icon" src={closeIcon} alt="Close"/>
+        </Button>
 
-                <div className="tutorial-overlay-container">
-                    <img src={pages[currentPage]} alt={`Page ${currentPage + 1}`} />
-                </div>
-                <div className="paging-controls">
-                    <Button variant="primary" soundFXVolume={soundFXVolume} onClick={handlePrev} disabled={currentPage === 0}>{t('prev')}</Button>
-                    <span>{currentPage + 1} / {pageCount}</span>
-                    <Button variant="primary" soundFXVolume={soundFXVolume} onClick={handleNext} disabled={currentPage === pageCount - 1}>{t('next')}</Button>
-                </div>
-            </Modal>
-
+        <div className="tutorial-overlay-container">
+          <img src={pages[currentPage]} alt={`Page ${currentPage + 1}`}/>
         </div>
-    );
+        <div className="paging-controls">
+          <Button variant="primary" soundFXVolume={soundFXVolume} onClick={handlePrev}
+                  disabled={currentPage === 0}>{t('prev')}</Button>
+          <span>{currentPage + 1} / {pageCount}</span>
+          <Button variant="primary" soundFXVolume={soundFXVolume} onClick={handleNext}
+                  disabled={currentPage === pageCount - 1}>{t('next')}</Button>
+        </div>
+      </Modal>
+
+    </div>
+  );
 };
 
 export default TutorialModal;

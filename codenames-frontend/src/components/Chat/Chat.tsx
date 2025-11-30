@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { t } from "i18next";
 import "../../views/Gameplay/Gameplay.css";
@@ -6,17 +6,16 @@ import "./Chat.css";
 import { useCookies } from "react-cookie";
 import { apiUrl, socketUrl } from "../../config/api.tsx";
 
-// Delay in milliseconds before scrolling to the bottom of the chat messages
 const SCROLL_DELAY_MS = 300;
 
 /**
  * Defines the message type structure.
  */
 interface Message {
-  text: string; // Message content
-  type: "incoming" | "outgoing"; // Message direction
-  sender: string; // Sender's name
-  gameID: string; // Associated game ID
+  text: string;
+  type: "incoming" | "outgoing";
+  sender: string;
+  gameID: string;
 }
 
 /**

@@ -11,15 +11,16 @@ import java.util.List;
 @Builder
 public class GetUsernamesResponse {
 
+    List<User> users;
+
     @NoArgsConstructor
     @AllArgsConstructor
     @Getter
     @Setter
     @Builder
     public static class User {
+
         private String id;
         private String username;
     }
-
-    List<User> users;
 }

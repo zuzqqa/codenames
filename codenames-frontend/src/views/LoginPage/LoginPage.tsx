@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import "../../styles/App.css";
@@ -18,9 +18,8 @@ import backButtonIcon from "../../assets/icons/arrow-back.png";
 
 import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister.tsx";
 import { logout } from "../../shared/utils.tsx";
-import { useNavigate, useLocation } from "react-router-dom";
-import { apiUrl } from "../../config/api.tsx";
-import { secure } from "../../config/api.tsx";
+import { useLocation, useNavigate } from "react-router-dom";
+import { apiUrl, secure } from "../../config/api.tsx";
 import { useToast } from "../../components/Toast/ToastContext.tsx";
 import { createGuestUser } from "../Home/Home.tsx";
 import GoogleLoginButton from "../../components/GoogleAuthentication/GoogleLoginButton.tsx";
@@ -44,17 +43,17 @@ interface LoginProps {
  * @returns {JSX.Element} The rendered LoginPage component.
  */
 const LoginPage: React.FC<LoginProps> = ({
-  setVolume,
-  soundFXVolume,
-  setSoundFXVolume,
-}) => {
+                                           setVolume,
+                                           soundFXVolume,
+                                           setSoundFXVolume,
+                                         }) => {
   const [login, setLogin] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [musicVolume, setMusicVolume] = useState(() => {
     const savedVolume = localStorage.getItem("musicVolume");
     return savedVolume ? parseFloat(savedVolume) : 50;
   });
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -85,7 +84,7 @@ const LoginPage: React.FC<LoginProps> = ({
     if (inputValue.length > password.length) {
       setPassword(password + inputValue[inputValue.length - 1]);
     } else {
-      setPassword(password.slice(0, -1)); // Handle backspace
+      setPassword(password.slice(0, -1));
     }
   };
 
@@ -164,12 +163,12 @@ const LoginPage: React.FC<LoginProps> = ({
    */
   const updateMusicVolume = (volume: number) => {
     setMusicVolume(volume);
-    setVolume(volume); // Update global volume
+    setVolume(volume);
   };
 
   return (
     <BackgroundContainer>
-      <GameTitleBar />
+      <GameTitleBar/>
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={toggleSettings}
@@ -183,7 +182,7 @@ const LoginPage: React.FC<LoginProps> = ({
         soundFXVolume={soundFXVolume}
         onClick={toggleSettings}
       >
-        <img src={settingsIcon} alt="Settings" />
+        <img src={settingsIcon} alt="Settings"/>
       </Button>
       <Button
         className="back-button"
@@ -191,13 +190,13 @@ const LoginPage: React.FC<LoginProps> = ({
         onClick={() => navigate("/home")}
         soundFXVolume={soundFXVolume}
       >
-        <img src={backButtonIcon} alt="Back" className="btn-arrow-back" />
+        <img src={backButtonIcon} alt="Back" className="btn-arrow-back"/>
       </Button>
       {document.cookie
         .split("; ")
         .find((cookie) => cookie.startsWith("loggedIn=")) && (
         <Button variant="logout" soundFXVolume={soundFXVolume}>
-          <img src={logoutButton} onClick={logout} alt="Logout" />
+          <img src={logoutButton} onClick={logout} alt="Logout"/>
         </Button>
       )}
       <LoginRegisterContainer variant="login">
@@ -270,7 +269,7 @@ const LoginPage: React.FC<LoginProps> = ({
             <div className="gold-line"></div>
           </div>
           <div className="google-container">
-            <GoogleLoginButton soundFXVolume={soundFXVolume} />
+            <GoogleLoginButton soundFXVolume={soundFXVolume}/>
           </div>
           <a
             className="login-register-link"

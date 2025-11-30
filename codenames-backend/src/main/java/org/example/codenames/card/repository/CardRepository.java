@@ -7,11 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-/**
- * Card repository.
- */
 @Repository
 public interface CardRepository extends MongoRepository<Card, String> {
+
     @NonNull
     Optional<Card> findById(String id);
 }

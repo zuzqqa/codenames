@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import JoinGame from "./JoinGame";
 import { io } from "socket.io-client";
 import * as utils from "../../shared/utils.tsx";
@@ -273,7 +273,7 @@ describe("JoinGame", () => {
     const gameSessionsListCall = mockOn.mock.calls.find(
       (call) => call[0] === "gameSessionsList"
     );
-    
+
     expect(gameSessionsListCall).toBeDefined();
     const gameSessionsListCallback = gameSessionsListCall![1];
 
@@ -535,8 +535,9 @@ describe("JoinGame", () => {
   });
 
   it("handles fetch error gracefully", async () => {
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {
+    });
+
     globalThis.fetch = vi.fn(() => Promise.reject(new Error("Network error"))) as any;
 
     render(
@@ -558,7 +559,8 @@ describe("JoinGame", () => {
   });
 
   it("handles invalid JSON in socket gameSessionsList event", async () => {
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {
+    });
 
     render(
       <JoinGame
@@ -571,7 +573,7 @@ describe("JoinGame", () => {
     const gameSessionsListCall = mockOn.mock.calls.find(
       (call) => call[0] === "gameSessionsList"
     );
-    
+
     expect(gameSessionsListCall).toBeDefined();
     const gameSessionsListCallback = gameSessionsListCall![1];
 

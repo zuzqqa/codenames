@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Chat from "./Chat";
 import { io } from "socket.io-client";
 
@@ -62,7 +62,7 @@ describe("Chat", () => {
   });
 
   it("renders chat input with placeholder", async () => {
-    render(<Chat />);
+    render(<Chat/>);
 
     await waitFor(() => {
       expect(
@@ -73,7 +73,7 @@ describe("Chat", () => {
 
   it("sends message when Enter is pressed", async () => {
     const user = userEvent.setup();
-    render(<Chat />);
+    render(<Chat/>);
 
     await waitFor(() => {
       expect(
@@ -95,7 +95,7 @@ describe("Chat", () => {
 
   it("does not send empty messages", async () => {
     const user = userEvent.setup();
-    render(<Chat />);
+    render(<Chat/>);
 
     await waitFor(() => {
       expect(
@@ -113,7 +113,7 @@ describe("Chat", () => {
   });
 
   it("displays incoming messages", async () => {
-    render(<Chat />);
+    render(<Chat/>);
 
     await waitFor(() => {
       expect(mockSocket.on).toHaveBeenCalledWith(
@@ -141,7 +141,7 @@ describe("Chat", () => {
   });
 
   it("connects to socket on mount", async () => {
-    render(<Chat />);
+    render(<Chat/>);
 
     await waitFor(() => {
       expect(io).toHaveBeenCalledWith(
@@ -156,7 +156,7 @@ describe("Chat", () => {
   });
 
   it("joins game room on socket connect", async () => {
-    render(<Chat />);
+    render(<Chat/>);
 
     await waitFor(() => {
       expect(mockSocket.on).toHaveBeenCalledWith(
@@ -180,7 +180,7 @@ describe("Chat", () => {
 
   it("adds focused class when input is focused", async () => {
     const user = userEvent.setup();
-    render(<Chat />);
+    render(<Chat/>);
 
     await waitFor(() => {
       expect(
@@ -198,7 +198,7 @@ describe("Chat", () => {
 
   it("clears message input after sending", async () => {
     const user = userEvent.setup();
-    render(<Chat />);
+    render(<Chat/>);
 
     await waitFor(() => {
       expect(

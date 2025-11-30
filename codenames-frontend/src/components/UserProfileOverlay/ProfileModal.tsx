@@ -1,5 +1,5 @@
-import {useEffect, useState} from "react";
-import {useTranslation} from "react-i18next";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import closeIcon from "../../assets/icons/close.png";
 import checkmarkIcon from "../../assets/icons/check.png";
@@ -24,16 +24,22 @@ import useFriendRequestsSocketIO from "./useFriendRequestsSocketIO.tsx";
 
 import "./ProfileModal.css";
 
-import {apiUrl} from "../../config/api.tsx";
-import {getUserId} from "../../shared/utils.tsx";
-import {useToast} from "../Toast/ToastContext.tsx";
+import { apiUrl } from "../../config/api.tsx";
+import { getUserId } from "../../shared/utils.tsx";
+import { useToast } from "../Toast/ToastContext.tsx";
 
+/**
+ * Props for `ProfileModal` component.
+ */
 interface ProfileModalProps {
   soundFXVolume: number;
   isOpen: boolean;
   onClose: () => void;
 }
 
+/**
+ * Representation of the user object returned by the backend for profile view.
+ */
 interface User {
   id: string;
   username: string;
@@ -45,19 +51,28 @@ interface User {
   receivedRequests: string[];
 }
 
+/**
+ * Shape returned by the user search endpoint.
+ */
 interface UserList {
   users: { id: string, username: string }[];
 }
 
 const availableProfilePics = [0, 1, 2, 3, 4];
 
-const ProfileModal: React.FC<ProfileModalProps> = ({soundFXVolume, isOpen, onClose}) => {
-  const {t} = useTranslation();
-  const {addToast} = useToast();
+
+ /**
+ * Profile modal component showing current user's profile, friends and friend requests.
+ *
+ * This component loads the current user when opened, allows editing profile fields,
+ * and uses `useFriendRequestsSocketIO` to keep friends/request lists in sync with the server.
+ */
+const ProfileModal: React.FC<ProfileModalProps> = ({ soundFXVolume, isOpen, onClose }) => {
+  const { t } = useTranslation();
+  const { addToast } = useToast();
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [editedUsername, setEditedUsername] = useState("");
-  const [editedEmail, setEditedEmail] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [profilePicIndex, setProfilePicIndex] = useState(0);
@@ -65,7 +80,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({soundFXVolume, isOpen, onClo
     "../../assets/images/profile-pic-default.png"
   );
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<UserList>({users: []});
+  const [searchResults, setSearchResults] = useState<UserList>({ users: [] });
   const [activeTab, setActiveTab] = useState<"friends" | "invitations" | "search">("friends");
 
   const initialFriendState = currentUser ? {
@@ -86,12 +101,12 @@ const ProfileModal: React.FC<ProfileModalProps> = ({soundFXVolume, isOpen, onClo
   } = useFriendRequestsSocketIO(currentUser?.username || "", initialFriendState);
 
   const tabIcons = {
-    friends: {default: friendsIcon, picked: friendsIconPicked},
+    friends: { default: friendsIcon, picked: friendsIconPicked },
     invitations: {
       default: friendRequestsIcon,
       picked: friendRequestsIconPicked,
     },
-    search: {default: searchIcon, picked: searchIconPicked},
+    search: { default: searchIcon, picked: searchIconPicked },
   };
 
   useEffect(() => {
@@ -113,7 +128,6 @@ const ProfileModal: React.FC<ProfileModalProps> = ({soundFXVolume, isOpen, onClo
           setCurrentUser(userData);
           // Initialize edited fields when user is loaded
           setEditedUsername(userData.username ?? "");
-          setEditedEmail(userData.email ?? "");
           setEditedDescription(userData.description ?? "");
           const picIndex = availableProfilePics.indexOf(userData.profilePic);
           setProfilePicIndex(picIndex !== -1 ? picIndex : 0);
@@ -130,6 +144,11 @@ const ProfileModal: React.FC<ProfileModalProps> = ({soundFXVolume, isOpen, onClo
     if (isOpen) fetchCurrentUser();
   }, [isOpen]);
 
+  /**
+   * Dynamically loads the profile picture asset by id. Falls back to default on error.
+   *
+   * @param profilePicId numeric id of profile picture
+   */
   const loadProfilePic = async (profilePicId: number) => {
     try {
       const image = await import(
@@ -141,13 +160,16 @@ const ProfileModal: React.FC<ProfileModalProps> = ({soundFXVolume, isOpen, onClo
     }
   };
 
+  /**
+   * Persists profile changes to the backend and updates local state on success.
+   */
   const handleSave = async () => {
     if (!currentUser) return;
 
     try {
       const response = await fetch(`${apiUrl}/api/users/${currentUser.id}`, {
         method: "PUT",
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
           id: currentUser.id,

@@ -24,10 +24,10 @@
   border-color: rgb(226, 215, 114);
   border-style: solid;
   background: linear-gradient(
-    to top,
-    rgb(50, 70, 77),
-    rgb(44, 61, 70),
-    rgb(34, 48, 59)
+      to top,
+      rgb(50, 70, 77),
+      rgb(44, 61, 70),
+      rgb(34, 48, 59)
   );
   font-size: calc(0.3rem + 1vw);
   box-shadow: 0rem 0.25rem 0.75rem rgba(0, 0, 0, 0.6);
@@ -39,9 +39,9 @@
   text-align: center;
   letter-spacing: 0.0625rem;
   background-image: linear-gradient(
-    to bottom,
-    rgb(252, 241, 139),
-    rgb(255, 211, 99)
+      to bottom,
+      rgb(252, 241, 139),
+      rgb(255, 211, 99)
   );
   background-clip: text;
   -webkit-background-clip: text;

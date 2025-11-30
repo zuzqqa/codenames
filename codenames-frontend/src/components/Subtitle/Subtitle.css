@@ -86,7 +86,7 @@
 }
 
 @media (max-width: 700px) {
-    .primary-subtitle-container {
+  .primary-subtitle-container {
     margin-bottom: clamp(6rem, 3vw, 9rem);
   }
 }

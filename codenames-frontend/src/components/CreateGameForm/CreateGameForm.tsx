@@ -3,10 +3,9 @@ import Button from "../Button/Button.tsx";
 import backButton from "../../assets/icons/arrow-back.png";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import React, { useState } from "react";
 import "./CreateGameForm.css";
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
-import React from "react";
 import { apiUrl } from "../../config/api.tsx";
 import { getUserId } from "../../shared/utils.tsx";
 import { useToast } from "../Toast/ToastContext.tsx";
@@ -109,7 +108,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
           onClick={handleBack}
           soundFXVolume={soundFXVolume}
         >
-          <img src={backButton} alt="Back" className="btn-arrow-back" />
+          <img src={backButton} alt="Back" className="btn-arrow-back"/>
         </Button>
         <span className="room-form-label">{t("create-game-button")}</span>
         <form
@@ -222,7 +221,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
           </Button>
         </form>
       </RoomMenu>
-      <DiscordLoginButton soundFXVolume={soundFXVolume} />
+      <DiscordLoginButton soundFXVolume={soundFXVolume}/>
     </>
   );
 };

@@ -21,6 +21,7 @@ import java.util.function.Function;
 @SuppressWarnings("deprecation")
 @Service
 public class JwtService {
+
     /**
      * Secret key used for signing JWT tokens.
      */

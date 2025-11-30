@@ -21,6 +21,7 @@ import java.io.IOException;
  */
 @Service
 public class JwtAuthFilter extends OncePerRequestFilter {
+
     /**
      * Service that handles JWT operations.
      */
@@ -56,7 +57,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String token = null;
 
-        // Extract token from cookies
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("authToken".equals(cookie.getName())) {

@@ -1,8 +1,7 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 
 import BackgroundContainer from "../../containers/Background/Background.tsx";
 import Button from "../../components/Button/Button.tsx";
@@ -19,16 +18,10 @@ import logoutButton from "../../assets/icons/logout.svg";
 import backButtonIcon from "../../assets/icons/arrow-back.png";
 
 import { logout } from "../../shared/utils.tsx";
-import {
-  validateEmail,
-  validateUsername,
-  validatePassword,
-} from "../../utils/validation.tsx";
 
 import "../../styles/App.css";
 import "./RegisterPage.css";
-import { apiUrl, frontendUrl } from "../../config/api.tsx";
-import { secure } from "../../config/api.tsx";
+import { apiUrl, secure } from "../../config/api.tsx";
 import { useToast } from "../../components/Toast/ToastContext.tsx";
 import { createGuestUser } from "../Home/Home.tsx";
 import GoogleLoginButton from "../../components/GoogleAuthentication/GoogleLoginButton.tsx";
@@ -57,10 +50,10 @@ interface RegisterProps {
  * @returns {JSX.Element} The rendered RegisterPage component.
  */
 const RegisterPage: React.FC<RegisterProps> = ({
-  setVolume,
-  soundFXVolume,
-  setSoundFXVolume,
-}) => {
+                                                 setVolume,
+                                                 soundFXVolume,
+                                                 setSoundFXVolume,
+                                               }) => {
   const [email, setEmail] = useState<string>("");
   const [login, setLogin] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -68,10 +61,10 @@ const RegisterPage: React.FC<RegisterProps> = ({
     const savedVolume = localStorage.getItem("musicVolume");
     return savedVolume ? parseFloat(savedVolume) : 50;
   });
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Tracks if the settings modal is open
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { t } = useTranslation();
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
   const { addToast } = useToast();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -107,7 +100,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
     if (inputValue.length > password.length) {
       setPassword(password + inputValue[inputValue.length - 1]);
     } else {
-      setPassword(password.slice(0, -1)); // Handle backspace
+      setPassword(password.slice(0, -1));
     }
   };
 
@@ -196,28 +189,26 @@ const RegisterPage: React.FC<RegisterProps> = ({
     setIsSettingsOpen(!isSettingsOpen);
   };
 
-  // Redirect user to /games if already logged in
   useEffect(() => {
-    const loggedIn = Cookies.get("loggedIn"); // Retrieve the cookie value
+    const loggedIn = Cookies.get("loggedIn");
     const jwtToken = Cookies.get("authToken");
 
-    // Ensure 'loggedIn' is true
     if (loggedIn === "true" && jwtToken) {
-      navigate("/games"); // Redirect to /games if logged in
+      navigate("/games");
     }
   }, [navigate]);
 
   return (
     <BackgroundContainer>
-      <GameTitleBar />
+      <GameTitleBar/>
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={toggleSettings}
         musicVolume={musicVolume}
         soundFXVolume={soundFXVolume}
         setMusicVolume={(volume) => {
-          setMusicVolume(volume); // Update local music volume
-          setVolume(volume / 100); // Update global volume
+          setMusicVolume(volume);
+          setVolume(volume / 100);
         }}
         setSoundFXVolume={setSoundFXVolume}
       />
@@ -226,7 +217,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
         soundFXVolume={soundFXVolume}
         onClick={toggleSettings}
       >
-        <img src={settingsIcon} alt="Settings" />
+        <img src={settingsIcon} alt="Settings"/>
       </Button>
       <Button
         className="back-button"
@@ -234,7 +225,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
         onClick={() => navigate("/home")}
         soundFXVolume={soundFXVolume}
       >
-        <img src={backButtonIcon} alt="Back" className="btn-arrow-back" />
+        <img src={backButtonIcon} alt="Back" className="btn-arrow-back"/>
       </Button>
       {document.cookie
         .split("; ")
@@ -243,7 +234,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
             cookie.startsWith("loggedIn=") && cookie.startsWith("authToken=")
         ) && (
         <Button variant="logout" soundFXVolume={soundFXVolume}>
-          <img src={logoutButton} onClick={logout} alt="Logout" />
+          <img src={logoutButton} onClick={logout} alt="Logout"/>
         </Button>
       )}
       <LoginRegisterContainer variant="register">
@@ -314,7 +305,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
             <div className="gold-line"></div>
           </div>
           <div className="google-container">
-            <GoogleLoginButton soundFXVolume={soundFXVolume} />
+            <GoogleLoginButton soundFXVolume={soundFXVolume}/>
           </div>
           <a className="login-register-link" onClick={() => navigate("/login")}>
             {t("already-have-an-account")}

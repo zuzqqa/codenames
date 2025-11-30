@@ -30,6 +30,7 @@ import static org.mockito.Mockito.*;
  */
 @ExtendWith(MockitoExtension.class)
 class EmailServiceTest {
+
     @Mock
     private JavaMailSender mailSender;
 

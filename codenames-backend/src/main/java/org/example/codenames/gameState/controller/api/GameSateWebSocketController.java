@@ -13,5 +13,13 @@ import java.util.UUID;
  * This controller is used to manage the game states
  */
 public interface GameSateWebSocketController {
+
+    /**
+     * Submit votes for the game with the given id.
+     *
+     * @param gameId      id of the game.
+     * @param voteRequest the vote request containing the votes.
+     * @return ResponseEntity containing the result of the operation.
+     */
     ResponseEntity<?> submitVotes(@PathVariable UUID gameId, @RequestBody CardsVoteRequest voteRequest) throws JsonProcessingException;
 }

@@ -9,7 +9,16 @@ import java.util.UUID;
 
 /**
  * Controller for game state related operations.
+ * This class is responsible for handling HTTP requests related to game state.
  */
 public interface GameStateController {
+
+    /**
+     * Get cards for the game with the given id.
+     *
+     * @param gameId   id of the game.
+     * @param language Language of the cards.
+     * @return ResponseEntity containing the list of cards.
+     */
     ResponseEntity<List<String>> getCards(@PathVariable UUID gameId, @RequestParam String language);
 }

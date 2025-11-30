@@ -4,15 +4,10 @@ import com.hazelcast.core.Hazelcast;
 import org.example.codenames.CodenamesApplication;
 import org.example.codenames.gameSession.controller.api.GameSessionController;
 import org.example.codenames.gameSession.repository.api.GameSessionRepository;
-
-import org.example.codenames.socket.service.api.SocketService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,10 +18,6 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -36,6 +27,10 @@ import org.testcontainers.utility.DockerImageName;
 import java.time.Duration;
 import java.util.UUID;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 /**
  * Integration tests for the game session functionalities.
  * Primarily testing {@link GameSessionController} endpoints.
@@ -44,14 +39,13 @@ import java.util.UUID;
 @SpringBootTest(classes = CodenamesApplication.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@TestPropertySource(locations="classpath:application-test.properties")
+@TestPropertySource(locations = "classpath:application-test.properties")
 public class GameSessionControllerTest {
 
     @Autowired
     private MockMvc mvc;
     @Autowired
     GameSessionRepository gameSessionRepository;
-
 
     // MongoDB Testcontainers container.
     public static MongoDBContainer mongo = new MongoDBContainer(DockerImageName.parse("mongo:5"))
@@ -69,7 +63,6 @@ public class GameSessionControllerTest {
     // Starting the MongoDB container before all tests.
     @BeforeAll
     static void startup() {
-        // Shutdown any existing Hazelcast instances to ensure clean state
         Hazelcast.shutdownAll();
         mongo.start();
     }
@@ -84,7 +77,6 @@ public class GameSessionControllerTest {
     static void shutdown() {
         Hazelcast.shutdownAll();
     }
-
 
     @Test
     void shouldCreateGame() throws Exception {
@@ -136,13 +128,13 @@ public class GameSessionControllerTest {
     void shouldSubmitVote() throws Exception {
         // Create a game session first
         String requestBody = """
-            {
-                "gameName": "voteGame",
-                "maxPlayers": 4,
-                "password": "",
-                "language": "en"
-            }
-            """;
+                {
+                    "gameName": "voteGame",
+                    "maxPlayers": 4,
+                    "password": "",
+                    "language": "en"
+                }
+                """;
 
         MvcResult result = mvc.perform(post("/api/game-session/create-game")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -153,11 +145,11 @@ public class GameSessionControllerTest {
         String gameId = new ObjectMapper().readTree(result.getResponse().getContentAsString()).get("gameId").asText();
 
         String voteRequest = """
-            {
-                "userId": "user123",
-                "votedUserId": "user456"
-            }
-            """;
+                {
+                    "userId": "user123",
+                    "votedUserId": "user456"
+                }
+                """;
 
         mvc.perform(post("/api/game-session/" + gameId + "/vote")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -168,13 +160,13 @@ public class GameSessionControllerTest {
     @Test
     void shouldConnectPlayer() throws Exception {
         String requestBody = """
-            {
-                "gameName": "connectGame",
-                "maxPlayers": 4,
-                "password": "",
-                "language": "en"
-            }
-            """;
+                {
+                    "gameName": "connectGame",
+                    "maxPlayers": 4,
+                    "password": "",
+                    "language": "en"
+                }
+                """;
 
         MvcResult result = mvc.perform(post("/api/game-session/create-game")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -194,13 +186,13 @@ public class GameSessionControllerTest {
     @Test
     void shouldDisconnectPlayer() throws Exception {
         String requestBody = """
-            {
-                "gameName": "disconnectGame",
-                "maxPlayers": 4,
-                "password": "",
-                "language": "en"
-            }
-            """;
+                {
+                    "gameName": "disconnectGame",
+                    "maxPlayers": 4,
+                    "password": "",
+                    "language": "en"
+                }
+                """;
 
         MvcResult result = mvc.perform(post("/api/game-session/create-game")
                         .contentType(MediaType.APPLICATION_JSON)

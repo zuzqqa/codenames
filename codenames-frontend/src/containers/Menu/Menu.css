@@ -15,12 +15,11 @@
 }
 
 
-
 @media (max-width: 700px) {
   .menu-container {
     display: flex;
     flex-direction: column;
-    justify-content:space-evenly;
+    justify-content: space-evenly;
     width: clamp(260px, 65vw, 600px);
     height: auto;
     padding: 1.5rem;

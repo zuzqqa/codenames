@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Entity class for the User object.
- */
 @Document(collection = "users")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,58 +15,23 @@ import java.util.Objects;
 @Setter
 @Builder
 public class User {
-    /**
-     * The unique identifier for the user.
-     */
+
     @Id
     private String id;
-    /**
-     * The username for the user.
-     */
     private String username;
-    /**
-     * The password for the user.
-     */
     private String password;
-    /**
-     * The email for the user.
-     */
     private String email;
-    /**
-     * The Discord ID for the user.
-     */
     private String discordUserId;
-    /**
-     * The description for the user.
-     */
     private String description;
-    /**
-     * The number of profile picture for the user.
-     */
     private int profilePic;
-    /**
-     * The roles for the user.
-     */
     private String roles;
-    /**
-     * The flag indicating if the user is a guest.
-     */
     private boolean isGuest;
-    /**
-     * User status.
-     */
     private userStatus status;
-    /**
-     * List of usernames of user's friends
-     */
+    @Builder.Default
     private List<String> friends = new ArrayList<>();
-    /**
-     * List of usernames of users to whom the user has sent a friend request
-     */
+    @Builder.Default
     private List<String> sentRequests = new ArrayList<>();
-    /**
-     * List of usernames from which the user received a friend request
-     */
+    @Builder.Default
     private List<String> receivedRequests = new ArrayList<>();
 
     /**
