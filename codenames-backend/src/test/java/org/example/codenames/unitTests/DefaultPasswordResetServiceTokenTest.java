@@ -3,7 +3,7 @@ package org.example.codenames.unitTests;
 import jakarta.servlet.http.HttpServletRequest;
 import org.example.codenames.tokens.passwordResetToken.entity.PasswordResetToken;
 import org.example.codenames.tokens.passwordResetToken.repository.api.PasswordResetTokenRepository;
-import org.example.codenames.tokens.passwordResetToken.service.impl.DefaultPasswordResetServiceToken;
+import org.example.codenames.tokens.passwordResetToken.service.impl.DefaultPasswordResetTokenService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class DefaultPasswordResetServiceTokenTest {
+class DefaultPasswordResetTokenServiceTest {
 
     @Mock
     PasswordResetTokenRepository repository;
 
     @InjectMocks
-    DefaultPasswordResetServiceToken service;
+    DefaultPasswordResetTokenService service;
 
     @Mock
     HttpServletRequest request;

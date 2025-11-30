@@ -3,7 +3,7 @@ package org.example.codenames.unitTests;
 import com.hazelcast.core.HazelcastInstance;
 import org.example.codenames.tokens.passwordResetToken.entity.PasswordResetToken;
 import org.example.codenames.tokens.passwordResetToken.repository.api.PasswordResetTokenRepository;
-import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetServiceToken;
+import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetTokenService;
 import org.example.codenames.user.entity.User;
 import org.example.codenames.user.repository.api.UserRepository;
 import org.example.codenames.user.service.impl.DefaultUserService;
@@ -332,7 +332,7 @@ public class UserServiceTest {
         when(passwordEncoder.encode(newPassword)).thenReturn(encodedPassword);
 
         // Mock token validation
-        PasswordResetServiceToken passwordResetServiceToken = mock(PasswordResetServiceToken.class);
+        PasswordResetTokenService passwordResetServiceToken = mock(PasswordResetTokenService.class);
         when(passwordResetServiceToken.isValidToken(token)).thenReturn(true);
         userService = new DefaultUserService(userRepository, passwordEncoder, passwordResetTokenRepository, passwordResetServiceToken, hazelcastInstance);
 
@@ -359,7 +359,7 @@ public class UserServiceTest {
         when(passwordResetTokenRepository.findByToken(token)).thenReturn(Optional.of(passwordResetToken));
 
         // Mock token validation
-        PasswordResetServiceToken passwordResetServiceToken = mock(PasswordResetServiceToken.class);
+        PasswordResetTokenService passwordResetServiceToken = mock(PasswordResetTokenService.class);
         when(passwordResetServiceToken.isValidToken(token)).thenReturn(false);
         userService = new DefaultUserService(userRepository, passwordEncoder, passwordResetTokenRepository, passwordResetServiceToken, hazelcastInstance);
 
@@ -425,7 +425,7 @@ public class UserServiceTest {
         var map = mock(com.hazelcast.map.IMap.class);
         when(hazelcastInstance.getMap("activeUsers")).thenReturn(map);
 
-        userService = new DefaultUserService(userRepository, passwordEncoder, passwordResetTokenRepository, mock(PasswordResetServiceToken.class), hazelcastInstance);
+        userService = new DefaultUserService(userRepository, passwordEncoder, passwordResetTokenRepository, mock(PasswordResetTokenService.class), hazelcastInstance);
 
         userService.updateUserActiveStatus(userId);
 
@@ -444,7 +444,7 @@ public class UserServiceTest {
                 )
         );
 
-        userService = new DefaultUserService(userRepository, passwordEncoder, passwordResetTokenRepository, mock(PasswordResetServiceToken.class), hazelcastInstance);
+        userService = new DefaultUserService(userRepository, passwordEncoder, passwordResetTokenRepository, mock(PasswordResetTokenService.class), hazelcastInstance);
 
         var activeUsers = userService.getAllActiveUsers();
 
