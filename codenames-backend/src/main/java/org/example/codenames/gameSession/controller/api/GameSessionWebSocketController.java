@@ -91,11 +91,11 @@ public interface GameSessionWebSocketController {
     /**
      * Change the turn
      *
-     * @param id the game session id
+     * @param gameId the game session id
      * @return the response entity
      * @throws JsonProcessingException if there is an error processing JSON
      */
-    ResponseEntity<?> changeTurn(@PathVariable UUID id) throws JsonProcessingException;
+    ResponseEntity<?> changeTurn(@PathVariable UUID gameId) throws JsonProcessingException;
 
     /**
      * Reveal card chosen by the currentSelectionLeader

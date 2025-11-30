@@ -42,39 +42,40 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class GameSessionControllerTest {
 
+    @Autowired
+    private MockMvc mvc;
+    @Autowired
+    GameSessionRepository gameSessionRepository;
+
     // MongoDB Testcontainers container.
     public static MongoDBContainer mongo = new MongoDBContainer(DockerImageName.parse("mongo:5"))
             .withExposedPorts(27017)
             .waitingFor(Wait.forLogMessage(".*Waiting for connections.*", 1))
             .withStartupTimeout(Duration.ofSeconds(60));
-    @Autowired
-    GameSessionRepository gameSessionRepository;
-    @Autowired
-    private MockMvc mvc;
 
     // Setting up the MongoDB connection properties (dynamic application.properties).
     @DynamicPropertySource
     static void mongoProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.data.mongodb.uri",
                 () -> "mongodb://" + mongo.getHost() + ":" + mongo.getMappedPort(27017) + "/CodenamesDB");
-        // Secret for token generation.
     }
 
     // Starting the MongoDB container before all tests.
     @BeforeAll
     static void startup() {
-        mongo.start();
-    }
-
-    @AfterAll
-    static void shutdown() {
         Hazelcast.shutdownAll();
+        mongo.start();
     }
 
     // Cleaning the database after each test for isolation.
     @AfterEach
     void cleanDatabase() {
         gameSessionRepository.deleteAll();
+    }
+
+    @AfterAll
+    static void shutdown() {
+        Hazelcast.shutdownAll();
     }
 
     @Test
