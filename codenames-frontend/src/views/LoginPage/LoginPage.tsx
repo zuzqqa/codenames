@@ -208,6 +208,7 @@ const LoginPage: React.FC<LoginProps> = ({
             position: "absolute",
             top: "calc(-28rem - 1vh)",
             left: "-1rem",
+            textWrap: "nowrap",
           }}
           shadowStyle={{
             fontSize: "calc(5.6rem + 0.2vw)",
@@ -215,6 +216,7 @@ const LoginPage: React.FC<LoginProps> = ({
             position: "absolute",
             top: "calc(-28rem - 1vh)",
             left: "-1rem",
+            textWrap: "nowrap",
           }}
         >
           {t("login-button-text")}

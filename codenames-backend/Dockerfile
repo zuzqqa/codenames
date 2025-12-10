@@ -26,4 +26,4 @@ RUN mvn dependency:go-offline
 EXPOSE 8080
 
 # Command to start the Spring Boot application
-CMD ["mvn", "spring-boot:run"]
+CMD ["mvn", "--debug", "spring-boot:run"]

@@ -11,6 +11,7 @@ services:
         - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
         - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
         - MONGO_URI=${MONGO_URI}
+        - SOCKET_IO_URL=http://codenames-socket-io-server:3000
         - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
         - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
         - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
@@ -20,8 +21,22 @@ services:
         - DISCORD_CATEGORY_ID=${DISCORD_CATEGORY_ID}
       volumes:
         - ./codenames-backend:/opt/codenames-backend
+      depends_on:
+        - socket
       networks:
         - codenames-network
+
+  socket:
+    build:
+      context: ./codenames-socket-io-server
+    container_name: codenames-socket-io-server
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./codenames-socket-io-server:/app
+    command: ["npm", "run", "start"]
+    networks:
+      - codenames-network
 
   frontend:
     build:
@@ -36,6 +51,7 @@ services:
     command: ["npm", "run", "dev", "--", "--host"]
     depends_on:
       - backend
+      - socket
     networks:
         - codenames-network 
 networks:

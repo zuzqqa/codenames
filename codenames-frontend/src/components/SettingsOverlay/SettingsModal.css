@@ -13,9 +13,9 @@
 }
 
 .settings-overlay-container {
-  padding-top: 3%;
   width: 75%;
   margin: auto;
+  margin-top: -1rem;
   height: 60%;
 }
 

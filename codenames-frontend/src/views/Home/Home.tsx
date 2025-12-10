@@ -195,7 +195,7 @@ const Home: React.FC<HomeProps> = ({
                   Codenames
                 </TitleComponent>
                 <SubtitleComponent variant="start">
-                  Your mission begins now
+                  {t("home-subtitle")}
                 </SubtitleComponent>
                 <div className="start-button">
                   <Button

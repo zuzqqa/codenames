@@ -71,6 +71,23 @@ const RegisterPage: React.FC<RegisterProps> = ({
   const isActivated = searchParams.get("activated") === "false";
 
   /**
+   * Gets the left position value based on the current locale.
+   * Adjusts positioning to accommodate different text lengths in different languages.
+   *
+   * @returns {string} The left position value.
+   */
+  const getLeftPosition = () => {
+    const currentLang = localStorage.getItem("i18nextLng") || "en";
+    switch (currentLang) {
+      case "pl":
+        return "-5rem"; // Polish text is longer
+      case "en":
+      default:
+        return "-1rem";
+    }
+  };
+
+  /**
    * Handles email input change.
    *
    * @param {ChangeEvent<HTMLInputElement>} e - Event object.
@@ -245,14 +262,16 @@ const RegisterPage: React.FC<RegisterProps> = ({
             textAlign: "left",
             position: "absolute",
             top: "calc(-30.6rem - 1vh)",
-            left: "-1rem",
+            left: getLeftPosition(),
+            textWrap: "nowrap",
           }}
           shadowStyle={{
             fontSize: "calc(5.6rem + 0.2vw)",
             textAlign: "left",
             position: "absolute",
             top: "calc(-30.6rem - 1vh)",
-            left: "-1rem",
+            left: getLeftPosition(),
+            textWrap: "nowrap",
           }}
         >
           {t("register-button-text")}
