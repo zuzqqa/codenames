@@ -1,16 +1,17 @@
 quit-modal-title {
   width: 100%;
   position: absolute;
-  top: 15%;
 }
 
 .quit-modal-title .title-modal {
   text-align: center;
+  margin-top: 3.5rem;
 }
 
 .quit-modal-title .title-shadow-modal {
   text-align: center;
   padding-left: 0.4rem;
+  margin-top: 3.5rem;
 }
 
 .quit-modal {

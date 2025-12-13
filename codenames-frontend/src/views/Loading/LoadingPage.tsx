@@ -10,6 +10,7 @@ import characters from "../../assets/images/characters.png";
 import "../../styles/App.css";
 import "../Home/Home.css";
 import "./LoadingPage.css";
+import {getUserId} from "../../shared/utils.tsx";
 
 /**
  * Props type definition for the LoadingPage component.
@@ -33,8 +34,9 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ soundFXVolume, duration }) =>
   useEffect(() => {
     const defaultDuration = 3;
     const effectiveDuration = duration ?? defaultDuration;
-    const timer = setTimeout(() => {
-      const endpoint = localStorage.getItem("userId") ? "/game-lobby" : "/";
+    const timer = setTimeout(async () => {
+      const endpoint = await getUserId() && sessionStorage.getItem("gameId") ? "/game-lobby" : "/";
+      console.log(endpoint);
       navigate(endpoint);
     }, effectiveDuration * 1000);
 
