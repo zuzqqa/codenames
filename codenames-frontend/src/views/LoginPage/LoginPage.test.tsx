@@ -2,6 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import LoginPage from "./LoginPage";
+import { loginUser } from "../../api/authApi.tsx";
 
 const mockNavigate = vi.fn();
 const mockUseLocation = vi.fn(() => ({
@@ -34,6 +35,10 @@ vi.mock("../../config/api.tsx", () => ({
 vi.mock("../../shared/utils.tsx", () => ({
   logout: vi.fn(),
   getCookie: vi.fn(),
+}));
+
+vi.mock("../../api/authApi.tsx", () => ({
+  loginUser: vi.fn(),
 }));
 
 vi.mock("../../components/GoogleAuthentication/GoogleLoginButton.tsx", () => ({
@@ -91,13 +96,6 @@ describe("LoginPage", () => {
     vi.clearAllMocks();
     mockUseLocation.mockReturnValue({ search: "" });
 
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ token: "test-token" }),
-      })
-    ) as any;
-
     Storage.prototype.getItem = vi.fn((key) => {
       if (key === "musicVolume") return "50";
       return null;
@@ -109,8 +107,16 @@ describe("LoginPage", () => {
       value: "",
     });
 
+    let href = "";
     delete (window as any).location;
-    (window as any).location = { href: "" };
+    (window as any).location = {
+      get href() {
+        return href;
+      },
+      set href(val) {
+        href = val;
+      },
+    };
   });
 
   it("renders login form with all elements", () => {
@@ -119,7 +125,7 @@ describe("LoginPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByPlaceholderText("LOGIN")).toBeInTheDocument();
@@ -137,7 +143,7 @@ describe("LoginPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     const loginInput = screen.getByPlaceholderText("LOGIN");
@@ -154,7 +160,7 @@ describe("LoginPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     const passwordInput = screen.getByPlaceholderText("PASSWORD");
@@ -170,7 +176,7 @@ describe("LoginPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     const passwordInput = screen.getByPlaceholderText("PASSWORD");
@@ -187,13 +193,17 @@ describe("LoginPage", () => {
   });
 
   it("submits form with valid credentials and redirects", async () => {
+    (loginUser as unknown as vi.Mock).mockResolvedValue({
+      token: "test-token",
+    });
+
     const user = userEvent.setup();
     render(
       <LoginPage
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     const loginInput = screen.getByPlaceholderText("LOGIN");
@@ -208,32 +218,20 @@ describe("LoginPage", () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(globalThis.fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/api/users/authenticate",
-        expect.objectContaining({
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: "testuser",
-            password: "password123",
-          }),
-        })
-      );
+      expect(loginUser).toHaveBeenCalledWith({
+        username: "testuser",
+        password: "password123",
+      });
     });
 
     expect(window.location.href).toBe("/games");
   });
 
   it("shows error toast when login fails with invalid credentials", async () => {
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: false,
-        status: 401,
-        json: () => Promise.resolve({ error: "Invalid credentials" }),
-      })
-    ) as any;
+    (loginUser as unknown as vi.Mock).mockRejectedValue({
+      status: 401,
+      data: { error: "Invalid login or password." },
+    });
 
     const user = userEvent.setup();
     render(
@@ -241,7 +239,7 @@ describe("LoginPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     await user.type(screen.getByPlaceholderText("LOGIN"), "wronguser");
@@ -251,22 +249,16 @@ describe("LoginPage", () => {
     await waitFor(() => {
       expect(mockAddToast).toHaveBeenCalledWith(
         "invalid-login-or-password",
-        "error"
+        "error",
       );
     });
   });
 
   it("shows error toast when account is not activated", async () => {
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: false,
-        status: 401,
-        json: () =>
-          Promise.resolve({
-            error: "Account is not active. Please check your email.",
-          }),
-      })
-    ) as any;
+    (loginUser as unknown as vi.Mock).mockRejectedValue({
+      status: 401,
+      data: { error: "Account is not active." },
+    });
 
     const user = userEvent.setup();
     render(
@@ -274,7 +266,7 @@ describe("LoginPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     await user.type(screen.getByPlaceholderText("LOGIN"), "inactiveuser");
@@ -284,19 +276,16 @@ describe("LoginPage", () => {
     await waitFor(() => {
       expect(mockAddToast).toHaveBeenCalledWith(
         "account-not-activated",
-        "error"
+        "error",
       );
     });
   });
 
   it("shows generic error toast when server error occurs", async () => {
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: false,
-        status: 500,
-        json: () => Promise.resolve({ error: "Server error" }),
-      })
-    ) as any;
+    (loginUser as unknown as vi.Mock).mockRejectedValue({
+      status: 500,
+      data: { error: "Server error." },
+    });
 
     const user = userEvent.setup();
     render(
@@ -304,7 +293,7 @@ describe("LoginPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     await user.type(screen.getByPlaceholderText("LOGIN"), "testuser");
@@ -323,7 +312,7 @@ describe("LoginPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     await user.click(screen.getByText("dont-have-an-account"));
@@ -337,7 +326,7 @@ describe("LoginPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     await user.click(screen.getByText("forgot-password-text"));
@@ -351,7 +340,7 @@ describe("LoginPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     const backButton = screen.getByAltText("Back");
@@ -367,7 +356,7 @@ describe("LoginPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     const settingsButton = screen.getByAltText("Settings");
@@ -384,7 +373,7 @@ describe("LoginPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     expect(localStorage.setItem).toHaveBeenCalledWith("musicVolume", "50");
@@ -399,14 +388,14 @@ describe("LoginPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     await user.click(screen.getByText("or-continue-as-guset"));
 
     expect(createGuestUser).toHaveBeenCalledWith(
       "http://localhost:8080",
-      false
+      false,
     );
   });
 
@@ -416,7 +405,7 @@ describe("LoginPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText("Google Login Button")).toBeInTheDocument();
@@ -432,7 +421,7 @@ describe("LoginPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     const loginInput = screen.getByPlaceholderText("LOGIN");
@@ -450,7 +439,7 @@ describe("LoginPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByAltText("Logout")).toBeInTheDocument();
@@ -469,7 +458,7 @@ describe("LoginPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     const logoutBtn = screen.getByAltText("Logout");

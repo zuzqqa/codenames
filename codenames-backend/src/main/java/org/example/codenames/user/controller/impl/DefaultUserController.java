@@ -20,6 +20,7 @@ import org.example.codenames.user.entity.mapper.UserMapper;
 import org.example.codenames.user.service.api.UserService;
 import org.example.codenames.userDetails.auth.AuthRequest;
 import org.example.codenames.userDetails.auth.AuthResponse;
+import org.example.codenames.userDetails.common.ErrorResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -121,7 +122,7 @@ public class DefaultUserController implements UserController {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthResponse> authenticateAndGenerateJWT(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<?> authenticateAndGenerateJWT(@RequestBody AuthRequest authRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
@@ -130,7 +131,7 @@ public class DefaultUserController implements UserController {
             if (!userService.isAccountActivated(authRequest.getUsername())) {
                 return ResponseEntity
                         .status(HttpStatus.UNAUTHORIZED)
-                        .body(new AuthResponse("Account is not active."));
+                        .body(new ErrorResponse("Account is not active."));
             }
 
             String token = jwtService.generateToken(authRequest.getUsername());
@@ -139,7 +140,7 @@ public class DefaultUserController implements UserController {
         } catch (BadCredentialsException ex) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body(new AuthResponse("Invalid username or password."));
+                    .body(new ErrorResponse("Invalid username or password."));
         }
     }
 

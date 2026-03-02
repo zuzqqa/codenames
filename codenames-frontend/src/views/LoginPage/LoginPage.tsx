@@ -23,6 +23,7 @@ import { apiUrl, secure } from "../../config/api.tsx";
 import { useToast } from "../../components/Toast/ToastContext.tsx";
 import { createGuestUser } from "../Home/Home.tsx";
 import GoogleLoginButton from "../../components/GoogleAuthentication/GoogleLoginButton.tsx";
+import { loginUser, LoginRequest } from "../../api/authApi.tsx";
 
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -43,10 +44,10 @@ interface LoginProps {
  * @returns {JSX.Element} The rendered LoginPage component.
  */
 const LoginPage: React.FC<LoginProps> = ({
-                                           setVolume,
-                                           soundFXVolume,
-                                           setSoundFXVolume,
-                                         }) => {
+  setVolume,
+  soundFXVolume,
+  setSoundFXVolume,
+}) => {
   const [login, setLogin] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [musicVolume, setMusicVolume] = useState(() => {
@@ -114,31 +115,17 @@ const LoginPage: React.FC<LoginProps> = ({
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const userData = { username: login, password };
+    const username = searchParams.get("username") || "";
+    const userData: LoginRequest = { username: login, password };
 
-    const response = await fetch(`${apiUrl}/api/users/authenticate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userData),
-    });
-
-    let data;
     try {
-      data = await response.json();
-    } catch (e) {
-      console.error("Failed to parse JSON response:", e);
-      throw new Error("Failed to parse JSON response");
-    }
-
-    if (response.ok) {
+      const data = await loginUser(userData);
       document.cookie = `authToken=${data.token}; max-age=36000; path=/; secure; samesite=none`;
       document.cookie = `loggedIn=true; max-age=36000; path=/; secure; samesite=none`;
       window.location.href = "/games";
-    } else {
-      if (response.status === 401) {
-        if (data.error && data.error.includes("not active")) {
+    } catch (error: any) {
+      if (error.status === 401) {
+        if (error.data?.error?.includes("not active")) {
           addToast(t("account-not-activated"), "error");
         } else {
           addToast(t("invalid-login-or-password"), "error");
@@ -168,7 +155,7 @@ const LoginPage: React.FC<LoginProps> = ({
 
   return (
     <BackgroundContainer>
-      <GameTitleBar/>
+      <GameTitleBar />
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={toggleSettings}
@@ -182,7 +169,7 @@ const LoginPage: React.FC<LoginProps> = ({
         soundFXVolume={soundFXVolume}
         onClick={toggleSettings}
       >
-        <img src={settingsIcon} alt="Settings"/>
+        <img src={settingsIcon} alt="Settings" />
       </Button>
       <Button
         className="back-button"
@@ -190,13 +177,13 @@ const LoginPage: React.FC<LoginProps> = ({
         onClick={() => navigate("/home")}
         soundFXVolume={soundFXVolume}
       >
-        <img src={backButtonIcon} alt="Back" className="btn-arrow-back"/>
+        <img src={backButtonIcon} alt="Back" className="btn-arrow-back" />
       </Button>
       {document.cookie
         .split("; ")
         .find((cookie) => cookie.startsWith("loggedIn=")) && (
         <Button variant="logout" soundFXVolume={soundFXVolume}>
-          <img src={logoutButton} onClick={logout} alt="Logout"/>
+          <img src={logoutButton} onClick={logout} alt="Logout" />
         </Button>
       )}
       <LoginRegisterContainer variant="login">
@@ -271,7 +258,7 @@ const LoginPage: React.FC<LoginProps> = ({
             <div className="gold-line"></div>
           </div>
           <div className="google-container">
-            <GoogleLoginButton soundFXVolume={soundFXVolume}/>
+            <GoogleLoginButton soundFXVolume={soundFXVolume} />
           </div>
           <a
             className="login-register-link"

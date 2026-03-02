@@ -49,7 +49,7 @@
   "voting-time": "Vote for cards that are the best match.",
   "select-cards": "Choose one card to be revealed.",
   "opposing-team-guessing": "Opposing team is guessing",
-  "email-error-message": "Invalid email. Use format: example@domain.com.",
+  "e-mail-error-message": "Invalid e-mail. Use format: example@domain.com.",
   "username-error-message": "Username can only contain letters and numbers.",
   "password-error-message": "Password must be 8+ chars, with upper, lower, number & special char.",
   "e-mail-exists-error": "User with this e-mail already exists.",
@@ -90,7 +90,7 @@
   "server-connection-error": "Server connection error. Please try again later.",
   "token-expired-message": "Your password reset link has expired or is invalid. Try",
   "try-reset-password": "resetting your password",
-  "reset-password-instructions": "Enter your email to receive a link to recover your account.",
+  "reset-password-instructions": "Enter your e-mail to receive a link to recover your account.",
   "go-back-to-homepage": "go back to the homepage",
   "game-name-already-exists": "Game with this name already exists.",
   "game-name-required": "Game name is required.",
@@ -106,5 +106,8 @@
   "prev": "Previous",
   "next": "Next",
   "unknown-error": "Something went wrong. Please try again later.",
-  "friends-already-error": "This user is already on your friends list."
+  "friends-already-error": "This user is already on your friends list.",
+  "e-mail-error-message": "Invalid e-mail.",
+  "network-error": "Network error."
 }
+  

@@ -25,6 +25,7 @@ import { apiUrl, secure } from "../../config/api.tsx";
 import { useToast } from "../../components/Toast/ToastContext.tsx";
 import { createGuestUser } from "../Home/Home.tsx";
 import GoogleLoginButton from "../../components/GoogleAuthentication/GoogleLoginButton.tsx";
+import { registerUser, RegisterRequest } from "../../api/authApi.tsx";
 
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -50,10 +51,10 @@ interface RegisterProps {
  * @returns {JSX.Element} The rendered RegisterPage component.
  */
 const RegisterPage: React.FC<RegisterProps> = ({
-                                                 setVolume,
-                                                 soundFXVolume,
-                                                 setSoundFXVolume,
-                                               }) => {
+  setVolume,
+  soundFXVolume,
+  setSoundFXVolume,
+}) => {
   const [email, setEmail] = useState<string>("");
   const [login, setLogin] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -128,11 +129,6 @@ const RegisterPage: React.FC<RegisterProps> = ({
   /**
    * Handles form submission for user registration.
    *
-   * - Validates input fields.
-   * - Displays appropriate error messages.
-   * - Sends registration request to the server.
-   * - Redirects to loading page on success.
-   *
    * @param {FormEvent<HTMLFormElement>} e - The form event triggered on submit.
    */
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -144,14 +140,14 @@ const RegisterPage: React.FC<RegisterProps> = ({
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+={}[\]|:;"'<>,.?/~`]).{8,}$/;
 
     if (!email || !login || !password) {
-      if (!email) addToast(t("email-error-message"), "error");
+      if (!email) addToast(t("e-mail-error-message"), "error");
       if (!login) addToast(t("username-error-message"), "error");
       if (!password) addToast(t("password-error-message"), "error");
       return;
     }
 
     if (!emailRegex.test(email)) {
-      addToast(t("email-error-message"), "error");
+      addToast(t("e-mail-error-message"), "error");
       return;
     }
 
@@ -163,39 +159,36 @@ const RegisterPage: React.FC<RegisterProps> = ({
     if (!passwordRegex.test(password)) {
       addToast(
         "Password must be 8+ chars, with upper, lower, number & special char.",
-        "error"
+        "error",
       );
       return;
     }
 
-    const userData = { email, username: login, password, roles: "USER" };
+    const userData: RegisterRequest = { email, username: login, password, roles: "USER" };
 
     try {
-      const response = await fetch(
-        `${apiUrl}/api/users?language=${
-          localStorage.getItem("i18nextLng") || "en"
-        }`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(userData),
-          credentials: "include",
-        }
+      const data = await registerUser(
+        userData,
+        localStorage.getItem("i18nextLng") || "en",
       );
 
-      if (response.ok) {
-        addToast(t("activation-link-sent"), "notification");
-      } else {
-        const errorData = await response.json();
+      addToast(t("activation-link-sent"), "notification");
+    } catch (error: any) {
+      if (error.status === 400) {
+        const err = error.data?.error || error.message;
 
-        if (errorData.error === "Username already exists.") {
+        if (err === "Username already exists.") {
           addToast(t("username-exists-error"), "error");
-        } else if (errorData.error === "E-mail already exists.") {
+        } else if (err === "E-mail already exists.") {
           addToast(t("e-mail-exists-error"), "error");
+        } else if (err === "Invalid e-mail address") {
+          addToast(t("e-mail-error-message"), "error");
+        } else {
+          addToast(err, "error");
         }
+      } else {
+        addToast(t("network-error"), "error");
       }
-    } catch (error) {
-      addToast(t("network-error"), "error");
     }
   };
 
@@ -217,7 +210,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
 
   return (
     <BackgroundContainer>
-      <GameTitleBar/>
+      <GameTitleBar />
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={toggleSettings}
@@ -234,7 +227,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
         soundFXVolume={soundFXVolume}
         onClick={toggleSettings}
       >
-        <img src={settingsIcon} alt="Settings"/>
+        <img src={settingsIcon} alt="Settings" />
       </Button>
       <Button
         className="back-button"
@@ -242,16 +235,16 @@ const RegisterPage: React.FC<RegisterProps> = ({
         onClick={() => navigate("/home")}
         soundFXVolume={soundFXVolume}
       >
-        <img src={backButtonIcon} alt="Back" className="btn-arrow-back"/>
+        <img src={backButtonIcon} alt="Back" className="btn-arrow-back" />
       </Button>
       {document.cookie
         .split("; ")
         .find(
           (cookie) =>
-            cookie.startsWith("loggedIn=") && cookie.startsWith("authToken=")
+            cookie.startsWith("loggedIn=") && cookie.startsWith("authToken="),
         ) && (
         <Button variant="logout" soundFXVolume={soundFXVolume}>
-          <img src={logoutButton} onClick={logout} alt="Logout"/>
+          <img src={logoutButton} onClick={logout} alt="Logout" />
         </Button>
       )}
       <LoginRegisterContainer variant="register">
@@ -324,7 +317,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
             <div className="gold-line"></div>
           </div>
           <div className="google-container">
-            <GoogleLoginButton soundFXVolume={soundFXVolume}/>
+            <GoogleLoginButton soundFXVolume={soundFXVolume} />
           </div>
           <a className="login-register-link" onClick={() => navigate("/login")}>
             {t("already-have-an-account")}

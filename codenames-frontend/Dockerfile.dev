@@ -1,7 +1,7 @@
 ## LOCAL HOST DOCKER FILE
 
 # Use Node.js 20 as the base image
-FROM node:20
+FROM node:18
 
 # Set the working directory inside the container
 WORKDIR /app
