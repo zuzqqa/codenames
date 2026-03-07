@@ -16,30 +16,8 @@ import characters from "../../assets/images/characters.png";
 import "../../styles/App.css";
 import "./Home.css";
 import Cookies from "js-cookie";
-import { apiUrl, secure } from "../../config/api.tsx";
-
-export async function createGuestUser(apiUrl: string, secure: string) {
-  try {
-    const response = await fetch(`${apiUrl}/api/users/create-guest`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      document.cookie = `authToken=${data.token}; max-age=36000; path=/; ${secure}`;
-      document.cookie = `loggedIn=true; max-age=36000; path=/; ${secure}`;
-      window.location.href = "/loading";
-    } else {
-      console.error("Unexpected response format");
-    }
-  } catch (error) {
-    console.error("Error creating guest account:", error);
-  }
-}
+import { secure } from "../../config/api.tsx";
+import { createGuestUser } from "../../utils/auth.tsx";
 
 /**
  * Props type definition for the Home component.
@@ -57,10 +35,10 @@ interface HomeProps {
  * @returns {JSX.Element} The rendered Home component.
  */
 const Home: React.FC<HomeProps> = ({
-                                     setVolume,
-                                     soundFXVolume,
-                                     setSoundFXVolume,
-                                   }) => {
+  setVolume,
+  soundFXVolume,
+  setSoundFXVolume,
+}) => {
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [musicVolume, setMusicVolume] = useState(() => {
     const savedVolume = localStorage.getItem("musicVolume");
@@ -138,7 +116,7 @@ const Home: React.FC<HomeProps> = ({
             <TitleComponent soundFXVolume={soundFXVolume}>
               Codenames
             </TitleComponent>
-            <CharactersComponent/>
+            <CharactersComponent />
             <SubtitleComponent variant="primary">
               {t("home-subtitle")}
             </SubtitleComponent>
@@ -171,7 +149,7 @@ const Home: React.FC<HomeProps> = ({
               <div className="second-column">
                 <Button
                   variant="primary"
-                  onClick={() => createGuestUser(apiUrl, secure)}
+                  onClick={() => createGuestUser(secure)}
                   soundFXVolume={soundFXVolume}
                 >
                   <span className="button-text">
@@ -185,7 +163,7 @@ const Home: React.FC<HomeProps> = ({
           <>
             <div className="start-container">
               <div className="character-image-start">
-                <img src={characters} alt="Characters"/>
+                <img src={characters} alt="Characters" />
               </div>
               <div className="start-text-container">
                 <TitleComponent

@@ -1,7 +1,7 @@
 import { apiRequest } from "./apiClient";
 
 export interface LoginRequest {
-  username: string; 
+  username: string;
   password: string;
 }
 
@@ -12,16 +12,32 @@ export interface RegisterRequest {
   roles: string;
 }
 
-export function loginUser(data: LoginRequest) {
+type AuthResponse = {
+  token: string;
+};
+
+export function loginUser(data: LoginRequest): Promise<AuthResponse> {
   return apiRequest(`/api/users/authenticate`, {
     method: "POST",
     body: JSON.stringify(data),
   });
 }
 
-export function registerUser(data: RegisterRequest, language: string) {
+export function registerUser(
+  data: RegisterRequest,
+  language: string,
+): Promise<AuthResponse> {
   return apiRequest(`/api/users?language=${language}`, {
     method: "POST",
     body: JSON.stringify(data),
+  });
+}
+
+export async function createGuest(): Promise<AuthResponse> {
+  return apiRequest(`/api/users/create-guest`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+    },
   });
 }

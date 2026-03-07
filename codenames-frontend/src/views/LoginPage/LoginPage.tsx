@@ -21,7 +21,7 @@ import { logout } from "../../shared/utils.tsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { apiUrl, secure } from "../../config/api.tsx";
 import { useToast } from "../../components/Toast/ToastContext.tsx";
-import { createGuestUser } from "../Home/Home.tsx";
+import { createGuestUser } from "../../utils/auth.tsx";
 import GoogleLoginButton from "../../components/GoogleAuthentication/GoogleLoginButton.tsx";
 import { loginUser, LoginRequest } from "../../api/authApi.tsx";
 
@@ -268,7 +268,7 @@ const LoginPage: React.FC<LoginProps> = ({
           </a>
           <a
             className="login-register-link guest-link"
-            onClick={() => createGuestUser(apiUrl, secure)}
+            onClick={() => createGuestUser(secure)}
           >
             {t("or-continue-as-guset")}
           </a>

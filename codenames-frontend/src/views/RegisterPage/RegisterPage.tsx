@@ -23,7 +23,7 @@ import "../../styles/App.css";
 import "./RegisterPage.css";
 import { apiUrl, secure } from "../../config/api.tsx";
 import { useToast } from "../../components/Toast/ToastContext.tsx";
-import { createGuestUser } from "../Home/Home.tsx";
+import { createGuestUser } from "../../utils/auth.tsx";
 import GoogleLoginButton from "../../components/GoogleAuthentication/GoogleLoginButton.tsx";
 import { registerUser, RegisterRequest } from "../../api/authApi.tsx";
 
@@ -324,7 +324,7 @@ const RegisterPage: React.FC<RegisterProps> = ({
           </a>
           <a
             className="login-register-link guest-link"
-            onClick={() => createGuestUser(apiUrl, secure)}
+            onClick={() => createGuestUser(secure)}
           >
             {t("or-continue-as-guset")}
           </a>
