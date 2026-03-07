@@ -25,6 +25,6 @@ export async function getUserId(): Promise<string | null> {
 }
 
 export async function getPlayerUsername(token: string): Promise<string> {
-  const data = await apiRequest("/api/users/username/" + token);
-  return data.username;
+  const response = await apiRequest("/api/users/username/" + token);
+  return response.username;
 }
