@@ -42,3 +42,10 @@ export async function createGuest(): Promise<AuthResponse> {
     },
   });
 }
+
+export async function connectDiscordAccount(token: string): Promise<string> {
+  return await apiRequest("/api/discord/link/begin", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}

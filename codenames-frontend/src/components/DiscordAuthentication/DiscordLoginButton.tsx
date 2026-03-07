@@ -4,6 +4,7 @@ import { apiUrl } from "../../config/api";
 import discordIcon from "../../assets/icons/discord-icon.png";
 import Cookies from "js-cookie";
 import { useTranslation } from "react-i18next";
+import { connectDiscordAccount } from "../../api/authApi";
 
 /**
  * Props for DiscordLoginButton component.
@@ -14,29 +15,27 @@ interface DiscordLoginButtonProps {
 }
 
 const DiscordLoginButton: React.FC<DiscordLoginButtonProps> = ({
-                                                                 soundFXVolume,
-                                                               }) => {
+  soundFXVolume,
+}) => {
   const { t } = useTranslation();
 
-  //TODO: move this fetch
   /**
    * Connects the user's Discord account.
    */
   async function connectDiscord(): Promise<void> {
-    const token = Cookies.get("authToken");
+    try {
+      const token = Cookies.get("authToken");
+      if (!token) {
+        alert("No auth token found");
+        return;
+      }
 
-    const res = await fetch(`${apiUrl}/api/discord/link/begin`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      credentials: "include",
-    });
-    if (!res.ok) {
+      await connectDiscordAccount(token);
+      window.location.href = `${apiUrl}/oauth2/authorization/discord`;
+    } catch (err) {
+      console.error("Error connecting Discord:", err);
       alert("Error");
-      return;
     }
-
-    const { redirectUrl } = await res.json();
-    window.location.href = `${apiUrl}/oauth2/authorization/discord`;
   }
 
   return (
