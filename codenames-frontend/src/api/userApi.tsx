@@ -23,3 +23,8 @@ export async function getUserId(): Promise<string | null> {
     return null;
   }
 }
+
+export async function getPlayerUsername(token: string): Promise<string> {
+  const data = await apiRequest("/api/users/username/" + token);
+  return data.username;
+}
