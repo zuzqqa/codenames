@@ -135,6 +135,7 @@ const JoinGame: React.FC<JoinGameProps> = ({
     };
   }, []);
 
+  // TODO: move this fetch
   /**
    * Fetches all available game sessions from the backend.
    * Only sessions in the "CREATED" state are stored.

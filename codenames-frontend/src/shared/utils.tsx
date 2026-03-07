@@ -41,10 +41,7 @@ export function getCookie(name: string) {
   if (parts.length === 2) return parts.pop()?.split(";").shift() ?? undefined;
 }
 
-/**
- * Retrieves user's id value.
- *
- */
+//TODO: delete this -> /api already has getUserId function
 export async function getUserId() {
   const token = getCookie("authToken");
 

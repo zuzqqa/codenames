@@ -71,6 +71,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
           language: values.deckLanguage,
         };
 
+        //TODO: move this fetch
         const response = await fetch(`${apiUrl}/api/game-session/create-game`, {
           method: "POST",
           headers: {

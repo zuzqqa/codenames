@@ -1,3 +1,4 @@
+// TODO: commment the code
 import { apiRequest } from "./apiClient";
 
 export async function fetchGameSession(sessionId: string) {

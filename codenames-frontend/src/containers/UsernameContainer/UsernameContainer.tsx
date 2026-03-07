@@ -22,6 +22,7 @@ const UsernameContainer: React.FC = () => {
     const token = Cookies.get("authToken");
 
     if (token) {
+      //TODO: move this fetch
       fetch(`${apiUrl}/api/users/get-username`, {
         method: "GET",
         headers: {

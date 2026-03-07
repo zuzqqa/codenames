@@ -1,3 +1,4 @@
+//TODO: comment the code
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
@@ -108,6 +109,7 @@ const GameList: React.FC<GameListProps> = ({
     }
   };
 
+  //TODO: move this fetch
   const handleSubmit = async () => {
     if (!selectedSessionId) return;
 

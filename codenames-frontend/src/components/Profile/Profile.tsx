@@ -1,3 +1,4 @@
+//TODO: comment the code
 import React, { useEffect, useState } from "react";
 import { apiUrl } from "../../config/api.tsx";
 import Button from "../Button/Button.tsx";
@@ -16,6 +17,7 @@ const Profile: React.FC<ProfileProps> = ({ soundFXVolume }) => {
     setIsProfileOpen(prev => !prev);
   };
 
+  //TODO: move this fetch
   useEffect(() => {
     const fetchGuestStatus = async () => {
       const token = getCookie("authToken");

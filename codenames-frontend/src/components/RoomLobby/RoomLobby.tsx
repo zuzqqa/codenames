@@ -115,6 +115,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     "gameId"
   )}`;
 
+  //TODO: move this fetch
   /**
    * Initializes the WebSocket connection and fetches the game session data.
    */
@@ -197,6 +198,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       return;
     }
 
+    //TODO: move this fetch
     const response = await fetch(
       `${apiUrl}/api/game-session/${storedGameId}/connect?userId=${userId}&teamIndex=0`,
       {
@@ -231,6 +233,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       return;
     }
 
+    //TODO: move this fetch
     const response = await fetch(
       `${apiUrl}/api/game-session/${storedGameId}/connect?userId=${userId}&teamIndex=1`,
       {
@@ -257,6 +260,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
 
     const token = getCookie("authToken");
 
+    //TODO: move this fetch
     const getIdResponse = await fetch(`${apiUrl}/api/users/get-id`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -267,6 +271,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     const userId = await getIdResponse.text();
 
     try {
+      //TODO: move this fetch
       const response = await fetch(
         `${apiUrl}/api/game-session/${storedGameId}/disconnect?userId=${userId}`,
         { method: "DELETE", credentials: "include" }
@@ -309,6 +314,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       return;
     }
     try {
+      //TODO: move this fetch
       const response = await fetch(
         `${apiUrl}/api/game-session/${storedGameId}/start`,
         { method: "POST" }

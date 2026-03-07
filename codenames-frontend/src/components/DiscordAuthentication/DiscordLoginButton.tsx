@@ -18,6 +18,7 @@ const DiscordLoginButton: React.FC<DiscordLoginButtonProps> = ({
                                                                }) => {
   const { t } = useTranslation();
 
+  //TODO: move this fetch
   /**
    * Connects the user's Discord account.
    */

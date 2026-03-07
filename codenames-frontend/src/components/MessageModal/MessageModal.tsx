@@ -46,6 +46,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
 
   if (!isOpen) return null;
 
+  //TODO: move this fetch
   /**
    * Handles form submission, sending an email with the message.
    * @async

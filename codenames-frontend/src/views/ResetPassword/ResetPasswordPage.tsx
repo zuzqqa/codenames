@@ -1,3 +1,4 @@
+// TODO: comment the code
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -56,6 +57,7 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
   const [tokenExpired, setTokenExpired] = useState(false);
   const { addToast } = useToast();
 
+  //TODO: move this fetch
   useEffect(() => {
     if (!token) {
       addToast(t("token-missing"), "error");
@@ -124,6 +126,7 @@ const ResetPasswordPage: React.FC<ResetPasswordProps> = ({
     localStorage.setItem("musicVolume", musicVolume.toString());
   }, [musicVolume]);
 
+  //TODO: move this fetch
   /**
    * Handles the form submission for resetting the password.
    * @param e - The form event triggered on submission.

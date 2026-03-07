@@ -116,6 +116,7 @@ const useFriendRequestsSocketIO = (
    * @param path API path (appended to apiUrl)
    * @param method HTTP method to use (default POST)
    */
+  //TODO: move this fetch ?
   const callApi = async (path: string, method = 'POST') => {
     try {
       return await fetch(`${apiUrl}${path}`, {

@@ -32,6 +32,7 @@ const Chat: React.FC = () => {
   const [gameId, setGameId] = useState("");
   const [animationDisabled, setAnimationDisabled] = useState(false);
 
+  //TODO: move this fetch
   /**
    * Fetches the player's username based on the authentication token.
    */

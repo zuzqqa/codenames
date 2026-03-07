@@ -1,3 +1,4 @@
+// TODO: commment the code
 import { createGuest } from "../api/authApi";
 
 export const createGuestUser = async (secure: string) => {
