@@ -11,8 +11,8 @@ import backButtonIcon from "../../assets/icons/arrow-back.png";
 
 import "./GameList.css";
 
-import { apiUrl } from "../../config/api.tsx";
 import { useToast } from "../Toast/ToastContext.tsx";
+import { authenticatePassword } from "../../api/gameApi.tsx";
 
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
@@ -59,11 +59,11 @@ interface GameSessionJoinGameDTO {
  * @returns {JSX.Element} The rendered GameList component
  */
 const GameList: React.FC<GameListProps> = ({
-                                             soundFXVolume,
-                                             gameSessions,
-                                             filteredSessions,
-                                             setFilteredSessions,
-                                           }) => {
+  soundFXVolume,
+  gameSessions,
+  filteredSessions,
+  setFilteredSessions,
+}) => {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isPasswordOverlayOpen, setIsPasswordOverlayOpen] = useState(false);
@@ -90,14 +90,14 @@ const GameList: React.FC<GameListProps> = ({
     const value = event.target.value.toLowerCase();
     setSearchTerm(value);
     const filtered = gameSessions.filter((game) =>
-      game.gameName.toLowerCase().includes(value)
+      game.gameName.toLowerCase().includes(value),
     );
     setFilteredSessions(filtered);
   };
 
   const joinSpecificGame = (sessionId: string) => {
     const selectedGame = filteredSessions.find(
-      (session) => session.sessionId === sessionId
+      (session) => session.sessionId === sessionId,
     );
 
     if (selectedGame?.password) {
@@ -109,24 +109,14 @@ const GameList: React.FC<GameListProps> = ({
     }
   };
 
-  //TODO: move this fetch
   const handleSubmit = async () => {
     if (!selectedSessionId) return;
 
-    const response = await fetch(
-      `${apiUrl}/api/game-session/${selectedSessionId}/authenticate-password/${enteredPassword}`,
-      {
-        method: "POST",
-        credentials: "include",
-      }
-    );
-
-    const result = await response.json();
-
-    if (result) {
+    try {
+      await authenticatePassword(selectedSessionId, enteredPassword);
       sessionStorage.setItem("gameId", selectedSessionId);
       navigate("/game-lobby");
-    } else {
+    } catch (error: any) {
       addToast(t("incorrect-password"), "error");
     }
   };
@@ -142,7 +132,7 @@ const GameList: React.FC<GameListProps> = ({
           onClick={() => navigate("/games")}
           soundFXVolume={soundFXVolume}
         >
-          <img src={backButtonIcon} alt="Back" className="btn-arrow-back"/>
+          <img src={backButtonIcon} alt="Back" className="btn-arrow-back" />
         </Button>
         <span className="room-form-label">{t("join-room-button")}</span>
 
@@ -188,7 +178,6 @@ const GameList: React.FC<GameListProps> = ({
           className="list-background"
           style={{ gridColumn: "2", gridRow: "2" }}
         ></div>
-
       </RoomMenu>
       {isPasswordOverlayOpen && (
         <div className="overlay-backdrop">
@@ -215,7 +204,7 @@ const GameList: React.FC<GameListProps> = ({
               <span>{t("submit-button")}</span>
             </Button>
             <Button variant="circle" soundFXVolume={soundFXVolume}>
-              <img src={closeIcon} onClick={onClose} alt="Close"/>
+              <img src={closeIcon} onClick={onClose} alt="Close" />
             </Button>
           </div>
         </div>

@@ -2,10 +2,10 @@
 import { apiRequest } from "./apiClient";
 
 export interface CreateGameRequest {
-  gameName: string,
-  maxPlayers: number,
-  password: string,
-  language: string,
+  gameName: string;
+  maxPlayers: number;
+  password: string;
+  language: string;
 }
 
 export async function fetchGameSession(sessionId: string) {
@@ -39,4 +39,16 @@ export async function createGame(data: CreateGameRequest): Promise<string> {
   });
 
   return response.gameId;
+}
+
+export async function authenticatePassword(
+  sessionId: string,
+  password: string,
+) {
+  return await apiRequest(
+    `/api/game-session/${sessionId}/authenticate-password/${password}`,
+    {
+      method: "POST",
+    },
+  );
 }
