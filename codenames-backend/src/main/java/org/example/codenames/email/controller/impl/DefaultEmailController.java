@@ -3,7 +3,7 @@ package org.example.codenames.email.controller.impl;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.example.codenames.email.controller.api.EmailController;
-import org.example.codenames.email.entity.EmailRequest;
+import org.example.codenames.email.entity.MessagePayload;
 import org.example.codenames.email.service.api.EmailService;
 import org.example.codenames.user.repository.api.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,18 +30,18 @@ public class DefaultEmailController implements EmailController {
     }
 
     @PostMapping("/send-report")
-    public ResponseEntity<String> sendEmail(@RequestBody EmailRequest request, String language) throws MessagingException, IOException {
+    public ResponseEntity<String> sendEmail(@RequestBody MessagePayload request, String language) throws MessagingException, IOException {
         emailService.sendEmail(request);
-        emailService.sendConfirmationEmail(request.getEmail(), language);
+        emailService.sendConfirmationEmail(request.getEmailAddress(), language);
 
         return ResponseEntity.ok("");
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<String> sendResetPasswordEmail(@RequestBody EmailRequest request, HttpServletRequest httpServletRequest, String language) throws MessagingException, IOException {
-        if (userRepository.findByEmail(request.getEmail()).isEmpty()) return ResponseEntity.notFound().build();
+    public ResponseEntity<String> sendResetPasswordEmail(@RequestBody MessagePayload request, HttpServletRequest httpServletRequest, String language) throws MessagingException, IOException {
+        if (userRepository.findByEmail(request.getEmailAddress()).isEmpty()) return ResponseEntity.notFound().build();
 
-        emailService.sendResetPasswordEmail(request.getEmail(), httpServletRequest, language);
+        emailService.sendResetPasswordEmail(request.getEmailAddress(), httpServletRequest, language);
 
         return ResponseEntity.ok("");
     }

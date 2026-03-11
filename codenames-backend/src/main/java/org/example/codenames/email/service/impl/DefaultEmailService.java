@@ -3,7 +3,7 @@ package org.example.codenames.email.service.impl;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
-import org.example.codenames.email.entity.EmailRequest;
+import org.example.codenames.email.entity.MessagePayload;
 import org.example.codenames.email.service.api.EmailService;
 import org.example.codenames.tokens.accountActivationToken.service.api.AccountActivationTokenService;
 import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetTokenService;
@@ -40,11 +40,11 @@ public class DefaultEmailService implements EmailService {
         this.accountActivationTokenService = accountActivationTokenService;
     }
 
-    public void sendEmail(EmailRequest request) {
+    public void sendEmail(MessagePayload request) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo("codenames.contact@gmail.com");
         mailMessage.setSubject("Codenames Contact Form");
-        mailMessage.setText(request.getEmail() + "\n" + request.getDataToSend());
+        mailMessage.setText(request.getEmailAddress() + "\n" + request.getMessage());
         mailSender.send(mailMessage);
     }
 

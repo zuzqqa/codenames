@@ -2,7 +2,7 @@ package org.example.codenames.email.controller.api;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.example.codenames.email.entity.EmailRequest;
+import org.example.codenames.email.entity.MessagePayload;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -23,7 +23,7 @@ public interface EmailController {
      * @throws MessagingException if an error occurs while sending the email
      * @throws IOException        if an error occurs while reading the email template file
      */
-    ResponseEntity<String> sendEmail(@RequestBody EmailRequest request, String language) throws MessagingException, IOException;
+    ResponseEntity<String> sendEmail(@RequestBody MessagePayload request, String language) throws MessagingException, IOException;
 
     /**
      * Sends a password reset to the specified e-mail address in the specified language.
@@ -35,5 +35,5 @@ public interface EmailController {
      * @throws MessagingException if an error occurs while sending the email
      * @throws IOException        if an error occurs while reading the email template file
      */
-    ResponseEntity<String> sendResetPasswordEmail(@RequestBody EmailRequest request, HttpServletRequest httpServletRequest, String language) throws MessagingException, IOException;
+    ResponseEntity<String> sendResetPasswordEmail(@RequestBody MessagePayload request, HttpServletRequest httpServletRequest, String language) throws MessagingException, IOException;
 }

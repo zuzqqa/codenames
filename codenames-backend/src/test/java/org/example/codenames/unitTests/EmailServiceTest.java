@@ -2,7 +2,7 @@ package org.example.codenames.unitTests;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.example.codenames.email.entity.EmailRequest;
+import org.example.codenames.email.entity.MessagePayload;
 import org.example.codenames.email.service.api.EmailService;
 import org.example.codenames.email.service.impl.DefaultEmailService;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ class EmailServiceTest {
      */
     @Test
     void sendEmail_ShouldSendEmail() {
-        EmailRequest request = new EmailRequest("test@example.com", "Test message");
+        MessagePayload request = new MessagePayload("test@example.com", "Test message");
 
         emailService.sendEmail(request);
 

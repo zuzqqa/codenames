@@ -1,7 +1,7 @@
 // TODO: commment the code
 import { apiRequest } from "./apiClient";
 
-export interface CreateGameRequest {
+export type CreateGameRequest = {
   gameName: string;
   maxPlayers: number;
   password: string;

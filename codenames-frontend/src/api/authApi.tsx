@@ -1,12 +1,12 @@
 // TODO: commment the code
 import { apiRequest } from "./apiClient";
 
-export interface LoginRequest {
+export type LoginRequest = {
   username: string;
   password: string;
 }
 
-export interface RegisterRequest {
+export type RegisterRequest = {
   email: string;
   username: string;
   password: string;
