@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import RoomLobby from "./RoomLobby";
 import { io } from "socket.io-client";
+import { getGameSession } from "../../api/gameApi";
 
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", () => ({
@@ -57,6 +58,10 @@ vi.mock("../Button/Button.tsx", () => ({
   ),
 }));
 
+vi.mock("../../api/gameApi.tsx", () => ({
+  getGameSession: vi.fn(),
+}));
+
 describe("RoomLobby", () => {
   const mockGameSession = {
     status: "CREATED",
@@ -85,18 +90,17 @@ describe("RoomLobby", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    globalThis.fetch = vi.fn((url) => {
-      if (url.includes("/api/game-session/")) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(mockGameSession),
-        });
-      }
+    globalThis.fetch = vi.fn((url: string) => {
+    if (url.includes("/api/game-session/")) {
       return Promise.resolve({
         ok: true,
-        text: () => Promise.resolve("user-123"),
+        json: () => Promise.resolve(mockGameSession),
       });
-    }) as any;
+    }
+    return Promise.resolve({ ok: true });
+  }) as any;
+
+    vi.mocked(getGameSession).mockResolvedValue(mockGameSession as any);
 
     Storage.prototype.getItem = vi.fn((key) => {
       if (key === "gameId") return "test-game-123";
@@ -258,7 +262,9 @@ describe("RoomLobby", () => {
           },
         ],
       ],
-    };
+    };  
+
+    vi.mocked(getGameSession).mockResolvedValue(extendedGameSession as any);
 
     globalThis.fetch = vi.fn((url) => {
       if (url.includes("/start")) {
