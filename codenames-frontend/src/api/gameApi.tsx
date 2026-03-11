@@ -6,7 +6,7 @@ export type CreateGameRequest = {
   maxPlayers: number;
   password: string;
   language: string;
-}
+};
 
 enum SessionStatus {
   CREATED = "CREATED",
@@ -20,21 +20,23 @@ export type GameSessionRoomLobbyDTO = {
   gameName: string;
   maxPlayers: number;
   connectedUsers: UserRoomLobbyDTO[][];
-}
+};
 
 export type UserRoomLobbyDTO = {
   id: string;
   username: string;
   profilePic: number;
   status: UserStatus;
-}
+};
 
 enum UserStatus {
   INACTIVE = "INACTIVE",
   ACTIVE = "ACTIVE",
 }
 
-export async function getGameSession(sessionId: string): Promise<GameSessionRoomLobbyDTO> {
+export async function getGameSession(
+  sessionId: string,
+): Promise<GameSessionRoomLobbyDTO> {
   return apiRequest(`/api/game-session/${sessionId}`);
 }
 
@@ -73,6 +75,19 @@ export async function authenticatePassword(
 ) {
   return await apiRequest(
     `/api/game-session/${sessionId}/authenticate-password/${password}`,
+    {
+      method: "POST",
+    },
+  );
+}
+
+export async function addPlayerToTeam(
+  sessionId: string,
+  userId: string,
+  team: number,
+) {
+  return await apiRequest(
+    `/api/game-session/${sessionId}/connect?userId=${userId}&teamIndex=${team}`,
     {
       method: "POST",
     },

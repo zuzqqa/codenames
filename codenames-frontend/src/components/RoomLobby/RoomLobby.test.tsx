@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import RoomLobby from "./RoomLobby";
 import { io } from "socket.io-client";
 import { getGameSession } from "../../api/gameApi";
+import { addPlayerToTeam } from "../../api/gameApi";
 
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", () => ({
@@ -60,6 +61,7 @@ vi.mock("../Button/Button.tsx", () => ({
 
 vi.mock("../../api/gameApi.tsx", () => ({
   getGameSession: vi.fn(),
+  addPlayerToTeam: vi.fn().mockResolvedValue(undefined),
 }));
 
 describe("RoomLobby", () => {
@@ -149,12 +151,10 @@ describe("RoomLobby", () => {
     await user.click(joinButtons[0]);
 
     await waitFor(() => {
-      expect(globalThis.fetch).toHaveBeenCalledWith(
-        expect.stringContaining("/connect?userId=user-123&teamIndex=0"),
-        expect.objectContaining({
-          method: "POST",
-          credentials: "include",
-        })
+      expect(addPlayerToTeam).toHaveBeenCalledWith(
+        "test-game-123",
+        "user-123",
+        0 
       );
     });
   });
@@ -171,12 +171,10 @@ describe("RoomLobby", () => {
     await user.click(joinButtons[1]);
 
     await waitFor(() => {
-      expect(globalThis.fetch).toHaveBeenCalledWith(
-        expect.stringContaining("/connect?userId=user-123&teamIndex=1"),
-        expect.objectContaining({
-          method: "POST",
-          credentials: "include",
-        })
+      expect(addPlayerToTeam).toHaveBeenCalledWith(
+        "test-game-123",
+        "user-123",
+        1 
       );
     });
   });

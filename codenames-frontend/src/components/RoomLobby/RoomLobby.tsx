@@ -15,7 +15,7 @@ import { apiUrl, frontendUrl, socketUrl } from "../../config/api.tsx";
 import { getCookie, getUserId } from "../../shared/utils.tsx";
 import { io } from "socket.io-client";
 import { useToast } from "../Toast/ToastContext.tsx";
-import { getGameSession } from "../../api/gameApi.tsx";
+import { addPlayerToTeam, getGameSession } from "../../api/gameApi.tsx";
 import {
   GameSessionRoomLobbyDTO,
   UserRoomLobbyDTO,
@@ -126,15 +126,16 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     };
   }, [navigate]);
 
-  /**
-   * Adds the current player to the red team.
-   */
-  const addPlayerToRedTeam = async () => {
-    if (isJoined) {
-      removePlayerFromTeam();
+  const addPlayerToTeamHandler = async (teamIndex: number) => {
+    if ((isJoinedBlue && teamIndex === 1) || (isJoinedRed && teamIndex === 0)) {
+      await removePlayerFromTeam();
+      return;
     }
 
-    // Fetch player ID, then add to red team via REST API
+    if (isJoined) {
+      await removePlayerFromTeam();
+    }
+
     const storedGameId = sessionStorage.getItem("gameId");
     if (!storedGameId) return;
 
@@ -144,55 +145,15 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       return;
     }
 
-    //TODO: move this fetch
-    const response = await fetch(
-      `${apiUrl}/api/game-session/${storedGameId}/connect?userId=${userId}&teamIndex=0`,
-      {
-        method: "POST",
-        credentials: "include",
-      },
-    );
-
-    if (response.ok) {
+    try {
+      await addPlayerToTeam(storedGameId, userId, teamIndex);
       setIsJoined(true);
-      setIsJoinedRed(true);
-    } else {
-      console.error("Failed to add player to red team");
-    }
-  };
-
-  /**
-   * Adds the current player to the blue team.
-   */
-  const addPlayerToBlueTeam = async () => {
-    if (isJoined) {
-      removePlayerFromTeam();
-    }
-
-    // Fetch player ID, then add to blue team via REST API
-    const storedGameId = sessionStorage.getItem("gameId");
-    if (!storedGameId) return;
-
-    const userId = await getUserId();
-
-    if (userId === null) {
-      return;
-    }
-
-    //TODO: move this fetch
-    const response = await fetch(
-      `${apiUrl}/api/game-session/${storedGameId}/connect?userId=${userId}&teamIndex=1`,
-      {
-        method: "POST",
-        credentials: "include",
-      },
-    );
-
-    if (response.ok) {
-      setIsJoined(true);
-      setIsJoinedBlue(true);
-    } else {
-      console.error("Failed to add player to blue team");
+      setIsJoinedRed(teamIndex === 0);
+      setIsJoinedBlue(teamIndex === 1);
+    } catch (error: any) {
+      console.error(
+        `Failed to add player to ${teamIndex === 0 ? "red" : "blue"} team`,
+      );
     }
   };
 
@@ -395,9 +356,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                       className="join-button btn-red"
                       variant={"join-team"}
                       soundFXVolume={soundFXVolume}
-                      onClick={
-                        isJoinedRed ? removePlayerFromTeam : addPlayerToRedTeam
-                      }
+                      onClick={() => addPlayerToTeamHandler(0)}
                     >
                       {isJoinedRed ? "-" : "+"}
                     </Button>
@@ -422,11 +381,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                       className="join-button btn-blue"
                       variant={"join-team"}
                       soundFXVolume={soundFXVolume}
-                      onClick={
-                        isJoinedBlue
-                          ? removePlayerFromTeam
-                          : addPlayerToBlueTeam
-                      }
+                      onClick={() => addPlayerToTeamHandler(1)}
                     >
                       {isJoinedBlue ? "-" : "+"}
                     </Button>
