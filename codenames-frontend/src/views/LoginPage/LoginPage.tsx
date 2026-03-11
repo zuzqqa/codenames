@@ -19,7 +19,7 @@ import backButtonIcon from "../../assets/icons/arrow-back.png";
 import LoginRegisterContainer from "../../containers/LoginRegister/LoginRegister.tsx";
 import { logout } from "../../shared/utils.tsx";
 import { useLocation, useNavigate } from "react-router-dom";
-import { apiUrl, secure } from "../../config/api.tsx";
+import { secure } from "../../config/api.tsx";
 import { useToast } from "../../components/Toast/ToastContext.tsx";
 import { createGuestUser } from "../../utils/auth.tsx";
 import GoogleLoginButton from "../../components/GoogleAuthentication/GoogleLoginButton.tsx";

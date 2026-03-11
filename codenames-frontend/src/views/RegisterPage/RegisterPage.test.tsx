@@ -1,15 +1,20 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi, Mock } from "vitest";
 import RegisterPage from "./RegisterPage";
 import Cookies from "js-cookie";
 import { useTranslation } from "react-i18next";
 import { registerUser } from "../../api/authApi.tsx";
+import { createGuestUser } from "../../utils/auth.tsx";
 
 const { t } = useTranslation();
 const mockNavigate = vi.fn();
 const mockUseLocation = vi.fn(() => ({
   search: "",
+}));
+
+vi.mock("../../utils/auth.tsx", () => ({
+  createGuestUser: vi.fn(),
 }));
 
 vi.mock("react-router-dom", () => ({
@@ -97,10 +102,6 @@ vi.mock("../../components/SettingsOverlay/SettingsModal.tsx", () => ({
 
 vi.mock("../../containers/LoginRegister/LoginRegister.tsx", () => ({
   default: ({ children }: any) => <div>{children}</div>,
-}));
-
-vi.mock("../Home/Home.tsx", () => ({
-  createGuestUser: vi.fn(),
 }));
 
 describe("RegisterPage", () => {
@@ -342,7 +343,7 @@ describe("RegisterPage", () => {
   });
 
   it("submits form with valid data and shows success toast", async () => {
-    (registerUser as unknown as vi.Mock).mockResolvedValue({});
+    (registerUser as unknown as Mock).mockResolvedValue({});
 
     const user = userEvent.setup();
     render(
@@ -367,7 +368,7 @@ describe("RegisterPage", () => {
   });
 
   it("shows error when username already exists", async () => {
-    (registerUser as unknown as vi.Mock).mockRejectedValue({
+    (registerUser as unknown as Mock).mockRejectedValue({
       status: 400,
       data: { error: "Username already exists." },
     });
@@ -395,7 +396,7 @@ describe("RegisterPage", () => {
   });
 
   it("shows error when email already exists", async () => {
-    (registerUser as unknown as vi.Mock).mockRejectedValue({
+    (registerUser as unknown as Mock).mockRejectedValue({
       status: 400,
       data: { error: "E-mail already exists." },
     });
@@ -423,7 +424,7 @@ describe("RegisterPage", () => {
   });
 
   it("shows network error when fetch fails", async () => {
-    (registerUser as unknown as vi.Mock).mockRejectedValue({
+    (registerUser as unknown as Mock).mockRejectedValue({
       status: 500,
       data: { error: "Network error." },
     });
@@ -508,24 +509,22 @@ describe("RegisterPage", () => {
   });
 
   it("creates guest user when guest link is clicked", async () => {
-    const { createGuestUser } = await import("../Home/Home.tsx");
-    const user = userEvent.setup();
+  const user = userEvent.setup();
 
-    render(
-      <RegisterPage
-        setVolume={vi.fn()}
-        soundFXVolume={50}
-        setSoundFXVolume={vi.fn()}
-      />,
-    );
+  render(
+    <RegisterPage
+      setVolume={vi.fn()}
+      soundFXVolume={50}
+      setSoundFXVolume={vi.fn()}
+    />,
+  );
 
-    await user.click(screen.getByText("or-continue-as-guset"));
+  await user.click(screen.getByText("or-continue-as-guset"));
 
-    expect(createGuestUser).toHaveBeenCalledWith(
-      "http://localhost:8080",
-      false,
-    );
-  });
+  expect(createGuestUser).toHaveBeenCalledWith(
+    false,
+  );
+});
 
   it("renders Google login button", () => {
     render(
