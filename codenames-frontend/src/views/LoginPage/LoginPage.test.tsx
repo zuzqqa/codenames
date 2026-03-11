@@ -1,12 +1,17 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi, Mock } from "vitest";
 import LoginPage from "./LoginPage";
 import { loginUser } from "../../api/authApi.tsx";
+import { createGuestUser } from "../../utils/auth.tsx";
 
 const mockNavigate = vi.fn();
 const mockUseLocation = vi.fn(() => ({
   search: "",
+}));
+
+vi.mock("../../utils/auth.tsx", () => ({
+  createGuestUser: vi.fn(),
 }));
 
 vi.mock("react-router-dom", () => ({
@@ -85,10 +90,6 @@ vi.mock("../../components/SettingsOverlay/SettingsModal.tsx", () => ({
 
 vi.mock("../../containers/LoginRegister/LoginRegister.tsx", () => ({
   default: ({ children }: any) => <div>{children}</div>,
-}));
-
-vi.mock("../Home/Home.tsx", () => ({
-  createGuestUser: vi.fn(),
 }));
 
 describe("LoginPage", () => {
@@ -193,7 +194,7 @@ describe("LoginPage", () => {
   });
 
   it("submits form with valid credentials and redirects", async () => {
-    (loginUser as unknown as vi.Mock).mockResolvedValue({
+    (loginUser as unknown as Mock).mockResolvedValue({
       token: "test-token",
     });
 
@@ -228,7 +229,7 @@ describe("LoginPage", () => {
   });
 
   it("shows error toast when login fails with invalid credentials", async () => {
-    (loginUser as unknown as vi.Mock).mockRejectedValue({
+    (loginUser as unknown as Mock).mockRejectedValue({
       status: 401,
       data: { error: "Invalid login or password." },
     });
@@ -255,7 +256,7 @@ describe("LoginPage", () => {
   });
 
   it("shows error toast when account is not activated", async () => {
-    (loginUser as unknown as vi.Mock).mockRejectedValue({
+    (loginUser as unknown as Mock).mockRejectedValue({
       status: 401,
       data: { error: "Account is not active." },
     });
@@ -282,7 +283,7 @@ describe("LoginPage", () => {
   });
 
   it("shows generic error toast when server error occurs", async () => {
-    (loginUser as unknown as vi.Mock).mockRejectedValue({
+    (loginUser as unknown as Mock).mockRejectedValue({
       status: 500,
       data: { error: "Server error." },
     });
@@ -380,7 +381,6 @@ describe("LoginPage", () => {
   });
 
   it("creates guest user when guest link is clicked", async () => {
-    const { createGuestUser } = await import("../../utils/auth.tsx");
     const user = userEvent.setup();
 
     render(
@@ -394,7 +394,6 @@ describe("LoginPage", () => {
     await user.click(screen.getByText("or-continue-as-guset"));
 
     expect(createGuestUser).toHaveBeenCalledWith(
-      "http://localhost:8080",
       false,
     );
   });
