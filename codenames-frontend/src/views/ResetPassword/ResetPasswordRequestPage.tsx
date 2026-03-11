@@ -63,6 +63,7 @@ const ResetPasswordRequestPage: React.FC<ResetPasswordRequestProps> = ({
     setEmail(e.target.value);
   };
 
+  //TODO: move this fetch
   /**
    * Handles the form submission for the password reset request.
    * @param e - The event triggered when the form is submitted.

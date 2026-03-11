@@ -4,7 +4,8 @@ import { t } from "i18next";
 import "../../views/Gameplay/Gameplay.css";
 import "./Chat.css";
 import { useCookies } from "react-cookie";
-import { apiUrl, socketUrl } from "../../config/api.tsx";
+import { socketUrl } from "../../config/api.tsx";
+import { getPlayerUsername } from "../../api/userApi.tsx";
 
 const SCROLL_DELAY_MS = 300;
 
@@ -38,15 +39,10 @@ const Chat: React.FC = () => {
   useEffect(() => {
     const fetchPlayerName = async () => {
       try {
-        const response = await fetch(
-          `${apiUrl}/api/users/username/` + cookies.authToken
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch player name");
-        }
-        const data = await response.json();
-        setPlayerName(data.username);
-      } catch (error) {
+        if (!cookies.authToken) return;
+        const username = await getPlayerUsername(cookies.authToken);
+        setPlayerName(username);
+      } catch (error: any) {
         console.error("Error fetching player name:", error);
       }
     };

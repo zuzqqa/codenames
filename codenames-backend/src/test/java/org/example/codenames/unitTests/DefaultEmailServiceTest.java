@@ -2,7 +2,7 @@ package org.example.codenames.unitTests;
 
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
-import org.example.codenames.email.entity.EmailRequest;
+import org.example.codenames.email.entity.MessagePayload;
 import org.example.codenames.email.service.impl.DefaultEmailService;
 import org.example.codenames.tokens.accountActivationToken.service.api.AccountActivationTokenService;
 import org.example.codenames.tokens.passwordResetToken.service.api.PasswordResetTokenService;
@@ -39,9 +39,9 @@ class DefaultEmailServiceTest {
 
     @Test
     void sendEmail_callsMailSender() {
-        EmailRequest er = new EmailRequest();
-        er.setEmail("a@b.c");
-        er.setDataToSend("hello");
+        MessagePayload er = new MessagePayload();
+        er.setEmailAddress("a@b.c");
+        er.setMessage("hello");
 
         doNothing().when(mailSender).send(any(SimpleMailMessage.class));
 

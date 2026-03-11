@@ -7,11 +7,13 @@ import React, { useState } from "react";
 import "./CreateGameForm.css";
 import RoomMenu from "../../containers/RoomMenu/RoomMenu.tsx";
 import { apiUrl } from "../../config/api.tsx";
-import { getUserId } from "../../shared/utils.tsx";
+import { getUserId } from "../../api/userApi.tsx";
 import { useToast } from "../Toast/ToastContext.tsx";
 import checkmarkIconEmpty from "../../assets/icons/checkbox-empty.png";
 import checkmarkIcon from "../../assets/icons/checkbox.png";
 import DiscordLoginButton from "../DiscordAuthentication/DiscordLoginButton.tsx";
+import { CreateGameRequest } from "../../api/gameApi.tsx";
+import { createGame } from "../../api/gameApi.tsx";
 
 /**
  * Props for CreateGameForm component.
@@ -56,38 +58,20 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
         addToast(t("private-lobby-password-error"), "error");
         return;
       }
+
+      const createGamePayload: CreateGameRequest = {
+        gameName: values.gameName,
+        maxPlayers: values.playerSlider,
+        password: values.password,
+        language: values.deckLanguage,
+      };
+
       try {
-        const getIdResponse = await getUserId();
-
-        if (getIdResponse === null) {
-          addToast(t("id-not-found"), "error");
-          return;
-        }
-
-        const requestData = {
-          gameName: values.gameName,
-          maxPlayers: values.playerSlider,
-          password: values.password,
-          language: values.deckLanguage,
-        };
-
-        const response = await fetch(`${apiUrl}/api/game-session/create-game`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestData),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          sessionStorage.setItem("gameId", data.gameId);
-          navigate("/game-lobby");
-        } else {
-          addToast(t("create-game-error"), "error");
-        }
-      } catch (err) {
-        addToast(t("unknown-error"), "error");
+        const gameId = await createGame(createGamePayload);
+        sessionStorage.setItem("gameId", gameId);
+        navigate("/game-lobby");
+      } catch (error: any) {
+        addToast(t("create-game-error"), "error");
       }
     },
   });
@@ -108,7 +92,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
           onClick={handleBack}
           soundFXVolume={soundFXVolume}
         >
-          <img src={backButton} alt="Back" className="btn-arrow-back"/>
+          <img src={backButton} alt="Back" className="btn-arrow-back" />
         </Button>
         <span className="room-form-label">{t("create-game-button")}</span>
         <form
@@ -221,7 +205,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ soundFXVolume }) => {
           </Button>
         </form>
       </RoomMenu>
-      <DiscordLoginButton soundFXVolume={soundFXVolume}/>
+      <DiscordLoginButton soundFXVolume={soundFXVolume} />
     </>
   );
 };

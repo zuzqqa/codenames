@@ -2,8 +2,7 @@ package org.example.codenames.email.service.api;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.example.codenames.email.entity.EmailRequest;
-import org.springframework.stereotype.Service;
+import org.example.codenames.email.entity.MessagePayload;
 
 /**
  * Default implementation of the EmailService interface.
@@ -16,7 +15,7 @@ public interface EmailService {
      *
      * @param request the e-mail request containing recipient details and message content
      */
-    void sendEmail(EmailRequest request);
+    void sendEmail(MessagePayload request);
 
     /**
      * Sends a confirmation e-mail to the specified user in the appropriate language.

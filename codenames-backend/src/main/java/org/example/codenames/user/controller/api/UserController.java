@@ -91,7 +91,7 @@ public interface UserController {
      *
      * @param authRequest the authentication request containing username and password
      */
-    ResponseEntity<AuthResponse> authenticateAndGenerateJWT(AuthRequest authRequest);
+    ResponseEntity<?> authenticateAndGenerateJWT(AuthRequest authRequest);
 
     /**
      * Retrieves the username from the authentication token stored in a header.

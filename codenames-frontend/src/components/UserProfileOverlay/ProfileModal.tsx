@@ -118,6 +118,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ soundFXVolume, isOpen, onCl
           return;
         }
 
+        //TODO: move this fetch
         const userResponse = await fetch(`${apiUrl}/api/users/profile/${id}`, {
           method: "GET",
           credentials: "include",
@@ -167,6 +168,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ soundFXVolume, isOpen, onCl
     if (!currentUser) return;
 
     try {
+      //TODO: move this fetch
       const response = await fetch(`${apiUrl}/api/users/${currentUser.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -213,6 +215,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ soundFXVolume, isOpen, onCl
   const handleSearch = async () => {
     if (!searchQuery) return;
     try {
+      //TODO: move this fetch
       const response = await fetch(`${apiUrl}/api/users/search?username=${searchQuery}`, {
         method: "GET",
         credentials: "include",

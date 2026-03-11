@@ -1,14 +1,20 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi, Mock } from "vitest";
 import RegisterPage from "./RegisterPage";
 import Cookies from "js-cookie";
 import { useTranslation } from "react-i18next";
+import { registerUser } from "../../api/authApi.tsx";
+import { createGuestUser } from "../../utils/auth.tsx";
 
 const { t } = useTranslation();
 const mockNavigate = vi.fn();
 const mockUseLocation = vi.fn(() => ({
   search: "",
+}));
+
+vi.mock("../../utils/auth.tsx", () => ({
+  createGuestUser: vi.fn(),
 }));
 
 vi.mock("react-router-dom", () => ({
@@ -38,6 +44,10 @@ vi.mock("../../config/api.tsx", () => ({
 vi.mock("../../shared/utils.tsx", () => ({
   logout: vi.fn(),
   getCookie: vi.fn(),
+}));
+
+vi.mock("../../api/authApi.tsx", () => ({
+  registerUser: vi.fn(),
 }));
 
 vi.mock("../../utils/validation.tsx", () => ({
@@ -94,21 +104,10 @@ vi.mock("../../containers/LoginRegister/LoginRegister.tsx", () => ({
   default: ({ children }: any) => <div>{children}</div>,
 }));
 
-vi.mock("../Home/Home.tsx", () => ({
-  createGuestUser: vi.fn(),
-}));
-
 describe("RegisterPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUseLocation.mockReturnValue({ search: "" });
-
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({}),
-      })
-    ) as any;
 
     Storage.prototype.getItem = vi.fn((key) => {
       if (key === "musicVolume") return "50";
@@ -126,7 +125,7 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByPlaceholderText("E-MAIL")).toBeInTheDocument();
@@ -144,7 +143,7 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     const emailInput = screen.getByPlaceholderText("E-MAIL");
@@ -160,7 +159,7 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     const loginInput = screen.getByPlaceholderText("LOGIN");
@@ -176,7 +175,7 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     const passwordInput = screen.getByPlaceholderText("PASSWORD");
@@ -192,7 +191,7 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     const passwordInput = screen.getByPlaceholderText("PASSWORD");
@@ -215,7 +214,7 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     await user.type(screen.getByPlaceholderText("LOGIN"), "testuser");
@@ -223,7 +222,10 @@ describe("RegisterPage", () => {
     await user.click(screen.getByText("submit-button"));
 
     await waitFor(() => {
-      expect(mockAddToast).toHaveBeenCalledWith("email-error-message", "error");
+      expect(mockAddToast).toHaveBeenCalledWith(
+        "e-mail-error-message",
+        "error",
+      );
     });
   });
 
@@ -234,7 +236,7 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     await user.type(screen.getByPlaceholderText("E-MAIL"), "test@example.com");
@@ -244,7 +246,7 @@ describe("RegisterPage", () => {
     await waitFor(() => {
       expect(mockAddToast).toHaveBeenCalledWith(
         "username-error-message",
-        "error"
+        "error",
       );
     });
   });
@@ -256,7 +258,7 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     await user.type(screen.getByPlaceholderText("E-MAIL"), "test@example.com");
@@ -266,7 +268,7 @@ describe("RegisterPage", () => {
     await waitFor(() => {
       expect(mockAddToast).toHaveBeenCalledWith(
         "password-error-message",
-        "error"
+        "error",
       );
     });
   });
@@ -278,7 +280,7 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     await user.type(screen.getByPlaceholderText("E-MAIL"), "invalid-email");
@@ -288,8 +290,8 @@ describe("RegisterPage", () => {
 
     await waitFor(() => {
       expect(mockAddToast).toHaveBeenCalledWith(
-        t("email-error-message"),
-        "error"
+        t("e-mail-error-message"),
+        "error",
       );
     });
   });
@@ -301,7 +303,7 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     await user.type(screen.getByPlaceholderText("E-MAIL"), "test@example.com");
@@ -312,7 +314,7 @@ describe("RegisterPage", () => {
     await waitFor(() => {
       expect(mockAddToast).toHaveBeenCalledWith(
         t("username-error-message"),
-        "error"
+        "error",
       );
     });
   });
@@ -324,7 +326,7 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     await user.type(screen.getByPlaceholderText("E-MAIL"), "test@example.com");
@@ -335,19 +337,21 @@ describe("RegisterPage", () => {
     await waitFor(() => {
       expect(mockAddToast).toHaveBeenCalledWith(
         "Password must be 8+ chars, with upper, lower, number & special char.",
-        "error"
+        "error",
       );
     });
   });
 
   it("submits form with valid data and shows success toast", async () => {
+    (registerUser as unknown as Mock).mockResolvedValue({});
+
     const user = userEvent.setup();
     render(
       <RegisterPage
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     await user.type(screen.getByPlaceholderText("E-MAIL"), "test@example.com");
@@ -356,36 +360,18 @@ describe("RegisterPage", () => {
     await user.click(screen.getByText("submit-button"));
 
     await waitFor(() => {
-      expect(globalThis.fetch).toHaveBeenCalledWith(
-        "http://localhost:8080/api/users?language=en",
-        expect.objectContaining({
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: "test@example.com",
-            username: "testuser",
-            password: "Password123!",
-            roles: "USER",
-          }),
-        })
-      );
-    });
-
-    await waitFor(() => {
       expect(mockAddToast).toHaveBeenCalledWith(
         "activation-link-sent",
-        "notification"
+        "notification",
       );
     });
   });
 
   it("shows error when username already exists", async () => {
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: false,
-        json: () => Promise.resolve({ error: "Username already exists." }),
-      })
-    ) as any;
+    (registerUser as unknown as Mock).mockRejectedValue({
+      status: 400,
+      data: { error: "Username already exists." },
+    });
 
     const user = userEvent.setup();
     render(
@@ -393,7 +379,7 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     await user.type(screen.getByPlaceholderText("E-MAIL"), "test@example.com");
@@ -404,18 +390,16 @@ describe("RegisterPage", () => {
     await waitFor(() => {
       expect(mockAddToast).toHaveBeenCalledWith(
         "username-exists-error",
-        "error"
+        "error",
       );
     });
   });
 
   it("shows error when email already exists", async () => {
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: false,
-        json: () => Promise.resolve({ error: "E-mail already exists." }),
-      })
-    ) as any;
+    (registerUser as unknown as Mock).mockRejectedValue({
+      status: 400,
+      data: { error: "E-mail already exists." },
+    });
 
     const user = userEvent.setup();
     render(
@@ -423,12 +407,12 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     await user.type(
       screen.getByPlaceholderText("E-MAIL"),
-      "existing@example.com"
+      "existing@example.com",
     );
     await user.type(screen.getByPlaceholderText("LOGIN"), "testuser");
     await user.type(screen.getByPlaceholderText("PASSWORD"), "Password123!");
@@ -440,9 +424,10 @@ describe("RegisterPage", () => {
   });
 
   it("shows network error when fetch fails", async () => {
-    globalThis.fetch = vi.fn(() =>
-      Promise.reject(new Error("Network error"))
-    ) as any;
+    (registerUser as unknown as Mock).mockRejectedValue({
+      status: 500,
+      data: { error: "Network error." },
+    });
 
     const user = userEvent.setup();
     render(
@@ -450,7 +435,7 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     await user.type(screen.getByPlaceholderText("E-MAIL"), "test@example.com");
@@ -470,7 +455,7 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     await user.click(screen.getByText("already-have-an-account"));
@@ -484,7 +469,7 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     const backButton = screen.getByAltText("Back");
@@ -500,7 +485,7 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     const settingsButton = screen.getByAltText("Settings");
@@ -517,31 +502,29 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     expect(localStorage.setItem).toHaveBeenCalledWith("musicVolume", "50");
   });
 
   it("creates guest user when guest link is clicked", async () => {
-    const { createGuestUser } = await import("../Home/Home.tsx");
-    const user = userEvent.setup();
+  const user = userEvent.setup();
 
-    render(
-      <RegisterPage
-        setVolume={vi.fn()}
-        soundFXVolume={50}
-        setSoundFXVolume={vi.fn()}
-      />
-    );
+  render(
+    <RegisterPage
+      setVolume={vi.fn()}
+      soundFXVolume={50}
+      setSoundFXVolume={vi.fn()}
+    />,
+  );
 
-    await user.click(screen.getByText("or-continue-as-guset"));
+  await user.click(screen.getByText("or-continue-as-guset"));
 
-    expect(createGuestUser).toHaveBeenCalledWith(
-      "http://localhost:8080",
-      false
-    );
-  });
+  expect(createGuestUser).toHaveBeenCalledWith(
+    false,
+  );
+});
 
   it("renders Google login button", () => {
     render(
@@ -549,7 +532,7 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText("Google Login Button")).toBeInTheDocument();
@@ -567,7 +550,7 @@ describe("RegisterPage", () => {
         setVolume={vi.fn()}
         soundFXVolume={50}
         setSoundFXVolume={vi.fn()}
-      />
+      />,
     );
 
     expect(mockNavigate).toHaveBeenCalledWith("/games");

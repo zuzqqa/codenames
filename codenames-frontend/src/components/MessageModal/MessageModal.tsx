@@ -10,7 +10,7 @@ import spinnerIcon from "../../assets/icons/spinner.svg";
 
 import "./MessageModal.css";
 
-import { apiUrl } from "../../config/api.tsx";
+import { MessagePayload, sendReport } from "../../api/emailApi.tsx";
 
 /**
  * Props for the MessageModal component.
@@ -58,28 +58,19 @@ const MessageModal: React.FC<MessageModalProps> = ({
 
     setIsLoading(true);
 
-    const dataToSend = {
-      email: email,
-      dataToSend: "MESSAGE: " + message,
+    const messagePayload: MessagePayload = {
+      emailAddress: email,
+      message: "MESSAGE: " + message,
     };
 
     try {
-      const response = await fetch(`${apiUrl}/api/email/send-report`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dataToSend),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to send email. Please try again later.");
-      }
-
+      await sendReport(messagePayload);
       setError(null);
       setIsConfirmationModalOpen(true);
       setEmail("");
       setMessage("");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (error: any) {
+      setError(error.message);
     } finally {
       setIsLoading(false);
     }

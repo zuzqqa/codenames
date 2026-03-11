@@ -15,7 +15,11 @@ import { apiUrl, frontendUrl, socketUrl } from "../../config/api.tsx";
 import { getCookie, getUserId } from "../../shared/utils.tsx";
 import { io } from "socket.io-client";
 import { useToast } from "../Toast/ToastContext.tsx";
-
+import { addPlayerToTeam, getGameSession } from "../../api/gameApi.tsx";
+import {
+  GameSessionRoomLobbyDTO,
+  UserRoomLobbyDTO,
+} from "../../api/gameApi.tsx";
 /**
  * @returns {string} - The URL of the API.
  */
@@ -32,62 +36,6 @@ interface RoomLobbyProps {
 }
 
 /**
- * Enum for user status.
- * @enum {string}
- * @property {string} INACTIVE - The user is inactive.
- * @property {string} ACTIVE - The user is active.
- */
-enum UserStatus {
-  INACTIVE = "INACTIVE",
-  ACTIVE = "ACTIVE",
-}
-
-/**
- * Represents a user in the game session.
- * @typedef {Object} UserRoomLobbyDTO
- * @property {string} id - The unique identifier of the user.
- * @property {string} username - The username of the player.
- * @property {number} profilePic - The profile picture ID of the player.
- * @property {UserStatus} status - The status of the player (active/inactive).
- */
-interface UserRoomLobbyDTO {
-  id: string;
-  username: string;
-  profilePic: number;
-  status: UserStatus;
-}
-
-/**
- * Enum for session status.
- * @enum {string}
- * @property {string} CREATED - The session is created.
- * @property {string} LEADER_SELECTION - The session is in leader selection phase.
- * @property {string} IN_PROGRESS - The session is in progress.
- * @property {string} FINISHED - The session is finished.
- */
-enum SessionStatus {
-  CREATED = "CREATED",
-  LEADER_SELECTION = "LEADER_SELECTION",
-  IN_PROGRESS = "IN_PROGRESS",
-  FINISHED = "FINISHED",
-}
-
-/**
- * Represents a game session.
- * @typedef {Object} GameSessionRoomLobbyDTO
- * @property {SessionStatus} status - The current status of the session.
- * @property {string} gameName - The name of the game.
- * @property {number} maxPlayers - The maximum number of players allowed.
- * @property {UserRoomLobbyDTO[][]} connectedUsers - List of users in each team.
- */
-interface GameSessionRoomLobbyDTO {
-  status: SessionStatus;
-  gameName: string;
-  maxPlayers: number;
-  connectedUsers: UserRoomLobbyDTO[][];
-}
-
-/**
  * RoomLobby component.
  *
  * @param {RoomLobbyProps} props - The properties for the RoomLobby component.
@@ -101,7 +49,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     useState<GameSessionRoomLobbyDTO | null>(null);
   const [redTeamPlayers, setRedTeamPlayers] = useState<UserRoomLobbyDTO[]>([]);
   const [blueTeamPlayers, setBlueTeamPlayers] = useState<UserRoomLobbyDTO[]>(
-    []
+    [],
   );
   const [isJoined, setIsJoined] = useState(false);
   const [isJoinedRed, setIsJoinedRed] = useState(false);
@@ -112,7 +60,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
   const [lobbyLink, setLobbyLink] = useState<string>("");
   const [isLinkIsleExpanded, setIsLinkIsleExpanded] = useState(false);
   const exampleLink = `${frontendUrl}/invite/${sessionStorage.getItem(
-    "gameId"
+    "gameId",
   )}`;
 
   /**
@@ -122,9 +70,8 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     const storedGameId = sessionStorage.getItem("gameId");
 
     if (storedGameId) {
-      fetch(`${apiUrl}/api/game-session/${storedGameId}`)
-        .then((response) => response.json())
-        .then((data: GameSessionRoomLobbyDTO) => {
+      getGameSession(storedGameId)
+        .then((data) => {
           setGameSession({
             ...data,
           });
@@ -154,7 +101,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     gameSocket.on("gameSessionUpdate", (updatedGameSessionJson: string) => {
       try {
         const updatedGameSession: GameSessionRoomLobbyDTO = JSON.parse(
-          updatedGameSessionJson
+          updatedGameSessionJson,
         );
 
         if (updatedGameSession.connectedUsers) {
@@ -179,15 +126,16 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     };
   }, [navigate]);
 
-  /**
-   * Adds the current player to the red team.
-   */
-  const addPlayerToRedTeam = async () => {
-    if (isJoined) {
-      removePlayerFromTeam();
+  const addPlayerToTeamHandler = async (teamIndex: number) => {
+    if ((isJoinedBlue && teamIndex === 1) || (isJoinedRed && teamIndex === 0)) {
+      await removePlayerFromTeam();
+      return;
     }
 
-    // Fetch player ID, then add to red team via REST API
+    if (isJoined) {
+      await removePlayerFromTeam();
+    }
+
     const storedGameId = sessionStorage.getItem("gameId");
     if (!storedGameId) return;
 
@@ -197,53 +145,15 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       return;
     }
 
-    const response = await fetch(
-      `${apiUrl}/api/game-session/${storedGameId}/connect?userId=${userId}&teamIndex=0`,
-      {
-        method: "POST",
-        credentials: "include",
-      }
-    );
-
-    if (response.ok) {
+    try {
+      await addPlayerToTeam(storedGameId, userId, teamIndex);
       setIsJoined(true);
-      setIsJoinedRed(true);
-    } else {
-      console.error("Failed to add player to red team");
-    }
-  };
-
-  /**
-   * Adds the current player to the blue team.
-   */
-  const addPlayerToBlueTeam = async () => {
-    if (isJoined) {
-      removePlayerFromTeam();
-    }
-
-    // Fetch player ID, then add to blue team via REST API
-    const storedGameId = sessionStorage.getItem("gameId");
-    if (!storedGameId) return;
-
-    const userId = await getUserId();
-
-    if (userId === null) {
-      return;
-    }
-
-    const response = await fetch(
-      `${apiUrl}/api/game-session/${storedGameId}/connect?userId=${userId}&teamIndex=1`,
-      {
-        method: "POST",
-        credentials: "include",
-      }
-    );
-
-    if (response.ok) {
-      setIsJoined(true);
-      setIsJoinedBlue(true);
-    } else {
-      console.error("Failed to add player to blue team");
+      setIsJoinedRed(teamIndex === 0);
+      setIsJoinedBlue(teamIndex === 1);
+    } catch (error: any) {
+      console.error(
+        `Failed to add player to ${teamIndex === 0 ? "red" : "blue"} team`,
+      );
     }
   };
 
@@ -257,6 +167,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
 
     const token = getCookie("authToken");
 
+    //TODO: move this fetch
     const getIdResponse = await fetch(`${apiUrl}/api/users/get-id`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -267,9 +178,10 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
     const userId = await getIdResponse.text();
 
     try {
+      //TODO: move this fetch
       const response = await fetch(
         `${apiUrl}/api/game-session/${storedGameId}/disconnect?userId=${userId}`,
-        { method: "DELETE", credentials: "include" }
+        { method: "DELETE", credentials: "include" },
       );
 
       if (!response.ok) {
@@ -300,7 +212,6 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
    * Starts the game session.
    */
   const startGame = async () => {
-
     const storedGameId = sessionStorage.getItem("gameId");
     if (!storedGameId) return;
 
@@ -309,9 +220,10 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
       return;
     }
     try {
+      //TODO: move this fetch
       const response = await fetch(
         `${apiUrl}/api/game-session/${storedGameId}/start`,
-        { method: "POST" }
+        { method: "POST" },
       );
       if (response.ok) {
         navigate("/choose-leader");
@@ -353,7 +265,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
 
       setTimeout(() => {
         setNotifications((prevNotifications) =>
-          prevNotifications.filter((notification) => notification.id !== id)
+          prevNotifications.filter((notification) => notification.id !== id),
         );
       }, 500);
     }
@@ -372,7 +284,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
           soundFXVolume={soundFXVolume}
           onClick={removePlayer}
         >
-          <img src={backButton} alt="Back" className="btn-arrow-back"/>
+          <img src={backButton} alt="Back" className="btn-arrow-back" />
         </Button>
         <span className="room-form-label">{t("game-lobby")}</span>
         <div className="room-lobby-divider">
@@ -409,7 +321,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                 }`}
                 onClick={handleLobbyLinkIsleUnroll}
               >
-                <img src={messageIcon} alt="Link" className="isle-image"/>
+                <img src={messageIcon} alt="Link" className="isle-image" />
                 <p className="isle-title">{t("invite-friends")}</p>
                 <p className="isle-text">{t("invite-friends-text")}</p>
                 <p className="isle-fields">
@@ -444,9 +356,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                       className="join-button btn-red"
                       variant={"join-team"}
                       soundFXVolume={soundFXVolume}
-                      onClick={
-                        isJoinedRed ? removePlayerFromTeam : addPlayerToRedTeam
-                      }
+                      onClick={() => addPlayerToTeamHandler(0)}
                     >
                       {isJoinedRed ? "-" : "+"}
                     </Button>
@@ -471,11 +381,7 @@ const RoomLobby: React.FC<RoomLobbyProps> = ({ soundFXVolume }) => {
                       className="join-button btn-blue"
                       variant={"join-team"}
                       soundFXVolume={soundFXVolume}
-                      onClick={
-                        isJoinedBlue
-                          ? removePlayerFromTeam
-                          : addPlayerToBlueTeam
-                      }
+                      onClick={() => addPlayerToTeamHandler(1)}
                     >
                       {isJoinedBlue ? "-" : "+"}
                     </Button>

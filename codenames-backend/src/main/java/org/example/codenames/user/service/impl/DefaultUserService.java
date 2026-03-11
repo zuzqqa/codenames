@@ -56,7 +56,7 @@ public class DefaultUserService implements UserService {
         }
 
         if (!user.isGuest() && (user.getEmail() == null || user.getEmail().isEmpty())) {
-            return Optional.of("Invalid email address");
+            return Optional.of("Invalid e-mail address");
         }
 
         if (!user.isGuest() && userRepository.existsByEmail(user.getEmail())) {

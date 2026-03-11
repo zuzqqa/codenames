@@ -133,6 +133,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
       endPool();
     }
 
+    //TODO: move this fetch
     if (storedGameId) {
       fetch(`${apiUrl}/api/game-session/${storedGameId}`)
         .then((response) => response.json())
@@ -148,6 +149,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
           }
         })
         .catch((err) => console.error("Failed to load game session", err));
+      //TODO: move this fetch
       fetch(`${apiUrl}/api/game-session/${storedGameId}/vote-state`)
         .then((response) => response.json())
         .then(async (data: { voteState: boolean }) => {
@@ -243,6 +245,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
     const storedGameId = sessionStorage.getItem("gameId");
 
     if (storedGameId) {
+      //TODO: move this fetch
       await fetch(
         `${apiUrl}/api/game-session/${storedGameId}/assign-leaders?language=${
           localStorage.getItem("i18nextLng") || "en"
@@ -287,6 +290,7 @@ const ChooseLeader: React.FC<ChooseLeaderProps> = ({
         votedUserId: selectedPlayer.id,
       };
 
+      //TODO: move this fetch
       const response = await fetch(
         `${apiUrl}/api/game-session/${storedGameId}/vote`,
         {

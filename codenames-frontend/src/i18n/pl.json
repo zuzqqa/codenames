@@ -23,7 +23,7 @@
   "PASSWORD": "HASŁO",
   "REPEAT-PASSWORD": "POWTÓRZ HASŁO",
   "password-reset": "Reset hasła",
-  "reset-password-instructions": "Podaj email aby otrzymać link do odzyskania konta.",
+  "reset-password-instructions": "Podaj e-mail aby otrzymać link do odzyskania konta.",
   "new-password": "Nowe hasło",
   "create-game-button": "Stworz grę",
   "create-game-error": "Błąd podczas tworzenia gry. Spróbuj ponownie.",
@@ -51,7 +51,7 @@
   "voting-time": "Zagłosuj na najbardziej prawdopodobne karty.",
   "select-cards": "Wybierz jedną kartę, ktora ma zostać odwrocona.",
   "opposing-team-guessing": "Zgaduje drużyna przeciwna",
-  "email-error-message": "Nieprawidłowy email. Użyj formatu: przykład@domena.com.",
+  "e-mail-error-message": "Nieprawidłowy e-mail. Użyj formatu: przykład@domena.com.",
   "username-error-message": "Nazwa użytkownika może zawierać tylko litery i cyfry.",
   "password-error-message": "Hasło musi mieć min. 8 znaków, zawierać wielką i małą literę, cyfrę oraz znak specjalny.",
   "e-mail-exists-error": "Użytkownik z tym adresem e-mail już istnieje.",
@@ -102,5 +102,7 @@
   "prev": "Wstecz",
   "next": "Dalej",
   "unknown-error": "Nieznany błąd. Spróbuj ponownie później.",
-  "friends-already-error": "Ten użytkownik jest już na twojej liście znajomych."
+  "friends-already-error": "Ten użytkownik jest już na twojej liście znajomych.",
+  "e-mail-error-message": "Nieprawidłowy e-mail.",
+  "network-error": "Błąd sieci."
 }

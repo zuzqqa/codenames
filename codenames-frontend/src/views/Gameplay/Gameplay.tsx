@@ -273,6 +273,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     if (!storedGameId) return;
 
     try {
+      //TODO: move this fetch
       const response = await fetch(
         `${apiUrl}/api/game-session/${storedGameId}/vote-cards`,
         {
@@ -307,6 +308,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     if (!storedGameId) return;
 
     try {
+      //TODO: move this fetch
       const response = fetch(
         `${apiUrl}/api/game-session/${storedGameId}/reveal-card`,
         {
@@ -352,8 +354,9 @@ const Gameplay: React.FC<GameplayProps> = ({
     fetchUserId();
 
     const token = Cookies.get("authToken");
-
+    
     if (token) {
+      //TODO: move this fetch
       fetch(`${apiUrl}/api/users/get-username`, {
         method: "GET",
         headers: {
@@ -453,6 +456,7 @@ const Gameplay: React.FC<GameplayProps> = ({
       if (!userId) return;
 
       try {
+        //TODO: move this fetch
         const response = await fetch(
           `${apiUrl}/api/game-session/${storedGameId}/full`
         );
@@ -568,6 +572,7 @@ const Gameplay: React.FC<GameplayProps> = ({
      */
     const fetchGameSession = async () => {
       try {
+        //TODO: move this fetch
         const response = await fetch(
           `${apiUrl}/api/game-session/${storedGameId}/full`
         );
@@ -875,6 +880,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     }
 
     const storedGameId = sessionStorage.getItem("gameId");
+    //TODO: move this fetch
     const response = await fetch(
       `${apiUrl}/api/game-session/${storedGameId}/change-turn`,
       {
@@ -890,6 +896,7 @@ const Gameplay: React.FC<GameplayProps> = ({
   const endGame = async () => {
     const storedGameId = sessionStorage.getItem("gameId");
 
+    //TODO: move this fetch
     await fetch(`${apiUrl}/api/game-session/${storedGameId}/finish`, {
       method: "POST",
       credentials: "include",
@@ -912,6 +919,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     if (!amIRedTeamLeader && !amIBlueTeamLeader) return;
 
     try {
+      //TODO: move this fetch
       await fetch(`${apiUrl}/api/game-session/${storedGameId}/send-hint`, {
         method: "POST",
         headers: {
@@ -963,6 +971,7 @@ const Gameplay: React.FC<GameplayProps> = ({
     setIsQuitModalOpen(false);
     if (!storedGameId) return;
 
+    //TODO: move this fetch
     fetch(
       `${apiUrl}/api/game-session/${storedGameId}/disconnect?userId=${userId}`,
       {

@@ -118,7 +118,12 @@ public class DefaultGameSessionController implements GameSessionController {
 
     @PostMapping("/{gameId}/authenticate-password/{enteredPassword}")
     public ResponseEntity<?> authenticatePassword(@PathVariable String gameId, @PathVariable String enteredPassword) {
-        return ResponseEntity.ok(gameSessionService.authenticatePassword(UUID.fromString(gameId), enteredPassword));
+        boolean valid = gameSessionService.authenticatePassword(UUID.fromString(gameId), enteredPassword);
+        if (valid) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(401).body("Incorrect password");
+        }
     }
 
     @GetMapping("/{gameId}/get-connected-users")
