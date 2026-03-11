@@ -380,7 +380,7 @@ describe("LoginPage", () => {
   });
 
   it("creates guest user when guest link is clicked", async () => {
-    const { createGuestUser } = await import("../Home/Home.tsx");
+    const { createGuestUser } = await import("../../utils/auth.tsx");
     const user = userEvent.setup();
 
     render(
