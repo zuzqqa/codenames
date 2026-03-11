@@ -28,3 +28,25 @@ export async function getPlayerUsername(token: string): Promise<string> {
   const response = await apiRequest("/api/users/username/" + token);
   return response.username;
 }
+
+export async function getGuestStatus(): Promise<boolean> {
+  const token = getCookie("authToken");
+
+  if (!token) {
+    return true;
+  }
+
+  try {
+    const guestStatus = await apiRequest("/api/users/is-guest", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return !!guestStatus;
+  } catch (err) {
+    console.error("Failed to retrieve guest status", err);
+    return true;
+  }
+}
