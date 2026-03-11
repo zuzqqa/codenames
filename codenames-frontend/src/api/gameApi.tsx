@@ -8,7 +8,33 @@ export type CreateGameRequest = {
   language: string;
 }
 
-export async function fetchGameSession(sessionId: string) {
+enum SessionStatus {
+  CREATED = "CREATED",
+  LEADER_SELECTION = "LEADER_SELECTION",
+  IN_PROGRESS = "IN_PROGRESS",
+  FINISHED = "FINISHED",
+}
+
+export type GameSessionRoomLobbyDTO = {
+  status: SessionStatus;
+  gameName: string;
+  maxPlayers: number;
+  connectedUsers: UserRoomLobbyDTO[][];
+}
+
+export type UserRoomLobbyDTO = {
+  id: string;
+  username: string;
+  profilePic: number;
+  status: UserStatus;
+}
+
+enum UserStatus {
+  INACTIVE = "INACTIVE",
+  ACTIVE = "ACTIVE",
+}
+
+export async function getGameSession(sessionId: string): Promise<GameSessionRoomLobbyDTO> {
   return apiRequest(`/api/game-session/${sessionId}`);
 }
 
